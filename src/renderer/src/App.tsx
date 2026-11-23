@@ -155,7 +155,7 @@ const sectionMeta: Record<Section, { title: string; eyebrow: string }> = {
 export default function App() {
   const [section, setSection] = useState<Section>(() => {
     const hash = window.location.hash.replace(/^#/, '')
-    if (/^(panel\.|panels\b|gestures\b|dock\b|surfaces\b)/.test(hash)) return 'surface'
+    if (/^(panel\.|panels\b|gestures\b|hotkeys\b|dock\b|surfaces\b)/.test(hash)) return 'surface'
     return 'dashboard'
   })
   const [query, setQuery] = useState('')

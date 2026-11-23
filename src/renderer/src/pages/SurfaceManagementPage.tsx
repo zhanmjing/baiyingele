@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import {
   ArrowUpRight,
   CircleDot,
   Copy,
   Grip,
+  Keyboard,
   LayoutGrid,
   PanelsTopLeft,
   Pencil,
@@ -11,6 +12,7 @@ import {
   Plus,
   Search,
   Sparkles,
+  RefreshCw,
   X
 } from 'lucide-react'
 import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
@@ -34,7 +36,7 @@ interface Props {
   lineLayer: LayerMeta
 }
 
-type SurfaceView = 'surfaces' | 'panels' | 'gestures' | 'dock'
+type SurfaceView = 'surfaces' | 'panels' | 'gestures' | 'hotkeys' | 'dock'
 
 const statusLabel: Record<string, string> = { active: '运行中', draft: '草稿', archived: '已归档' }
 const PANEL_MODES = ['right', 'left', 'bottom', 'floating', 'modal', 'sheet']
@@ -154,7 +156,7 @@ function gestureTargetsFor(layer: LayerMeta, kind: 'point' | 'line'): GestureTar
 function parseHash(): { view: SurfaceView; id: string } {
   const [head, tail] = window.location.hash.replace(/^#/, '').split('/')
   if (head.startsWith('panel.')) return { view: 'panels', id: decodeURIComponent(head) }
-  const view: SurfaceView = head === 'panels' || head === 'gestures' || head === 'dock' ? head : 'surfaces'
+  const view: SurfaceView = head === 'panels' || head === 'gestures' || head === 'hotkeys' || head === 'dock' ? head : 'surfaces'
   return { view, id: decodeURIComponent(tail ?? '') }
 }
 
@@ -164,8 +166,15 @@ export function SurfaceManagementPage({
 }: Props) {
   const [resources, setResources] = useState(loadSurfaceResources)
   const { panelClasses, dockTabs, dockTiles } = resources
-  // 手势绑定唯一数据源是主进程的触发器服务（trigger-bindings.json）
+  // 手势/热键绑定唯一数据源是主进程的触发器服务（trigger-bindings.json）
   const [gestureBindings, setGestureBindings] = useState<GestureBindingView[]>([])
+  const [hotkeyBindings, setHotkeyBindings] = useState<TriggerRecord[]>([])
+  const [hotkeyCombos, setHotkeyCombos] = useState<string[]>([])
+  const [hotkeyFailures, setHotkeyFailures] = useState<string[]>([])
+  const [hotkeyCombo, setHotkeyCombo] = useState('')
+  const [hotkeyTargetId, setHotkeyTargetId] = useState('')
+  const [hotkeyNote, setHotkeyNote] = useState('')
+  const [hotkeyPattern, setHotkeyPattern] = useState('')
   const initialHash = useMemo(parseHash, [])
   const [view, setView] = useState<SurfaceView>(initialHash.view)
   const [surfaceClassId, setSurfaceClassId] = useState(layer.classes[0]?.id ?? '')
@@ -246,7 +255,16 @@ export function SurfaceManagementPage({
 
   function changeView(next: SurfaceView) {
     setView(next)
-    const suffix = next === 'panels' ? `panels/${panelId}` : next === 'gestures' ? `gestures/${gesturePattern}` : next === 'dock' ? `dock/${dockTab.id}` : 'surfaces'
+    const suffix =
+      next === 'panels'
+        ? `panels/${panelId}`
+        : next === 'gestures'
+          ? `gestures/${gesturePattern}`
+          : next === 'hotkeys'
+            ? 'hotkeys'
+            : next === 'dock'
+              ? `dock/${dockTab.id}`
+              : 'surfaces'
     window.history.replaceState(null, '', `#${suffix}`)
   }
   function selectPanel(item: PanelClass) {
@@ -449,7 +467,7 @@ export function SurfaceManagementPage({
     if (!gesture || !window.confirm(`删除手势 ${gesture.pattern}？`)) return
     const record = gestureBindings.find((item) => item.pattern === gesture.pattern)
     if (record?.id && window.baiying?.removeTrigger) await window.baiying.removeTrigger(record.id)
-    await reloadGestures()
+    await reloadTriggers()
     setGesturePattern(''); onToast('GestureBinding 已删除')
   }
   function deleteDockTab() {
@@ -523,14 +541,63 @@ export function SurfaceManagementPage({
     }
   }
 
-  async function reloadGestures() {
+  async function reloadTriggers() {
     if (!window.baiying?.getTriggers) return
     try {
-      const payload = (await window.baiying.getTriggers()) as { bindings: TriggerRecord[] }
+      const payload = (await window.baiying.getTriggers()) as {
+        bindings: TriggerRecord[]
+        combos?: string[]
+        failures?: string[]
+      }
       setGestureBindings(payload.bindings.filter((item) => item.source === 'gesture').map(toGestureBinding))
+      setHotkeyBindings(payload.bindings.filter((item) => item.source === 'hotkey'))
+      setHotkeyCombos(payload.combos ?? [])
+      setHotkeyFailures(payload.failures ?? [])
     } catch {
       // 读取失败保持原样，由用户操作触发重试
     }
+  }
+
+  /** 在输入框里按下组合键 → 拼成 "Ctrl+Alt+Space" */
+  function captureHotkey(event: ReactKeyboardEvent<HTMLInputElement>) {
+    event.preventDefault()
+    const parts: string[] = []
+    if (event.ctrlKey) parts.push('Ctrl')
+    if (event.altKey) parts.push('Alt')
+    if (event.shiftKey) parts.push('Shift')
+    if (event.metaKey) parts.push('Meta')
+    const key = event.key
+    if (!['Control', 'Alt', 'Shift', 'Meta'].includes(key)) {
+      parts.push(key.length === 1 ? key.toUpperCase() : key)
+    }
+    setHotkeyCombo(parts.join('+'))
+  }
+
+  async function addHotkeyBinding() {
+    if (!hotkeyCombo) { onToast('先在输入框里按一个组合键'); return }
+    const target = gestureTargets.find((item) => item.id === hotkeyTargetId)
+    if (!target) { onToast('请选择目标实例'); return }
+    if (!window.baiying?.addTrigger) { onToast('当前环境不支持'); return }
+    const result = (await window.baiying.addTrigger({
+      source: 'hotkey',
+      pattern: hotkeyCombo,
+      targetKind: target.kind,
+      targetId: target.atomRef,
+      note: hotkeyNote.trim(),
+      name: hotkeyCombo
+    })) as { ok?: boolean; message?: string }
+    if (!result?.ok) { onToast(`添加失败：${result?.message ?? '未知错误'}`); return }
+    setHotkeyCombo('')
+    setHotkeyNote('')
+    await reloadTriggers()
+    onToast(`已绑定 ${hotkeyCombo} → ${target.label}`)
+  }
+
+  async function removeHotkeyBinding(id: string) {
+    if (!window.baiying?.removeTrigger) return
+    await window.baiying.removeTrigger(id)
+    await reloadTriggers()
+    onToast('热键绑定已删除')
   }
 
   /** 首次启动：把 localStorage 里的旧手势迁到主进程，之后就以主进程为准 */
@@ -571,7 +638,7 @@ export function SurfaceManagementPage({
       }
     }
 
-    await reloadGestures()
+    await reloadTriggers()
   }
 
   function recordPoint(event: ReactPointerEvent<HTMLDivElement>): { x: number; y: number; t: number } {
@@ -655,7 +722,7 @@ export function SurfaceManagementPage({
       return
     }
 
-    await reloadGestures()
+    await reloadTriggers()
     setGesturePattern(pattern)
     window.history.replaceState(null, '', `#gestures/${encodeURIComponent(pattern)}`)
     setGestureEditor(null)
@@ -670,6 +737,7 @@ export function SurfaceManagementPage({
     { id: 'surfaces', label: '目录', count: `${layer.classes.length}/${layer.classes.reduce((n, c) => n + c.instances.length, 0)}`, icon: LayoutGrid },
     { id: 'panels', label: '面板', count: `${panelClasses.length}/${panelClasses.reduce((n, c) => n + c.instances.length, 0)}`, icon: PanelsTopLeft },
     { id: 'gestures', label: '手势', count: String(gestureBindings.length), icon: Grip },
+    { id: 'hotkeys', label: '热键', count: String(hotkeyBindings.length), icon: Keyboard },
     { id: 'dock', label: '启动坞', count: String(dockTiles.length), icon: Sparkles }
   ]
 
@@ -696,6 +764,22 @@ export function SurfaceManagementPage({
           {view === 'surfaces' ? <SurfaceClassList classes={filteredSurfaceClasses} selectedId={surfaceClass?.id} onSelect={(item) => { setSurfaceClassId(item.id); setSurfaceInstanceId('') }} /> : null}
           {view === 'panels' ? <PanelClassList classes={filteredPanelClasses} selectedId={panelClass?.id} onSelect={selectPanel} /> : null}
           {view === 'gestures' ? <GestureList bindings={gestureBindings} selected={gesture?.pattern} onSelect={selectGesture} /> : null}
+          {view === 'hotkeys' ? (
+            <div className="surface-list">
+              {hotkeyBindings.length === 0 && <div className="surface-list-item">还没有热键绑定</div>}
+              {hotkeyBindings.map((binding) => (
+                <button
+                  key={binding.id}
+                  className={`surface-list-item ${hotkeyPattern === binding.pattern ? 'active' : ''}`}
+                  onClick={() => setHotkeyPattern(binding.pattern)}
+                >
+                  <span className="surface-list-icon">⌘</span>
+                  <div><strong>{binding.pattern}</strong><code>{binding.targetId}</code></div>
+                  <em>{binding.fireCount}</em>
+                </button>
+              ))}
+            </div>
+          ) : null}
           {view === 'dock' ? <DockTabList tabs={dockTabs} tiles={dockTiles} selected={dockTab?.id} onSelect={selectDockTab} /> : null}
         </aside>
 
@@ -719,6 +803,13 @@ export function SurfaceManagementPage({
               <button className="btn ghost" onClick={() => gesture && openGestureRecorder(gesture.pattern)} disabled={!gesture}>● 重录</button>
               <button className="btn ghost" onClick={deleteGesture} disabled={!gesture}><X size={12} /> 删除</button>
               <button className="text-btn" onClick={resetReferenceData}>重置参考数据</button>
+            </div>
+          )}
+          {view === 'hotkeys' && (
+            <div className="surface-action-bar">
+              <button className="btn primary" onClick={() => void addHotkeyBinding()} disabled={!hotkeyCombo || !hotkeyTargetId}><Plus size={12} /> 添加绑定</button>
+              <button className="btn ghost" onClick={() => void reloadTriggers()}><RefreshCw size={12} /> 刷新钩子状态</button>
+              <span className="text-btn">已挂载 {hotkeyCombos.length} 个组合{hotkeyFailures.length ? ` · ${hotkeyFailures.length} 个失败` : ''}</span>
             </div>
           )}
           {view === 'dock' && (
