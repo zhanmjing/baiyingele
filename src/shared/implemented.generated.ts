@@ -36,5 +36,5 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'win.open': 'Electron shell.openExternal / openPath；带 app 时走 spawn',
   'win.screen.capture': 'desktopCapturer 枚举屏幕源',
   'win.theme.mode': 'Windows 深浅主题：读写 HKCU Personalize 注册表键并读回校验',
-  'win.window.query': 'PowerShell 枚举有主窗口的进程；支持按进程名/标题筛选'
+  'win.window.query': 'koffi 直调 user32 枚举窗口（微秒级）；koffi 不可用时回退 PowerShell'
 }

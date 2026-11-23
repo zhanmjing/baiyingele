@@ -1,13 +1,16 @@
+import { enumWindows, win32Available, win32LoadError } from './_win32'
 import { isWindows, runPowerShell } from './_powershell'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
 export const id = 'win.window.query'
-export const summary = 'PowerShell 枚举有主窗口的进程；支持按进程名/标题筛选'
+export const summary = 'koffi 直调 user32 枚举窗口（微秒级）；koffi 不可用时回退 PowerShell'
 
 export interface WindowInfo {
   id: number
   process: string
   title: string
+  /** 窗口句柄，供 win.window.control 使用 */
+  hwnd?: string
 }
 
 export interface WindowSelector {
@@ -29,8 +32,8 @@ export function parseSelector(raw: string): WindowSelector {
 
 /**
  * 纯函数：筛选 + 排序 + 限流。
- * 注意：Windows 的 z 序拿不到（PowerShell 读不到 GetWindow 的 z-order），
- * 所以 sort=z_order 时退化为「按进程名、再按标题」的稳定顺序，并在输出里说明。
+ * 排序用「进程名、再标题」做稳定顺序——真正的 z 序要额外调 GetWindow(hwnd, GW_HWNDPREV)，
+ * 目前没有实现，所以 sort=z_order 时退化处理并在输出里说明。
  */
 export function selectWindows(
   windows: WindowInfo[],
@@ -54,8 +57,24 @@ export function selectWindows(
   return filtered.slice(0, Math.max(1, Math.min(limit, 500)))
 }
 
-/** 真实枚举：拿 PowerShell 的进程窗口列表 */
-async function listWindows(): Promise<WindowInfo[]> {
+function stripExe(name: string): string {
+  return name.replace(/\.exe$/i, '')
+}
+
+/** 主路径：koffi 直接枚举（返回 null 表示 koffi 不可用，交给调用方回退） */
+function listWindowsNative(limit: number): WindowInfo[] | null {
+  const windows = enumWindows(limit)
+  if (!windows) return null
+  return windows.map((window) => ({
+    id: window.pid,
+    hwnd: window.hwnd,
+    process: stripExe(window.process),
+    title: window.title
+  }))
+}
+
+/** 回退路径：PowerShell Get-Process */
+async function listWindowsPowerShell(): Promise<WindowInfo[]> {
   const script = [
     '$items = @(Get-Process | Where-Object { $_.MainWindowTitle -ne "" } | ForEach-Object {',
     '  [pscustomobject]@{ id = $_.Id; process = $_.ProcessName; title = $_.MainWindowTitle }',
@@ -90,12 +109,16 @@ export const run: Capability = async (ctx) => {
   const sort = String(ctx.params.sort ?? 'z_order')
 
   try {
-    const all = await listWindows()
+    const native = listWindowsNative(500)
+    const backend = native ? 'koffi' : 'powershell'
+    const all = native ?? (await listWindowsPowerShell())
     const picked = selectWindows(all, selector, Number.isFinite(limit) ? limit : 50)
+
     const notes = [
       selector.process ? `进程 ~ ${selector.process}` : '',
       selector.title ? `标题 ${selector.titleMatch === 'exact' ? '=' : '~'} ${selector.title}` : '',
-      sort === 'z_order' ? 'z 序不可用，已按进程名排序' : ''
+      sort === 'z_order' ? 'z 序未实现，已按进程名排序' : '',
+      backend === 'powershell' ? `koffi 不可用，已回退 PowerShell（${win32LoadError() ?? '未知原因'}）` : ''
     ].filter(Boolean)
 
     const sample = picked
@@ -106,11 +129,13 @@ export const run: Capability = async (ctx) => {
     return {
       status: 'ok',
       output:
-        `命中 ${picked.length} / 总共 ${all.length} 个窗口` +
+        `命中 ${picked.length} / 总共 ${all.length} 个窗口 · ${backend}` +
         `${notes.length ? `（${notes.join('；')}）` : ''}` +
         `${sample ? ` · 前 3 个：${sample}` : ''}`,
       value: JSON.stringify(picked),
       evidence: {
+        backend,
+        koffiAvailable: win32Available(),
         total: all.length,
         matched: picked.length,
         selector,

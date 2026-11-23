@@ -147,7 +147,7 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
 | `win.ocr.read` | 视觉模型 OCR：`$screenshot` / 本地图片 / 图片 URL 三路输入，复用 provider 降级链 |
-| `win.window.query` | PowerShell 枚举有主窗口的进程，按进程名/标题筛选（L0 只读） |
+| `win.window.query` | **koffi 直调 user32** 枚举窗口（~0.35ms/次），koffi 不可用时自动回退 PowerShell |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
 其余 85 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
@@ -164,18 +164,37 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 
 `npm run smoke` 会验证第一条的完整链路。
 
-### 没有 native 模块怎么办
+### 系统能力怎么接：koffi + 回退
 
-窗口枚举、主题切换这类系统能力**没有引入 ffi-napi / win32-api**（在现代 Node + Electron 上编译成功率很低），
-而是走 PowerShell 互操作 —— 代价是每次调用约 200–600ms，换来的是零编译依赖、随包即用。
+窗口枚举、主题切换这类系统能力**没有引入 ffi-napi / win32-api / Rust sidecar**，而是走
+[koffi](https://koffi.dev/) —— 一个运行时 dlopen 的 FFI，**零编译、零 native 构建**。
 
-两个必须处理的坑都写在 `src/main/capabilities/_powershell.ts` 里：
+已验证的事实（`node scripts/probe-koffi.cjs`）：
 
-1. PowerShell 5.1 默认按控制台代码页输出，中文窗口标题会乱码 → 统一加 UTF-8 前导
-2. 非 Windows 平台上 `powershell.exe` 不存在 → 每个能力入口先查 `isWindows()`
+| 运行时 | NODE_MODULE_VERSION | 结果 |
+|---|---|---|
+| 纯 Node 24.22.0 | 137 | ✅ 枚举 259 个窗口 |
+| **Electron 45.4.1 自带 Node** | **150** | ✅ 枚举 304 个窗口 |
 
-需要 true native 才能做的（全局键盘钩子 `win.key.trigger`、窗口移动/置顶 `win.window.control`、
-音量 `win.audio.volume`、亮度 `win.display.brightness`）目前仍是模拟，管理页会标出来。
+两套 ABI 都能直接加载 → **Node-API 稳定 ABI 生效，不需要为 Electron 重新编译**。
+
+**性能对比（窗口查询，20 次平均）：**
+
+| 实现 | 每次耗时 |
+|---|---|
+| PowerShell 子进程 | 300–600ms |
+| **koffi 直调 user32** | **0.35ms** |
+
+三条铁律（写在 `src/main/capabilities/_win32.ts` 顶部）：
+
+1. **所有 C 签名只写在那一个文件里** —— koffi 签名写错不是抛异常，是**整个主进程崩溃**
+2. **懒加载**：`require('koffi')` 失败时返回 `null`，能力自动回退 PowerShell 并在输出里说明原因
+3. **每个句柄都要 `CloseHandle`**，用 `try/finally` 保证
+
+打包注意：koffi 是运行时依赖，`electron-builder` 里必须同时配 `files` 和 `asarUnpack`（原生 `.node` 不能留在 asar 内）。
+
+仍为模拟、需要进一步能力的：`win.key.trigger`（全局键盘钩子，候选 `uiohook-napi`）、
+`win.window.control`、`win.audio.volume`、`win.display.brightness`、`win.key.send`、`ui.form`。
 
 ## 场层落点（landing）
 
