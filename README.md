@@ -148,9 +148,10 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
 | `win.ocr.read` | 视觉模型 OCR：`$screenshot` / 本地图片 / 图片 URL 三路输入，复用 provider 降级链 |
 | `win.window.query` | **koffi 直调 user32** 枚举窗口（~0.35ms/次），koffi 不可用时自动回退 PowerShell |
+| `win.window.control` | koffi 控制窗口：focus / move / topmost / close；支持按 `hwnd` 精确指定 |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
-其余 85 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 84 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
@@ -195,6 +196,14 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 
 仍为模拟、需要进一步能力的：`win.key.trigger`（全局键盘钩子，候选 `uiohook-napi`）、
 `win.window.control`、`win.audio.volume`、`win.display.brightness`、`win.key.send`、`ui.form`。
+
+### 窗口控制踩到的两个坑
+
+1. **`SetForegroundWindow` 会被系统拒绝**：后台进程调用时 Windows 只让任务栏闪一下。正规做法是
+   `AttachThreadInput` 把当前线程的输入队列临时挂到目标线程和前台线程上，调完立刻摘掉 —— 见 `focusWindow()`。
+2. **同名窗口会选错**：`Clash Verge` 这类应用可能有多个标题相同的窗口，按标题选会在两次调用间选到不同的那个。
+   所以 `selector` 支持 `{ "hwnd": "..." }` 精确定位（`win.window.query` 的返回值里带 `hwnd`），
+   匹配到多个时输出里也会明确提示。
 
 ## 场层落点（landing）
 

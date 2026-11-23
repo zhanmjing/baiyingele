@@ -18,6 +18,8 @@ export interface WindowSelector {
   process?: string
   title?: string
   titleMatch?: 'contains' | 'exact'
+  /** 精确指定窗口句柄（优先于 process/title）。同名窗口有多个时用它消歧 */
+  hwnd?: string
 }
 
 /** 解析实例里的 selector（JSON 字符串）；解析不了就当没有条件 */

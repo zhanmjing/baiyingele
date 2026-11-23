@@ -85,6 +85,7 @@ const { applyLanding } = require('../.tmp/smoke/main/fieldRuntime.js')
 const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
 const { selectWindows, parseSelector } = require('../.tmp/smoke/main/capabilities/win.window.query.js')
 const { planThemeChange } = require('../.tmp/smoke/main/capabilities/win.theme.mode.js')
+const { computeRect, resolveTarget } = require('../.tmp/smoke/main/capabilities/win.window.control.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -547,6 +548,38 @@ async function main() {
     console.log(`✓ win.window.query 实机：命中 ${listed.length} 个窗口${listed[0] ? `（例如 ${listed[0].process}）` : ''}`)
   } else {
     console.log(`· win.window.query 实机调用跳过：${realQuery.output.slice(0, 60)}`)
+  }
+
+  // ── 7j. win.window.control：矩形解析 + 目标解析（不产生桌面副作用）──
+  const AREA = { x: 0, y: 0, width: 1920, height: 1080 }
+
+  assert.deepStrictEqual(computeRect('0,0,0.5,1', AREA), { x: 0, y: 0, width: 960, height: 1080 }, '比例写法')
+  assert.deepStrictEqual(computeRect('0.5,0.5,0.5,0.5', AREA), { x: 960, y: 540, width: 960, height: 540 }, '带偏移的比例')
+  assert.deepStrictEqual(computeRect('100,100,800,600', AREA), { x: 100, y: 100, width: 800, height: 600 }, '像素写法')
+  assert.strictEqual(computeRect('1,2,3', AREA), null, '参数不足应为 null')
+  assert.strictEqual(computeRect('a,b,c,d', AREA), null, '非数字应为 null')
+
+  const bogusSelector = '{"title":"__绝不存在的窗口标题__"}'
+  const ctlNoTarget = await CAPABILITIES['win.window.control'](
+    ctx('win.window.control', { op: 'focus', selector: bogusSelector })
+  )
+  assert.strictEqual(ctlNoTarget.status, 'warn', '匹配不到窗口必须 warn')
+  assert.match(ctlNoTarget.output, /没有匹配的窗口/)
+
+  const unknownOp = await CAPABILITIES['win.window.control'](ctx('win.window.control', { op: 'explode' }))
+  assert.strictEqual(unknownOp.status, 'warn')
+  assert.match(unknownOp.output, /未知 op/)
+
+  // 真实 Win32 读路径（枚举 + 主屏工作区），但 rect 非法 → 不会移动任何窗口
+  const badRect = await CAPABILITIES['win.window.control'](
+    ctx('win.window.control', { op: 'move', selector: '', rect: 'bogus', monitor: '1' })
+  )
+  if (badRect.output.includes('没有匹配的窗口')) {
+    console.log('· win.window.control 实机跳过：当前没有可匹配的窗口')
+  } else {
+    assert.strictEqual(badRect.status, 'warn', '非法 rect 必须 warn')
+    assert.match(badRect.output, /rect 格式不对/, `应走到 rect 校验: ${badRect.output}`)
+    console.log('✓ win.window.control：矩形解析 / 无目标 / 未知 op / Win32 读路径 都正确（未移动任何窗口）')
   }
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────

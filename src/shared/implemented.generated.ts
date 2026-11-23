@@ -16,6 +16,7 @@ export const IMPLEMENTED_CLASS_IDS = [
   'win.open',
   'win.screen.capture',
   'win.theme.mode',
+  'win.window.control',
   'win.window.query'
 ] as const
 
@@ -36,5 +37,6 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'win.open': 'Electron shell.openExternal / openPath；带 app 时走 spawn',
   'win.screen.capture': 'desktopCapturer 枚举屏幕源',
   'win.theme.mode': 'Windows 深浅主题：读写 HKCU Personalize 注册表键并读回校验',
+  'win.window.control': 'koffi 控制窗口：focus / move / topmost / close（focus 用 AttachThreadInput 绕前台锁）',
   'win.window.query': 'koffi 直调 user32 枚举窗口（微秒级）；koffi 不可用时回退 PowerShell'
 }
