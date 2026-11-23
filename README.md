@@ -138,6 +138,7 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `file.read` | `node:fs` 读取，超过 `maxBytes` 截断；目录/缺失按 warn 处理 |
 | `file.move` | `node:fs` rename（`EXDEV` 回落 copy+unlink），`overwrite=false` 时不覆盖 |
 | `file.scan` | `node:fs` 递归扫描，`limit` 封顶，不可读目录跳过并计入说明 |
+| `clipboard.write` | `clipboard.writeText` + 回读校验；空文本拒绝，不清空用户剪贴板 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |

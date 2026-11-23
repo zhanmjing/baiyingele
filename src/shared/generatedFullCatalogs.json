@@ -1238,6 +1238,57 @@
           }
         }
       ]
+    },
+    {
+      "id": "clipboard.write",
+      "name": "写剪贴板",
+      "family": "file",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "把文本写入系统剪贴板；写后回读校验，空文本直接拒绝以免清空用户内容。",
+      "params": [
+        {
+          "key": "text",
+          "label": "text",
+          "type": "text",
+          "required": false,
+          "description": "text",
+          "defaultValue": ""
+        },
+        {
+          "key": "format",
+          "label": "format",
+          "type": "text",
+          "required": false,
+          "description": "format",
+          "defaultValue": "text"
+        }
+      ],
+      "instances": [
+        {
+          "id": "clipboard.write.i-text@r1",
+          "name": "i-text",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"text\":\"\",\"format\":\"text\"}",
+          "params": {
+            "text": "",
+            "format": "text"
+          }
+        },
+        {
+          "id": "clipboard.write.i-uppercase@r1",
+          "name": "i-uppercase",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"text\":\"\",\"format\":\"text\"}",
+          "params": {
+            "text": "",
+            "format": "text"
+          }
+        }
+      ]
     }
   ],
   "line": [

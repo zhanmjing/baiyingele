@@ -2,39 +2,13 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 80,
+    "ok": 83,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 161
+    "missing": 158
   },
   "requirements": [
-    {
-      "id": "req:point.clipboard.write",
-      "layer": "point",
-      "capability": "point:clipboard.write",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.advanced-paste",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "body.composition",
-          "owner": "body.clipboard-history",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "body.composition",
-          "owner": "body.color-picker",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
     {
       "id": "req:point.open.terminal@r1.instance",
       "layer": "point",

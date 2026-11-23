@@ -20,6 +20,41 @@ const fs = require('node:fs')
 const os = require('node:os')
 const path = require('node:path')
 
+// 能力模块会 require('electron')，但本脚本跑在纯 node 下。
+// 先把 electron 换成可控假桩，这样剪贴板这类能力也能被真实断言。
+const fakeClipboard = {
+  text: '',
+  async readText() {
+    return this.text
+  },
+  async writeText(value) {
+    this.text = value
+  },
+  async read() {
+    return []
+  },
+  clear() {
+    this.text = ''
+  }
+}
+const electronPath = require.resolve('electron')
+require.cache[electronPath] = {
+  id: electronPath,
+  filename: electronPath,
+  loaded: true,
+  exports: {
+    clipboard: fakeClipboard,
+    app: { getPath: () => os.tmpdir(), setAppUserModelId() {} },
+    Notification: class {
+      static isSupported() {
+        return false
+      }
+      show() {}
+    },
+    desktopCapturer: { async getSources() { return [] } }
+  }
+}
+
 const { LayerStore } = require('../.tmp/smoke/main/layerStore.js')
 const { createLineRunner, orderNodes, parseFlowArgs } = require('../.tmp/smoke/main/flowRuntime.js')
 const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
@@ -171,6 +206,27 @@ async function main() {
   const scanMissing = await CAPABILITIES['file.scan'](ctx('file.scan', { root: path.join(workdir, 'ghost-dir') }))
   assert.strictEqual(scanMissing.status, 'warn', '目录不存在必须 warn')
   console.log('✓ file.scan：模式过滤 / limit 截断 / 目录缺失 都正确')
+
+  // ── 7c. 真实能力：clipboard.write ↔ win.clipboard.get 往返 ──
+  fakeClipboard.text = ''
+
+  const emptyWrite = await CAPABILITIES['clipboard.write'](ctx('clipboard.write', { text: '' }))
+  assert.strictEqual(emptyWrite.status, 'warn', '空文本必须 warn')
+  assert.strictEqual(fakeClipboard.text, '', '空文本不能改动剪贴板')
+
+  const CLIPBOARD_TEXT = '你好，剪贴板'
+  const clipWritten = await CAPABILITIES['clipboard.write'](ctx('clipboard.write', { text: CLIPBOARD_TEXT }))
+  assert.strictEqual(clipWritten.status, 'ok', `写剪贴板应成功: ${clipWritten.output}`)
+  assert.strictEqual(fakeClipboard.text, CLIPBOARD_TEXT, '剪贴板内容应被写入')
+
+  const clipReadBack = await CAPABILITIES['win.clipboard.get'](ctx('win.clipboard.get', { format: 'text' }))
+  assert.strictEqual(clipReadBack.status, 'ok', `读剪贴板应成功: ${clipReadBack.output}`)
+  assert.strictEqual(clipReadBack.value, CLIPBOARD_TEXT, '写进去的内容必须能原样读回')
+
+  fakeClipboard.text = ''
+  const emptyRead = await CAPABILITIES['win.clipboard.get'](ctx('win.clipboard.get', { format: 'text' }))
+  assert.strictEqual(emptyRead.status, 'warn', '空剪贴板必须 warn')
+  console.log('✓ clipboard.write ↔ win.clipboard.get：写入 / 回读 / 空值保护 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

@@ -19,6 +19,7 @@
     "file.move",
     "file.read",
     "notify.toast",
-    "file.scan"
+    "file.scan",
+    "clipboard.write"
   ]
 }
