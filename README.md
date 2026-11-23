@@ -145,13 +145,21 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
+| `win.ocr.read` | 视觉模型 OCR：`$screenshot` / 本地图片 / 图片 URL 三路输入，复用 provider 降级链 |
 
-其余 89 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 87 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
-已打通的端到端流程是 `flow.clipboard-to-file`（读剪贴板 → 套模板 → 写文件 → 系统通知）：
-四个节点各产生一条真实 `PointRun`，再聚合成一条 `FlowRun`——`npm run smoke` 可验证。
+已打通 **3 条全真流程**（每个节点都绑定到真实能力，各产生一条真实 `PointRun` 再聚合成 `FlowRun`）：
+
+| 流程 | 链路 |
+|---|---|
+| `flow.clipboard-to-file` | 读剪贴板 → 套模板 → 写文件 → 系统通知 |
+| `flow.open-external-site` | HTTP 可达性检查 → 打开 URL → 通知 |
+| `flow.screenshot-translate` | 抓屏 → OCR（视觉模型）→ 翻译 → 通知 |
+
+`npm run smoke` 会验证第一条的完整链路。
 
 ## 翻译 provider 配置
 

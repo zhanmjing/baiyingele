@@ -62,7 +62,18 @@ require.cache[electronPath] = {
         shellCalls.push(['openExternal', target])
       }
     },
-    desktopCapturer: { async getSources() { return [] } }
+    desktopCapturer: {
+      async getSources() {
+        return [
+          {
+            id: 'screen:0:0',
+            name: 'Screen 1',
+            thumbnail: { toPNG: () => Buffer.from('fake-png-bytes') }
+          }
+        ]
+      }
+    },
+    screen: { getPrimaryDisplay: () => ({ size: { width: 1280, height: 720 } }) }
   }
 }
 
@@ -240,14 +251,22 @@ async function main() {
   console.log('✓ clipboard.write ↔ win.clipboard.get：写入 / 回读 / 空值保护 都正确')
 
   // ── 7d. translate.text：provider 降级链 本地 → 网络 → API ──────
-  const startChatServer = (reply) =>
+  const startChatServer = (initialReply) =>
     new Promise((resolve) => {
+      let reply = initialReply
       const server = http.createServer((req, res) => {
         res.writeHead(200, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ choices: [{ message: { content: reply } }] }))
+        const body = typeof reply === 'function' ? reply() : reply
+        res.end(JSON.stringify({ choices: [{ message: { content: body } }] }))
       })
       server.listen(0, '127.0.0.1', () =>
-        resolve({ server, url: `http://127.0.0.1:${server.address().port}/v1` })
+        resolve({
+          server,
+          url: `http://127.0.0.1:${server.address().port}/v1`,
+          setReply: (next) => {
+            reply = next
+          }
+        })
       )
     })
 
@@ -366,6 +385,49 @@ async function main() {
   clearTranslateEnv()
   await new Promise((resolve) => classServer.server.close(resolve))
   console.log('✓ field.classify：未配置 / 正常分类 / 非法标签 / 非 JSON / 无候选集 都正确')
+
+  // ── 7g. 真实能力：win.ocr.read（视觉模型）────────────────────
+  const ocrHolder = { text: '第一行\n第二行' }
+  const ocrServer = await startChatServer(() => ocrHolder.text)
+  const SMALL_PNG = `data:image/png;base64,${Buffer.from('fake-png-bytes').toString('base64')}`
+
+  clearTranslateEnv()
+  const ocrNoProvider = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: SMALL_PNG }))
+  assert.strictEqual(ocrNoProvider.status, 'warn', '没配 provider 必须 warn')
+  assert.match(ocrNoProvider.output, /未配置 OCR provider/)
+
+  process.env.BAIYING_TRANSLATE_LOCAL_URL = ocrServer.url
+
+  const ocrDataUrl = await CAPABILITIES['win.ocr.read'](
+    ctx('win.ocr.read', { image: SMALL_PNG, lang: 'zh', layout: 'true' })
+  )
+  assert.strictEqual(ocrDataUrl.status, 'ok', `data URL 应成功: ${ocrDataUrl.output}`)
+  assert.strictEqual(ocrDataUrl.value, '第一行\n第二行', '识别文本应原样透传')
+  assert.strictEqual(ocrDataUrl.evidence.imageSource, 'data-url')
+  assert.strictEqual(ocrDataUrl.evidence.tier, 'local')
+  assert.strictEqual(ocrDataUrl.evidence.layout, true)
+
+  const imgPath = path.join(workdir, 'shot.png')
+  fs.writeFileSync(imgPath, Buffer.from('fake-png-bytes'))
+  const ocrFile = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: imgPath }))
+  assert.strictEqual(ocrFile.status, 'ok', `本地图片应成功: ${ocrFile.output}`)
+  assert.strictEqual(ocrFile.evidence.imageSource, imgPath)
+
+  const ocrScreenshot = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: '$screenshot' }))
+  assert.strictEqual(ocrScreenshot.status, 'ok', `截图 OCR 应成功: ${ocrScreenshot.output}`)
+  assert.match(String(ocrScreenshot.evidence.imageSource), /^screenshot:/, '应走截图分支')
+
+  const ocrMissing = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: '' }))
+  assert.strictEqual(ocrMissing.status, 'warn', '缺图必须 warn')
+
+  ocrHolder.text = ''
+  const ocrEmpty = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: SMALL_PNG }))
+  assert.strictEqual(ocrEmpty.status, 'warn', '空结果必须 warn')
+  assert.match(ocrEmpty.output, /没有识别到文字/, `空结果文案不对: ${ocrEmpty.output}`)
+
+  clearTranslateEnv()
+  await new Promise((resolve) => ocrServer.server.close(resolve))
+  console.log('✓ win.ocr.read：未配置 / data URL / 本地图片 / 截图 / 缺图 / 空结果 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

@@ -79,11 +79,10 @@ export function describeTierConfig(): string {
   return tiers.length ? tiers.map((tier) => `${tier.name}=${tier.endpoint}`).join(' → ') : '（未配置）'
 }
 
-/**
- * 依次尝试各档位，返回第一份成功结果。
- * 全部失败时抛错，错误里带每档的失败原因——调用方据此给 warn 文案。
- */
-export async function chatOnce(prompt: string, system?: string): Promise<ChatResult> {
+type ChatMessage = Record<string, unknown>
+
+/** 依次尝试各档位，返回第一份成功结果；messages 由调用方按需构造（纯文本或图文） */
+async function runTiers(buildMessages: () => ChatMessage[]): Promise<ChatResult> {
   const tiers = resolveTiers()
   if (!tiers.length) {
     throw new Error(
@@ -105,18 +104,18 @@ export async function chatOnce(prompt: string, system?: string): Promise<ChatRes
         body: JSON.stringify({
           model: tier.model,
           temperature: 0,
-          messages: [
-            ...(system ? [{ role: 'system', content: system }] : []),
-            { role: 'user', content: prompt }
-          ]
+          messages: buildMessages()
         }),
         signal: AbortSignal.timeout(tier.timeoutMs)
       })
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = (await response.json()) as { choices?: { message?: { content?: string } }[] }
-      const text = data.choices?.[0]?.message?.content?.trim()
-      if (!text) throw new Error('响应里没有 content')
+      const choice = data.choices?.[0]
+      // 没有 choices 说明响应结构不对，属于本次档位失败；
+      // 但 content 为空是合法结果（图里没字 / 模型不想说话），交给调用方判断
+      if (!choice) throw new Error('响应里没有 choices')
+      const text = String(choice.message?.content ?? '').trim()
 
       attempts.push({ tier: tier.name, ok: true, elapsedMs: Date.now() - startedAt })
       return { text, tier: tier.name, attempts }
@@ -134,4 +133,29 @@ export async function chatOnce(prompt: string, system?: string): Promise<ChatRes
   throw new Error(
     `所有 provider 都失败：${attempts.map((attempt) => `${attempt.tier}(${attempt.reason})`).join('；')}`
   )
+}
+
+/** 纯文本对话 */
+export function chatOnce(prompt: string, system?: string): Promise<ChatResult> {
+  return runTiers(() => [
+    ...(system ? [{ role: 'system', content: system }] : []),
+    { role: 'user', content: prompt }
+  ])
+}
+
+/**
+ * 图文对话（OpenAI 兼容的 image_url 格式）。
+ * images 支持 data URL 或公网可访问的图片 URL。
+ */
+export function chatWithImages(prompt: string, system: string | undefined, images: string[]): Promise<ChatResult> {
+  return runTiers(() => [
+    ...(system ? [{ role: 'system', content: system }] : []),
+    {
+      role: 'user',
+      content: [
+        { type: 'text', text: prompt },
+        ...images.map((url) => ({ type: 'image_url', image_url: { url } }))
+      ]
+    }
+  ])
 }

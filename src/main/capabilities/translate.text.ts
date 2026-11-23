@@ -41,6 +41,15 @@ export const run: Capability = async (ctx) => {
       `把下面的文本翻译成${targetLabel}。只输出译文本身，不要解释、不要加引号。\n\n${text}`,
       `你是翻译引擎。源语言：${sourceLabel}。目标语言：${targetLabel}。只输出译文。`
     )
+    if (!result.text.trim()) {
+      return {
+        status: 'warn',
+        output: `模型返回了空译文（${result.tier} 档）`,
+        evidence: { tier: result.tier, attempts: result.attempts },
+        elapsedMs: elapsed(startedAt)
+      }
+    }
+
     const retries = result.attempts.length - 1
     return {
       status: 'ok',
