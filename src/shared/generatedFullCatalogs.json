@@ -995,6 +995,140 @@
       ]
     },
     {
+      "id": "file.move",
+      "name": "移动 / 重命名文件",
+      "family": "file",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "同盘用 rename 原子移动，跨盘回落 copy+unlink；目标已存在且 overwrite=false 时不动文件并返回 warn。",
+      "params": [
+        {
+          "key": "from",
+          "label": "from",
+          "type": "text",
+          "required": false,
+          "description": "from",
+          "defaultValue": ""
+        },
+        {
+          "key": "to",
+          "label": "to",
+          "type": "text",
+          "required": false,
+          "description": "to",
+          "defaultValue": ""
+        },
+        {
+          "key": "overwrite",
+          "label": "overwrite",
+          "type": "bool",
+          "required": false,
+          "description": "overwrite",
+          "defaultValue": "false"
+        }
+      ],
+      "instances": [
+        {
+          "id": "file.move.i-rename@r1",
+          "name": "i-rename",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"from\":\"\",\"to\":\"\",\"overwrite\":false}",
+          "params": {
+            "from": "",
+            "to": "",
+            "overwrite": "false"
+          }
+        },
+        {
+          "id": "file.move.i-move@r1",
+          "name": "i-move",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"from\":\"\",\"to\":\"\",\"overwrite\":false}",
+          "params": {
+            "from": "",
+            "to": "",
+            "overwrite": "false"
+          }
+        },
+        {
+          "id": "file.move.i-archive@r1",
+          "name": "i-archive",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"from\":\"\",\"to\":\"\",\"overwrite\":true}",
+          "params": {
+            "from": "",
+            "to": "",
+            "overwrite": "true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "file.read",
+      "name": "读文件",
+      "family": "file",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "读取文本文件内容；超过 maxBytes 时截断并标注，目录路径按 warn 处理。",
+      "params": [
+        {
+          "key": "path",
+          "label": "path",
+          "type": "text",
+          "required": false,
+          "description": "path",
+          "defaultValue": ""
+        },
+        {
+          "key": "encoding",
+          "label": "encoding",
+          "type": "text",
+          "required": false,
+          "description": "encoding",
+          "defaultValue": "utf-8"
+        },
+        {
+          "key": "maxBytes",
+          "label": "maxBytes",
+          "type": "number",
+          "required": false,
+          "description": "maxBytes",
+          "defaultValue": "262144"
+        }
+      ],
+      "instances": [
+        {
+          "id": "file.read.i-text@r1",
+          "name": "i-text",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"path\":\"\",\"encoding\":\"utf-8\",\"maxBytes\":262144}",
+          "params": {
+            "path": "",
+            "encoding": "utf-8",
+            "maxBytes": "262144"
+          }
+        },
+        {
+          "id": "file.read.i-preview@r1",
+          "name": "i-preview",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"path\":\"\",\"encoding\":\"utf-8\",\"maxBytes\":4096}",
+          "params": {
+            "path": "",
+            "encoding": "utf-8",
+            "maxBytes": "4096"
+          }
+        }
+      ]
+    },
+    {
       "id": "notify.toast",
       "name": "系统通知",
       "family": "notify",

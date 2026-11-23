@@ -16,6 +16,8 @@
     "win.screen.capture",
     "text.template",
     "file.write",
+    "file.move",
+    "file.read",
     "notify.toast"
   ]
 }

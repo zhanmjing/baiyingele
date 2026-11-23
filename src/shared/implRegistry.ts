@@ -10,6 +10,8 @@ export const IMPLEMENTED_CLASS_IDS = [
   'win.clipboard.get',
   'text.template',
   'file.write',
+  'file.read',
+  'file.move',
   'notify.toast',
   'win.http.request',
   'win.screen.capture'
@@ -22,6 +24,8 @@ export const IMPL_SUMMARY: Record<ImplementedClassId, string> = {
   'win.clipboard.get': 'Electron clipboard.readText / readImage',
   'text.template': '纯函数：把 {{input}} 替换为上游输出',
   'file.write': 'node:fs writeFile / appendFile（~ 展开为主目录）',
+  'file.read': 'node:fs 读取，超过 maxBytes 截断；目录或缺失按 warn 处理',
+  'file.move': 'node:fs rename（EXDEV 回落 copy+unlink），overwrite=false 时不覆盖',
   'notify.toast': 'Electron Notification',
   'win.http.request': 'fetch + 10s 超时\n返回 HTTP 状态码与字节数',
   'win.screen.capture': 'desktopCapturer 枚举屏幕源'

@@ -91,11 +91,30 @@ export class LayerStore {
     this.runner = runner
     this.state = this.load()
 
-    const currentClassCount = new Set(this.state.instances.map((instance) => instance.classId)).size
-    if (currentClassCount < def.classes.length) {
-      this.state = { ...this.state, instances: this.seedInstances() }
-      this.save()
-    }
+    // 增量补齐：只为「一条实例都没有」的类补种子实例。
+    // 旧实现是「类数量不足就整层重灌」——新增一个类会把用户所有本地实例（含改过的参数与归档状态）清空，
+    // 而在快速加能力阶段每加一个类都会触发它。
+    if (this.backfillMissingClasses()) this.save()
+  }
+
+  /** 返回是否补过东西 */
+  private backfillMissingClasses(): boolean {
+    const covered = new Set(this.state.instances.map((instance) => instance.classId))
+    const missing = this.def.classes.filter((pointClass) => !covered.has(pointClass.id))
+    if (!missing.length) return false
+
+    const stamp = Date.now()
+    const seeded = missing.flatMap((pointClass) =>
+      pointClass.instances.map((instance) => ({
+        ...instance,
+        classId: pointClass.id,
+        params: { ...(instance.params ?? {}) },
+        createdAt: stamp,
+        updatedAt: stamp
+      }))
+    )
+    this.state = { ...this.state, instances: [...this.state.instances, ...seeded] }
+    return true
   }
 
   private seedInstances(): PointInstanceRecord[] {

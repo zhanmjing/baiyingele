@@ -1,0 +1,26 @@
+{
+  "id": "file.read",
+  "name": "读文件",
+  "group": "file",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "读取文本文件内容；超过 maxBytes 时截断并标注，目录路径按 warn 处理。",
+  "instances": [
+    {
+      "id": "file.read.i-text@r1",
+      "name": "i-text",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"path\":\"\",\"encoding\":\"utf-8\",\"maxBytes\":262144}"
+    },
+    {
+      "id": "file.read.i-preview@r1",
+      "name": "i-preview",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"path\":\"\",\"encoding\":\"utf-8\",\"maxBytes\":4096}"
+    }
+  ]
+}

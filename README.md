@@ -125,6 +125,8 @@ build/data/legacy/                           旧整包数据（只作追溯，�
 | `win.clipboard.get` | Electron `clipboard.readText()` / `read()`（Electron 45 的 W3C 异步 API） |
 | `text.template` | 纯函数：`{{input}}` 替换为上游输出 |
 | `file.write` | `node:fs` 写入 / 追加，`~` 展开为主目录 |
+| `file.read` | `node:fs` 读取，超过 `maxBytes` 截断；目录/缺失按 warn 处理 |
+| `file.move` | `node:fs` rename（`EXDEV` 回落 copy+unlink），`overwrite=false` 时不覆盖 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |

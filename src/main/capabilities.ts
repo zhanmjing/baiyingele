@@ -7,7 +7,7 @@
  * 返回 null 表示"这个类没有真实实现"，调用方回落到模拟输出。
  */
 import { app, clipboard, desktopCapturer, Notification } from 'electron'
-import { appendFile, mkdir, writeFile } from 'node:fs/promises'
+import { appendFile, copyFile, mkdir, open, rename, stat, unlink, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { IMPLEMENTED_CLASS_IDS, type ImplementedClassId } from '../shared/implRegistry'
@@ -113,6 +113,97 @@ const fileWrite: Capability = async (ctx) => {
   }
 }
 
+/** L0 · 读文件 */
+const fileRead: Capability = async (ctx) => {
+  const startedAt = Date.now()
+  const target = expandPath(String(ctx.params.path ?? ''))
+  if (!target) return { status: 'warn', output: '未提供 path', elapsedMs: elapsed(startedAt) }
+
+  const encoding = String(ctx.params.encoding ?? 'utf-8') || 'utf-8'
+  const requested = Number(ctx.params.maxBytes ?? 262144)
+  const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, 16 * 1024 * 1024) : 262144
+
+  try {
+    const info = await stat(target)
+    if (info.isDirectory()) {
+      return { status: 'warn', output: `是目录而不是文件：${target}`, elapsedMs: elapsed(startedAt) }
+    }
+
+    const handle = await open(target, 'r')
+    try {
+      const buffer = Buffer.alloc(Math.min(limit, info.size))
+      const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0)
+      const text = buffer.subarray(0, bytesRead).toString(encoding as BufferEncoding)
+      const truncated = info.size > bytesRead
+      const firstLine = (text.split(/\r?\n/)[0] ?? '').slice(0, 60)
+      return {
+        status: 'ok',
+        output: `读取 ${target} · ${bytesRead} bytes${truncated ? `（原文 ${info.size}，已截断）` : ''} · ${JSON.stringify(firstLine)}`,
+        value: text,
+        elapsedMs: elapsed(startedAt)
+      }
+    } finally {
+      await handle.close()
+    }
+  } catch (error) {
+    return { status: 'warn', output: `读取失败：${errorMessage(error)}`, elapsedMs: elapsed(startedAt) }
+  }
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** L1 · 移动 / 重命名文件 */
+const fileMove: Capability = async (ctx) => {
+  const startedAt = Date.now()
+  const from = expandPath(String(ctx.params.from ?? ''))
+  const to = expandPath(String(ctx.params.to ?? ''))
+  const overwrite = String(ctx.params.overwrite) === 'true'
+
+  if (!from || !to) {
+    return { status: 'warn', output: '需要 from 和 to 两个参数', elapsedMs: elapsed(startedAt) }
+  }
+  if (!(await pathExists(from))) {
+    return { status: 'warn', output: `源文件不存在：${from}`, elapsedMs: elapsed(startedAt) }
+  }
+  if (!overwrite && (await pathExists(to))) {
+    return {
+      status: 'warn',
+      output: `目标已存在且 overwrite=false，未改动任何文件：${to}`,
+      elapsedMs: elapsed(startedAt)
+    }
+  }
+
+  try {
+    await mkdir(dirname(to), { recursive: true })
+    try {
+      await rename(from, to)
+    } catch (error) {
+      // 跨盘移动会抛 EXDEV：退化成复制 + 删除
+      if ((error as NodeJS.ErrnoException).code === 'EXDEV') {
+        await copyFile(from, to)
+        await unlink(from)
+      } else {
+        throw error
+      }
+    }
+    return {
+      status: 'ok',
+      output: `已移动 ${from} → ${to}${overwrite ? '（overwrite=true）' : ''}`,
+      value: to,
+      elapsedMs: elapsed(startedAt)
+    }
+  } catch (error) {
+    return { status: 'warn', output: `移动失败：${errorMessage(error)}`, elapsedMs: elapsed(startedAt) }
+  }
+}
+
 /** L1 · 系统通知 */
 const notifyToast: Capability = async (ctx) => {
   const startedAt = Date.now()
@@ -173,6 +264,8 @@ export const CAPABILITIES: Record<ImplementedClassId, Capability> = {
   'win.clipboard.get': clipboardGet,
   'text.template': textTemplate,
   'file.write': fileWrite,
+  'file.read': fileRead,
+  'file.move': fileMove,
   'notify.toast': notifyToast,
   'win.http.request': httpRequest,
   'win.screen.capture': screenCapture

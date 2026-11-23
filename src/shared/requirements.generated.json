@@ -2,45 +2,13 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 73,
+    "ok": 78,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 168
+    "missing": 163
   },
   "requirements": [
-    {
-      "id": "req:point.file.move",
-      "layer": "point",
-      "capability": "point:file.move",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.batch-rename",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "body.composition",
-          "owner": "body.file-organizer",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "body.composition",
-          "owner": "body.invoice-archive",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "line.node.pointClass",
-          "owner": "flow.invoice-archive/move",
-          "role": "to = $archiveDir",
-          "required": true
-        }
-      ]
-    },
     {
       "id": "req:point.clipboard.write",
       "layer": "point",
@@ -694,20 +662,6 @@
         {
           "where": "body.composition",
           "owner": "body.batch-rename",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.read",
-      "layer": "point",
-      "capability": "point:file.read",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.file-preview",
           "role": "能力执行",
           "required": true
         }

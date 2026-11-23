@@ -1,0 +1,33 @@
+{
+  "id": "file.move",
+  "name": "移动 / 重命名文件",
+  "group": "file",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "同盘用 rename 原子移动，跨盘回落 copy+unlink；目标已存在且 overwrite=false 时不动文件并返回 warn。",
+  "instances": [
+    {
+      "id": "file.move.i-rename@r1",
+      "name": "i-rename",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"from\":\"\",\"to\":\"\",\"overwrite\":false}"
+    },
+    {
+      "id": "file.move.i-move@r1",
+      "name": "i-move",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"from\":\"\",\"to\":\"\",\"overwrite\":false}"
+    },
+    {
+      "id": "file.move.i-archive@r1",
+      "name": "i-archive",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"from\":\"\",\"to\":\"\",\"overwrite\":true}"
+    }
+  ]
+}
