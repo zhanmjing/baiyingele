@@ -276,6 +276,30 @@ gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑
 
 **测试覆盖**：5 个轨迹样例（LDR/UD/RL/DR/DLU）+ ±2px 抖动 + 0.5x/2x 缩放 + 4 种无效输入 + 模糊匹配。
 
+### 手势绑定的唯一数据源
+
+以前手势绑定存在渲染层 localStorage（`surfaceResourceStore`），和触发器服务是**两套数据**——
+会出现「面层显示有绑定，实际按了没反应」。
+
+现在统一到主进程：`trigger-bindings.json` 是唯一数据源，面层手势视图通过
+`trigger:list` / `trigger:add` / `trigger:remove` 读写。
+
+**首次启动会自动迁移**：把 localStorage 里目标可解析的旧手势导入主进程，
+跳过悬空目标并提示，然后清空旧数据（`baiying.gestures.migrated.v1` 标记只迁一次）。
+
+种子手势（`generatedSurface.json`）已全部指向真实可执行的实例：
+
+| 手势 | 目标 |
+|---|---|
+| `LDR` | `win.open.i-open-github@r1` 打开 GitHub |
+| `UD` | `win.window.query.i-list-windows@r1` 列出可见窗口 |
+| `RL` | `win.window.query.i-foreground@r1` 查前台窗口 |
+| `DR` | `win.clipboard.get.i-clip-text@r1` 读剪贴板 |
+| `DLU` | `win.window.control.i-topmost@r1` 切换置顶 |
+
+冒烟测试里有一条断言专门守着这件事：**种子手势的目标必须全部能解析**，
+防止以后改了目录又把种子数据改漂。
+
 ### 界面
 
 面层「手势」页的录制板有两个动作：**录制**（定义 pattern，不触发）和**试触发**（用当前轨迹真跑一次派发）。

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import {
   ArrowUpRight,
   CircleDot,
@@ -103,6 +103,23 @@ function resourceSlug(value: string): string {
 
 
 
+/** 触发器服务返回的绑定（与 GestureBinding 同构，多了主进程 id） */
+interface TriggerRecord {
+  id: string
+  source: 'hotkey' | 'gesture'
+  pattern: string
+  name?: string
+  effect?: string
+  targetKind: 'point' | 'line'
+  targetId: string
+  enabled: boolean
+  note: string
+  fireCount: number
+  lastFiredAt: number | null
+}
+
+type GestureBindingView = GestureBinding & { id?: string }
+
 interface GestureTarget {
   id: string
   kind: 'point' | 'line'
@@ -146,7 +163,9 @@ export function SurfaceManagementPage({
   onArchiveInstance, onRestoreInstance, onDuplicateInstance, onRunComplete, onNavigate, pointLayer, lineLayer
 }: Props) {
   const [resources, setResources] = useState(loadSurfaceResources)
-  const { panelClasses, gestures: gestureBindings, dockTabs, dockTiles } = resources
+  const { panelClasses, dockTabs, dockTiles } = resources
+  // 手势绑定唯一数据源是主进程的触发器服务（trigger-bindings.json）
+  const [gestureBindings, setGestureBindings] = useState<GestureBindingView[]>([])
   const initialHash = useMemo(parseHash, [])
   const [view, setView] = useState<SurfaceView>(initialHash.view)
   const [surfaceClassId, setSurfaceClassId] = useState(layer.classes[0]?.id ?? '')
@@ -206,6 +225,13 @@ export function SurfaceManagementPage({
   }, [])
 
   useEffect(() => { saveSurfaceResources(resources) }, [resources])
+
+  const gesturesBootstrapped = useRef(false)
+  useEffect(() => {
+    if (gesturesBootstrapped.current) return
+    gesturesBootstrapped.current = true
+    void bootstrapGestures()
+  }, [])
   useEffect(() => {
     if (panelInstance) {
       setPanelMode(panelInstance.mode)
@@ -419,9 +445,11 @@ export function SurfaceManagementPage({
     setResources((current) => ({ ...current, panelClasses: current.panelClasses.map((item) => item.id === panelClass.id ? { ...item, instances: item.instances.filter((instance) => instance.label !== panelInstance.label) } : item) }))
     setPanelInstanceLabel(''); onToast('PanelInstance 已删除')
   }
-  function deleteGesture() {
+  async function deleteGesture() {
     if (!gesture || !window.confirm(`删除手势 ${gesture.pattern}？`)) return
-    setResources((current) => ({ ...current, gestures: current.gestures.filter((item) => item.pattern !== gesture.pattern) }))
+    const record = gestureBindings.find((item) => item.pattern === gesture.pattern)
+    if (record?.id && window.baiying?.removeTrigger) await window.baiying.removeTrigger(record.id)
+    await reloadGestures()
     setGesturePattern(''); onToast('GestureBinding 已删除')
   }
   function deleteDockTab() {
@@ -475,6 +503,77 @@ export function SurfaceManagementPage({
     })
   }
 
+  /** 主进程绑定 → 视图模型；目标解析不到时保留原始 id（显示成 placeholder） */
+  function toGestureBinding(record: TriggerRecord): GestureBindingView {
+    const match = gestureTargets.find(
+      (target) => target.atomRef === record.targetId && target.kind === record.targetKind
+    )
+    return {
+      id: record.id,
+      pattern: record.pattern,
+      name: record.name || record.pattern,
+      kind: record.targetKind === 'line' ? 'flow' : 'point',
+      target: record.targetId,
+      effect: record.effect || 'L2',
+      desc: record.note || '',
+      targetKind: record.targetKind,
+      targetId: match?.id ?? record.targetId,
+      targetLabel: match?.label ?? record.targetId,
+      href: match?.href ?? `${record.targetKind}-management`
+    }
+  }
+
+  async function reloadGestures() {
+    if (!window.baiying?.getTriggers) return
+    try {
+      const payload = (await window.baiying.getTriggers()) as { bindings: TriggerRecord[] }
+      setGestureBindings(payload.bindings.filter((item) => item.source === 'gesture').map(toGestureBinding))
+    } catch {
+      // 读取失败保持原样，由用户操作触发重试
+    }
+  }
+
+  /** 首次启动：把 localStorage 里的旧手势迁到主进程，之后就以主进程为准 */
+  async function bootstrapGestures() {
+    if (!window.baiying?.addTrigger) {
+      setGestureBindings(resources.gestures ?? [])
+      return
+    }
+
+    const MIGRATION_KEY = 'baiying.gestures.migrated.v1'
+    const legacy = resources.gestures ?? []
+    if (!localStorage.getItem(MIGRATION_KEY) && legacy.length) {
+      let migrated = 0
+      let skipped = 0
+      for (const item of legacy) {
+        const kind = item.targetKind ?? (item.kind === 'flow' ? 'line' : 'point')
+        const exists = gestureTargets.some((target) => target.atomRef === item.target && target.kind === kind)
+        if (!exists) {
+          skipped += 1
+          continue
+        }
+        const result = (await window.baiying.addTrigger({
+          source: 'gesture',
+          pattern: item.pattern,
+          targetKind: kind,
+          targetId: item.target,
+          note: item.desc,
+          name: item.name,
+          effect: item.effect
+        })) as { ok?: boolean }
+        if (result?.ok) migrated += 1
+        else skipped += 1
+      }
+      localStorage.setItem(MIGRATION_KEY, '1')
+      setResources((current) => ({ ...current, gestures: [] }))
+      if (migrated || skipped) {
+        onToast(`已迁移 ${migrated} 个手势绑定${skipped ? `，跳过 ${skipped} 个悬空目标` : ''}`)
+      }
+    }
+
+    await reloadGestures()
+  }
+
   function recordPoint(event: ReactPointerEvent<HTMLDivElement>): { x: number; y: number; t: number } {
     const rect = event.currentTarget.getBoundingClientRect()
     return {
@@ -523,31 +622,40 @@ export function SurfaceManagementPage({
     openGestureEditor(editPattern, pattern)
   }
 
-  function saveGestureBinding() {
+  async function saveGestureBinding() {
     if (!gestureEditor) return
     const target = gestureTargets.find((item) => item.id === gestureEditor.targetId)
     const pattern = gestureEditor.pattern.trim().toUpperCase()
     if (!pattern || !gestureEditor.name.trim()) { onToast('pattern 和名称必填'); return }
     if (!target) { onToast('请选择点层或线层目标实例'); return }
-    if (gestureBindings.some((item) => item.pattern === pattern && item.pattern !== gestureEditor.editPattern)) { onToast('Gesture pattern 已存在'); return }
-    const binding: GestureBinding = {
-      pattern,
-      name: gestureEditor.name.trim(),
-      kind: target.kind === 'point' ? 'point' : 'flow',
-      target: target.atomRef,
-      effect: gestureEditor.effect,
-      desc: gestureEditor.desc.trim(),
-      targetKind: target.kind,
-      targetId: target.id,
-      targetLabel: target.label,
-      href: target.href
+    if (gestureBindings.some((item) => item.pattern === pattern && item.pattern !== gestureEditor.editPattern)) {
+      onToast('Gesture pattern 已存在')
+      return
     }
-    setResources((current) => ({
-      ...current,
-      gestures: gestureEditor.editPattern
-        ? current.gestures.map((item) => item.pattern === gestureEditor.editPattern ? binding : item)
-        : [...current.gestures, binding]
-    }))
+    if (!window.baiying?.addTrigger) { onToast('当前环境不支持'); return }
+
+    // 编辑时 pattern 或目标可能变，绑定 id 会跟着变：先删旧的
+    if (gestureEditor.editPattern) {
+      const previous = gestureBindings.find((item) => item.pattern === gestureEditor.editPattern)
+      if (previous?.id) await window.baiying.removeTrigger(previous.id)
+    }
+
+    const result = (await window.baiying.addTrigger({
+      source: 'gesture',
+      pattern,
+      targetKind: target.kind,
+      targetId: target.atomRef,
+      note: gestureEditor.desc.trim(),
+      name: gestureEditor.name.trim(),
+      effect: gestureEditor.effect
+    })) as { ok?: boolean; message?: string }
+
+    if (!result?.ok) {
+      onToast(`保存失败：${result?.message ?? '未知错误'}`)
+      return
+    }
+
+    await reloadGestures()
     setGesturePattern(pattern)
     window.history.replaceState(null, '', `#gestures/${encodeURIComponent(pattern)}`)
     setGestureEditor(null)

@@ -2,39 +2,13 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 90,
+    "ok": 92,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 151
+    "missing": 149
   },
   "requirements": [
-    {
-      "id": "req:point.open.terminal@r1.instance",
-      "layer": "point",
-      "capability": "point:open.terminal@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "terminal",
-          "role": "终端",
-          "required": true
-        },
-        {
-          "where": "dock.tile.target",
-          "owner": "dev-terminal",
-          "role": "终端",
-          "required": true
-        },
-        {
-          "where": "gesture.target",
-          "owner": "DR",
-          "role": "打开终端",
-          "required": true
-        }
-      ]
-    },
     {
       "id": "req:point.inst.site-openai@r1.instance",
       "layer": "point",
@@ -51,6 +25,26 @@
           "where": "dock.tile.target",
           "owner": "web-openai",
           "role": "OpenAI",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.open.terminal@r1.instance",
+      "layer": "point",
+      "capability": "point:open.terminal@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "terminal",
+          "role": "终端",
+          "required": true
+        },
+        {
+          "where": "dock.tile.target",
+          "owner": "dev-terminal",
+          "role": "终端",
           "required": true
         }
       ]
@@ -1633,20 +1627,6 @@
           "where": "line.node.pointClass",
           "owner": "flow.invoice-archive/validate",
           "role": "rules = $vendorRules",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.vpn.default.status@r1.instance",
-      "layer": "point",
-      "capability": "point:vpn.default.status@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "gesture.target",
-          "owner": "UD",
-          "role": "检测 VPN 状态",
           "required": true
         }
       ]

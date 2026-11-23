@@ -33,6 +33,10 @@ export interface AddTriggerInput {
   targetKind: TriggerTargetKind
   targetId: string
   note?: string
+  /** 展示名 */
+  name?: string
+  /** 副作用等级展示 */
+  effect?: string
   enabled?: boolean
 }
 
@@ -115,7 +119,9 @@ export class TriggerService {
       targetKind: input.targetKind,
       targetId: input.targetId,
       enabled: input.enabled ?? true,
-      note: input.note ?? ''
+      note: input.note ?? '',
+      name: input.name,
+      effect: input.effect
     })
     this.sync()
     return { ok: true, binding }

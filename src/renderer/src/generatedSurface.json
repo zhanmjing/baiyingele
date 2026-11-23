@@ -1031,42 +1031,47 @@
     {
       "pattern": "LDR",
       "name": "打开 GitHub",
-      "kind": "flow",
-      "target": "inst.site-github@r1",
-      "effect": "L2",
-      "desc": "确保 VPN → 可达性 → 打开 URL → 通知"
+      "kind": "point",
+      "target": "win.open.i-open-github@r1",
+      "effect": "L1",
+      "desc": "手势 LDR → 用默认浏览器打开 GitHub",
+      "targetKind": "point"
     },
     {
       "pattern": "UD",
-      "name": "检测 VPN 状态",
+      "name": "列出可见窗口",
       "kind": "point",
-      "target": "vpn.default.status@r1",
+      "target": "win.window.query.i-list-windows@r1",
       "effect": "L0",
-      "desc": "读取进程/窗口/隧道状态，不做修改"
+      "desc": "手势 UD → 枚举当前可见窗口",
+      "targetKind": "point"
     },
     {
       "pattern": "RL",
-      "name": "开发工作区",
-      "kind": "flow",
-      "target": "inst.workspace-dev@r3",
-      "effect": "L1",
-      "desc": "VS Code + 终端 + 双屏布局"
+      "name": "当前前台窗口",
+      "kind": "point",
+      "target": "win.window.query.i-foreground@r1",
+      "effect": "L0",
+      "desc": "手势 RL → 查询前台窗口",
+      "targetKind": "point"
     },
     {
       "pattern": "DR",
-      "name": "打开终端",
+      "name": "取剪贴板文本",
       "kind": "point",
-      "target": "open.terminal@r1",
-      "effect": "L1",
-      "desc": "打开默认终端"
+      "target": "win.clipboard.get.i-clip-text@r1",
+      "effect": "L0",
+      "desc": "手势 DR → 读取剪贴板文本",
+      "targetKind": "point"
     },
     {
       "pattern": "DLU",
-      "name": "确保 VPN",
-      "kind": "flow",
-      "target": "inst.ensure-vpn-ask@r2",
-      "effect": "L2",
-      "desc": "检测 → 启动/询问 → 等待 → 连接"
+      "name": "窗口置顶切换",
+      "kind": "point",
+      "target": "win.window.control.i-topmost@r1",
+      "effect": "L1",
+      "desc": "手势 DLU → 切换目标窗口置顶",
+      "targetKind": "point"
     }
   ],
   "dockTabs": [

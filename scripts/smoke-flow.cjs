@@ -652,9 +652,19 @@ async function main() {
   assert.strictEqual(hotBinding.binding.pattern, 'Ctrl+Alt+Space', '组合键应规范化')
   assert.strictEqual(hotBinding.binding.source, 'hotkey')
 
-  const gestBinding = triggerService.add({ source: 'gesture', pattern: 'ldr', targetKind: 'line', targetId: LINE_TARGET, note: 'LDR 触发流程' })
+  const gestBinding = triggerService.add({
+    source: 'gesture',
+    pattern: 'ldr',
+    targetKind: 'line',
+    targetId: LINE_TARGET,
+    note: 'LDR 触发流程',
+    name: '打开 GitHub',
+    effect: 'L2'
+  })
   assert.strictEqual(gestBinding.ok, true, `手势绑定应成功: ${gestBinding.ok ? '' : gestBinding.message}`)
   assert.strictEqual(gestBinding.binding.pattern, 'LDR', '手势模式应大写')
+  assert.strictEqual(gestBinding.binding.name, '打开 GitHub', '展示名应持久化')
+  assert.strictEqual(gestBinding.binding.effect, 'L2', '副作用等级应持久化')
 
   assert.strictEqual(triggerService.add({ source: 'gesture', pattern: 'XYZ', targetKind: 'line', targetId: LINE_TARGET }).ok, false, '非法手势应拒绝')
   assert.strictEqual(triggerService.add({ source: 'hotkey', pattern: 'Ctrl', targetKind: 'point', targetId: TRIGGER_TARGET }).ok, false, '只有修饰键应拒绝')
@@ -694,6 +704,15 @@ async function main() {
   const noMatch = await triggerService.dispatchHotkey('F12')
   assert.strictEqual(noMatch[0].status, 'skipped')
   assert.match(noMatch[0].output, /没有匹配的绑定/)
+
+  // 种子手势必须全部指向真实实例（否则首次启动迁移后是空的）
+  const surfaceSeed = require('../src/renderer/src/generatedSurface.json')
+  for (const seed of surfaceSeed.gestures) {
+    const kind = seed.targetKind ?? (seed.kind === 'flow' ? 'line' : 'point')
+    const targetStore = kind === 'line' ? lnForTrigger : ptForTrigger
+    assert.ok(targetStore.instance(seed.target), `种子手势 ${seed.pattern} 的目标不存在: ${seed.target}`)
+  }
+  console.log(`  种子手势 ${surfaceSeed.gestures.length} 个，目标全部可解析`)
 
   assert.strictEqual(triggerService.remove(hotBinding.binding.id), true)
   assert.strictEqual(triggerService.remove(gestBinding.binding.id), true)

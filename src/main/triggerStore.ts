@@ -18,6 +18,10 @@ export interface TriggerBinding {
   source: TriggerSource
   /** hotkey: 'Ctrl+Alt+Space'（已规范化）；gesture: 'LDR' */
   pattern: string
+  /** 展示名（手势视图里显示的「打开 GitHub」这类） */
+  name?: string
+  /** 副作用等级展示（L0–L3 / A0–A3） */
+  effect?: string
   targetKind: TriggerTargetKind
   targetId: string
   enabled: boolean
@@ -37,6 +41,8 @@ function migrate(raw: Partial<TriggerBinding> & { combo?: string }): TriggerBind
     id: String(raw.id ?? ''),
     source: (raw.source as TriggerSource) ?? 'hotkey',
     pattern: String(raw.pattern ?? raw.combo ?? ''),
+    name: raw.name ?? undefined,
+    effect: raw.effect ?? undefined,
     targetKind: (raw.targetKind as TriggerTargetKind) ?? 'point',
     targetId: String(raw.targetId ?? ''),
     enabled: raw.enabled !== false,
