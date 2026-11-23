@@ -59,6 +59,10 @@ const api = {
     ipcRenderer.invoke('runs:history', limit),
   undoFieldLanding: (token: string): Promise<{ ok: boolean; message: string }> =>
     ipcRenderer.invoke('field:undo', token),
+  getRecentTriggers: (
+    limit = 20
+  ): Promise<{ combos: string[]; firings: { at: number; combo: string }[] }> =>
+    ipcRenderer.invoke('trigger:recent', limit),
   ...layerApi
 }
 

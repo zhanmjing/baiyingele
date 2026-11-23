@@ -149,9 +149,10 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.ocr.read` | 视觉模型 OCR：`$screenshot` / 本地图片 / 图片 URL 三路输入，复用 provider 降级链 |
 | `win.window.query` | **koffi 直调 user32** 枚举窗口（~0.35ms/次），koffi 不可用时自动回退 PowerShell |
 | `win.window.control` | koffi 控制窗口：focus / move / topmost / close；支持按 `hwnd` 精确指定 |
+| `win.key.trigger` | **uiohook-napi** 全局热键监听（常驻钩子，不是一次性执行） |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
-其余 84 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 83 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
@@ -204,6 +205,27 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 2. **同名窗口会选错**：`Clash Verge` 这类应用可能有多个标题相同的窗口，按标题选会在两次调用间选到不同的那个。
    所以 `selector` 支持 `{ "hwnd": "..." }` 精确定位（`win.window.query` 的返回值里带 `hwnd`），
    匹配到多个时输出里也会明确提示。
+
+### 全局热键为什么是「异类」能力
+
+`win.key.trigger` 和前面 18 个能力**结构上不同**：其它能力都是「调一次 → 返回结果」，
+而它是**注册一个常驻监听器**：
+
+```bash
+# 开始监听（返回后钩子仍在运行）
+win.key.trigger  keys="Ctrl+Alt+Space"  scope=global
+# 停止（keys 传空）
+win.key.trigger  keys=""                scope=global
+```
+
+触发记录进内存环形缓冲（最近 50 条），通过 `window.baiying.getRecentTriggers()` 读取。
+**还没接的是「触发之后执行什么」**——那需要一个触发器服务把 `combo → PointInstance/FlowInstance` 连起来，
+是下一步的事，现在只到「能听见」为止。
+
+两个已验证的事实：
+
+- uiohook-napi 1.5.5 在 **Node modules=137 与 Electron 45 modules=150 两套 ABI 下都能起停钩子**
+- 钩子必须能干净停止：`stopHook()` 会清空注册表并 `uIOhook.stop()`，冒烟测试每次都验证起停
 
 ## 场层落点（landing）
 

@@ -86,6 +86,7 @@ const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
 const { selectWindows, parseSelector } = require('../.tmp/smoke/main/capabilities/win.window.query.js')
 const { planThemeChange } = require('../.tmp/smoke/main/capabilities/win.theme.mode.js')
 const { computeRect, resolveTarget } = require('../.tmp/smoke/main/capabilities/win.window.control.js')
+const { parseCombo, matchesCombo, registeredCombos } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -581,6 +582,46 @@ async function main() {
     assert.match(badRect.output, /rect 格式不对/, `应走到 rect 校验: ${badRect.output}`)
     console.log('✓ win.window.control：矩形解析 / 无目标 / 未知 op / Win32 读路径 都正确（未移动任何窗口）')
   }
+
+  // ── 7k. win.key.trigger：组合键解析 / 匹配 / 钩子起停 ──────────
+  const KEYMAP = { Space: 57, A: 30, F5: 116, Escape: 1 }
+
+  const combo1 = parseCombo('Ctrl+Alt+Space')
+  assert.deepStrictEqual(
+    { key: combo1.key, ctrl: combo1.ctrl, alt: combo1.alt, shift: combo1.shift, label: combo1.label },
+    { key: 'Space', ctrl: true, alt: true, shift: false, label: 'Ctrl+Alt+Space' }
+  )
+  assert.strictEqual(parseCombo('F5').label, 'F5', '单功能键')
+  assert.strictEqual(parseCombo('Ctrl+Shift+A').label, 'Ctrl+Shift+A', '多修饰键')
+  assert.strictEqual(parseCombo('esc').key, 'Escape', '别名解析')
+  assert.strictEqual(parseCombo(''), null, '空字符串应为 null')
+  assert.strictEqual(parseCombo('Ctrl'), null, '只有修饰键应为 null')
+  assert.strictEqual(parseCombo('Ctrl+A+B'), null, '两个主键应为 null')
+
+  const spaceCombo = parseCombo('Ctrl+Alt+Space')
+  const evt = (keycode, mods) => ({ keycode, ctrlKey: false, altKey: false, shiftKey: false, metaKey: false, ...mods })
+  assert.strictEqual(matchesCombo(spaceCombo, evt(57, { ctrlKey: true, altKey: true }), KEYMAP), true, '完全匹配')
+  assert.strictEqual(matchesCombo(spaceCombo, evt(57, { ctrlKey: true }), KEYMAP), false, '少一个修饰键不匹配')
+  assert.strictEqual(matchesCombo(spaceCombo, evt(30, { ctrlKey: true, altKey: true }), KEYMAP), false, '主键不同不匹配')
+  assert.strictEqual(matchesCombo(parseCombo('F13'), evt(116, {}), KEYMAP), false, 'keymap 里没有的键不匹配')
+
+  // 钩子起停（真启动全局钩子，随后立刻停掉）
+  const trigStart = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'Ctrl+Alt+Space', scope: 'global' }))
+  if (trigStart.status === 'ok') {
+    assert.match(trigStart.output, /已开始监听 Ctrl\+Alt\+Space/)
+    assert.deepStrictEqual(registeredCombos(), ['Ctrl+Alt+Space'], '应注册 1 个组合')
+    const trigStop = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: '', scope: 'global' }))
+    assert.strictEqual(trigStop.status, 'ok')
+    assert.match(trigStop.output, /已停止全局钩子|钩子本来就没在运行/)
+    assert.deepStrictEqual(registeredCombos(), [], '停止后应清空组合')
+    console.log('✓ win.key.trigger：组合解析 / 事件匹配 / 钩子起停 都正确')
+  } else {
+    assert.match(trigStart.output, /启动全局钩子失败/, `非预期失败: ${trigStart.output}`)
+    console.log(`· win.key.trigger 实机跳过：${trigStart.output.slice(0, 60)}`)
+  }
+
+  const badScope = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'F5', scope: 'window' }))
+  assert.strictEqual(badScope.status, 'warn', '非 global 作用域必须 warn')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

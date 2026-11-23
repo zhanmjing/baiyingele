@@ -8,6 +8,7 @@ import { createLineRunner } from './flowRuntime'
 import { applyLanding } from './fieldRuntime'
 import { UndoJournal } from './undoJournal'
 import { decideLanding } from '../shared/fieldLanding'
+import { recentFirings, registeredCombos } from './capabilities/win.key.trigger'
 import { lineProfiles } from '../shared/lineCatalog'
 import {
   LayerStore,
@@ -182,6 +183,11 @@ app.whenReady().then(() => {
     if (result) throw new Error(result)
     return true
   })
+
+  ipcMain.handle('trigger:recent', (_event, limit = 20) => ({
+    combos: registeredCombos(),
+    firings: recentFirings(limit)
+  }))
 
   ipcMain.handle('field:undo', (_event, token: string) => {
     const entry = undoJournal.take(token)
