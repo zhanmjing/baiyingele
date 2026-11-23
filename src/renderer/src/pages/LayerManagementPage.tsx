@@ -26,7 +26,7 @@ import {
 import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
 import { bodyProfiles, type BodyProfile } from '../../../shared/bodyCatalog'
 import { hasRealImpl, IMPL_SUMMARY, type ImplementedClassId } from '../../../shared/implRegistry'
-import type { InstanceDraft } from './LayerWorkspace'
+import type { InstanceDraft } from './instanceDraft'
 
 interface Props {
   layer: LayerMeta

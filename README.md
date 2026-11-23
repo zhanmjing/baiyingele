@@ -66,53 +66,95 @@ npm run package
 > 如果终端里存在 `ELECTRON_RUN_AS_NODE=1`，`npm run dev` / `npm start` 会通过
 > `scripts/run-electron-vite.mjs` 和 `scripts/start.mjs` 清掉它，避免 Electron 被当成 Node 运行。
 
+## 开发命令
+
+| 命令 | 作用 |
+|---|---|
+| `npm run dev` | 启动开发环境（HMR） |
+| `npm run typecheck` | 主进程 + 渲染层类型检查（约 0.5s） |
+| `npm run validate` | 目录结构 + 跨层引用校验（软问题只报告） |
+| `npm run validate:strict` | 跨层引用未解析也计为失败 |
+| `npm run data:gen` | 用 `build/data` 重新生成五层目录 |
+| `npm run smoke` | 无 GUI 的端到端运行时冒烟测试 |
+| `npm run check` | typecheck + validate + build（提交前跑这个） |
+| `npm run build` / `npm start` | 生产构建 / 运行构建产物 |
+| `npm run package` | Windows 打包 |
+
+### 数据管线
+
+```text
+build/data/.layer-catalogs.json ─┐
+build/data/.field-data.json ─────┴─→ npm run data:gen → src/shared/generatedFullCatalogs.json
+```
+
+`generatedFullCatalogs.json` 是派生产物，**不要手改**：`npm run validate` 会重算一遍并比对，
+手改会直接报「目录漂移」。正确姿势：改 `build/data` → `npm run data:gen` → `npm run validate`。
+
+## 真实能力 vs 模拟能力
+
+只有 `src/shared/implRegistry.ts` 登记、并在 `src/main/capabilities.ts` 实现的类才真正执行：
+
+| 类 | 实现 |
+|---|---|
+| `win.clipboard.get` | Electron `clipboard.readText()` / `read()`（Electron 45 的 W3C 异步 API） |
+| `text.template` | 纯函数：`{{input}}` 替换为上游输出 |
+| `file.write` | `node:fs` 写入 / 追加，`~` 展开为主目录 |
+| `notify.toast` | Electron `Notification` |
+| `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
+| `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
+
+其余 91 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+已打通的端到端流程是 `flow.clipboard-to-file`（读剪贴板 → 套模板 → 写文件 → 系统通知）：
+四个节点各产生一条真实 `PointRun`，再聚合成一条 `FlowRun`——`npm run smoke` 可验证。
+
 ## 目录
 
 ```text
 baiyingELE/
-├─ design/            旧设计文档（40 个）
+├─ design/            旧设计文档（39 篇）
 ├─ prototypes/        旧 HTML 原型（38 个）
-├─ build/             旧构建资料与完整 JSON 数据（95 个）
+├─ build/             旧构建资料与完整 JSON 数据（95 个，含 data:gen 的输入）
 ├─ src/
-│  ├─ shared/
-│  │  ├─ pointCatalog.ts     点层共享契约与完整目录
-│  │  ├─ lineCatalog.ts      线层共享契约 + 数据流图
-│  │  ├─ generatedFullCatalogs.json 五层完整目录（从 build/data 生成）
-│  │  ├─ generatedLineProfiles.json 线层数据流图
-│  │  └─ generatedBodyProfiles.json 体层组合/Manifest/生命周期
+│  ├─ shared/                        五层共用契约（主进程与渲染层同源）
+│  │  ├─ layerKeys.ts                层名唯一清单（不含 JSON，preload 可安全引用）
+│  │  ├─ layerApi.ts                 五层 IPC 类型契约（映射类型生成方法名）
+│  │  ├─ implRegistry.ts             哪些类是真实实现、哪些是模拟
+│  │  ├─ pointCatalog.ts / lineCatalog.ts / surfaceCatalog.ts
+│  │  ├─ bodyCatalog.ts / fieldCatalog.ts
+│  │  ├─ generatedFullCatalogs.json  五层完整目录（由 build/data 生成）
+│  │  ├─ generatedLineProfiles.json  线层数据流图
+│  │  └─ generatedBodyProfiles.json  体层组合 / Manifest / 生命周期
 │  ├─ main/
-│  │  ├─ index.ts            Electron 主进程、窗口、IPC
-│  │  ├─ pointStore.ts       PointInstance / PointRun 持久化
-│  │  ├─ lineStore.ts        FlowInstance / FlowRun 持久化
-│  │  ├─ surfaceStore.ts     SurfaceInstance / SurfaceRun 持久化
-│  │  ├─ bodyStore.ts        BodyInstance / BodyRun 持久化
-│  │  └─ fieldStore.ts       FieldInstance / FieldRun 持久化
-│  ├─ preload/index.ts       contextBridge 安全桥
+│  │  ├─ index.ts            Electron 主进程、窗口、循环注册五层 IPC
+│  │  ├─ layerRegistry.ts    层表：类目录 + 输出摘要（新增一层改这里）
+│  │  ├─ layerStore.ts       泛型实例 / 运行记录存储（五层共用一份）
+│  │  ├─ capabilities.ts     6 个真实能力实现（剪贴板/模板/写文件/通知/HTTP/抓屏）
+│  │  └─ flowRuntime.ts      线层执行器：按数据流图逐节点执行并聚合 FlowRun
+│  ├─ preload/index.ts       contextBridge 安全桥（方法按层名循环生成）
 │  └─ renderer/
 │     ├─ index.html
 │     └─ src/
 │        ├─ App.tsx          壳、导航、命令面板、toast
-│        ├─ data.ts          五层 mock 数据
-│        ├─ settingsData.ts  旧设置原型的类型化适配层
-│        ├─ generatedSettings.json  98 项设置 / 7 个 section（先改这里）
+│        ├─ data.ts          五层元数据（统计从种子派生，不写死）
 │        ├─ pages/
 │        │  ├─ Dashboard.tsx
-│        │  ├─ LayerWorkspace.tsx
-│        │  ├─ LayerManagementPage.tsx
-│        │  ├─ LineManagementPage.tsx
-│        │  ├─ SurfaceManagementPage.tsx
-│        │  ├─ surfaceResourceStore.ts
+│        │  ├─ LayerManagementPage.tsx   点/体/场管理页
+│        │  ├─ LineManagementPage.tsx    线层管理页
+│        │  ├─ SurfaceManagementPage.tsx 面层管理页（面/面板/手势/启动坞）
 │        │  ├─ RunHistoryPage.tsx
-│        │  └─ SettingsPage.tsx
-│        ├─ components/
-│        │  ├─ Sidebar.tsx
-│        │  └─ Topbar.tsx
-│        └─ styles.css       全部 UI 样式
+│        │  ├─ SettingsPage.tsx
+│        │  └─ instanceDraft.ts          实例表单类型
+│        ├─ components/Sidebar.tsx · Topbar.tsx
+│        └─ styles.css
+├─ scripts/
+│  ├─ gen-catalogs.mjs      build/data → generatedFullCatalogs.json（可 100% 复原）
+│  ├─ validate-catalog.mjs  结构 + 跨层引用校验
+│  ├─ smoke-flow.cjs        无 GUI 的端到端运行时冒烟测试
+│  ├─ run-electron-vite.mjs
+│  └─ start.mjs
 ├─ electron.vite.config.ts
 ├─ package.json
-└─ scripts/
-   ├─ run-electron-vite.mjs
-   └─ start.mjs
+└─ tsconfig*.json
 ```
 
 ## 已实现
@@ -152,12 +194,14 @@ src/shared/generatedFullCatalogs.json
 
 | 层 | 功能类 | 实例 |
 |---|---:|---:|
-| 点 | 13 | 32 |
+| 点 | 16 | 37 |
 | 线 | 13 | 32 |
 | 面 | 16 | 46 |
 | 体 | 29 | 82 |
 | 场 | 23 | 78 |
-| **合计** | **94** | **270** |
+| **合计** | **97** | **275** |
+
+> 这些数字由 `npm run validate` 从目录实算，写死在文档里只是快照。
 
 面层附属数据：
 
@@ -423,14 +467,19 @@ src/shared/bodyCatalog.ts
 
 ## IPC
 
-主进程已注册：
+主进程按层名循环注册，每层 8 个通道（新增一层自动获得全套）：
 
 ```text
-app:info    返回 Electron / Chrome / Node / 平台 / 版本
-point:run   模拟执行一个点实例
+app:info / app:open-data-dir / runs:history
+<layer>:catalog          <layer>:runs
+<layer>:instance:create  <layer>:instance:update
+<layer>:instance:archive <layer>:instance:restore
+<layer>:instance:duplicate
+<layer>:run
 ```
 
 渲染层只能通过 preload 暴露的 `window.baiying` 调用，不直接拿 Node。
+方法名由 `shared/layerApi.ts` 的映射类型生成，preload 实现与渲染层声明同源，写错名字会在 typecheck 阶段报错。
 
 ## 设计约定
 

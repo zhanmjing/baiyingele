@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react'
 import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
-import type { InstanceDraft } from './LayerWorkspace'
+import type { InstanceDraft } from './instanceDraft'
 import { lineProfiles, type LineNode, type LineProfile } from '../../../shared/lineCatalog'
 
 interface Props {

@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react'
 import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
-import type { InstanceDraft } from './LayerWorkspace'
+import type { InstanceDraft } from './instanceDraft'
 import { gesturePath, type DockTab, type DockTile, type GestureBinding, type PanelClass, type PanelInstance } from '../surfaceData'
 import { loadSurfaceResources, saveSurfaceResources, resetSurfaceResources } from '../surfaceResourceStore'
 
