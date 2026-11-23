@@ -2,11 +2,11 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 83,
+    "ok": 85,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 158
+    "missing": 156
   },
   "requirements": [
     {
@@ -51,26 +51,6 @@
           "where": "dock.tile.target",
           "owner": "web-openai",
           "role": "OpenAI",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.translate.text",
-      "layer": "point",
-      "capability": "point:translate.text",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.screenshot-translate",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "line.node.pointClass",
-          "owner": "flow.screenshot-translate/translate",
-          "role": "$sourceLang → $targetLang",
           "required": true
         }
       ]

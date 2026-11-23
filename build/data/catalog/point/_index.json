@@ -20,6 +20,7 @@
     "file.read",
     "notify.toast",
     "file.scan",
-    "clipboard.write"
+    "clipboard.write",
+    "translate.text"
   ]
 }

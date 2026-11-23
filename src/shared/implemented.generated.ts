@@ -7,6 +7,7 @@ export const IMPLEMENTED_CLASS_IDS = [
   'file.write',
   'notify.toast',
   'text.template',
+  'translate.text',
   'win.clipboard.get',
   'win.http.request',
   'win.screen.capture'
@@ -20,6 +21,7 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'file.write': 'node:fs writeFile / appendFile（~ 展开为主目录）',
   'notify.toast': 'Electron Notification',
   'text.template': '纯函数：把 {{input}} 替换为上游输出',
+  'translate.text': '翻译文本；provider 链 本地 → 网络 → API 降级，key 走环境变量',
   'win.clipboard.get': 'Electron clipboard.readText / read',
   'win.http.request': 'fetch + 10s 超时，返回状态码与字节数',
   'win.screen.capture': 'desktopCapturer 枚举屏幕源'

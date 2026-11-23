@@ -139,6 +139,7 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `file.move` | `node:fs` rename（`EXDEV` 回落 copy+unlink），`overwrite=false` 时不覆盖 |
 | `file.scan` | `node:fs` 递归扫描，`limit` 封顶，不可读目录跳过并计入说明 |
 | `clipboard.write` | `clipboard.writeText` + 回读校验；空文本拒绝，不清空用户剪贴板 |
+| `translate.text` | provider 链 **本地 → 网络 → API** 降级（免费优先），key 只读环境变量 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
@@ -146,6 +147,27 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 其余 91 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 已打通的端到端流程是 `flow.clipboard-to-file`（读剪贴板 → 套模板 → 写文件 → 系统通知）：
 四个节点各产生一条真实 `PointRun`，再聚合成一条 `FlowRun`——`npm run smoke` 可验证。
+
+## 翻译 provider 配置
+
+`translate.text` 走一条降级链，**免费优先**，三档都用 OpenAI 兼容的 `/chat/completions` 协议
+（Ollama / LM Studio / vLLM / DeepSeek / OpenAI 通吃）。没配的档位会被跳过：
+
+| 顺序 | 环境变量 | 例子 |
+|---|---|---|
+| 1 本地 | `BAIYING_TRANSLATE_LOCAL_URL` | `http://127.0.0.1:11434/v1`（Ollama） |
+| 2 网络 | `BAIYING_TRANSLATE_NETWORK_URL` | `http://192.168.1.10:8000/v1`（局域网自建） |
+| 3 API | `BAIYING_TRANSLATE_API_URL` | `https://api.deepseek.com/v1` |
+
+```bash
+# 云端档的 key 只从环境变量读，不落库、不进设置文件
+export BAIYING_TRANSLATE_KEY=sk-...
+# 各档模型名可选，默认 local/network=qwen2.5:7b，api=gpt-4o-mini
+export BAIYING_TRANSLATE_API_MODEL=gpt-4o-mini
+```
+
+三档都没配时，运行会直接返回 `warn`「未配置翻译 provider」而**不会发起任何请求**——
+不会伪造一个成功结果。本地档 4s 超时、网络档 8s、API 档 20s，失败自动降级并在输出里注明命中了哪档。
 
 ## 目录
 

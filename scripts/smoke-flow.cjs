@@ -19,6 +19,7 @@ const assert = require('node:assert')
 const fs = require('node:fs')
 const os = require('node:os')
 const path = require('node:path')
+const http = require('node:http')
 
 // 能力模块会 require('electron')，但本脚本跑在纯 node 下。
 // 先把 electron 换成可控假桩，这样剪贴板这类能力也能被真实断言。
@@ -227,6 +228,55 @@ async function main() {
   const emptyRead = await CAPABILITIES['win.clipboard.get'](ctx('win.clipboard.get', { format: 'text' }))
   assert.strictEqual(emptyRead.status, 'warn', '空剪贴板必须 warn')
   console.log('✓ clipboard.write ↔ win.clipboard.get：写入 / 回读 / 空值保护 都正确')
+
+  // ── 7d. translate.text：provider 降级链 本地 → 网络 → API ──────
+  const startChatServer = (reply) =>
+    new Promise((resolve) => {
+      const server = http.createServer((req, res) => {
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ choices: [{ message: { content: reply } }] }))
+      })
+      server.listen(0, '127.0.0.1', () =>
+        resolve({ server, url: `http://127.0.0.1:${server.address().port}/v1` })
+      )
+    })
+
+  const clearTranslateEnv = () => {
+    for (const key of Object.keys(process.env)) {
+      if (key.startsWith('BAIYING_TRANSLATE_')) delete process.env[key]
+    }
+  }
+
+  const TRANSLATED = '你好，世界'
+  const live = await startChatServer(TRANSLATED)
+  const deadUrl = 'http://127.0.0.1:9/v1'
+
+  clearTranslateEnv()
+  const noProvider = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello' }))
+  assert.strictEqual(noProvider.status, 'warn', '没配 provider 必须 warn')
+  assert.match(noProvider.output, /未配置翻译 provider/, `文案不对: ${noProvider.output}`)
+
+  process.env.BAIYING_TRANSLATE_LOCAL_URL = live.url
+  const viaLocal = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello', target: 'zh' }))
+  assert.strictEqual(viaLocal.status, 'ok', `本地档应成功: ${viaLocal.output}`)
+  assert.strictEqual(viaLocal.value, TRANSLATED, '译文应原样透传')
+  assert.match(viaLocal.output, /local 档/, `应标注命中 local: ${viaLocal.output}`)
+
+  process.env.BAIYING_TRANSLATE_LOCAL_URL = deadUrl
+  process.env.BAIYING_TRANSLATE_NETWORK_URL = live.url
+  const viaNetwork = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello' }))
+  assert.strictEqual(viaNetwork.status, 'ok', `本地挂掉应降级到网络档: ${viaNetwork.output}`)
+  assert.match(viaNetwork.output, /network 档/)
+  assert.match(viaNetwork.output, /前面 1 档失败/, '应说明前面有档位失败')
+
+  process.env.BAIYING_TRANSLATE_NETWORK_URL = deadUrl
+  const allDead = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello' }))
+  assert.strictEqual(allDead.status, 'warn', '全挂必须 warn')
+  assert.match(allDead.output, /所有 provider 都失败/, `应带上每档原因: ${allDead.output}`)
+
+  clearTranslateEnv()
+  await new Promise((resolve) => live.server.close(resolve))
+  console.log('✓ translate.text：未配置 / 命中本地 / 降级到网络 / 全挂 四种情形都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
