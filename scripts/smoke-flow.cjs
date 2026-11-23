@@ -109,7 +109,7 @@ async function main() {
   // 2. 端到端：跑一条真实流程
   const record = await lineStore.run('inst.clipboard-inbox@r3')
   assert.strictEqual(record.status, 'ok', `FlowRun 失败: ${record.output}`)
-  assert.match(record.output, /4 节点 · 成功 4 跳过 0 失败 0/, `节点统计异常: ${record.output}`)
+  assert.match(record.output, /4 节点 · 真实 4 模拟 0 跳过 0 失败 0/, `节点统计异常: ${record.output}`)
   console.log('✓ FlowRun ok:', record.output.slice(0, 120), '…')
 
   // 3. 每个节点都产生了真实 PointRun

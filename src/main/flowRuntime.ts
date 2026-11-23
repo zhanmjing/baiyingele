@@ -8,6 +8,7 @@
  *   - 每个节点单独产生 PointRun，聚合成一条 FlowRun
  *   - 未绑定或绑定到不存在实例的节点记为 skipped（不假装成功）
  */
+import { hasRealImpl } from '../shared/implRegistry'
 import type { LineNode, LineProfile } from '../shared/lineCatalog'
 import type { InstanceRunner, LayerStore, RunOutcome } from './layerStore'
 
@@ -87,7 +88,8 @@ export function createLineRunner(deps: FlowDeps): InstanceRunner {
     const pointStore = deps.pointStore()
     const trace: string[] = []
     let cursor = ctx.input ?? ''
-    let ok = 0
+    let real = 0
+    let simulated = 0
     let skipped = 0
     let failed = 0
 
@@ -105,15 +107,20 @@ export function createLineRunner(deps: FlowDeps): InstanceRunner {
         continue
       }
 
+      // 节点绑定的类没有真实实现时，跑的是 layerStore 的模拟 runner：
+      // 必须显式标出来，否则整条流程会「看起来成功」。
+      const isSimulated = !hasRealImpl(bound.classId)
+
       try {
         const { record, outcome } = await pointStore.runDetailed(bound.id, {
           input: cursor,
           args,
           params: applyMapping(bound.params, node.mapping, { input: cursor, args })
         })
-        if (record.status === 'ok') ok += 1
-        else failed += 1
-        trace.push(`${node.label}: ${record.output}`)
+        if (record.status !== 'ok') failed += 1
+        else if (isSimulated) simulated += 1
+        else real += 1
+        trace.push(`${node.label}${isSimulated ? '(模拟)' : ''}: ${record.output}`)
         cursor = outcome.value ?? record.output
       } catch (error) {
         failed += 1
@@ -122,8 +129,9 @@ export function createLineRunner(deps: FlowDeps): InstanceRunner {
     }
 
     const outcome: RunOutcome = {
-      status: failed > 0 ? 'warn' : 'ok',
-      output: `${nodes.length} 节点 · 成功 ${ok} 跳过 ${skipped} 失败 ${failed}｜${trace.join(' → ')}`.slice(0, 500),
+      // 一个真实节点都没跑到（全是模拟或全跳过）时不能算成功
+      status: failed > 0 || real === 0 ? 'warn' : 'ok',
+      output: `${nodes.length} 节点 · 真实 ${real} 模拟 ${simulated} 跳过 ${skipped} 失败 ${failed}｜${trace.join(' → ')}`.slice(0, 500),
       value: cursor,
       elapsedMs: Date.now() - startedAt
     }
