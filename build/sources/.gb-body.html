@@ -1,0 +1,45 @@
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">G</div><div><b>手势识别 → 点/线实例</b><span>GestureRecognizer × GestureBinding × AtomRef</span></div></div>
+    <div class="top-hint">在画布上按住左键画手势 · 抬手匹配 · <kbd>LDR</kbd> → GitHub</div>
+    <button class="icon-btn" id="themeBtn">☾</button>
+  </header>
+
+  <div class="layout">
+    <main class="panel">
+      <div class="pad-head"><b>Gesture Pad</b><span id="phase" class="phase">idle</span></div>
+      <div class="pad" id="pad">
+        <div class="pad-hint" id="padHint"><b>按住左键画手势</b>例：LDR / UD / RL / DR / DLU</div>
+        <svg id="trail" viewBox="0 0 600 360" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="readout">
+        <div class="pattern-box"><div class="k">Recognized</div><div class="v" id="pattern">—</div></div>
+        <div class="dirs" id="dirs"></div>
+      </div>
+      <div class="pad-foot">
+        <button class="preset" data-preset="LDR">LDR</button>
+        <button class="preset" data-preset="UD">UD</button>
+        <button class="preset" data-preset="RL">RL</button>
+        <button class="preset" data-preset="DR">DR</button>
+        <button class="preset" data-preset="DLU">DLU</button>
+        <div class="spacer"></div>
+        <label class="fuzzy-label"><input type="checkbox" id="fuzzy"> 模糊匹配（≤1 段）</label>
+        <button class="preset" id="clear">清空</button>
+      </div>
+    </main>
+
+    <aside class="panel side">
+      <div class="side-head">GestureBinding · 手势 → 目标实例</div>
+      <div class="binding-list" id="bindings"></div>
+      <div class="match empty" id="match">画一个手势，或点上方预设</div>
+    </aside>
+  </div>
+</div>
+
+<div class="bubble" id="bubble">
+  <div class="top"><span id="bubbleKind" class="type-badge flow">FLOW</span><span class="name" id="bubbleName">—</span><span class="status" id="bubbleStatus">running</span></div>
+  <div class="bar"><i id="bubbleBar"></i></div>
+  <div class="sub"><span id="bubbleSub">—</span><span id="bubblePct">0%</span></div>
+</div>
+<div class="toast" id="toast"></div>

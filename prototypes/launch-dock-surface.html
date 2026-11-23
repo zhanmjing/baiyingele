@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CLaunch 式启动坞 · 面层实例</title>
+<style>
+:root{
+  --bg:#070b14; --bg2:#0b1220; --panel:rgba(15,23,42,.92); --panel2:#111c31; --panel3:#16233a;
+  --line:rgba(148,163,184,.14); --line2:rgba(148,163,184,.24);
+  --text:#e5edf8; --dim:#8fa2bb; --faint:#5f7188;
+  --blue:#3b82f6; --cyan:#06b6d4; --violet:#8b5cf6; --amber:#f59e0b;
+  --green:#22c55e; --red:#ef4444;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --tile:74px;
+}
+body.light{
+  --bg:#eaf0f7; --bg2:#f7fafc; --panel:rgba(255,255,255,.92); --panel2:#f7fafc; --panel3:#eef4fb;
+  --line:rgba(15,23,42,.10); --line2:rgba(15,23,42,.18);
+  --text:#0f172a; --dim:#52637a; --faint:#7c8ba1;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--font);color:var(--text);overflow:hidden;background:var(--bg)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+code,.mono{font-family:var(--mono)}
+.desktop{
+  position:relative;width:100vw;height:100vh;overflow:hidden;
+  background:
+    radial-gradient(900px 500px at 18% 8%,rgba(59,130,246,.24),transparent 62%),
+    radial-gradient(800px 460px at 86% 18%,rgba(139,92,246,.18),transparent 64%),
+    radial-gradient(700px 500px at 55% 110%,rgba(6,182,212,.12),transparent 60%),
+    linear-gradient(145deg,#050912,#0b1424 52%,#111a2d);
+}
+body.light .desktop{background:
+  radial-gradient(900px 500px at 18% 8%,rgba(59,130,246,.12),transparent 62%),
+  radial-gradient(800px 460px at 86% 18%,rgba(139,92,246,.10),transparent 64%),
+  linear-gradient(145deg,#eef4fb,#fff 55%,#e8f0f9)}
+.desktop:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(148,163,184,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.055) 1px,transparent 1px);
+  background-size:42px 42px;mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent 78%);
+}
+.desk-label{
+  position:absolute;left:24px;top:20px;font-size:11px;color:rgba(226,239,255,.55);
+  font-family:var(--mono);letter-spacing:.2px;display:flex;gap:9px;align-items:center;
+}
+body.light .desk-label{color:var(--faint)}
+.desk-label kbd{border:1px solid var(--line2);border-radius:4px;padding:2px 5px;background:rgba(15,23,42,.35);font-size:9px}
+body.light .desk-label kbd{background:#fff}
+.desk-badge{
+  position:absolute;right:24px;top:20px;display:flex;gap:7px;align-items:center;
+  font-size:9px;color:rgba(226,239,255,.55);font-family:var(--mono);
+}
+body.light .desk-badge{color:var(--faint)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.10)}
+
+.dock-wrap{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:20;transition:transform .28s ease,opacity .28s ease}
+.dock-wrap.hidden{transform:translate(-50%,calc(100% + 42px));opacity:0;pointer-events:none}
+.dock{
+  width:min(780px,calc(100vw - 30px));border:1px solid rgba(148,163,184,.22);border-radius:20px;
+  background:linear-gradient(180deg,rgba(17,28,49,.94),rgba(10,17,30,.94));
+  backdrop-filter:blur(22px);box-shadow:0 30px 80px rgba(0,0,0,.48),0 1px 0 rgba(255,255,255,.04) inset;
+  overflow:hidden;position:relative;
+}
+body.light .dock{background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(247,250,252,.94));border-color:rgba(15,23,42,.14)}
+.dock:before{content:"";position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,.65),rgba(139,92,246,.55),transparent)}
+.dock-head{display:flex;align-items:center;gap:10px;padding:11px 13px 9px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px;flex:1;min-width:0;overflow:auto}
+.tab{border:1px solid transparent;border-radius:8px;background:transparent;color:var(--faint);font-size:10px;padding:6px 9px;white-space:nowrap}
+.tab:hover{color:var(--text);background:var(--panel3)}
+.tab.active{color:#93c5fd;border-color:rgba(59,130,246,.24);background:rgba(59,130,246,.12)}
+body.light .tab.active{color:#1d4ed8}
+.dock-tools{display:flex;align-items:center;gap:6px;flex:none}
+.search{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:6px 8px;width:150px}
+.search span{color:var(--faint);font-size:12px}
+.search input{width:100%;border:0;outline:0;background:transparent;font-size:10px}
+.search input::placeholder{color:var(--faint)}
+.icon-btn{width:31px;height:31px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--dim);font-size:13px}
+.icon-btn:hover{color:var(--text);border-color:var(--line2)}
+.icon-btn.on{color:#93c5fd;border-color:rgba(59,130,246,.28);background:rgba(59,130,246,.12)}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;padding:12px 13px 8px;min-height:190px}
+.tile{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;border:1px solid transparent;
+  border-radius:11px;background:transparent;padding:8px 5px 7px;min-height:calc(var(--tile) + 12px);transition:.14s;
+  user-select:none;
+}
+.tile:hover{background:rgba(148,163,184,.08);border-color:var(--line);transform:translateY(-2px)}
+.tile.dragging{opacity:.35}
+.tile.drop-target{border-color:var(--cyan);background:rgba(6,182,212,.09)}
+.tile-icon{
+  width:calc(var(--tile) * .60);height:calc(var(--tile) * .60);border-radius:12px;display:grid;place-items:center;font-size:20px;
+  background:linear-gradient(145deg,rgba(59,130,246,.18),rgba(139,92,246,.10));
+  border:1px solid rgba(148,163,184,.18);box-shadow:0 8px 18px rgba(0,0,0,.16);position:relative;
+}
+.tile[data-kind="flow"] .tile-icon{background:linear-gradient(145deg,rgba(139,92,246,.22),rgba(59,130,246,.10));border-color:rgba(139,92,246,.24)}
+.tile[data-kind="point"] .tile-icon{background:linear-gradient(145deg,rgba(6,182,212,.20),rgba(59,130,246,.08));border-color:rgba(6,182,212,.20)}
+.tile-icon .kind-dot{position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;background:var(--cyan);border:2px solid #0c1525;display:grid;place-items:center;font-size:5px;color:#04212a;font-weight:800}
+.tile[data-kind="flow"] .kind-dot{background:var(--violet);color:#fff}
+.tile-label{font-size:9px;line-height:1.25;text-align:center;color:var(--dim);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile:hover .tile-label{color:var(--text)}
+.tile-sub{font-size:7px;color:var(--faint);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hotkey{position:absolute;top:4px;right:5px;font-size:6px;color:var(--faint);font-family:var(--mono);background:rgba(15,23,42,.65);border:1px solid var(--line);border-radius:3px;padding:1px 3px}
+body.light .hotkey{background:rgba(255,255,255,.8)}
+.dock-foot{display:flex;align-items:center;gap:10px;padding:8px 13px 10px;border-top:1px solid var(--line)}
+.pages{display:flex;gap:5px;align-items:center;flex:1}
+.page-dot{width:7px;height:7px;border-radius:50%;border:0;background:rgba(148,163,184,.28);padding:0}
+.page-dot.active{background:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,.10);width:16px;border-radius:99px}
+.foot-tools{display:flex;align-items:center;gap:8px}
+.size-label{font-size:8px;color:var(--faint);font-family:var(--mono);display:flex;align-items:center;gap:5px}
+input[type=range]{width:64px;accent-color:var(--cyan);height:3px}
+.add-btn,.settings-btn{border:1px solid var(--line);border-radius:7px;background:var(--panel2);color:var(--dim);font-size:10px;padding:5px 7px}
+.add-btn:hover,.settings-btn:hover{color:var(--text);border-color:var(--line2)}
+.show-dock{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:19;display:none;
+  border:1px solid rgba(6,182,212,.30);border-radius:9px;background:rgba(8,47,73,.82);color:#a5f3fc;
+  font-size:10px;padding:8px 12px;backdrop-filter:blur(12px);box-shadow:0 12px 28px rgba(0,0,0,.30);
+}
+.show-dock.visible{display:block}
+.launch-bubble{
+  position:fixed;left:50%;bottom:210px;transform:translateX(-50%) translateY(8px);z-index:30;
+  width:min(420px,calc(100vw - 30px));border:1px solid var(--line2);border-radius:12px;
+  background:rgba(10,17,30,.92);backdrop-filter:blur(18px);box-shadow:0 18px 48px rgba(0,0,0,.42);
+  padding:10px 12px;opacity:0;pointer-events:none;transition:.2s;
+}
+body.light .launch-bubble{background:rgba(255,255,255,.94)}
+.launch-bubble.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.lb-head{display:flex;align-items:center;gap:7px}
+.lb-kind{font-size:7px;padding:2px 4px;border-radius:3px;font-family:var(--mono);background:rgba(6,182,212,.12);color:#67e8f9;border:1px solid rgba(6,182,212,.20)}
+.lb-kind.flow{background:rgba(139,92,246,.12);color:#c4b5fd;border-color:rgba(139,92,246,.22)}
+.lb-name{font-size:11px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-status{font-size:8px;color:var(--faint);font-family:var(--mono)}
+.lb-bar{height:5px;border-radius:99px;background:var(--panel3);overflow:hidden;margin:8px 0 5px}
+.lb-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .1s linear}
+.lb-sub{font-size:8px;color:var(--faint);font-family:var(--mono);display:flex;justify-content:space-between;gap:8px}
+.ctx{
+  position:fixed;z-index:50;min-width:150px;border:1px solid var(--line2);border-radius:9px;
+  background:rgba(10,17,30,.96);box-shadow:0 18px 44px rgba(0,0,0,.42);padding:4px;display:none;
+}
+body.light .ctx{background:#fff}
+.ctx.show{display:block}
+.ctx button{width:100%;display:flex;justify-content:space-between;gap:12px;border:0;border-radius:5px;background:transparent;color:var(--dim);font-size:10px;padding:7px 8px;text-align:left}
+.ctx button:hover{background:var(--panel3);color:var(--text)}
+.ctx .sep{height:1px;background:var(--line);margin:3px 4px}
+.ctx .danger{color:#fca5a5}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;pointer-events:none;background:#0b1220;border:1px solid var(--line2);color:#dbeafe;padding:9px 13px;border-radius:9px;font-size:11px;box-shadow:0 14px 30px rgba(0,0,0,.35);transition:.2s;z-index:90}
+body.light .toast{background:#fff;color:#0f172a}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){
+  .dock{border-radius:16px}
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:9px}
+  .tile{min-height:78px}
+  .tile-icon{width:38px;height:38px;font-size:17px}
+  .search{width:110px}
+  .tabs .tab{padding:5px 7px}
+  .dock-head{gap:6px;padding:9px}
+  .size-label{display:none}
+}
+</style>
+</head>
+
+<body>
+<div class="desktop" id="desktop">
+  <div class="desk-label">CLaunch 式启动坞 · 双击桌面 / 边缘 / <kbd>Ctrl+Space</kbd> 唤出</div>
+  <div class="desk-badge"><span class="live-dot"></span>SurfaceInstance · launch-dock.desktop@r1</div>
+
+  <div class="dock-wrap" id="dockWrap">
+    <div class="dock" id="dock">
+      <header class="dock-head">
+        <div class="tabs" id="tabs"></div>
+        <div class="dock-tools">
+          <div class="search"><span>⌕</span><input id="search" autocomplete="off" placeholder="搜索图标…"></div>
+          <button class="icon-btn" id="pinBtn" title="固定/取消自动隐藏">📌</button>
+          <button class="icon-btn" id="themeBtn" title="切换主题">☾</button>
+        </div>
+      </header>
+      <div class="grid" id="grid"></div>
+      <footer class="dock-foot">
+        <div class="pages" id="pages"></div>
+        <div class="foot-tools">
+          <label class="size-label">ICON <input type="range" id="size" min="64" max="92" value="74"></label>
+          <button class="add-btn" id="addBtn">＋ 添加</button>
+          <button class="settings-btn" id="settingsBtn">⚙ 设置</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <button class="show-dock" id="showDock">显示启动坞</button>
+
+  <div class="launch-bubble" id="bubble">
+    <div class="lb-head"><span class="lb-kind" id="lbKind">FLOW</span><span class="lb-name" id="lbName">—</span><span class="lb-status" id="lbStatus">running</span></div>
+    <div class="lb-bar"><i id="lbBar"></i></div>
+    <div class="lb-sub"><span id="lbSub">—</span><span id="lbPct">0%</span></div>
+  </div>
+
+  <div class="ctx" id="ctx"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const TABS=[
+  {id:'common',name:'常用'},
+  {id:'dev',name:'开发'},
+  {id:'system',name:'系统'},
+  {id:'tools',name:'工具'},
+  {id:'web',name:'外网'},
+];
+
+const TILES=[
+  {id:'github',tab:'common',name:'GitHub',sub:'inst.site-github',kind:'flow',icon:'GH',hotkey:'1',target:'inst.site-github@r1',effect:'L2'},
+  {id:'youtube',tab:'common',name:'YouTube',sub:'inst.site-youtube',kind:'flow',icon:'▶',hotkey:'2',target:'inst.site-youtube@r3',effect:'L2'},
+  {id:'vpn',tab:'common',name:'确保 VPN',sub:'inst.ensure-vpn-ask',kind:'flow',icon:'VPN',hotkey:'3',target:'inst.ensure-vpn-ask@r2',effect:'L2'},
+  {id:'vscode',tab:'common',name:'VS Code',sub:'inst.open-app-vscode',kind:'flow',icon:'VS',hotkey:'4',target:'inst.open-app-vscode-project@r2',effect:'L1'},
+  {id:'terminal',tab:'common',name:'终端',sub:'open.terminal',kind:'point',icon:'>_',hotkey:'5',target:'open.terminal@r1',effect:'L1'},
+  {id:'translate',tab:'common',name:'截图翻译',sub:'inst.screenshot-en-zh',kind:'flow',icon:'文',hotkey:'6',target:'inst.screenshot-en-zh@r4',effect:'L1'},
+  {id:'invoice',tab:'common',name:'发票归档',sub:'inst.invoice-company',kind:'flow',icon:'¥',hotkey:'7',target:'inst.invoice-company@r6',effect:'L1'},
+  {id:'clipboard',tab:'common',name:'剪贴板存文件',sub:'inst.clipboard-inbox',kind:'flow',icon:'▤',hotkey:'8',target:'inst.clipboard-inbox@r3',effect:'L1'},
+  {id:'sysmon',tab:'common',name:'系统监控',sub:'sys.metrics.snapshot',kind:'point',icon:'◉',hotkey:'9',target:'sys.metrics.snapshot@r1',effect:'L0'},
+  {id:'settings',tab:'common',name:'设置',sub:'settings.open',kind:'point',icon:'⚙',hotkey:'0',target:'settings.open@r1',effect:'L0'},
+  {id:'google',tab:'common',name:'Google',sub:'inst.site-google',kind:'flow',icon:'G',hotkey:'',target:'inst.site-google@r1',effect:'L2'},
+  {id:'openai',tab:'common',name:'OpenAI',sub:'inst.site-openai',kind:'flow',icon:'AI',hotkey:'',target:'inst.site-openai@r1',effect:'L2'},
+
+  {id:'dev-github',tab:'dev',name:'GitHub',sub:'inst.site-github',kind:'flow',icon:'GH',hotkey:'1',target:'inst.site-github@r1',effect:'L2'},
+  {id:'dev-vscode',tab:'dev',name:'VS Code',sub:'inst.open-app-vscode',kind:'flow',icon:'VS',hotkey:'2',target:'inst.open-app-vscode-project@r2',effect:'L1'},
+  {id:'dev-terminal',tab:'dev',name:'终端',sub:'open.terminal',kind:'point',icon:'>_',hotkey:'3',target:'open.terminal@r1',effect:'L1'},
+  {id:'dev-http',tab:'dev',name:'GitHub API',sub:'inst.http-github-status',kind:'flow',icon:'{}',hotkey:'4',target:'inst.http-github-status@r2',effect:'L1'},
+  {id:'dev-json',tab:'dev',name:'JSON 格式化',sub:'json.format',kind:'point',icon:'{}',hotkey:'5',target:'json.format@r1',effect:'L0'},
+  {id:'dev-regex',tab:'dev',name:'正则测试',sub:'text.regex',kind:'point',icon:'.*',hotkey:'6',target:'text.regex@r1',effect:'L0'},
+  {id:'dev-docker',tab:'dev',name:'Docker',sub:'inst.ensure-service-docker',kind:'flow',icon:'DK',hotkey:'7',target:'inst.ensure-service-docker@r1',effect:'L1'},
+  {id:'dev-logs',tab:'dev',name:'运行日志',sub:'flow.run.logs',kind:'point',icon:'≡',hotkey:'8',target:'flow.run.logs@r1',effect:'L0'},
+
+  {id:'sys-cpu',tab:'system',name:'CPU',sub:'sys.cpu.stats',kind:'point',icon:'CPU',hotkey:'1',target:'sys.cpu.stats@r1',effect:'L0'},
+  {id:'sys-gpu',tab:'system',name:'GPU',sub:'sys.gpu.stats',kind:'point',icon:'GPU',hotkey:'2',target:'sys.gpu.stats@r1',effect:'L0'},
+  {id:'sys-mem',tab:'system',name:'内存',sub:'sys.memory.stats',kind:'point',icon:'RAM',hotkey:'3',target:'sys.memory.stats@r1',effect:'L0'},
+  {id:'sys-net',tab:'system',name:'网速',sub:'sys.network.stats',kind:'point',icon:'NET',hotkey:'4',target:'sys.network.stats@r1',effect:'L0'},
+  {id:'sys-disk',tab:'system',name:'磁盘',sub:'sys.disk.stats',kind:'point',icon:'DSK',hotkey:'5',target:'sys.disk.stats@r1',effect:'L0'},
+  {id:'sys-uptime',tab:'system',name:'开机时长',sub:'sys.uptime',kind:'point',icon:'UP',hotkey:'6',target:'sys.uptime@r1',effect:'L0'},
+  {id:'sys-temp',tab:'system',name:'温度',sub:'sys.sensors.temp',kind:'point',icon:'°C',hotkey:'7',target:'sys.sensors.temp@r1',effect:'L0'},
+  {id:'sys-proc',tab:'system',name:'进程 Top',sub:'sys.process.top',kind:'point',icon:'TOP',hotkey:'8',target:'sys.process.top@r1',effect:'L0'},
+  {id:'sys-service',tab:'system',name:'服务状态',sub:'service.status',kind:'point',icon:'SVC',hotkey:'9',target:'service.status@r1',effect:'L0'},
+  {id:'sys-power',tab:'system',name:'电源',sub:'sys.power.status',kind:'point',icon:'PWR',hotkey:'0',target:'sys.power.status@r1',effect:'L0'},
+
+  {id:'tool-ocr',tab:'tools',name:'OCR',sub:'ocr.read',kind:'point',icon:'OCR',hotkey:'1',target:'ocr.read@r1',effect:'L0'},
+  {id:'tool-translate',tab:'tools',name:'翻译',sub:'translate.text',kind:'point',icon:'文',hotkey:'2',target:'translate.text@r1',effect:'L1'},
+  {id:'tool-clip',tab:'tools',name:'剪贴板',sub:'input.clipboard',kind:'point',icon:'▤',hotkey:'3',target:'input.clipboard@r1',effect:'L0'},
+  {id:'tool-write',tab:'tools',name:'写文件',sub:'file.write',kind:'point',icon:'✎',hotkey:'4',target:'file.write@r1',effect:'L1'},
+  {id:'tool-hash',tab:'tools',name:'哈希',sub:'hash.sha256',kind:'point',icon:'#',hotkey:'5',target:'hash.sha256@r1',effect:'L0'},
+  {id:'tool-zip',tab:'tools',name:'压缩',sub:'file.zip',kind:'point',icon:'ZIP',hotkey:'6',target:'file.zip@r1',effect:'L1'},
+  {id:'tool-color',tab:'tools',name:'取色',sub:'screen.color',kind:'point',icon:'◐',hotkey:'7',target:'screen.color@r1',effect:'L0'},
+  {id:'tool-timer',tab:'tools',name:'计时器',sub:'timer.start',kind:'point',icon:'◷',hotkey:'8',target:'timer.start@r1',effect:'L0'},
+
+  {id:'web-github',tab:'web',name:'GitHub',sub:'inst.site-github',kind:'flow',icon:'GH',hotkey:'1',target:'inst.site-github@r1',effect:'L2'},
+  {id:'web-youtube',tab:'web',name:'YouTube',sub:'inst.site-youtube',kind:'flow',icon:'▶',hotkey:'2',target:'inst.site-youtube@r3',effect:'L2'},
+  {id:'web-google',tab:'web',name:'Google',sub:'inst.site-google',kind:'flow',icon:'G',hotkey:'3',target:'inst.site-google@r1',effect:'L2'},
+  {id:'web-openai',tab:'web',name:'OpenAI',sub:'inst.site-openai',kind:'flow',icon:'AI',hotkey:'4',target:'inst.site-openai@r1',effect:'L2'},
+  {id:'web-x',tab:'web',name:'X',sub:'inst.site-x',kind:'flow',icon:'X',hotkey:'5',target:'inst.site-x@r1',effect:'L2'},
+  {id:'web-so',tab:'web',name:'StackOverflow',sub:'inst.site-so',kind:'flow',icon:'SO',hotkey:'6',target:'inst.site-so@r1',effect:'L2'},
+  {id:'web-bili',tab:'web',name:'Bilibili',sub:'inst.site-bili',kind:'flow',icon:'B',hotkey:'7',target:'inst.site-bili@r1',effect:'L2'},
+  {id:'web-reddit',tab:'web',name:'Reddit',sub:'inst.site-reddit',kind:'flow',icon:'R',hotkey:'8',target:'inst.site-reddit@r1',effect:'L2'},
+  {id:'web-gmail',tab:'web',name:'Gmail',sub:'inst.site-gmail',kind:'flow',icon:'M',hotkey:'9',target:'inst.site-gmail@r1',effect:'L2'},
+  {id:'web-maps',tab:'web',name:'Maps',sub:'inst.site-maps',kind:'flow',icon:'⌖',hotkey:'0',target:'inst.site-maps@r1',effect:'L2'},
+];
+
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const state={tab:'common',page:0,query:'',pinned:true,size:74,dragId:null,ctxTile:null,hideTimer:null,launchTimer:null,toastTimer:null,bubbleTimer:null,justDragged:false};
+
+function currentTiles(){
+  const q=state.query.trim().toLowerCase();
+  return TILES.filter(t=>t.tab===state.tab&&(!q||[t.id,t.name,t.sub,t.target,t.kind].join(' ').toLowerCase().includes(q)));
+}
+function pageCount(){return Math.max(1,Math.ceil(currentTiles().length/10));}
+function pageTiles(){
+  const all=currentTiles();
+  return all.slice(state.page*10,state.page*10+10);
+}
+
+function renderTabs(){
+  $('#tabs').innerHTML=TABS.map(t=>`<button class="tab ${state.tab===t.id?'active':''}" data-tab="${t.id}">${esc(t.name)}</button>`).join('');
+  $$('#tabs [data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;state.page=0;state.query='';$('#search').value='';render();});
+}
+function renderGrid(){
+  const tiles=pageTiles();
+  if(!tiles.length){$('#grid').innerHTML=`<div class="tile" style="grid-column:1/-1;min-height:160px;justify-content:center;color:var(--faint)">没有匹配的图标</div>`;return;}
+  $('#grid').innerHTML=tiles.map((t,i)=>`<button class="tile" draggable="true" data-tile-id="${esc(t.id)}" data-kind="${t.kind}" title="${esc(t.name)} · ${esc(t.target)}">
+    <span class="hotkey">${esc(t.hotkey||'')}</span>
+    <span class="tile-icon">${esc(t.icon)}<span class="kind-dot">${t.kind==='flow'?'FL':'PT'}</span></span>
+    <span class="tile-label">${esc(t.name)}</span>
+    <span class="tile-sub">${esc(t.sub)}</span>
+  </button>`).join('');
+  bindTiles();
+}
+function bindTiles(){
+  $$('#grid [data-tile-id]').forEach(el=>{
+    el.onclick=()=>{if(state.dragId||state.justDragged)return;const t=TILES.find(x=>x.id===el.dataset.tileId);if(t)launch(t);};
+    el.oncontextmenu=(e)=>{e.preventDefault();openCtx(e,tilesById(el.dataset.tileId));};
+    el.ondragstart=(e)=>{state.dragId=el.dataset.tileId;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',state.dragId);};
+    el.ondragover=(e)=>{e.preventDefault();el.classList.add('drop-target');};
+    el.ondragleave=()=>el.classList.remove('drop-target');
+    el.ondrop=(e)=>{e.preventDefault();el.classList.remove('drop-target');const from=state.dragId,to=el.dataset.tileId;if(!from||from===to)return;const a=TILES.findIndex(x=>x.id===from),b=TILES.findIndex(x=>x.id===to);if(a<0||b<0)return;const [m]=TILES.splice(a,1);TILES.splice(b,0,m);state.dragId=null;renderGrid();toast('已调整图标顺序');};
+    el.ondragend=()=>{el.classList.remove('dragging');state.dragId=null;state.justDragged=true;setTimeout(()=>state.justDragged=false,220);};
+  });
+}
+function tilesById(id){return TILES.find(t=>t.id===id);}
+
+function renderPages(){
+  const n=pageCount();const dots=[];
+  for(let i=0;i<n;i++)dots.push(`<button class="page-dot ${i===state.page?'active':''}" data-page="${i}" title="第 ${i+1} 页"></button>`);
+  $('#pages').innerHTML=dots.join('');
+  $$('#pages [data-page]').forEach(b=>b.onclick=()=>{state.page=Number(b.dataset.page);renderGrid();renderPages();});
+}
+function render(){renderTabs();renderGrid();renderPages();}
+
+function launch(t){
+  if(state.launchTimer){clearInterval(state.launchTimer);state.launchTimer=null;}
+  if(state.bubbleTimer){clearTimeout(state.bubbleTimer);state.bubbleTimer=null;}
+  const bubble=$('#bubble');bubble.classList.add('show');
+  $('#lbKind').textContent=t.kind==='flow'?'FLOW':'POINT';
+  $('#lbKind').className='lb-kind '+(t.kind==='flow'?'flow':'');
+  $('#lbName').textContent=t.name;
+  $('#lbStatus').textContent='running';
+  $('#lbSub').textContent=`${t.kind==='flow'?'FlowRun':'PointRun'} · ${t.target} · ${t.effect}`;
+  $('#lbBar').style.width='0%';$('#lbPct').textContent='0%';
+  let pct=0;
+  state.launchTimer=setInterval(()=>{
+    pct=Math.min(100,pct+Math.floor(Math.random()*8)+4);
+    $('#lbBar').style.width=pct+'%';$('#lbPct').textContent=pct+'%';
+    if(pct>=100){
+      clearInterval(state.launchTimer);state.launchTimer=null;
+      $('#lbStatus').textContent='ok';
+      $('#lbSub').textContent=`${t.kind==='flow'?'FlowRun':'PointRun'} 完成 · ${t.effect} · 已写入运行记录`;
+      state.bubbleTimer=setTimeout(()=>bubble.classList.remove('show'),1600);
+    }
+  },60);
+}
+
+function openCtx(e,t){
+  if(!t)return;state.ctxTile=t.id;
+  const ctx=$('#ctx');
+  ctx.innerHTML=`<button data-act="run">启动 <span>Enter</span></button><button data-act="inspect">检查器 <span>⌕</span></button><button data-act="favorite">收藏 <span>☆</span></button><div class="sep"></div><button data-act="edit">编辑图标 <span>✎</span></button><button class="danger" data-act="remove">移除 <span>×</span></button>`;
+  ctx.classList.add('show');
+  const x=Math.min(e.clientX,innerWidth-180),y=Math.min(e.clientY,innerHeight-210);
+  ctx.style.left=x+'px';ctx.style.top=y+'px';
+  $$('#ctx [data-act]').forEach(b=>b.onclick=()=>{
+    const act=b.dataset.act;ctx.classList.remove('show');
+    if(act==='run')launch(t);
+    else if(act==='remove'){const i=TILES.findIndex(x=>x.id===t.id);if(i>=0)TILES.splice(i,1);render();toast('已移除图标');}
+    else toast(`模拟：${act} ${t.name}`);
+  });
+}
+
+function toast(msg){
+  const t=$('#toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>t.classList.remove('show'),1600);
+}
+function showDock(){ $('#dockWrap').classList.remove('hidden');$('#showDock').classList.remove('visible'); }
+function hideDock(){ if(state.pinned)return;$('#dockWrap').classList.add('hidden');$('#showDock').classList.add('visible'); }
+function scheduleHide(){ if(state.pinned)return;clearTimeout(state.hideTimer);state.hideTimer=setTimeout(hideDock,850); }
+
+function initTheme(){
+  let saved=null;try{saved=localStorage.getItem('launch-dock-theme');}catch(e){}
+  if(saved==='light')document.body.classList.add('light');
+  updateThemeBtn();
+  $('#themeBtn').onclick=()=>{document.body.classList.toggle('light');try{localStorage.setItem('launch-dock-theme',document.body.classList.contains('light')?'light':'dark');}catch(e){}updateThemeBtn();toast(document.body.classList.contains('light')?'浅色皮肤':'深色皮肤');};
+}
+function updateThemeBtn(){$('#themeBtn').textContent=document.body.classList.contains('light')?'☀':'☾';}
+
+function init(){
+  initTheme();render();showDock();
+  $('#search').oninput=(e)=>{state.query=e.target.value;state.page=0;renderGrid();renderPages();};
+  $('#pinBtn').classList.toggle('on',state.pinned);
+  $('#pinBtn').onclick=()=>{state.pinned=!state.pinned;$('#pinBtn').classList.toggle('on',state.pinned);toast(state.pinned?'已固定启动坞':'已开启自动隐藏');if(state.pinned)showDock();};
+  $('#size').oninput=(e)=>{state.size=Number(e.target.value);document.documentElement.style.setProperty('--tile',state.size+'px');};
+  $('#addBtn').onclick=()=>toast('模拟：打开图标选择器（选择点实例/线实例）');
+  $('#settingsBtn').onclick=()=>toast('模拟：打开 surface.settings.launch-dock');
+  $('#showDock').onclick=showDock;
+  $('#dockWrap').onmouseenter=()=>{clearTimeout(state.hideTimer);showDock();};
+  $('#dockWrap').onmouseleave=scheduleHide;
+  $('#desktop').ondblclick=(e)=>{if(!e.target.closest('#dockWrap'))showDock();};
+  document.addEventListener('click',(e)=>{if(!e.target.closest('#ctx')&&!e.target.closest('[data-tile-id]'))$('#ctx').classList.remove('show');});
+  document.addEventListener('mousemove',(e)=>{if(e.clientY>innerHeight-7&&$('#dockWrap').classList.contains('hidden'))showDock();});
+  document.addEventListener('keydown',(e)=>{
+    if(e.ctrlKey&&e.code==='Space'){e.preventDefault();$('#dockWrap').classList.contains('hidden')?showDock():hideDock();return;}
+    if(e.key==='Escape'){if($('#ctx').classList.contains('show'))$('#ctx').classList.remove('show');else hideDock();return;}
+    if(e.key==='/'&&document.activeElement!==$('#search')){e.preventDefault();$('#search').focus();return;}
+    if(/^[0-9]$/.test(e.key)&&document.activeElement!==$('#search')){
+      const idx=e.key==='0'?9:Number(e.key)-1;
+      const t=pageTiles()[idx];if(t){e.preventDefault();launch(t);}
+    }
+  });
+
+}
+document.addEventListener('DOMContentLoaded',init);
+
+</script>
+</body>
+</html>

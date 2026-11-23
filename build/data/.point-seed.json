@@ -1,0 +1,838 @@
+[
+  {
+    "id": "win.key.send",
+    "name": "发送快捷键",
+    "family": "hotkey",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 12,
+    "success": 99.2,
+    "updated": "2026-11-18",
+    "desc": "向目标窗口发送组合键；复制、粘贴、剪切只是不同 keys 的实例。",
+    "permissions": [
+      "input.send"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-copy",
+        "name": "复制",
+        "params": {
+          "keys": "Ctrl+C",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 8,
+        "lastRun": "2 分钟前",
+        "status": "stable",
+        "success": 99.4
+      },
+      {
+        "id": "i-paste",
+        "name": "粘贴",
+        "params": {
+          "keys": "Ctrl+V",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 7,
+        "lastRun": "2 分钟前",
+        "status": "stable",
+        "success": 99.1
+      },
+      {
+        "id": "i-cut",
+        "name": "剪切",
+        "params": {
+          "keys": "Ctrl+X",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 98.8
+      },
+      {
+        "id": "i-undo",
+        "name": "撤销",
+        "params": {
+          "keys": "Ctrl+Z",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 4,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99
+      },
+      {
+        "id": "i-select-all",
+        "name": "全选",
+        "params": {
+          "keys": "Ctrl+A",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 2,
+        "lastRun": "3 天前",
+        "status": "stable",
+        "success": 99.6
+      }
+    ]
+  },
+  {
+    "id": "win.key.trigger",
+    "name": "监听快捷键",
+    "family": "hotkey",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 6,
+    "success": 98.6,
+    "updated": "2026-11-17",
+    "desc": "全局或按应用监听组合键，发出 trigger 事件；和发送快捷键共用 Hotkey 契约。",
+    "permissions": [
+      "input.registerHotkey"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-trigger-panel",
+        "name": "打开面板",
+        "params": {
+          "keys": "Ctrl+Alt+Space",
+          "scope": "global"
+        },
+        "tags": [
+          "入口"
+        ],
+        "usedBy": 5,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99
+      },
+      {
+        "id": "i-trigger-shot",
+        "name": "截图翻译",
+        "params": {
+          "keys": "Ctrl+Alt+T",
+          "scope": "global"
+        },
+        "tags": [
+          "截图",
+          "AI"
+        ],
+        "usedBy": 3,
+        "lastRun": "12 分钟前",
+        "status": "stable",
+        "success": 97.8
+      }
+    ]
+  },
+  {
+    "id": "win.window.control",
+    "name": "控制窗口",
+    "family": "window",
+    "version": "1.2.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 18,
+    "success": 96.4,
+    "updated": "2026-11-20",
+    "desc": "按 WindowSelector 找到顶层窗口，执行聚焦、移动、缩放、置顶、关闭等操作。",
+    "permissions": [
+      "window.read",
+      "window.control"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-focus-notepad",
+        "name": "聚焦记事本",
+        "params": {
+          "op": "focus",
+          "selector": {
+            "strategy": "process",
+            "process": "notepad.exe",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "error"
+          }
+        },
+        "tags": [
+          "常用"
+        ],
+        "usedBy": 4,
+        "lastRun": "5 分钟前",
+        "status": "stable",
+        "success": 98.2
+      },
+      {
+        "id": "i-move-chrome",
+        "name": "Chrome 移到副屏左半",
+        "params": {
+          "op": "move",
+          "monitor": 1,
+          "rect": "0,0,0.5,1",
+          "selector": {
+            "strategy": "process",
+            "process": "chrome.exe",
+            "title": "GitHub",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "error"
+          }
+        },
+        "tags": [
+          "多屏"
+        ],
+        "usedBy": 3,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 95.2
+      },
+      {
+        "id": "i-topmost",
+        "name": "当前窗口置顶切换",
+        "params": {
+          "op": "topmost",
+          "mode": "toggle",
+          "selector": {
+            "strategy": "foreground",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "error"
+          }
+        },
+        "tags": [
+          "窗口"
+        ],
+        "usedBy": 6,
+        "lastRun": "20 分钟前",
+        "status": "stable",
+        "success": 99.1
+      },
+      {
+        "id": "i-close-explorer",
+        "name": "关闭所有资源管理器",
+        "params": {
+          "op": "close",
+          "match": "all",
+          "selector": {
+            "strategy": "class",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "CabinetWClass",
+            "match": "all"
+          }
+        },
+        "tags": [
+          "危险"
+        ],
+        "usedBy": 1,
+        "lastRun": "昨天",
+        "status": "draft",
+        "success": 92
+      }
+    ]
+  },
+  {
+    "id": "win.window.query",
+    "name": "查询窗口",
+    "family": "window",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 9,
+    "success": 99,
+    "updated": "2026-11-12",
+    "desc": "只读查询顶层窗口，返回 WindowInfo[]；用于选择器测试、批量操作前预览。",
+    "permissions": [
+      "window.read"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-list-windows",
+        "name": "列出可见窗口",
+        "params": {
+          "limit": 50,
+          "sort": "z_order",
+          "selector": {
+            "strategy": "foreground",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "all"
+          }
+        },
+        "tags": [
+          "调试"
+        ],
+        "usedBy": 5,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.8
+      },
+      {
+        "id": "i-foreground",
+        "name": "当前前台窗口",
+        "params": {
+          "limit": 1,
+          "sort": "z_order",
+          "selector": {
+            "strategy": "foreground",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "first"
+          }
+        },
+        "tags": [
+          "常用"
+        ],
+        "usedBy": 4,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.9
+      }
+    ]
+  },
+  {
+    "id": "win.open",
+    "name": "打开目标",
+    "family": "open",
+    "version": "1.1.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 14,
+    "success": 97.6,
+    "updated": "2026-11-19",
+    "desc": "一个类覆盖文件、文件夹、应用、URL；kind 参数决定解析路径与默认处理器。",
+    "permissions": [
+      "open.path",
+      "open.app",
+      "open.url"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-open-downloads",
+        "name": "打开下载文件夹",
+        "params": {
+          "kind": "folder",
+          "target": "%USERPROFILE%\\Downloads",
+          "app": "",
+          "args": ""
+        },
+        "tags": [
+          "常用"
+        ],
+        "usedBy": 6,
+        "lastRun": "10 分钟前",
+        "status": "stable",
+        "success": 99.5
+      },
+      {
+        "id": "i-open-github",
+        "name": "打开 GitHub",
+        "params": {
+          "kind": "url",
+          "target": "https://github.com",
+          "app": "",
+          "args": ""
+        },
+        "tags": [
+          "网页"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99.2
+      },
+      {
+        "id": "i-open-project",
+        "name": "用 VS Code 打开项目",
+        "params": {
+          "kind": "folder",
+          "target": "C:\\project",
+          "app": "code.exe",
+          "args": "."
+        },
+        "tags": [
+          "开发"
+        ],
+        "usedBy": 5,
+        "lastRun": "2 小时前",
+        "status": "stable",
+        "success": 96.8
+      }
+    ]
+  },
+  {
+    "id": "win.audio.volume",
+    "name": "控制系统音量",
+    "family": "settings",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 11,
+    "success": 99.3,
+    "updated": "2026-11-16",
+    "desc": "主音量与静音控制；action 参数覆盖 up/down/set/mute/toggle。应用音量放 P1。",
+    "permissions": [
+      "settings.audio.write"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-vol-up",
+        "name": "音量 +5",
+        "params": {
+          "action": "up",
+          "step": 5,
+          "level": 50,
+          "app": ""
+        },
+        "tags": [
+          "音量"
+        ],
+        "usedBy": 5,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.8
+      },
+      {
+        "id": "i-vol-toggle",
+        "name": "静音切换",
+        "params": {
+          "action": "toggle",
+          "step": 5,
+          "level": 50,
+          "app": ""
+        },
+        "tags": [
+          "音量"
+        ],
+        "usedBy": 4,
+        "lastRun": "30 分钟前",
+        "status": "stable",
+        "success": 99.9
+      },
+      {
+        "id": "i-vol-30",
+        "name": "设 30%",
+        "params": {
+          "action": "set",
+          "step": 5,
+          "level": 30,
+          "app": ""
+        },
+        "tags": [
+          "音量"
+        ],
+        "usedBy": 2,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99.6
+      }
+    ]
+  },
+  {
+    "id": "win.display.brightness",
+    "name": "控制亮度",
+    "family": "settings",
+    "version": "0.9.0",
+    "status": "draft",
+    "p0": true,
+    "official": true,
+    "usedBy": 5,
+    "success": 94.2,
+    "updated": "2026-11-20",
+    "desc": "内屏走 WMI、外屏走 DDC/CI；不支持时明确失败，不用假值。",
+    "permissions": [
+      "settings.display.brightness"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-bright-60",
+        "name": "内屏亮度 60%",
+        "params": {
+          "action": "set",
+          "value": 60,
+          "step": 10,
+          "monitor": "internal",
+          "method": "auto"
+        },
+        "tags": [
+          "亮度"
+        ],
+        "usedBy": 3,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 96.5
+      },
+      {
+        "id": "i-bright-up",
+        "name": "亮度 +10",
+        "params": {
+          "action": "up",
+          "value": 60,
+          "step": 10,
+          "monitor": "internal",
+          "method": "auto"
+        },
+        "tags": [
+          "亮度"
+        ],
+        "usedBy": 2,
+        "lastRun": "昨天",
+        "status": "draft",
+        "success": 91
+      }
+    ]
+  },
+  {
+    "id": "win.theme.mode",
+    "name": "深浅主题",
+    "family": "settings",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 8,
+    "success": 98.4,
+    "updated": "2026-11-15",
+    "desc": "写 AppsUseLightTheme / SystemUsesLightTheme 并广播 ImmersiveColorSet；部分应用需重启。",
+    "permissions": [
+      "settings.theme"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-dark",
+        "name": "深色模式",
+        "params": {
+          "action": "set",
+          "mode": "dark",
+          "scope": "both"
+        },
+        "tags": [
+          "主题"
+        ],
+        "usedBy": 5,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99
+      },
+      {
+        "id": "i-light-apps",
+        "name": "应用浅色",
+        "params": {
+          "action": "set",
+          "mode": "light",
+          "scope": "apps"
+        },
+        "tags": [
+          "主题"
+        ],
+        "usedBy": 3,
+        "lastRun": "3 天前",
+        "status": "stable",
+        "success": 97.2
+      }
+    ]
+  },
+  {
+    "id": "win.ocr.read",
+    "name": "OCR 识别",
+    "family": "capture",
+    "version": "1.1.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 16,
+    "success": 96.8,
+    "updated": "2026-11-18",
+    "desc": "从图片/截图提取文字；优先 Windows AI OCR，语言不支持时回退 PaddleOCR。",
+    "permissions": [
+      "screen.capture"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-ocr-auto",
+        "name": "截图转文字",
+        "params": {
+          "image": "$screenshot",
+          "lang": "auto",
+          "layout": true
+        },
+        "tags": [
+          "OCR"
+        ],
+        "usedBy": 9,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 97.5
+      },
+      {
+        "id": "i-ocr-en",
+        "name": "英文截图",
+        "params": {
+          "image": "$screenshot",
+          "lang": "en",
+          "layout": false
+        },
+        "tags": [
+          "OCR"
+        ],
+        "usedBy": 4,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 96
+      }
+    ]
+  },
+  {
+    "id": "win.clipboard.get",
+    "name": "读取剪贴板",
+    "family": "file",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 10,
+    "success": 99.5,
+    "updated": "2026-11-11",
+    "desc": "读取文本/图片/文件列表；format 参数决定输出类型。",
+    "permissions": [
+      "clipboard.read"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-clip-text",
+        "name": "取文本",
+        "params": {
+          "format": "text"
+        },
+        "tags": [
+          "剪贴板"
+        ],
+        "usedBy": 7,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.7
+      },
+      {
+        "id": "i-clip-image",
+        "name": "取图片",
+        "params": {
+          "format": "image"
+        },
+        "tags": [
+          "剪贴板"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 98.9
+      }
+    ]
+  },
+  {
+    "id": "win.http.request",
+    "name": "HTTP 请求",
+    "family": "network",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 7,
+    "success": 97.8,
+    "updated": "2026-11-14",
+    "desc": "统一 GET/POST/PUT/DELETE，带超时、重试、SSRF 防护和响应大小限制。",
+    "permissions": [
+      "net.http"
+    ],
+    "sideEffects": [
+      "read",
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-http-github",
+        "name": "GET GitHub API",
+        "params": {
+          "method": "GET",
+          "url": "https://api.github.com/repos/owner/repo",
+          "body": ""
+        },
+        "tags": [
+          "API"
+        ],
+        "usedBy": 4,
+        "lastRun": "2 小时前",
+        "status": "stable",
+        "success": 98.6
+      },
+      {
+        "id": "i-http-webhook",
+        "name": "POST Webhook",
+        "params": {
+          "method": "POST",
+          "url": "https://example.com/hook",
+          "body": "{\"event\":\"done\"}"
+        },
+        "tags": [
+          "API"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "draft",
+        "success": 94
+      }
+    ]
+  },
+  {
+    "id": "ui.form",
+    "name": "用户表单",
+    "family": "human",
+    "version": "0.8.0",
+    "status": "draft",
+    "p0": true,
+    "official": true,
+    "usedBy": 4,
+    "success": 97,
+    "updated": "2026-11-21",
+    "desc": "JSON Schema 驱动的表单；取消/超时返回明确状态，审批是 gate 不是这个类。",
+    "permissions": [],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-form-confirm",
+        "name": "发布确认",
+        "params": {
+          "title": "确认发布",
+          "fields": "备注, 版本号"
+        },
+        "tags": [
+          "交互"
+        ],
+        "usedBy": 4,
+        "lastRun": "今天",
+        "status": "draft",
+        "success": 96.4
+      }
+    ]
+  },
+  {
+    "id": "ai.llm.complete",
+    "name": "LLM 补全",
+    "family": "ai",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 9,
+    "success": 97.4,
+    "updated": "2026-11-21",
+    "desc": "调用本地或云端模型补全/总结/翻译；模型是包资源，未加载时不占显存。",
+    "permissions": [
+      "ai.llm"
+    ],
+    "sideEffects": [
+      "read",
+      "network"
+    ],
+    "instances": [
+      {
+        "id": "i-llm-summarize",
+        "name": "总结选中文本",
+        "params": {
+          "model": "local.qwen3.5-7b",
+          "prompt": "请总结以下内容",
+          "temperature": 0.2,
+          "maxTokens": 1024
+        },
+        "tags": [
+          "AI"
+        ],
+        "usedBy": 5,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 97.8
+      },
+      {
+        "id": "i-llm-translate",
+        "name": "翻译成英文",
+        "params": {
+          "model": "cloud.gpt-5.5",
+          "prompt": "Translate to English",
+          "temperature": 0.1,
+          "maxTokens": 800
+        },
+        "tags": [
+          "AI"
+        ],
+        "usedBy": 4,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 96.6
+      }
+    ]
+  }
+]

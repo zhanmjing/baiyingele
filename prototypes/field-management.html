@@ -1,0 +1,2698 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Field Management · 场层管理</title>
+<style>
+:root{--bg:#070b12;--panel:#0d1420;--card:#111a29;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.26);--ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;--amber:#f59e0b;--green:#22c55e;--red:#ef4444;--mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;--font:"Segoe UI","Microsoft YaHei",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+#app{display:grid;grid-template-rows:54px 38px minmax(0,1fr);height:100%}
+header{display:flex;align-items:center;gap:10px;padding:0 13px;background:linear-gradient(180deg,#0e1725,#0a111c);border-bottom:1px solid var(--line);position:relative;z-index:10}
+.brand{display:flex;align-items:center;gap:8px;min-width:190px}.brand .mark{width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#08111c;font:800 12px var(--mono)}.brand b{font-size:13px}.brand span{display:block;font:7px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.top-stats{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-left:auto}.mini{font:6.8px var(--mono);padding:2px 4px;border-radius:3px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c;white-space:nowrap}.mini.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.06)}.mini.green{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.06)}.mini.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.06)}.mini.violet{color:#c4b5fd;border-color:rgba(139,92,246,.24);background:rgba(139,92,246,.06)}
+.btn{border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:6px;padding:5px 8px;font-size:8.5px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:3px;cursor:pointer}.btn:hover{color:#dbeafe;border-color:var(--line2)}.btn.primary{border-color:rgba(139,92,246,.36);background:rgba(139,92,246,.12);color:#ddd6fe}.btn.small{padding:3px 5px;font-size:7px}.btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.25)}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr) 330px;min-height:0}
+.left{border-right:1px solid var(--line);background:#0a111c;overflow-y:auto;padding:10px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.left::-webkit-scrollbar,main::-webkit-scrollbar,#inspector::-webkit-scrollbar{width:7px}.left::-webkit-scrollbar-thumb,main::-webkit-scrollbar-thumb,#inspector::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.pane-head{display:flex;align-items:center;gap:5px;margin:6px 2px 5px}.pane-head b{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.pane-head .count{font:6.5px var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:3px;padding:1px 3px}.pane-head button{margin-left:auto;border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:4px;width:18px;height:18px;line-height:1;font-size:10px}
+.flow-item{border:1px solid var(--line);border-radius:6px;background:#0e1826;padding:6px 7px;margin-bottom:4px;cursor:pointer}.flow-item:hover{border-color:var(--line2);background:#121f30}.flow-item.on{border-color:rgba(139,92,246,.45);background:rgba(139,92,246,.08)}.fi-top{display:flex;align-items:center;gap:4px}.fi-name{font-size:9px;font-weight:650;color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fi-ver{font:6px var(--mono);color:var(--faint);margin-left:auto;white-space:nowrap}.fi-id{font:6px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}.fi-meta{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}.fi-badge{font:6px var(--mono);color:#8fa2bb;border:1px solid var(--line);border-radius:2px;padding:1px 2px}
+.inst-item{border:1px solid var(--line);border-radius:5px;background:#0b1420;padding:5px 6px;margin-bottom:3px;cursor:pointer}.inst-item:hover{background:#121f30}.inst-item.on{border-color:rgba(34,211,238,.38);background:rgba(34,211,238,.06)}.ii-top{display:flex;align-items:center;gap:4px}.ii-name{font-size:8px;color:#b9c7da;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ii-rev{font:6px var(--mono);color:#a5f3fc;margin-left:auto}.ii-id{font:6px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}.ii-status{font:6px var(--mono);padding:1px 2px;border-radius:2px;border:1px solid var(--line);color:#86efac;margin-top:3px;display:inline-block}.ii-status.draft{color:#fcd34d;border-color:rgba(245,158,11,.22)}.ii-status.archived{color:#94a3b8}
+main{min-width:0;overflow-y:auto;padding:14px 16px 28px;background:radial-gradient(circle at 30% 0%,rgba(139,92,246,.045),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.hero{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px}.hero-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#171f33;border:1px solid rgba(139,92,246,.25);color:#c4b5fd;font:800 13px var(--mono);flex:0 0 38px}.hero-main{min-width:0;flex:1}.kicker{font:7px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}.hero h1{font-size:18px;margin:2px 0 2px}.hero p{margin:0;color:#94a8c0;font-size:10px;line-height:1.5}.hero-actions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.mode-tabs{display:flex;gap:2px;border:1px solid var(--line);border-radius:5px;padding:2px;background:#0a1420;align-self:flex-start}.mode-tabs button{border:none;background:transparent;color:#7e91a7;border-radius:3px;padding:4px 6px;font-size:7.5px}.mode-tabs button.on{background:rgba(139,92,246,.14);color:#ddd6fe}
+.stats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.graph-panel{border:1px solid var(--line);border-radius:8px;background:#0a1420;margin-bottom:9px;overflow:hidden}.panel-head{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}.panel-head b{font-size:8.5px;color:#dbeafe}.panel-head .sub{font:6.8px var(--mono);color:var(--faint)}.panel-head .right{margin-left:auto;display:flex;gap:4px;align-items:center}.graph-scroll{overflow:auto;max-height:440px;min-height:250px;background:#08101b}.canvas{position:relative;margin:12px}.canvas svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.node{position:absolute;border:1px solid var(--line2);border-radius:7px;background:#101b2a;padding:7px 7px 6px;cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s;overflow:hidden}.node:hover{background:#152238}.node.selected{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(34,211,238,.22),0 6px 18px rgba(0,0,0,.24)}.node.point.impl{border-color:rgba(34,197,94,.42)}.node.point.placeholder{border-style:dashed;border-color:rgba(245,158,11,.42);background:rgba(35,27,16,.7)}.node.gate{border-color:rgba(139,92,246,.38);background:rgba(24,20,38,.8)}.node.subflow{border-color:rgba(59,130,246,.4);background:rgba(15,26,45,.8)}.n-kind{font:6px var(--mono);letter-spacing:.08em;color:var(--faint);text-transform:uppercase}.n-label{font-size:9px;font-weight:650;color:#dbeafe;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-meta{font:6.5px var(--mono);color:#8fa2bb;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-pin{font:6px var(--mono);color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-badge{position:absolute;right:4px;bottom:4px;font:5.5px var(--mono);padding:1px 2px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#0a1420}.n-badge.ok{color:#86efac;border-color:rgba(34,197,94,.28)}.n-badge.sub{color:#93c5fd;border-color:rgba(59,130,246,.28)}.n-badge.ph{color:#fcd34d;border-color:rgba(245,158,11,.28)}.n-jump{position:absolute;right:4px;top:4px;width:16px;height:16px;border-radius:4px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.09);color:#86efac;font-size:8px;line-height:1;padding:0}
+.legend{display:flex;gap:9px;flex-wrap:wrap;padding:5px 8px;border-top:1px solid var(--line);font:6.8px var(--mono);color:var(--faint)}.legend span{display:flex;align-items:center;gap:3px}.legend i{width:6px;height:6px;border-radius:2px;display:inline-block}.legend i.impl{background:var(--green)}.legend i.ph{background:var(--amber)}.legend i.gate{background:var(--violet)}.legend i.sub{background:var(--blue)}
+.bind-panel{border:1px solid var(--line);border-radius:8px;background:#0a1420;overflow:hidden}.table-wrap{overflow:auto;max-height:290px}table{width:100%;border-collapse:collapse;font-size:8px}th{position:sticky;top:0;z-index:2;text-align:left;font:7px var(--mono);color:var(--faint);padding:6px 7px;border-bottom:1px solid var(--line);background:#0d1926;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}td{padding:6px 7px;border-bottom:1px solid rgba(148,163,184,.07);color:#9fb1c8;vertical-align:middle}.tr-node{cursor:pointer}.tr-node:hover td{background:#101d2c}.tr-node.on td{background:rgba(34,211,238,.05)}.mono{font-family:var(--mono);font-size:7px;color:#8fa2bb}.t-label{font-size:8.5px;color:#dbeafe}.t-sub{display:block;font:6.3px var(--mono);color:var(--faint);margin-top:1px;word-break:break-all}.pill{font:6px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);white-space:nowrap}.pill.ok{color:#86efac;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.05)}.pill.ph{color:#fcd34d;border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.05)}.pill.gate{color:#c4b5fd;border-color:rgba(139,92,246,.28);background:rgba(139,92,246,.06)}.pill.sub{color:#93c5fd;border-color:rgba(59,130,246,.28);background:rgba(59,130,246,.06)}.plink{font:6.8px var(--mono);color:#86efac;border:1px solid rgba(34,197,94,.28);border-radius:3px;padding:2px 4px;background:rgba(34,197,94,.06);white-space:nowrap}.plink:hover{background:rgba(34,197,94,.12)}
+#inspector{border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:12px 12px 32px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.insp-kicker{font:7px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}.insp-title{font-size:13px;margin:4px 0 2px;color:#dbeafe}.insp-id{font:8px var(--mono);color:#c4b5fd;word-break:break-all;margin-bottom:7px}.insp-section{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:8px;margin-bottom:7px}.lh{font:7px var(--mono);color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.kv{display:grid;grid-template-columns:60px 1fr;gap:3px 6px;font-size:8px;line-height:1.45}.kv .k{color:var(--faint);font-family:var(--mono)}.kv .v{color:#b9c7da;word-break:break-all}.note{font-size:7.5px;line-height:1.55;color:var(--faint);border-left:2px solid rgba(245,158,11,.4);padding-left:6px;margin-top:6px}.actions{display:flex;gap:4px;flex-wrap:wrap}.actions .btn{flex:1;min-width:70px}.insp-list{border:1px solid var(--line);border-radius:5px;overflow:auto;max-height:190px;background:#0a1420}.insp-row{display:flex;justify-content:space-between;gap:5px;padding:4px 6px;border-bottom:1px solid rgba(148,163,184,.07);font:6.8px var(--mono);color:#8fa2bb;cursor:pointer}.insp-row:hover,.insp-row.on{background:#121f30;color:#dbeafe}.empty{padding:24px 8px;text-align:center;color:var(--faint);font-size:9px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:7px 11px;border-radius:7px;font-size:9px;z-index:60;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1250px){.layout{grid-template-columns:225px minmax(0,1fr)}#inspector{display:none}}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.left{display:none}main{padding:10px}.hero{flex-wrap:wrap}.top-stats{display:none}}
+
+/* ===== field management ===== */
+.viewbar{display:flex;align-items:center;gap:7px;padding:0 13px;border-bottom:1px solid var(--line);background:#0a121e}
+#viewTabs{display:flex;gap:2px;border:1px solid var(--line);border-radius:6px;padding:2px;background:#08111c;overflow-x:auto;max-width:58vw;scrollbar-width:thin}
+#viewTabs button{border:none;background:transparent;color:#7e91a7;border-radius:4px;padding:4px 8px;font-size:8px;white-space:nowrap}
+#viewTabs button.on{background:rgba(139,92,246,.12);color:#ddd6fe}
+#viewTabs button span{font:6.5px var(--mono);color:var(--faint);margin-left:3px}
+#viewStats{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.panel-search{width:100%;border:1px solid var(--line);border-radius:5px;background:#08111b;color:#dbeafe;font:7px var(--mono);padding:5px 6px;outline:none;margin-bottom:6px}.panel-search::placeholder{color:#5f7188}
+.tab-mini{border:1px solid var(--line);border-radius:3px;background:#0d1826;color:#7e91a7;font:6px var(--mono);padding:2px 4px;margin:0 2px 2px 0;cursor:pointer}.tab-mini.on{border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.09);color:#ddd6fe}.tab-mini:hover{color:#dbeafe}
+.sec-head{display:flex;align-items:center;gap:5px;margin:0 0 6px}.sec-head b{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.sec-head .right{margin-left:auto;display:flex;gap:4px;align-items:center}
+.field-visual{border:1px solid var(--line);border-radius:8px;background:radial-gradient(circle at 50% 30%,rgba(139,92,246,.06),transparent 50%),#08111b;padding:12px;margin-bottom:8px}
+.field-chain{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center}.field-core{border:1px solid rgba(139,92,246,.34);border-radius:10px;background:rgba(139,92,246,.08);padding:10px 13px;text-align:center;min-width:150px;box-shadow:0 12px 30px rgba(0,0,0,.24)}.field-core .fc-i{font-size:20px;color:#c4b5fd}.field-core .fc-n{font-size:9px;color:#ddd6fe;font-weight:650;margin-top:3px}.field-core .fc-id{font:5.8px var(--mono);color:#5f7188;margin-top:2px;word-break:break-all}.field-arrow{font:12px var(--mono);color:#475569}.landing-group{display:flex;flex-direction:column;gap:3px;min-width:110px}.landing-chip{border:1px solid var(--line);border-radius:4px;background:#0a1420;padding:3px 5px;font:6px var(--mono);color:#8fa2bb;text-decoration:none;white-space:nowrap}.landing-chip.mapped{color:#86efac;border-color:rgba(34,197,94,.24);background:rgba(34,197,94,.04)}.landing-chip.ph{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.04)}.field-output{border:1px solid var(--line);border-radius:5px;background:#0d1826;padding:5px 7px;font:6px var(--mono);color:#a5f3fc;max-width:210px;text-align:center}.autonomy{font:6px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 3px}.autonomy.A0{color:#93c5fd;border-color:rgba(59,130,246,.26);background:rgba(59,130,246,.05)}.autonomy.A1{color:#fcd34d;border-color:rgba(245,158,11,.26);background:rgba(245,158,11,.05)}.autonomy.A2{color:#fca5a5;border-color:rgba(239,68,68,.26);background:rgba(239,68,68,.05)}
+.ai-stack{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}.ai-layer{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;background:#0d1826;padding:6px 8px}.ai-layer .al-k{font:5.8px var(--mono);color:#5f7188;text-transform:uppercase;min-width:56px}.ai-layer .al-v{font:6.5px var(--mono);color:#b9c7da;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ai-layer.provider{border-color:rgba(34,211,238,.22)}.ai-layer.prompt{border-color:rgba(139,92,246,.24)}.ai-layer.tools{border-color:rgba(34,197,94,.22)}.ai-layer.guard{border-color:rgba(245,158,11,.22)}.ai-layer.output{border-color:rgba(59,130,246,.24)}
+.run-row{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:5px;background:#0d1826;padding:5px 6px;margin-bottom:4px;cursor:pointer}.run-row:hover{border-color:var(--line2)}.run-row.on{border-color:rgba(34,211,238,.38);background:rgba(34,211,238,.05)}.run-status{width:6px;height:6px;border-radius:50%;background:#22c55e}.run-status.warn{background:#f59e0b}.run-status.error{background:#ef4444}.run-main{min-width:0;flex:1}.run-name{font:7px var(--mono);color:#9fb1c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.run-meta{font:5.8px var(--mono);color:#5f7188;margin-top:1px}.confidence{width:64px;height:4px;border-radius:9px;background:#17263a;overflow:hidden}.confidence i{display:block;height:100%;background:#22d3ee}.confidence.low i{background:#f59e0b}.confidence.bad i{background:#ef4444}
+.policy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:8px}.policy-card{border:1px solid var(--line);border-radius:6px;background:#0d1826;padding:7px}.policy-card label{display:block;font:5.8px var(--mono);color:#5f7188;text-transform:uppercase;margin-bottom:3px}.policy-card select,.policy-card input{width:100%;border:1px solid var(--line);border-radius:3px;background:#08111b;color:#9fb1c8;font:6.5px var(--mono);padding:3px 4px;outline:none}.policy-card .chk{display:flex;gap:3px;align-items:center;font:6.5px var(--mono);color:#8fa2bb}.policy-card .chk input{width:auto;accent-color:#8b5cf6}
+.modal-overlay{position:fixed;inset:0;background:rgba(2,6,12,.68);backdrop-filter:blur(3px);z-index:50;display:grid;place-items:center;padding:14px}.modal{width:min(560px,100%);max-height:90vh;overflow:auto;border:1px solid var(--line2);border-radius:9px;background:#0d1724;padding:13px;box-shadow:0 24px 70px rgba(0,0,0,.55)}.modal h3{margin:0 0 4px;font-size:13px;color:#dbeafe}.modal p{margin:0 0 8px;font-size:7.5px;color:#8fa2bb;line-height:1.5}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.form-grid .full{grid-column:1/-1}.field label{display:block;font:6px var(--mono);color:#5f7188;text-transform:uppercase;margin-bottom:2px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:4px;background:#08111b;color:#dbeafe;font:7px var(--mono);padding:5px 6px;outline:none}.field textarea{min-height:40px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:5px;margin-top:9px}
+.instance-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}.instance-card{border:1px solid var(--line);border-radius:6px;background:#0d1826;padding:6px;cursor:pointer}.instance-card:hover{border-color:var(--line2);background:#122033}.instance-card.on{border-color:rgba(139,92,246,.42);background:rgba(139,92,246,.07)}.ic-top{display:flex;align-items:center;gap:4px}.ic-name{font-size:8px;color:#dbeafe;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ic-rev{font:6px var(--mono);color:#c4b5fd;margin-left:auto}.ic-desc{font-size:6.5px;color:#8fa2bb;line-height:1.45;margin-top:3px;max-height:28px;overflow:hidden}.ic-meta{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}.ic-badge{font:5.5px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 2px;color:#8fa2bb}.ic-badge.on{color:#86efac;border-color:rgba(34,197,94,.24)}
+.kind-badge{font:5.8px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 2px}.kind-badge.point{color:#a5f3fc;border-color:rgba(34,211,238,.25)}.kind-badge.line{color:#c4b5fd;border-color:rgba(139,92,246,.25)}.wire-chips{display:flex;gap:3px;flex-wrap:wrap}.wire-chip{font:5.8px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 3px;color:#8fa2bb;background:#0c1725}.wire-chip.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.24);background:rgba(34,211,238,.06)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><div class="mark">✦</div><div><b>Field Management</b><span>FieldClass / FieldInstance / FieldRun / AI Substrate</span></div></div>
+    <div class="top-stats" id="topStats"></div>
+    <a class="btn" href="settings-workspace-settings-only.html#field">⚙ 设置</a>
+  </header>
+  <div class="viewbar"><nav id="viewTabs"></nav><div id="viewStats"></div></div>
+  <div class="layout">
+    <aside class="left"><div id="leftPane"></div></aside>
+    <main id="main"></main>
+    <aside id="inspector"></aside>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const FIELD_DATA = {
+  "classes": [
+    {
+      "id": "field.observe",
+      "family": "perceive",
+      "output": "context snapshot",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.observe.desktop@r1",
+          "classId": "field.observe",
+          "scope": "global",
+          "output": "前台进程/窗口/时间/空闲",
+          "rev": 1,
+          "name": "observe.desktop",
+          "status": "active",
+          "detail": "global · 前台进程/窗口/时间/空闲"
+        },
+        {
+          "id": "field.observe.selection@r1",
+          "classId": "field.observe",
+          "scope": "global",
+          "output": "选中文本/剪贴板/文件",
+          "rev": 1,
+          "name": "observe.selection",
+          "status": "active",
+          "detail": "global · 选中文本/剪贴板/文件"
+        },
+        {
+          "id": "field.observe.run-history@r1",
+          "classId": "field.observe",
+          "scope": "run history",
+          "output": "最近运行/失败/耗时",
+          "rev": 1,
+          "name": "observe.run-history",
+          "status": "active",
+          "detail": "run history · 最近运行/失败/耗时"
+        }
+      ],
+      "name": "observe",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "context snapshot → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.classify",
+      "family": "understand",
+      "output": "label",
+      "landing": "point/surface/body",
+      "autonomy": "A2",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.classify.intent@r1",
+          "classId": "field.classify",
+          "scope": "command palette",
+          "output": "action/flow/body/question",
+          "rev": 1,
+          "name": "classify.intent",
+          "status": "active",
+          "detail": "command palette · action/flow/body/question"
+        },
+        {
+          "id": "field.classify.file-type@r1",
+          "classId": "field.classify",
+          "scope": "body.file-preview",
+          "output": "text/image/pdf/video/audio",
+          "rev": 1,
+          "name": "classify.file-type",
+          "status": "active",
+          "detail": "body.file-preview · text/image/pdf/video/audio"
+        },
+        {
+          "id": "field.classify.ocr-mode@r1",
+          "classId": "field.classify",
+          "scope": "body.ocr",
+          "output": "text/math/qr/table",
+          "rev": 1,
+          "name": "classify.ocr-mode",
+          "status": "active",
+          "detail": "body.ocr · text/math/qr/table"
+        },
+        {
+          "id": "field.classify.error-kind@r1",
+          "classId": "field.classify",
+          "scope": "flow runtime",
+          "output": "uia/network/permission/param",
+          "rev": 1,
+          "name": "classify.error-kind",
+          "status": "active",
+          "detail": "flow runtime · uia/network/permission/param"
+        }
+      ],
+      "name": "classify",
+      "group": "understand",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "label → point/surface/body · 自主度上限 A2"
+    },
+    {
+      "id": "field.prefill",
+      "family": "perceive",
+      "output": "param suggestion",
+      "landing": "point",
+      "autonomy": "A2",
+      "count": 5,
+      "instances": [
+        {
+          "id": "field.prefill.point-params@r1",
+          "classId": "field.prefill",
+          "scope": "point instances",
+          "output": "参数默认值",
+          "rev": 1,
+          "name": "prefill.point-params",
+          "status": "active",
+          "detail": "point instances · 参数默认值"
+        },
+        {
+          "id": "field.prefill.vpn-profile@r1",
+          "classId": "field.prefill",
+          "scope": "body.external-access",
+          "output": "vpn.profile",
+          "rev": 1,
+          "name": "prefill.vpn-profile",
+          "status": "active",
+          "detail": "body.external-access · vpn.profile"
+        },
+        {
+          "id": "field.prefill.ocr-language@r1",
+          "classId": "field.prefill",
+          "scope": "body.ocr.text",
+          "output": "ocr.language",
+          "rev": 1,
+          "name": "prefill.ocr-language",
+          "status": "active",
+          "detail": "body.ocr.text · ocr.language"
+        },
+        {
+          "id": "field.prefill.rename-pattern@r1",
+          "classId": "field.prefill",
+          "scope": "body.batch-rename.regex",
+          "output": "rename.pattern",
+          "rev": 1,
+          "name": "prefill.rename-pattern",
+          "status": "active",
+          "detail": "body.batch-rename.regex · rename.pattern"
+        },
+        {
+          "id": "field.prefill.search-query@r1",
+          "classId": "field.prefill",
+          "scope": "command palette",
+          "output": "query",
+          "rev": 1,
+          "name": "prefill.search-query",
+          "status": "active",
+          "detail": "command palette · query"
+        }
+      ],
+      "name": "prefill",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "param suggestion → point · 自主度上限 A2"
+    },
+    {
+      "id": "field.rank",
+      "family": "perceive",
+      "output": "ranking",
+      "landing": "surface",
+      "autonomy": "A2",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.rank.scene-grid@r1",
+          "classId": "field.rank",
+          "scope": "surface.launch-dock",
+          "output": "tile.order",
+          "rev": 1,
+          "name": "rank.scene-grid",
+          "status": "active",
+          "detail": "surface.launch-dock · tile.order"
+        },
+        {
+          "id": "field.rank.command-palette@r1",
+          "classId": "field.rank",
+          "scope": "surface.command-palette",
+          "output": "result.order",
+          "rev": 1,
+          "name": "rank.command-palette",
+          "status": "active",
+          "detail": "surface.command-palette · result.order"
+        },
+        {
+          "id": "field.rank.body-market@r1",
+          "classId": "field.rank",
+          "scope": "surface.card-grid",
+          "output": "body.order",
+          "rev": 1,
+          "name": "rank.body-market",
+          "status": "active",
+          "detail": "surface.card-grid · body.order"
+        },
+        {
+          "id": "field.rank.ocr-mode@r1",
+          "classId": "field.rank",
+          "scope": "body.ocr",
+          "output": "mode order",
+          "rev": 1,
+          "name": "rank.ocr-mode",
+          "status": "active",
+          "detail": "body.ocr · mode order"
+        }
+      ],
+      "name": "rank",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "ranking → surface · 自主度上限 A2"
+    },
+    {
+      "id": "field.recommend",
+      "family": "perceive",
+      "output": "suggestion",
+      "landing": "point/line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.recommend.next-action@r1",
+          "classId": "field.recommend",
+          "scope": "point/surface",
+          "output": "action suggestion",
+          "rev": 1,
+          "name": "recommend.next-action",
+          "status": "active",
+          "detail": "point/surface · action suggestion"
+        },
+        {
+          "id": "field.recommend.body@r1",
+          "classId": "field.recommend",
+          "scope": "body market",
+          "output": "body suggestion",
+          "rev": 1,
+          "name": "recommend.body",
+          "status": "active",
+          "detail": "body market · body suggestion"
+        },
+        {
+          "id": "field.recommend.template@r1",
+          "classId": "field.recommend",
+          "scope": "flow editor",
+          "output": "template suggestion",
+          "rev": 1,
+          "name": "recommend.template",
+          "status": "active",
+          "detail": "flow editor · template suggestion"
+        }
+      ],
+      "name": "recommend",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "suggestion → point/line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.detect",
+      "family": "perceive",
+      "output": "signal",
+      "landing": "line/body",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.detect.repetition@r1",
+          "classId": "field.detect",
+          "scope": "global",
+          "output": "repeated manual sequence",
+          "rev": 1,
+          "name": "detect.repetition",
+          "status": "active",
+          "detail": "global · repeated manual sequence"
+        },
+        {
+          "id": "field.detect.anomaly@r1",
+          "classId": "field.detect",
+          "scope": "run history",
+          "output": "unusual failure/latency",
+          "rev": 1,
+          "name": "detect.anomaly",
+          "status": "active",
+          "detail": "run history · unusual failure/latency"
+        },
+        {
+          "id": "field.detect.opportunity@r1",
+          "classId": "field.detect",
+          "scope": "body usage",
+          "output": "automation opportunity",
+          "rev": 1,
+          "name": "detect.opportunity",
+          "status": "active",
+          "detail": "body usage · automation opportunity"
+        }
+      ],
+      "name": "detect",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "signal → line/body · 自主度上限 A0"
+    },
+    {
+      "id": "field.generate",
+      "family": "generate",
+      "output": "draft",
+      "landing": "point/line/surface/body",
+      "autonomy": "A1",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.generate.point-action@r1",
+          "classId": "field.generate",
+          "scope": "point editor",
+          "output": "Action DSL draft",
+          "rev": 1,
+          "name": "generate.point-action",
+          "status": "active",
+          "detail": "point editor · Action DSL draft"
+        },
+        {
+          "id": "field.generate.flow@r1",
+          "classId": "field.generate",
+          "scope": "line editor",
+          "output": "FlowClass/FlowInstance draft",
+          "rev": 1,
+          "name": "generate.flow",
+          "status": "active",
+          "detail": "line editor · FlowClass/FlowInstance draft"
+        },
+        {
+          "id": "field.generate.surface-layout@r1",
+          "classId": "field.generate",
+          "scope": "surface editor",
+          "output": "SurfaceClass/Instance draft",
+          "rev": 1,
+          "name": "generate.surface-layout",
+          "status": "active",
+          "detail": "surface editor · SurfaceClass/Instance draft"
+        },
+        {
+          "id": "field.generate.body-manifest@r1",
+          "classId": "field.generate",
+          "scope": "body editor",
+          "output": "BodyManifest draft",
+          "rev": 1,
+          "name": "generate.body-manifest",
+          "status": "active",
+          "detail": "body editor · BodyManifest draft"
+        }
+      ],
+      "name": "generate",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "draft → point/line/surface/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.compose",
+      "family": "generate",
+      "output": "draft",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.compose.flow-from-points@r1",
+          "classId": "field.compose",
+          "scope": "line editor",
+          "output": "flow composition draft",
+          "rev": 1,
+          "name": "compose.flow-from-points",
+          "status": "active",
+          "detail": "line editor · flow composition draft"
+        },
+        {
+          "id": "field.compose.surface-from-data@r1",
+          "classId": "field.compose",
+          "scope": "surface editor",
+          "output": "surface binding draft",
+          "rev": 1,
+          "name": "compose.surface-from-data",
+          "status": "active",
+          "detail": "surface editor · surface binding draft"
+        },
+        {
+          "id": "field.compose.body-from-flows@r1",
+          "classId": "field.compose",
+          "scope": "body editor",
+          "output": "body composition draft",
+          "rev": 1,
+          "name": "compose.body-from-flows",
+          "status": "active",
+          "detail": "body editor · body composition draft"
+        }
+      ],
+      "name": "compose",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "draft → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.plan",
+      "family": "generate",
+      "output": "plan",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.plan.single-app@r1",
+          "classId": "field.plan",
+          "scope": "task",
+          "output": "app-specific plan",
+          "rev": 1,
+          "name": "plan.single-app",
+          "status": "active",
+          "detail": "task · app-specific plan"
+        },
+        {
+          "id": "field.plan.cross-app@r1",
+          "classId": "field.plan",
+          "scope": "task",
+          "output": "multi-app plan",
+          "rev": 1,
+          "name": "plan.cross-app",
+          "status": "active",
+          "detail": "task · multi-app plan"
+        },
+        {
+          "id": "field.plan.batch@r1",
+          "classId": "field.plan",
+          "scope": "batch",
+          "output": "batch plan",
+          "rev": 1,
+          "name": "plan.batch",
+          "status": "active",
+          "detail": "batch · batch plan"
+        }
+      ],
+      "name": "plan",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "plan → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.translate",
+      "family": "generate",
+      "output": "text/dsl",
+      "landing": "point/line",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.translate.nl-to-dsl@r1",
+          "classId": "field.translate",
+          "scope": "editor",
+          "output": "NL → DSL",
+          "rev": 1,
+          "name": "translate.nl-to-dsl",
+          "status": "active",
+          "detail": "editor · NL → DSL"
+        },
+        {
+          "id": "field.translate.dsl-to-nl@r1",
+          "classId": "field.translate",
+          "scope": "inspector",
+          "output": "DSL → 人话",
+          "rev": 1,
+          "name": "translate.dsl-to-nl",
+          "status": "active",
+          "detail": "inspector · DSL → 人话"
+        },
+        {
+          "id": "field.translate.error-to-human@r1",
+          "classId": "field.translate",
+          "scope": "run history",
+          "output": "error → 解释",
+          "rev": 1,
+          "name": "translate.error-to-human",
+          "status": "active",
+          "detail": "run history · error → 解释"
+        }
+      ],
+      "name": "translate",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "text/dsl → point/line · 自主度上限 A1"
+    },
+    {
+      "id": "field.summarize",
+      "family": "generate",
+      "output": "summary",
+      "landing": "surface/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.summarize.run-history@r1",
+          "classId": "field.summarize",
+          "scope": "surface.run-history",
+          "output": "运行摘要",
+          "rev": 1,
+          "name": "summarize.run-history",
+          "status": "active",
+          "detail": "surface.run-history · 运行摘要"
+        },
+        {
+          "id": "field.summarize.context@r1",
+          "classId": "field.summarize",
+          "scope": "command palette",
+          "output": "上下文摘要",
+          "rev": 1,
+          "name": "summarize.context",
+          "status": "active",
+          "detail": "command palette · 上下文摘要"
+        },
+        {
+          "id": "field.summarize.document@r1",
+          "classId": "field.summarize",
+          "scope": "body",
+          "output": "文档摘要",
+          "rev": 1,
+          "name": "summarize.document",
+          "status": "active",
+          "detail": "body · 文档摘要"
+        }
+      ],
+      "name": "summarize",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "summary → surface/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.diagnose",
+      "family": "evolve",
+      "output": "diagnosis",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.diagnose.flow-failure@r1",
+          "classId": "field.diagnose",
+          "scope": "flow run",
+          "output": "cause + fix",
+          "rev": 1,
+          "name": "diagnose.flow-failure",
+          "status": "active",
+          "detail": "flow run · cause + fix"
+        },
+        {
+          "id": "field.diagnose.uia-timeout@r1",
+          "classId": "field.diagnose",
+          "scope": "UIA step",
+          "output": "selector/timing fix",
+          "rev": 1,
+          "name": "diagnose.uia-timeout",
+          "status": "active",
+          "detail": "UIA step · selector/timing fix"
+        },
+        {
+          "id": "field.diagnose.vpn-unreachable@r1",
+          "classId": "field.diagnose",
+          "scope": "external access",
+          "output": "network/VPN cause",
+          "rev": 1,
+          "name": "diagnose.vpn-unreachable",
+          "status": "active",
+          "detail": "external access · network/VPN cause"
+        },
+        {
+          "id": "field.diagnose.ocr-low-confidence@r1",
+          "classId": "field.diagnose",
+          "scope": "body.ocr",
+          "output": "preprocess/mode fix",
+          "rev": 1,
+          "name": "diagnose.ocr-low-confidence",
+          "status": "active",
+          "detail": "body.ocr · preprocess/mode fix"
+        }
+      ],
+      "name": "diagnose",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "diagnosis → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.repair",
+      "family": "evolve",
+      "output": "patch",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.repair.flow-patch@r1",
+          "classId": "field.repair",
+          "scope": "flow",
+          "output": "patch",
+          "rev": 1,
+          "name": "repair.flow-patch",
+          "status": "active",
+          "detail": "flow · patch"
+        },
+        {
+          "id": "field.repair.selector-patch@r1",
+          "classId": "field.repair",
+          "scope": "UIA step",
+          "output": "selector patch",
+          "rev": 1,
+          "name": "repair.selector-patch",
+          "status": "active",
+          "detail": "UIA step · selector patch"
+        },
+        {
+          "id": "field.repair.settings-patch@r1",
+          "classId": "field.repair",
+          "scope": "body/flow",
+          "output": "settings patch",
+          "rev": 1,
+          "name": "repair.settings-patch",
+          "status": "active",
+          "detail": "body/flow · settings patch"
+        },
+        {
+          "id": "field.repair.permission-fix@r1",
+          "classId": "field.repair",
+          "scope": "permission error",
+          "output": "grant/scope fix",
+          "rev": 1,
+          "name": "repair.permission-fix",
+          "status": "active",
+          "detail": "permission error · grant/scope fix"
+        }
+      ],
+      "name": "repair",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "patch → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.mine",
+      "family": "evolve",
+      "output": "suggestion",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.mine.action-sequence@r1",
+          "classId": "field.mine",
+          "scope": "global",
+          "output": "action sequence suggestion",
+          "rev": 1,
+          "name": "mine.action-sequence",
+          "status": "active",
+          "detail": "global · action sequence suggestion"
+        },
+        {
+          "id": "field.mine.flow-template@r1",
+          "classId": "field.mine",
+          "scope": "line",
+          "output": "flow template",
+          "rev": 1,
+          "name": "mine.flow-template",
+          "status": "active",
+          "detail": "line · flow template"
+        },
+        {
+          "id": "field.mine.body-candidate@r1",
+          "classId": "field.mine",
+          "scope": "body",
+          "output": "body candidate",
+          "rev": 1,
+          "name": "mine.body-candidate",
+          "status": "active",
+          "detail": "body · body candidate"
+        }
+      ],
+      "name": "mine",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "suggestion → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.learn",
+      "family": "evolve",
+      "output": "weights/thresholds",
+      "landing": "point/surface",
+      "autonomy": "A2",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.learn.ranking@r1",
+          "classId": "field.learn",
+          "scope": "surface rank",
+          "output": "weight update",
+          "rev": 1,
+          "name": "learn.ranking",
+          "status": "active",
+          "detail": "surface rank · weight update"
+        },
+        {
+          "id": "field.learn.prefill@r1",
+          "classId": "field.learn",
+          "scope": "point prefill",
+          "output": "default update",
+          "rev": 1,
+          "name": "learn.prefill",
+          "status": "active",
+          "detail": "point prefill · default update"
+        },
+        {
+          "id": "field.learn.threshold@r1",
+          "classId": "field.learn",
+          "scope": "field policy",
+          "output": "confidence threshold",
+          "rev": 1,
+          "name": "learn.threshold",
+          "status": "active",
+          "detail": "field policy · confidence threshold"
+        }
+      ],
+      "name": "learn",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "weights/thresholds → point/surface · 自主度上限 A2"
+    },
+    {
+      "id": "field.personalize",
+      "family": "evolve",
+      "output": "defaults/layout",
+      "landing": "point/surface",
+      "autonomy": "A2",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.personalize.shortcut@r1",
+          "classId": "field.personalize",
+          "scope": "global",
+          "output": "shortcut suggestion",
+          "rev": 1,
+          "name": "personalize.shortcut",
+          "status": "active",
+          "detail": "global · shortcut suggestion"
+        },
+        {
+          "id": "field.personalize.layout@r1",
+          "classId": "field.personalize",
+          "scope": "surface",
+          "output": "layout suggestion",
+          "rev": 1,
+          "name": "personalize.layout",
+          "status": "active",
+          "detail": "surface · layout suggestion"
+        },
+        {
+          "id": "field.personalize.defaults@r1",
+          "classId": "field.personalize",
+          "scope": "point/body",
+          "output": "defaults",
+          "rev": 1,
+          "name": "personalize.defaults",
+          "status": "active",
+          "detail": "point/body · defaults"
+        }
+      ],
+      "name": "personalize",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "defaults/layout → point/surface · 自主度上限 A2"
+    },
+    {
+      "id": "field.critique",
+      "family": "evolve",
+      "output": "review",
+      "landing": "line/body",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.critique.flow@r1",
+          "classId": "field.critique",
+          "scope": "flow",
+          "output": "review findings",
+          "rev": 1,
+          "name": "critique.flow",
+          "status": "active",
+          "detail": "flow · review findings"
+        },
+        {
+          "id": "field.critique.body@r1",
+          "classId": "field.critique",
+          "scope": "body",
+          "output": "review findings",
+          "rev": 1,
+          "name": "critique.body",
+          "status": "active",
+          "detail": "body · review findings"
+        },
+        {
+          "id": "field.critique.permission@r1",
+          "classId": "field.critique",
+          "scope": "permission",
+          "output": "over-broad permission warning",
+          "rev": 1,
+          "name": "critique.permission",
+          "status": "active",
+          "detail": "permission · over-broad permission warning"
+        }
+      ],
+      "name": "critique",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "review → line/body · 自主度上限 A0"
+    },
+    {
+      "id": "field.route",
+      "family": "govern",
+      "output": "route decision",
+      "landing": "all",
+      "autonomy": "A2",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.route.model@r1",
+          "classId": "field.route",
+          "scope": "global",
+          "output": "local/cloud/fallback",
+          "rev": 1,
+          "name": "route.model",
+          "status": "active",
+          "detail": "global · local/cloud/fallback"
+        },
+        {
+          "id": "field.route.tool@r1",
+          "classId": "field.route",
+          "scope": "command palette",
+          "output": "point/flow/body",
+          "rev": 1,
+          "name": "route.tool",
+          "status": "active",
+          "detail": "command palette · point/flow/body"
+        },
+        {
+          "id": "field.route.body@r1",
+          "classId": "field.route",
+          "scope": "file/trigger",
+          "output": "body instance",
+          "rev": 1,
+          "name": "route.body",
+          "status": "active",
+          "detail": "file/trigger · body instance"
+        }
+      ],
+      "name": "route",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "route decision → all · 自主度上限 A2"
+    },
+    {
+      "id": "field.guard",
+      "family": "govern",
+      "output": "risk/decision",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.guard.risk@r1",
+          "classId": "field.guard",
+          "scope": "all drafts",
+          "output": "L0–L3",
+          "rev": 1,
+          "name": "guard.risk",
+          "status": "active",
+          "detail": "all drafts · L0–L3"
+        },
+        {
+          "id": "field.guard.permission@r1",
+          "classId": "field.guard",
+          "scope": "all drafts",
+          "output": "allow/deny/ask",
+          "rev": 1,
+          "name": "guard.permission",
+          "status": "active",
+          "detail": "all drafts · allow/deny/ask"
+        },
+        {
+          "id": "field.guard.confidence@r1",
+          "classId": "field.guard",
+          "scope": "all suggestions",
+          "output": "pass/ask/reject",
+          "rev": 1,
+          "name": "guard.confidence",
+          "status": "active",
+          "detail": "all suggestions · pass/ask/reject"
+        },
+        {
+          "id": "field.guard.privacy@r1",
+          "classId": "field.guard",
+          "scope": "context",
+          "output": "redact/block",
+          "rev": 1,
+          "name": "guard.privacy",
+          "status": "active",
+          "detail": "context · redact/block"
+        }
+      ],
+      "name": "guard",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "risk/decision → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.ask",
+      "family": "govern",
+      "output": "question",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.ask.clarify@r1",
+          "classId": "field.ask",
+          "scope": "ambiguous request",
+          "output": "question + options",
+          "rev": 1,
+          "name": "ask.clarify",
+          "status": "active",
+          "detail": "ambiguous request · question + options"
+        },
+        {
+          "id": "field.ask.confirm@r1",
+          "classId": "field.ask",
+          "scope": "A1/A2",
+          "output": "confirm dialog",
+          "rev": 1,
+          "name": "ask.confirm",
+          "status": "active",
+          "detail": "A1/A2 · confirm dialog"
+        },
+        {
+          "id": "field.ask.choose@r1",
+          "classId": "field.ask",
+          "scope": "multiple matches",
+          "output": "chooser",
+          "rev": 1,
+          "name": "ask.choose",
+          "status": "active",
+          "detail": "multiple matches · chooser"
+        }
+      ],
+      "name": "ask",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "question → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.explain",
+      "family": "govern",
+      "output": "explanation",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.explain.suggestion@r1",
+          "classId": "field.explain",
+          "scope": "surface",
+          "output": "why this suggestion",
+          "rev": 1,
+          "name": "explain.suggestion",
+          "status": "active",
+          "detail": "surface · why this suggestion"
+        },
+        {
+          "id": "field.explain.point-run@r1",
+          "classId": "field.explain",
+          "scope": "point run",
+          "output": "what happened",
+          "rev": 1,
+          "name": "explain.point-run",
+          "status": "active",
+          "detail": "point run · what happened"
+        },
+        {
+          "id": "field.explain.flow-run@r1",
+          "classId": "field.explain",
+          "scope": "flow run",
+          "output": "step trace",
+          "rev": 1,
+          "name": "explain.flow-run",
+          "status": "active",
+          "detail": "flow run · step trace"
+        },
+        {
+          "id": "field.explain.permission@r1",
+          "classId": "field.explain",
+          "scope": "permission prompt",
+          "output": "why needed",
+          "rev": 1,
+          "name": "explain.permission",
+          "status": "active",
+          "detail": "permission prompt · why needed"
+        }
+      ],
+      "name": "explain",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "explanation → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.simulate",
+      "family": "govern",
+      "output": "preview/impact",
+      "landing": "line/body",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.simulate.dry-run@r1",
+          "classId": "field.simulate",
+          "scope": "draft/patch",
+          "output": "dry-run result",
+          "rev": 1,
+          "name": "simulate.dry-run",
+          "status": "active",
+          "detail": "draft/patch · dry-run result"
+        },
+        {
+          "id": "field.simulate.impact@r1",
+          "classId": "field.simulate",
+          "scope": "body/flow",
+          "output": "impact analysis",
+          "rev": 1,
+          "name": "simulate.impact",
+          "status": "active",
+          "detail": "body/flow · impact analysis"
+        },
+        {
+          "id": "field.simulate.rollback@r1",
+          "classId": "field.simulate",
+          "scope": "A2 apply",
+          "output": "rollback plan",
+          "rev": 1,
+          "name": "simulate.rollback",
+          "status": "active",
+          "detail": "A2 apply · rollback plan"
+        }
+      ],
+      "name": "simulate",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "preview/impact → line/body · 自主度上限 A0"
+    },
+    {
+      "id": "field.memory",
+      "family": "govern",
+      "output": "memory op",
+      "landing": "all",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.memory.preference@r1",
+          "classId": "field.memory",
+          "scope": "global",
+          "output": "preference read/write",
+          "rev": 1,
+          "name": "memory.preference",
+          "status": "active",
+          "detail": "global · preference read/write"
+        },
+        {
+          "id": "field.memory.episodic@r1",
+          "classId": "field.memory",
+          "scope": "run history",
+          "output": "episode recall",
+          "rev": 1,
+          "name": "memory.episodic",
+          "status": "active",
+          "detail": "run history · episode recall"
+        },
+        {
+          "id": "field.memory.knowledge@r1",
+          "classId": "field.memory",
+          "scope": "body/domain",
+          "output": "knowledge recall",
+          "rev": 1,
+          "name": "memory.knowledge",
+          "status": "active",
+          "detail": "body/domain · knowledge recall"
+        }
+      ],
+      "name": "memory",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "memory op → all · 自主度上限 A1"
+    }
+  ]
+};
+const AI_DATA = {
+  "classes": [
+    {
+      "id": "ai.model",
+      "name": "ai.model",
+      "group": "模型与提示",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "模型/provider/上下文窗口/价格/能力 · 示例：fast / reasoning / vision / embedding / rerank / local",
+      "instances": [
+        {
+          "id": "ai.model.fast@r1",
+          "name": "fast",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · fast"
+        },
+        {
+          "id": "ai.model.reasoning@r1",
+          "name": "reasoning",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · reasoning"
+        },
+        {
+          "id": "ai.model.vision@r1",
+          "name": "vision",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · vision"
+        },
+        {
+          "id": "ai.model.embedding@r1",
+          "name": "embedding",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · embedding"
+        },
+        {
+          "id": "ai.model.rerank@r1",
+          "name": "rerank",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · rerank"
+        },
+        {
+          "id": "ai.model.local@r1",
+          "name": "local",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · local"
+        }
+      ]
+    },
+    {
+      "id": "ai.prompt",
+      "name": "ai.prompt",
+      "group": "模型与提示",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "系统指令、模板、few-shot、输出风格 · 示例：system / researcher / coder / support / extractor / critic",
+      "instances": [
+        {
+          "id": "ai.prompt.system@r1",
+          "name": "system",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · system"
+        },
+        {
+          "id": "ai.prompt.researcher@r1",
+          "name": "researcher",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · researcher"
+        },
+        {
+          "id": "ai.prompt.coder@r1",
+          "name": "coder",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · coder"
+        },
+        {
+          "id": "ai.prompt.support@r1",
+          "name": "support",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · support"
+        },
+        {
+          "id": "ai.prompt.extractor@r1",
+          "name": "extractor",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · extractor"
+        },
+        {
+          "id": "ai.prompt.critic@r1",
+          "name": "critic",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · critic"
+        }
+      ]
+    },
+    {
+      "id": "ai.router",
+      "name": "ai.router",
+      "group": "模型与提示",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "按任务/成本/延迟/隐私选模型或工具 · 示例：fast / reasoning / private / cheap",
+      "instances": [
+        {
+          "id": "ai.router.fast@r1",
+          "name": "fast",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · fast"
+        },
+        {
+          "id": "ai.router.reasoning@r1",
+          "name": "reasoning",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · reasoning"
+        },
+        {
+          "id": "ai.router.private@r1",
+          "name": "private",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · private"
+        },
+        {
+          "id": "ai.router.cheap@r1",
+          "name": "cheap",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · cheap"
+        }
+      ]
+    },
+    {
+      "id": "ai.fallback",
+      "name": "ai.fallback",
+      "group": "模型与提示",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "模型/工具/检索失败降级 · 示例：model / tool / retrieval",
+      "instances": [
+        {
+          "id": "ai.fallback.model@r1",
+          "name": "model",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · model"
+        },
+        {
+          "id": "ai.fallback.tool@r1",
+          "name": "tool",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool"
+        },
+        {
+          "id": "ai.fallback.retrieval@r1",
+          "name": "retrieval",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · retrieval"
+        }
+      ]
+    },
+    {
+      "id": "ai.cache",
+      "name": "ai.cache",
+      "group": "模型与提示",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "提示/检索/工具结果缓存 · 示例：prompt / retrieval / tool",
+      "instances": [
+        {
+          "id": "ai.cache.prompt@r1",
+          "name": "prompt",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · prompt"
+        },
+        {
+          "id": "ai.cache.retrieval@r1",
+          "name": "retrieval",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · retrieval"
+        },
+        {
+          "id": "ai.cache.tool@r1",
+          "name": "tool",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool"
+        }
+      ]
+    },
+    {
+      "id": "ai.quota",
+      "name": "ai.quota",
+      "group": "模型与提示",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "用户/租户/模型/工具配额 · 示例：user / tenant / model / tool",
+      "instances": [
+        {
+          "id": "ai.quota.user@r1",
+          "name": "user",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · user"
+        },
+        {
+          "id": "ai.quota.tenant@r1",
+          "name": "tenant",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tenant"
+        },
+        {
+          "id": "ai.quota.model@r1",
+          "name": "model",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · model"
+        },
+        {
+          "id": "ai.quota.tool@r1",
+          "name": "tool",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool"
+        }
+      ]
+    },
+    {
+      "id": "ai.context",
+      "name": "ai.context",
+      "group": "上下文与知识",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "组装任务上下文 · 示例：chat / copilot / agent / rag",
+      "instances": [
+        {
+          "id": "ai.context.chat@r1",
+          "name": "chat",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · chat"
+        },
+        {
+          "id": "ai.context.copilot@r1",
+          "name": "copilot",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · copilot"
+        },
+        {
+          "id": "ai.context.agent@r1",
+          "name": "agent",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · agent"
+        },
+        {
+          "id": "ai.context.rag@r1",
+          "name": "rag",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · rag"
+        }
+      ]
+    },
+    {
+      "id": "ai.retriever",
+      "name": "ai.retriever",
+      "group": "上下文与知识",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "检索证据 · 示例：docs / code / web / database",
+      "instances": [
+        {
+          "id": "ai.retriever.docs@r1",
+          "name": "docs",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · docs"
+        },
+        {
+          "id": "ai.retriever.code@r1",
+          "name": "code",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · code"
+        },
+        {
+          "id": "ai.retriever.web@r1",
+          "name": "web",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · web"
+        },
+        {
+          "id": "ai.retriever.database@r1",
+          "name": "database",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · database"
+        }
+      ]
+    },
+    {
+      "id": "ai.knowledge-base",
+      "name": "ai.knowledge-base",
+      "group": "上下文与知识",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "知识库/索引/版本 · 示例：product / policy / code / support",
+      "instances": [
+        {
+          "id": "ai.knowledge-base.product@r1",
+          "name": "product",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · product"
+        },
+        {
+          "id": "ai.knowledge-base.policy@r1",
+          "name": "policy",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · policy"
+        },
+        {
+          "id": "ai.knowledge-base.code@r1",
+          "name": "code",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · code"
+        },
+        {
+          "id": "ai.knowledge-base.support@r1",
+          "name": "support",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · support"
+        }
+      ]
+    },
+    {
+      "id": "ai.memory",
+      "name": "ai.memory",
+      "group": "上下文与知识",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "短期/长期/项目/情景记忆 · 示例：session / user / project / episodic / semantic",
+      "instances": [
+        {
+          "id": "ai.memory.session@r1",
+          "name": "session",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · session"
+        },
+        {
+          "id": "ai.memory.user@r1",
+          "name": "user",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · user"
+        },
+        {
+          "id": "ai.memory.project@r1",
+          "name": "project",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · project"
+        },
+        {
+          "id": "ai.memory.episodic@r1",
+          "name": "episodic",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · episodic"
+        },
+        {
+          "id": "ai.memory.semantic@r1",
+          "name": "semantic",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · semantic"
+        }
+      ]
+    },
+    {
+      "id": "ai.multimodal",
+      "name": "ai.multimodal",
+      "group": "上下文与知识",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "图像/音频/视频/文档输入输出 · 示例：image / audio / video / document",
+      "instances": [
+        {
+          "id": "ai.multimodal.image@r1",
+          "name": "image",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · image"
+        },
+        {
+          "id": "ai.multimodal.audio@r1",
+          "name": "audio",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · audio"
+        },
+        {
+          "id": "ai.multimodal.video@r1",
+          "name": "video",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · video"
+        },
+        {
+          "id": "ai.multimodal.document@r1",
+          "name": "document",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · document"
+        }
+      ]
+    },
+    {
+      "id": "ai.agent",
+      "name": "ai.agent",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "角色 + 指令 + 工具 + 循环 · 示例：researcher / coder / reviewer / support / planner / ops",
+      "instances": [
+        {
+          "id": "ai.agent.researcher@r1",
+          "name": "researcher",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · researcher"
+        },
+        {
+          "id": "ai.agent.coder@r1",
+          "name": "coder",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · coder"
+        },
+        {
+          "id": "ai.agent.reviewer@r1",
+          "name": "reviewer",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · reviewer"
+        },
+        {
+          "id": "ai.agent.support@r1",
+          "name": "support",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · support"
+        },
+        {
+          "id": "ai.agent.planner@r1",
+          "name": "planner",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · planner"
+        },
+        {
+          "id": "ai.agent.ops@r1",
+          "name": "ops",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · ops"
+        }
+      ]
+    },
+    {
+      "id": "ai.handoff",
+      "name": "ai.handoff",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "任务委派/转交 · 示例：triage-to-specialist / coder-to-reviewer / support-to-billing",
+      "instances": [
+        {
+          "id": "ai.handoff.triage-to-specialist@r1",
+          "name": "triage-to-specialist",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · triage-to-specialist"
+        },
+        {
+          "id": "ai.handoff.coder-to-reviewer@r1",
+          "name": "coder-to-reviewer",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · coder-to-reviewer"
+        },
+        {
+          "id": "ai.handoff.support-to-billing@r1",
+          "name": "support-to-billing",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · support-to-billing"
+        },
+        {
+          "id": "ai.handoff.researcher-to-writer@r1",
+          "name": "researcher-to-writer",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · researcher-to-writer"
+        }
+      ]
+    },
+    {
+      "id": "ai.workflow",
+      "name": "ai.workflow",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "有状态图/节点/边/检查点 · 示例：invoice / support / content / research / etl",
+      "instances": [
+        {
+          "id": "ai.workflow.invoice@r1",
+          "name": "invoice",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · invoice"
+        },
+        {
+          "id": "ai.workflow.support@r1",
+          "name": "support",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · support"
+        },
+        {
+          "id": "ai.workflow.content@r1",
+          "name": "content",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · content"
+        },
+        {
+          "id": "ai.workflow.research@r1",
+          "name": "research",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · research"
+        },
+        {
+          "id": "ai.workflow.etl@r1",
+          "name": "etl",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · etl"
+        }
+      ]
+    },
+    {
+      "id": "ai.planner",
+      "name": "ai.planner",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "任务分解/计划 · 示例：task / multi-step / multi-agent",
+      "instances": [
+        {
+          "id": "ai.planner.task@r1",
+          "name": "task",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · task"
+        },
+        {
+          "id": "ai.planner.multi-step@r1",
+          "name": "multi-step",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · multi-step"
+        },
+        {
+          "id": "ai.planner.multi-agent@r1",
+          "name": "multi-agent",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · multi-agent"
+        }
+      ]
+    },
+    {
+      "id": "ai.critic",
+      "name": "ai.critic",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "反思/审查/评分 · 示例：factuality / code / style / security",
+      "instances": [
+        {
+          "id": "ai.critic.factuality@r1",
+          "name": "factuality",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · factuality"
+        },
+        {
+          "id": "ai.critic.code@r1",
+          "name": "code",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · code"
+        },
+        {
+          "id": "ai.critic.style@r1",
+          "name": "style",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · style"
+        },
+        {
+          "id": "ai.critic.security@r1",
+          "name": "security",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · security"
+        }
+      ]
+    },
+    {
+      "id": "ai.tool",
+      "name": "ai.tool",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "函数调用/外部动作 · 示例：web-search / http / sql / python / files / calendar / email",
+      "instances": [
+        {
+          "id": "ai.tool.web-search@r1",
+          "name": "web-search",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · web-search"
+        },
+        {
+          "id": "ai.tool.http@r1",
+          "name": "http",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · http"
+        },
+        {
+          "id": "ai.tool.sql@r1",
+          "name": "sql",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · sql"
+        },
+        {
+          "id": "ai.tool.python@r1",
+          "name": "python",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · python"
+        },
+        {
+          "id": "ai.tool.files@r1",
+          "name": "files",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · files"
+        },
+        {
+          "id": "ai.tool.calendar@r1",
+          "name": "calendar",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · calendar"
+        },
+        {
+          "id": "ai.tool.email@r1",
+          "name": "email",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · email"
+        }
+      ]
+    },
+    {
+      "id": "ai.mcp",
+      "name": "ai.mcp",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "MCP server/client 连接 · 示例：github / slack / notion / database / filesystem",
+      "instances": [
+        {
+          "id": "ai.mcp.github@r1",
+          "name": "github",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · github"
+        },
+        {
+          "id": "ai.mcp.slack@r1",
+          "name": "slack",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · slack"
+        },
+        {
+          "id": "ai.mcp.notion@r1",
+          "name": "notion",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · notion"
+        },
+        {
+          "id": "ai.mcp.database@r1",
+          "name": "database",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · database"
+        },
+        {
+          "id": "ai.mcp.filesystem@r1",
+          "name": "filesystem",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · filesystem"
+        }
+      ]
+    },
+    {
+      "id": "ai.sandbox",
+      "name": "ai.sandbox",
+      "group": "推理与行动",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "隔离执行环境 · 示例：python / shell / browser",
+      "instances": [
+        {
+          "id": "ai.sandbox.python@r1",
+          "name": "python",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · python"
+        },
+        {
+          "id": "ai.sandbox.shell@r1",
+          "name": "shell",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · shell"
+        },
+        {
+          "id": "ai.sandbox.browser@r1",
+          "name": "browser",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · browser"
+        }
+      ]
+    },
+    {
+      "id": "ai.structured-output",
+      "name": "ai.structured-output",
+      "group": "输出与信任",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "schema 约束输出 · 示例：invoice / ticket / contract / resume / event",
+      "instances": [
+        {
+          "id": "ai.structured-output.invoice@r1",
+          "name": "invoice",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · invoice"
+        },
+        {
+          "id": "ai.structured-output.ticket@r1",
+          "name": "ticket",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · ticket"
+        },
+        {
+          "id": "ai.structured-output.contract@r1",
+          "name": "contract",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · contract"
+        },
+        {
+          "id": "ai.structured-output.resume@r1",
+          "name": "resume",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · resume"
+        },
+        {
+          "id": "ai.structured-output.event@r1",
+          "name": "event",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · event"
+        }
+      ]
+    },
+    {
+      "id": "ai.citation",
+      "name": "ai.citation",
+      "group": "输出与信任",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "引用/归因/来源 · 示例：docs / web / database",
+      "instances": [
+        {
+          "id": "ai.citation.docs@r1",
+          "name": "docs",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · docs"
+        },
+        {
+          "id": "ai.citation.web@r1",
+          "name": "web",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · web"
+        },
+        {
+          "id": "ai.citation.database@r1",
+          "name": "database",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · database"
+        }
+      ]
+    },
+    {
+      "id": "ai.clarify",
+      "name": "ai.clarify",
+      "group": "输出与信任",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "澄清/确认/消歧 · 示例：missing-slot / ambiguous-intent / risky-action",
+      "instances": [
+        {
+          "id": "ai.clarify.missing-slot@r1",
+          "name": "missing-slot",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · missing-slot"
+        },
+        {
+          "id": "ai.clarify.ambiguous-intent@r1",
+          "name": "ambiguous-intent",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · ambiguous-intent"
+        },
+        {
+          "id": "ai.clarify.risky-action@r1",
+          "name": "risky-action",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · risky-action"
+        }
+      ]
+    },
+    {
+      "id": "ai.guardrail",
+      "name": "ai.guardrail",
+      "group": "输出与信任",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "输入/输出/工具护栏 · 示例：pii / prompt-injection / toxicity / tool-permission / output-schema",
+      "instances": [
+        {
+          "id": "ai.guardrail.pii@r1",
+          "name": "pii",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · pii"
+        },
+        {
+          "id": "ai.guardrail.prompt-injection@r1",
+          "name": "prompt-injection",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · prompt-injection"
+        },
+        {
+          "id": "ai.guardrail.toxicity@r1",
+          "name": "toxicity",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · toxicity"
+        },
+        {
+          "id": "ai.guardrail.tool-permission@r1",
+          "name": "tool-permission",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool-permission"
+        },
+        {
+          "id": "ai.guardrail.output-schema@r1",
+          "name": "output-schema",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · output-schema"
+        }
+      ]
+    },
+    {
+      "id": "ai.human-approval",
+      "name": "ai.human-approval",
+      "group": "输出与信任",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "人工审批/中断/恢复 · 示例：high-risk / tool-call / publish / payment",
+      "instances": [
+        {
+          "id": "ai.human-approval.high-risk@r1",
+          "name": "high-risk",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · high-risk"
+        },
+        {
+          "id": "ai.human-approval.tool-call@r1",
+          "name": "tool-call",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool-call"
+        },
+        {
+          "id": "ai.human-approval.publish@r1",
+          "name": "publish",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · publish"
+        },
+        {
+          "id": "ai.human-approval.payment@r1",
+          "name": "payment",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · payment"
+        }
+      ]
+    },
+    {
+      "id": "ai.policy",
+      "name": "ai.policy",
+      "group": "输出与信任",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "租户/数据驻留/模型白名单/保留 · 示例：tenant / data-residency / model-allowlist / retention",
+      "instances": [
+        {
+          "id": "ai.policy.tenant@r1",
+          "name": "tenant",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tenant"
+        },
+        {
+          "id": "ai.policy.data-residency@r1",
+          "name": "data-residency",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · data-residency"
+        },
+        {
+          "id": "ai.policy.model-allowlist@r1",
+          "name": "model-allowlist",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · model-allowlist"
+        },
+        {
+          "id": "ai.policy.retention@r1",
+          "name": "retention",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · retention"
+        }
+      ]
+    },
+    {
+      "id": "ai.tracer",
+      "name": "ai.tracer",
+      "group": "运维与学习",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "LLM/工具/agent 调用追踪 · 示例：llm / tool / agent / otel",
+      "instances": [
+        {
+          "id": "ai.tracer.llm@r1",
+          "name": "llm",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · llm"
+        },
+        {
+          "id": "ai.tracer.tool@r1",
+          "name": "tool",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool"
+        },
+        {
+          "id": "ai.tracer.agent@r1",
+          "name": "agent",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · agent"
+        },
+        {
+          "id": "ai.tracer.otel@r1",
+          "name": "otel",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · otel"
+        }
+      ]
+    },
+    {
+      "id": "ai.evaluator",
+      "name": "ai.evaluator",
+      "group": "运维与学习",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "数据集/grader/指标 · 示例：answer-quality / tool-correctness / safety / cost / latency",
+      "instances": [
+        {
+          "id": "ai.evaluator.answer-quality@r1",
+          "name": "answer-quality",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · answer-quality"
+        },
+        {
+          "id": "ai.evaluator.tool-correctness@r1",
+          "name": "tool-correctness",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · tool-correctness"
+        },
+        {
+          "id": "ai.evaluator.safety@r1",
+          "name": "safety",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · safety"
+        },
+        {
+          "id": "ai.evaluator.cost@r1",
+          "name": "cost",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · cost"
+        },
+        {
+          "id": "ai.evaluator.latency@r1",
+          "name": "latency",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · latency"
+        }
+      ]
+    },
+    {
+      "id": "ai.feedback",
+      "name": "ai.feedback",
+      "group": "运维与学习",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "点赞/纠正/排序/标注 · 示例：thumbs / correction / ranking / annotation",
+      "instances": [
+        {
+          "id": "ai.feedback.thumbs@r1",
+          "name": "thumbs",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · thumbs"
+        },
+        {
+          "id": "ai.feedback.correction@r1",
+          "name": "correction",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · correction"
+        },
+        {
+          "id": "ai.feedback.ranking@r1",
+          "name": "ranking",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · ranking"
+        },
+        {
+          "id": "ai.feedback.annotation@r1",
+          "name": "annotation",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · annotation"
+        }
+      ]
+    },
+    {
+      "id": "ai.experiment",
+      "name": "ai.experiment",
+      "group": "运维与学习",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "L1",
+      "priority": "P1",
+      "summary": "prompt/model/retriever A/B · 示例：prompt-ab / model-ab / retriever-ab",
+      "instances": [
+        {
+          "id": "ai.experiment.prompt-ab@r1",
+          "name": "prompt-ab",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · prompt-ab"
+        },
+        {
+          "id": "ai.experiment.model-ab@r1",
+          "name": "model-ab",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · model-ab"
+        },
+        {
+          "id": "ai.experiment.retriever-ab@r1",
+          "name": "retriever-ab",
+          "rev": 1,
+          "status": "active",
+          "detail": "运维与学习 · retriever-ab"
+        }
+      ]
+    }
+  ]
+};
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const deep = o => JSON.parse(JSON.stringify(o));
+let FIELD_CLASSES = deep(FIELD_DATA.classes);
+let AI_CLASSES = deep(AI_DATA.classes);
+const DEFAULT_POLICY = { autonomyCeiling: 'A2', confidenceThreshold: 0.6, privacy: 'redact', fallback: 'rules', requireEvidence: true, requireUndo: true, explain: true };
+let POLICY = { ...DEFAULT_POLICY };
+let RUNS = [
+  { id: 'run-0001', mode: 'field', classId: 'field.prefill', instId: 'field.prefill.ocr-language@r1', output: 'ocr.language = zh', confidence: 0.84, decision: 'A1 draft', latency: 42, status: 'ok', evidence: ['selected_text', 'app', 'recent_actions'], model: 'local/rules' },
+  { id: 'run-0002', mode: 'field', classId: 'field.guard', instId: 'field.guard.risk@r1', output: 'L2 · require approval', confidence: 0.91, decision: 'A0 ask', latency: 18, status: 'ok', evidence: ['draft', 'permission'], model: 'rules' },
+  { id: 'run-0003', mode: 'ai', classId: 'ai.agent', instId: 'ai.agent.researcher@r1', output: 'research plan draft', confidence: 0.77, decision: 'A1 draft', latency: 1240, status: 'ok', evidence: ['web_search', 'docs'], model: 'cloud/claude' },
+  { id: 'run-0004', mode: 'field', classId: 'field.diagnose', instId: 'field.diagnose.flow-failure@r1', output: 'cause: selector changed', confidence: 0.68, decision: 'A1 patch draft', latency: 220, status: 'warn', evidence: ['run_trace', 'uia_tree'], model: 'reasoning' }
+];
+const STORAGE = 'baiying.fieldManager.v1';
+try { const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null'); if (saved) { if (Array.isArray(saved.fieldClasses) && saved.fieldClasses.length) FIELD_CLASSES = saved.fieldClasses; if (Array.isArray(saved.aiClasses) && saved.aiClasses.length) AI_CLASSES = saved.aiClasses; if (Array.isArray(saved.runs)) RUNS = saved.runs; if (saved.policy) POLICY = { ...DEFAULT_POLICY, ...saved.policy }; } } catch (_) {}
+const FAMILIES = ['perceive', 'understand', 'generate', 'evolve', 'govern'];
+const state = { mode: 'field', fieldClassId: FIELD_CLASSES[0]?.id || '', fieldInstId: FIELD_CLASSES[0]?.instances[0]?.id || '', aiClassId: AI_CLASSES[0]?.id || '', aiInstId: AI_CLASSES[0]?.instances[0]?.id || '', runId: RUNS[0]?.id || '', query: '', filter: 'all', toastTimer: null };
+const fieldClass = () => FIELD_CLASSES.find(c => c.id === state.fieldClassId) || FIELD_CLASSES[0];
+const fieldInst = () => fieldClass()?.instances.find(i => i.id === state.fieldInstId) || fieldClass()?.instances[0] || null;
+const aiClass = () => AI_CLASSES.find(c => c.id === state.aiClassId) || AI_CLASSES[0];
+const aiInst = () => aiClass()?.instances.find(i => i.id === state.aiInstId) || aiClass()?.instances[0] || null;
+const activeClass = () => state.mode === 'ai' ? aiClass() : fieldClass();
+const activeInst = () => state.mode === 'ai' ? aiInst() : fieldInst();
+const run = () => RUNS.find(r => r.id === state.runId) || RUNS[0] || null;
+const allInstances = list => list.reduce((n, c) => n + c.instances.length, 0);
+function saveData() { try { localStorage.setItem(STORAGE, JSON.stringify({ fieldClasses: FIELD_CLASSES, aiClasses: AI_CLASSES, runs: RUNS, policy: POLICY, savedAt: new Date().toISOString() })); } catch (_) {} }
+function showToast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => t.classList.remove('show'), 1800); }
+function ensureSelection() { if (!FIELD_CLASSES.some(c => c.id === state.fieldClassId)) state.fieldClassId = FIELD_CLASSES[0]?.id || ''; if (!fieldClass()?.instances.some(i => i.id === state.fieldInstId)) state.fieldInstId = fieldClass()?.instances[0]?.id || ''; if (!AI_CLASSES.some(c => c.id === state.aiClassId)) state.aiClassId = AI_CLASSES[0]?.id || ''; if (!aiClass()?.instances.some(i => i.id === state.aiInstId)) state.aiInstId = aiClass()?.instances[0]?.id || ''; }
+function updateHash() { const h = `#${state.mode}/${encodeURIComponent(state.mode === 'ai' ? state.aiClassId : state.fieldClassId)}`; if (location.hash !== h) history.replaceState(null, '', h); }
+function parseHash() { const parts = (location.hash || '').replace(/^#/, '').split('/').map(decodeURIComponent).filter(Boolean); if (['field', 'ai', 'runs', 'policy'].includes(parts[0])) state.mode = parts[0]; if (state.mode === 'field' && parts[1] && FIELD_CLASSES.some(c => c.id === parts[1])) state.fieldClassId = parts[1]; if (state.mode === 'ai' && parts[1] && AI_CLASSES.some(c => c.id === parts[1])) state.aiClassId = parts[1]; ensureSelection(); }
+function renderTopStats() {
+  const f0 = FIELD_CLASSES.filter(c => c.autonomy === 'A0').length, f1 = FIELD_CLASSES.filter(c => c.autonomy === 'A1').length, f2 = FIELD_CLASSES.filter(c => c.autonomy === 'A2').length;
+  $('#topStats').innerHTML = `<span class="mini violet">${FIELD_CLASSES.length} FieldClass</span><span class="mini cyan">${allInstances(FIELD_CLASSES)} FieldInstance</span><span class="mini green">${AI_CLASSES.length} AIClass</span><span class="mini">${allInstances(AI_CLASSES)} AIInstance</span><span class="mini amber">${f0}/${f1}/${f2} A0/A1/A2</span>`;
+  $('#viewStats').innerHTML = `<span class="mini">${RUNS.length} runs</span><span class="mini">${POLICY.autonomyCeiling} ceiling</span><span class="mini">conf ≥ ${POLICY.confidenceThreshold}</span><span class="mini">${POLICY.privacy}</span>`;
+}
+function renderViewTabs() {
+  const tabs = [['field', 'Field', `${FIELD_CLASSES.length}/${allInstances(FIELD_CLASSES)}`], ['ai', 'AI', `${AI_CLASSES.length}/${allInstances(AI_CLASSES)}`], ['runs', 'Runs', `${RUNS.length}`], ['policy', 'Policy', POLICY.autonomyCeiling]];
+  $('#viewTabs').innerHTML = tabs.map(([id, label, count]) => `<button data-view="${id}" class="${state.mode === id ? 'on' : ''}">${label}<span>${count}</span></button>`).join('');
+}
+function filteredClasses(list) {
+  const q = state.query.trim().toLowerCase();
+  return list.filter(c => {
+    if (state.filter !== 'all' && (state.mode === 'field' ? c.family : c.group) !== state.filter) return false;
+    if (!q) return true;
+    return [c.id, c.name, c.summary, c.family, c.group, ...c.instances.map(i => i.id + ' ' + i.name + ' ' + i.detail)].join(' ').toLowerCase().includes(q);
+  });
+}
+function renderLeft() {
+  if (state.mode === 'runs') return renderRunLeft();
+  if (state.mode === 'policy') return renderPolicyLeft();
+  const isAI = state.mode === 'ai';
+  const list = isAI ? AI_CLASSES : FIELD_CLASSES;
+  const c = activeClass(), instList = c?.instances || [];
+  const chips = isAI ? [...new Set(list.map(x => x.group))] : FAMILIES;
+  const shown = filteredClasses(list);
+  $('#leftPane').innerHTML = `<div class="pane-head"><b>${isAI ? 'AIClass · AI 基座' : 'FieldClass · 场层类'}</b><span class="count">${list.length}</span><button data-action="new-class" title="新建">＋</button></div><input class="panel-search" id="fieldSearch" placeholder="搜索 class / instance / summary…" value="${esc(state.query)}"><div class="fi-meta" style="margin-bottom:5px"><button class="tab-mini ${state.filter === 'all' ? 'on' : ''}" data-filter="all">全部</button>${chips.map(x => `<button class="tab-mini ${state.filter === x ? 'on' : ''}" data-filter="${esc(x)}">${esc(x)}</button>`).join('')}</div>
+    ${shown.map(x => `<div class="flow-item ${x.id === c?.id ? 'on' : ''}" data-class="${esc(x.id)}"><div class="fi-top"><span class="fi-name">${isAI ? '✦' : '✧'} ${esc(x.name)}</span><span class="fi-ver">${x.instances.length}</span></div><div class="fi-id">${esc(x.id)}</div><div class="fi-meta"><span class="fi-badge">${esc(isAI ? x.group : x.family)}</span>${isAI ? `<span class="fi-badge">${esc(x.effect)}</span>` : `<span class="autonomy ${esc(x.autonomy)}">${esc(x.autonomy)}</span>`}<span class="fi-badge">${esc(x.priority)}</span></div></div>`).join('') || '<div class="empty">没有匹配项。</div>'}
+    <div class="pane-head" style="margin-top:10px"><b>${isAI ? 'AIInstance' : 'FieldInstance'} · 实例</b><span class="count">${instList.length}</span><button data-action="new-instance" title="新建实例">＋</button></div>
+    ${instList.map(i => `<div class="inst-item ${i.id === (isAI ? state.aiInstId : state.fieldInstId) ? 'on' : ''}" data-inst="${esc(i.id)}"><div class="ii-top"><span class="ii-name">${esc(i.name)}</span><span class="ii-rev">r${i.rev}</span></div><div class="ii-id">${esc(i.detail)}</div><span class="ii-status">${esc(i.status)}</span></div>`).join('') || '<div class="empty">暂无实例</div>'}
+    <div style="margin-top:10px"><button class="btn" style="width:100%;justify-content:center" data-action="reset-data">↺ 重置示例数据</button></div>`;
+  const search = $('#fieldSearch'); if (search) search.addEventListener('input', e => { state.query = e.target.value; renderLeft(); });
+  $$('#leftPane [data-class]').forEach(el => el.onclick = () => { if (isAI) { state.aiClassId = el.dataset.class; state.aiInstId = aiClass().instances[0]?.id || ''; } else { state.fieldClassId = el.dataset.class; state.fieldInstId = fieldClass().instances[0]?.id || ''; } updateHash(); renderAll(); });
+  $$('#leftPane [data-inst]').forEach(el => el.onclick = () => { if (isAI) state.aiInstId = el.dataset.inst; else state.fieldInstId = el.dataset.inst; updateHash(); renderAll(); });
+  $$('#leftPane [data-filter]').forEach(b => b.onclick = () => { state.filter = b.dataset.filter; renderLeft(); });
+  $$('#leftPane [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function renderRunLeft() {
+  $('#leftPane').innerHTML = `<div class="pane-head"><b>FieldRun / AIRun</b><span class="count">${RUNS.length}</span><button data-action="new-run" title="新建模拟运行">＋</button></div>${RUNS.map(r => `<div class="run-row ${r.id === state.runId ? 'on' : ''}" data-run="${esc(r.id)}"><span class="run-status ${r.status === 'warn' ? 'warn' : r.status === 'error' ? 'error' : ''}"></span><div class="run-main"><div class="run-name">${esc(r.classId)} · ${esc(r.instId)}</div><div class="run-meta">${esc(r.decision)} · ${r.latency}ms · ${esc(r.model)}</div></div><span class="mini">${Math.round(r.confidence * 100)}%</span></div>`).join('') || '<div class="empty">暂无运行记录</div>'}`;
+  $$('#leftPane [data-run]').forEach(el => el.onclick = () => { state.runId = el.dataset.run; renderAll(); });
+  $$('#leftPane [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function renderPolicyLeft() {
+  $('#leftPane').innerHTML = `<div class="pane-head"><b>Field Policy</b><span class="count">A0–A2</span></div><div class="flow-item on"><div class="fi-top"><span class="fi-name">自主度 / 置信度</span></div><div class="fi-id">autonomyCeiling · confidenceThreshold</div></div><div class="flow-item"><div class="fi-top"><span class="fi-name">隐私 / 回退</span></div><div class="fi-id">privacy · fallback</div></div><div class="flow-item"><div class="fi-top"><span class="fi-name">证据 / 撤销 / 解释</span></div><div class="fi-id">evidence · undo · explain</div></div>`; }
+const LANDING_META = {
+  point: { label: 'Point', href: 'atom-catalog-management.html' },
+  line: { label: 'Line', href: 'line-management.html' },
+  surface: { label: 'Surface', href: 'surface-management.html' },
+  body: { label: 'Body', href: 'body-management.html' }
+};
+function landingItems(landing) {
+  return String(landing || '').toLowerCase() === 'all' ? ['point', 'line', 'surface', 'body'] : String(landing || '').split('/').map(s => s.trim()).filter(Boolean);
+}
+function landingHTML(landing) {
+  const items = landingItems(landing);
+  return `<div class="landing-group">${items.map(x => { const m = LANDING_META[x]; return m ? `<a class="landing-chip mapped" href="${m.href}">${m.label} ↗</a>` : `<span class="landing-chip ph">${esc(x)} ·ph</span>`; }).join('') || '<span class="landing-chip ph">no landing</span>'}</div>`;
+}
+function aiConfig(c, i) {
+  return { provider: c.config?.provider || (String(c.id).includes('model') ? 'local' : 'auto'), model: c.config?.model || (String(c.id).includes('agent') ? 'reasoning' : String(c.id).includes('model') ? 'fast' : 'router'), prompt: c.config?.prompt || c.summary, tools: c.config?.tools || (String(c.id).includes('agent') ? 'web_search, file_read, code' : '—'), guardrails: c.config?.guardrails || 'pii, permission, confidence' };
+}
+function renderFieldMain() {
+  const c = fieldClass(), i = fieldInst();
+  if (!c) { $('#main').innerHTML = '<div class="empty">没有 FieldClass。</div>'; return; }
+  $('#main').innerHTML = `<div class="hero"><div class="hero-icon" style="color:#c4b5fd">✧</div><div class="hero-main"><div class="kicker">FieldClass · ${esc(c.family)}</div><h1>${esc(c.name)}</h1><p>${esc(c.summary)}</p></div><div class="hero-actions"><button class="btn" data-action="edit-class">✎ 编辑</button><button class="btn primary" data-action="new-instance">＋ 实例</button><button class="btn" data-action="run-instance">▶ 运行</button><button class="btn danger" data-action="delete-class">⌫ 删除</button></div></div>
+    <div class="stats"><span class="autonomy ${esc(c.autonomy)}">${esc(c.autonomy)}</span><span class="mini">${esc(c.family)}</span><span class="mini cyan">${esc(c.output)}</span><span class="mini">${esc(c.landing)}</span><span class="mini">${c.instances.length} instances</span><span class="mini">v${esc(c.version)}</span>${i ? `<span class="mini amber">${esc(i.name)} · r${i.rev}</span>` : ''}</div>
+    <div class="field-visual"><div class="field-chain"><div class="field-core"><div class="fc-i">✧</div><div class="fc-n">${esc(c.name)}</div><div class="fc-id">${esc(c.id)} · ${esc(c.autonomy)}</div></div><span class="field-arrow">→</span>${landingHTML(c.landing)}<span class="field-arrow">→</span><div class="field-output">${esc(c.output)}</div></div></div>
+    <div class="sec-head"><b>Field Contract</b><span class="right"><span class="mini">${esc(c.id)}</span></span></div><div class="bind-panel"><div style="padding:7px 8px"><div class="kv" style="display:grid;grid-template-columns:70px 1fr;gap:4px;font:7px var(--mono)"><div class="k" style="color:#5f7188">family</div><div class="v">${esc(c.family)}</div><div class="k" style="color:#5f7188">output</div><div class="v">${esc(c.output)}</div><div class="k" style="color:#5f7188">landing</div><div class="v">${esc(c.landing)}</div><div class="k" style="color:#5f7188">autonomy</div><div class="v">${esc(c.autonomy)}</div><div class="k" style="color:#5f7188">priority</div><div class="v">${esc(c.priority)}</div><div class="k" style="color:#5f7188">version</div><div class="v">${esc(c.version)}</div></div></div></div>
+    <div class="sec-head" style="margin-top:8px"><b>FieldInstance · ${c.instances.length}</b><span class="right"><button class="btn small" data-action="new-instance">＋ 新建实例</button></span></div><div class="instance-grid">${c.instances.map(x => `<div class="instance-card ${x.id === state.fieldInstId ? 'on' : ''}" data-inst-card="${esc(x.id)}"><div class="ic-top"><span class="ic-name">${esc(x.name)}</span><span class="ic-rev">r${x.rev}</span></div><div class="ic-desc">${esc(x.detail)}</div><div class="ic-meta"><span class="ic-badge ${x.status === 'active' ? 'on' : ''}">${esc(x.status)}</span><span class="ic-badge">${esc(c.autonomy)}</span><span class="ic-badge">${esc(c.family)}</span></div></div>`).join('') || '<div class="empty">暂无实例</div>'}</div>`;
+  bindMain();
+}
+function renderAIMain() {
+  const c = aiClass(), i = aiInst();
+  if (!c) { $('#main').innerHTML = '<div class="empty">没有 AIClass。</div>'; return; }
+  const cfg = aiConfig(c, i);
+  $('#main').innerHTML = `<div class="hero"><div class="hero-icon" style="color:#c4b5fd">✦</div><div class="hero-main"><div class="kicker">AIClass · ${esc(c.group)}</div><h1>${esc(c.name)}</h1><p>${esc(c.summary)}</p></div><div class="hero-actions"><button class="btn" data-action="edit-class">✎ 编辑</button><button class="btn primary" data-action="new-instance">＋ 实例</button><button class="btn" data-action="run-instance">▶ 运行</button><button class="btn danger" data-action="delete-class">⌫ 删除</button></div></div>
+    <div class="stats"><span class="mini violet">${esc(c.group)}</span><span class="mini">${esc(c.effect)}</span><span class="mini">${esc(c.priority)}</span><span class="mini cyan">${c.instances.length} instances</span><span class="mini">v${esc(c.version)}</span>${i ? `<span class="mini amber">${esc(i.name)} · r${i.rev}</span>` : ''}</div>
+    <div class="sec-head"><b>AI Substrate · 模型/提示/工具/护栏</b><span class="right"><span class="mini">${esc(cfg.provider)} / ${esc(cfg.model)}</span></span></div><div class="ai-stack"><div class="ai-layer provider"><span class="al-k">Provider</span><span class="al-v">${esc(cfg.provider)} / ${esc(cfg.model)} · local/cloud fallback</span></div><div class="ai-layer prompt"><span class="al-k">Prompt</span><span class="al-v">${esc(cfg.prompt)}</span></div><div class="ai-layer tools"><span class="al-k">Tools</span><span class="al-v">${esc(cfg.tools)}</span></div><div class="ai-layer guard"><span class="al-k">Guardrails</span><span class="al-v">${esc(cfg.guardrails)}</span></div><div class="ai-layer output"><span class="al-k">Output</span><span class="al-v">${esc(c.summary)}</span></div></div>
+    <div class="sec-head" style="margin-top:8px"><b>AIInstance · ${c.instances.length}</b><span class="right"><button class="btn small" data-action="new-instance">＋ 新建实例</button></span></div><div class="instance-grid">${c.instances.map(x => `<div class="instance-card ${x.id === state.aiInstId ? 'on' : ''}" data-inst-card="${esc(x.id)}"><div class="ic-top"><span class="ic-name">${esc(x.name)}</span><span class="ic-rev">r${x.rev}</span></div><div class="ic-desc">${esc(x.detail)}</div><div class="ic-meta"><span class="ic-badge ${x.status === 'active' ? 'on' : ''}">${esc(x.status)}</span><span class="ic-badge">${esc(c.group)}</span><span class="ic-badge">${esc(c.effect)}</span></div></div>`).join('') || '<div class="empty">暂无实例</div>'}</div>`;
+  bindMain();
+}
+function bindMain() {
+  $$('#main [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+  $$('#main [data-inst-card]').forEach(el => el.onclick = () => { if (state.mode === 'ai') state.aiInstId = el.dataset.instCard; else state.fieldInstId = el.dataset.instCard; updateHash(); renderAll(); });
+}
+function renderRunMain() {
+  const r = run();
+  if (!r) { $('#main').innerHTML = '<div class="empty">暂无运行记录。</div>'; return; }
+  const pct = Math.round(r.confidence * 100);
+  $('#main').innerHTML = `<div class="hero"><div class="hero-icon" style="color:#22d3ee">▶</div><div class="hero-main"><div class="kicker">FieldRun / AIRun</div><h1>${esc(r.id)} · ${esc(r.classId)}</h1><p>${esc(r.instId)} · ${esc(r.decision)} · ${esc(r.model)}</p></div><div class="hero-actions"><button class="btn primary" data-action="new-run">＋ 模拟运行</button></div></div><div class="stats"><span class="mini ${r.status === 'ok' ? 'green' : 'amber'}">${esc(r.status)}</span><span class="mini">${esc(r.mode)}</span><span class="mini">${r.latency} ms</span><span class="mini">confidence ${pct}%</span><span class="mini">${esc(r.decision)}</span></div>
+    <div class="sec-head"><b>Run Result</b><span class="right"><span class="mini">${esc(r.model)}</span></span></div><div class="bind-panel"><div style="padding:8px"><div style="font:8px var(--mono);color:#a5f3fc;margin-bottom:5px">output</div><div style="border:1px solid var(--line);border-radius:5px;background:#08111b;padding:7px;font:7px var(--mono);color:#b9c7da;line-height:1.6">${esc(r.output)}</div><div style="display:flex;align-items:center;gap:6px;margin-top:8px"><span class="mini">confidence</span><div class="confidence ${pct < 60 ? 'bad' : pct < 75 ? 'low' : ''}" style="width:150px"><i style="width:${pct}%"></i></div><b style="font:8px var(--mono);color:#dbeafe">${pct}%</b><span class="mini">${esc(r.decision)}</span></div><div class="sec-head" style="margin-top:8px"><b>Evidence</b></div><div class="wire-chips">${(r.evidence || []).map(x => `<span class="wire-chip cyan">${esc(x)}</span>`).join('')}</div></div></div>
+    <div class="sec-head" style="margin-top:8px"><b>Run History</b><span class="right"><span class="mini">${RUNS.length} records</span></span></div><div class="bind-panel"><div class="table-wrap"><table><thead><tr><th>Run</th><th>Mode</th><th>Class</th><th>Decision</th><th>Confidence</th><th>Latency</th><th>Status</th></tr></thead><tbody>${RUNS.map(x => `<tr class="tr-node ${x.id === r.id ? 'on' : ''}" data-run-row="${esc(x.id)}"><td class="mono">${esc(x.id)}</td><td><span class="kind-badge ${x.mode === 'ai' ? 'line' : 'point'}">${esc(x.mode)}</span></td><td class="mono">${esc(x.classId)}</td><td class="mono">${esc(x.decision)}</td><td class="mono">${Math.round(x.confidence * 100)}%</td><td class="mono">${x.latency}ms</td><td class="mono">${esc(x.status)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  $$('#main [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+  $$('#main [data-run-row]').forEach(el => el.onclick = () => { state.runId = el.dataset.runRow; renderAll(); });
+}
+function renderPolicyMain() {
+  const a0 = FIELD_CLASSES.filter(c => c.autonomy === 'A0').length, a1 = FIELD_CLASSES.filter(c => c.autonomy === 'A1').length, a2 = FIELD_CLASSES.filter(c => c.autonomy === 'A2').length;
+  $('#main').innerHTML = `<div class="hero"><div class="hero-icon" style="color:#f59e0b">⚖</div><div class="hero-main"><div class="kicker">Field Policy · 场层治理</div><h1>自主度与信任边界</h1><p>A0 只建议 / A1 草稿需批准 / A2 自动应用可撤销。A3 全自动禁止。</p></div><div class="hero-actions"><button class="btn primary" data-action="save-policy">保存策略</button></div></div><div class="stats"><span class="mini">${a0} A0</span><span class="mini">${a1} A1</span><span class="mini">${a2} A2</span><span class="mini">${RUNS.length} runs</span><span class="mini">threshold ${POLICY.confidenceThreshold}</span></div>
+    <div class="policy-grid"><div class="policy-card"><label>autonomy ceiling</label><select id="policyAutonomy">${['A0', 'A1', 'A2'].map(x => `<option value="${x}" ${POLICY.autonomyCeiling === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="policy-card"><label>confidence threshold</label><input id="policyThreshold" type="number" min="0" max="1" step="0.05" value="${POLICY.confidenceThreshold}"></div><div class="policy-card"><label>privacy</label><select id="policyPrivacy">${['redact', 'block', 'allow'].map(x => `<option value="${x}" ${POLICY.privacy === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="policy-card"><label>fallback</label><select id="policyFallback">${['rules', 'ask', 'off'].map(x => `<option value="${x}" ${POLICY.fallback === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="policy-card"><label class="chk"><input type="checkbox" id="policyEvidence" ${POLICY.requireEvidence ? 'checked' : ''}> require evidence</label></div><div class="policy-card"><label class="chk"><input type="checkbox" id="policyUndo" ${POLICY.requireUndo ? 'checked' : ''}> require undo</label></div><div class="policy-card"><label class="chk"><input type="checkbox" id="policyExplain" ${POLICY.explain ? 'checked' : ''}> explain every suggestion</label></div></div>
+    <div class="sec-head"><b>Autonomy Matrix</b></div><div class="policy-grid"><div class="policy-card"><label>A0 · suggest only</label><div class="mini">只读建议；无写入；无需 undo</div></div><div class="policy-card"><label>A1 · draft + approve</label><div class="mini">生成草稿；必须人工批准</div></div><div class="policy-card"><label>A2 · apply + undo</label><div class="mini">自动应用；必须有 undoToken</div></div><div class="policy-card"><label>A3 · forbidden</label><div class="mini" style="color:#fca5a5">全自动执行禁止</div></div></div>`;
+  $$('#main [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function renderMain() {
+  if (state.mode === 'field') renderFieldMain();
+  else if (state.mode === 'ai') renderAIMain();
+  else if (state.mode === 'runs') renderRunMain();
+  else renderPolicyMain();
+}
+function renderInspector() {
+  if (state.mode === 'runs') return renderRunInspector();
+  if (state.mode === 'policy') return renderPolicyInspector();
+  const c = activeClass(), i = activeInst();
+  if (!c) { $('#inspector').innerHTML = '<div class="empty">选择类。</div>'; return; }
+  const isAI = state.mode === 'ai';
+  $('#inspector').innerHTML = `<div class="insp-kicker">${isAI ? 'AIClass' : 'FieldClass'} · ${isAI ? esc(c.group) : esc(c.family)}</div><div class="insp-title">${isAI ? '✦' : '✧'} ${esc(c.name)}</div><div class="insp-id">${esc(c.id)} · v${esc(c.version)}</div>
+    <div class="insp-section"><div class="lh">Contract</div><div class="kv">${isAI ? `<div class="k">group</div><div class="v">${esc(c.group)}</div><div class="k">effect</div><div class="v">${esc(c.effect)}</div>` : `<div class="k">family</div><div class="v">${esc(c.family)}</div><div class="k">output</div><div class="v">${esc(c.output)}</div><div class="k">landing</div><div class="v">${esc(c.landing)}</div><div class="k">autonomy</div><div class="v">${esc(c.autonomy)}</div>`}<div class="k">priority</div><div class="v">${esc(c.priority)}</div><div class="k">instances</div><div class="v">${c.instances.length}</div></div></div>
+    <div class="insp-section"><div class="lh">Summary</div><div style="font-size:8px;line-height:1.55;color:#9fb1c8">${esc(c.summary)}</div></div>
+    ${i ? `<div class="insp-section"><div class="lh">Instance · ${esc(i.name)}</div><div class="kv"><div class="k">id</div><div class="v">${esc(i.id)}</div><div class="k">rev</div><div class="v">r${i.rev}</div><div class="k">status</div><div class="v">${esc(i.status)}</div><div class="k">detail</div><div class="v">${esc(i.detail)}</div></div><div class="actions" style="margin-top:5px"><button class="btn" data-action="run-instance">▶ 运行</button><button class="btn" data-action="edit-instance">✎ 编辑</button><button class="btn" data-action="duplicate-instance">⧉ 复制</button><button class="btn danger" data-action="delete-instance">⌫ 删除</button></div></div>` : ''}
+    <div class="insp-section"><div class="lh">Class Actions</div><div class="actions"><button class="btn" data-action="edit-class">✎ 编辑</button><button class="btn" data-action="new-instance">＋ 实例</button><button class="btn danger" data-action="delete-class">⌫ 删除</button></div></div>`;
+  $$('#inspector [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function renderRunInspector() {
+  const r = run(); if (!r) { $('#inspector').innerHTML = '<div class="empty">暂无运行记录。</div>'; return; }
+  const pct = Math.round(r.confidence * 100);
+  $('#inspector').innerHTML = `<div class="insp-kicker">Run Inspector</div><div class="insp-title">${esc(r.id)}</div><div class="insp-id">${esc(r.classId)} → ${esc(r.instId)}</div><div class="insp-section"><div class="lh">Result</div><div class="kv"><div class="k">mode</div><div class="v">${esc(r.mode)}</div><div class="k">decision</div><div class="v">${esc(r.decision)}</div><div class="k">confidence</div><div class="v">${pct}%</div><div class="k">latency</div><div class="v">${r.latency}ms</div><div class="k">model</div><div class="v">${esc(r.model)}</div><div class="k">status</div><div class="v">${esc(r.status)}</div></div></div><div class="insp-section"><div class="lh">Output</div><div style="font:7px var(--mono);color:#b9c7da;line-height:1.55">${esc(r.output)}</div></div><div class="insp-section"><div class="lh">Evidence</div><div class="wire-chips">${(r.evidence || []).map(x => `<span class="wire-chip cyan">${esc(x)}</span>`).join('')}</div></div><div class="insp-section"><div class="actions"><button class="btn" data-action="new-run">＋ 新运行</button></div></div>`; $$('#inspector [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function renderPolicyInspector() {
+  $('#inspector').innerHTML = `<div class="insp-kicker">Field Policy</div><div class="insp-title">治理摘要</div><div class="insp-id">A0–A2 · evidence · undo · explain</div><div class="insp-section"><div class="lh">Current</div><div class="kv"><div class="k">ceiling</div><div class="v">${esc(POLICY.autonomyCeiling)}</div><div class="k">threshold</div><div class="v">${POLICY.confidenceThreshold}</div><div class="k">privacy</div><div class="v">${esc(POLICY.privacy)}</div><div class="k">fallback</div><div class="v">${esc(POLICY.fallback)}</div><div class="k">evidence</div><div class="v">${POLICY.requireEvidence ? 'required' : 'optional'}</div><div class="k">undo</div><div class="v">${POLICY.requireUndo ? 'required' : 'optional'}</div><div class="k">explain</div><div class="v">${POLICY.explain ? 'required' : 'optional'}</div></div></div><div class="insp-section"><div class="lh">Principle</div><div class="note">可解释、可撤销、可退场。A3 全自动禁止；A2 必须有 undoToken。</div></div>`; }
+function renderAll() { renderTopStats(); renderViewTabs(); renderLeft(); renderMain(); renderInspector(); }
+function openModal(html) { $('#modalRoot').innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal">${html}</div></div>`; }
+function closeModal() { $('#modalRoot').innerHTML = ''; }
+function confirmModal(title, message, label, onConfirm) { openModal(`<h3>${esc(title)}</h3><p>${esc(message)}</p><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn danger" id="modalConfirm">${esc(label)}</button></div>`); $('#modalConfirm').onclick = () => { closeModal(); onConfirm(); }; }
+function openClassModal(edit = false) {
+  const isAI = state.mode === 'ai';
+  const c = edit ? activeClass() : null;
+  openModal(`<h3>${edit ? '编辑' : '新建'} ${isAI ? 'AIClass' : 'FieldClass'}</h3><p>${isAI ? 'AI 能力契约：模型/provider + prompt + tools + guardrails。' : 'Field 智能契约：输入/输出 + 落点 + 自主度上限。'}</p><div class="form-grid"><div class="field"><label>ID</label><input id="mClassId" value="${esc(c?.id || (isAI ? 'ai.custom' : 'field.custom'))}" ${edit ? 'disabled' : ''}></div><div class="field"><label>名称</label><input id="mClassName" value="${esc(c?.name || 'Custom')}"></div><div class="field"><label>version</label><input id="mClassVersion" value="${esc(c?.version || '0.1.0')}"></div><div class="field"><label>priority</label><select id="mClassPriority">${['P0', 'P1', 'P2'].map(x => `<option value="${x}" ${(c?.priority || 'P1') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field full"><label>summary</label><textarea id="mClassSummary">${esc(c?.summary || '')}</textarea></div>${isAI ? `<div class="field"><label>group</label><input id="mClassGroup" value="${esc(c?.group || '模型与提示')}"></div><div class="field"><label>effect</label><select id="mClassEffect">${['L0', 'L1', 'L2'].map(x => `<option value="${x}" ${(c?.effect || 'L1') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>provider</label><input id="mClassProvider" value="${esc(c?.config?.provider || 'local')}"></div><div class="field"><label>model</label><input id="mClassModel" value="${esc(c?.config?.model || 'fast')}"></div><div class="field full"><label>prompt</label><input id="mClassPrompt" value="${esc(c?.config?.prompt || '')}"></div><div class="field full"><label>tools</label><input id="mClassTools" value="${esc(c?.config?.tools || '')}"></div><div class="field full"><label>guardrails</label><input id="mClassGuards" value="${esc(c?.config?.guardrails || '')}"></div>` : `<div class="field"><label>family</label><select id="mClassFamily">${FAMILIES.map(x => `<option value="${x}" ${(c?.family || 'perceive') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>autonomy</label><select id="mClassAutonomy">${['A0', 'A1', 'A2'].map(x => `<option value="${x}" ${(c?.autonomy || 'A1') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>output</label><input id="mClassOutput" value="${esc(c?.output || 'suggestion')}"></div><div class="field"><label>landing</label><input id="mClassLanding" value="${esc(c?.landing || 'all')}"></div>`}</div><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="classSave">${edit ? '保存' : '创建'}</button></div>`);
+  $('#classSave').onclick = () => {
+    const id = $('#mClassId').value.trim(), name = $('#mClassName').value.trim(); if (!id || !name) { showToast('ID 和名称必填'); return; }
+    const list = isAI ? AI_CLASSES : FIELD_CLASSES;
+    if (!edit && list.some(x => x.id === id)) { showToast('ID 已存在'); return; }
+    const base = { id, name, version: $('#mClassVersion').value.trim() || '1.0.0', priority: $('#mClassPriority').value, status: c?.status || 'active', summary: $('#mClassSummary').value.trim() };
+    const data = isAI ? { ...base, group: $('#mClassGroup').value.trim() || '模型与提示', effect: $('#mClassEffect').value, config: { provider: $('#mClassProvider').value.trim() || 'local', model: $('#mClassModel').value.trim() || 'fast', prompt: $('#mClassPrompt').value.trim(), tools: $('#mClassTools').value.trim(), guardrails: $('#mClassGuards').value.trim() } } : { ...base, family: $('#mClassFamily').value, autonomy: $('#mClassAutonomy').value, output: $('#mClassOutput').value.trim() || 'suggestion', landing: $('#mClassLanding').value.trim() || 'all' };
+    if (edit) { Object.assign(c, data); showToast('已更新'); }
+    else { list.push({ ...data, instances: [] }); if (isAI) state.aiClassId = id; else state.fieldClassId = id; showToast('已创建'); }
+    saveData(); closeModal(); ensureSelection(); updateHash(); renderAll();
+  };
+}
+function openInstanceModal(edit = false) {
+  const isAI = state.mode === 'ai', c = activeClass(), i = edit ? activeInst() : null;
+  if (!c) return;
+  openModal(`<h3>${edit ? '编辑' : '新建'} ${isAI ? 'AIInstance' : 'FieldInstance'}</h3><p>${isAI ? 'AIInstance = AIClass + provider/model + 参数 + revision。' : 'FieldInstance = FieldClass + 作用域 + 输出绑定 + revision。'}</p><div class="form-grid"><div class="field"><label>name</label><input id="mInstName" value="${esc(i?.name || 'new-instance')}"></div><div class="field"><label>status</label><select id="mInstStatus">${['active', 'draft', 'archived'].map(x => `<option value="${x}" ${(i?.status || 'active') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>rev</label><input id="mInstRev" type="number" value="${i?.rev || 1}"></div><div class="field full"><label>detail</label><textarea id="mInstDetail">${esc(i?.detail || '')}</textarea></div>${isAI ? `<div class="field"><label>provider</label><input id="mInstProvider" value="${esc(i?.config?.provider || c.config?.provider || 'local')}"></div><div class="field"><label>model</label><input id="mInstModel" value="${esc(i?.config?.model || c.config?.model || 'fast')}"></div>` : `<div class="field"><label>scope</label><input id="mInstScope" value="${esc(i?.scope || 'global')}"></div><div class="field"><label>output</label><input id="mInstOutput" value="${esc(i?.output || c.output || '')}"></div>`}</div><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="instSave">${edit ? '保存新 revision' : '创建'}</button></div>`);
+  $('#instSave').onclick = () => {
+    const name = $('#mInstName').value.trim(); if (!name) { showToast('name 必填'); return; }
+    const data = { name, rev: edit ? (i.rev || 1) + 1 : Number($('#mInstRev').value) || 1, status: $('#mInstStatus').value, detail: $('#mInstDetail').value.trim() };
+    if (isAI) data.config = { provider: $('#mInstProvider').value.trim(), model: $('#mInstModel').value.trim() };
+    else { data.scope = $('#mInstScope').value.trim(); data.output = $('#mInstOutput').value.trim(); }
+    const id = edit ? i.id : `${c.id}.${name.replace(/\s+/g, '-')}@r1`; data.id = id; data.classId = c.id;
+    if (edit) Object.assign(i, data); else c.instances.push(data);
+    if (isAI) state.aiInstId = id; else state.fieldInstId = id;
+    saveData(); closeModal(); updateHash(); renderAll(); showToast(edit ? '实例已更新 · rev +1' : '实例已创建');
+  };
+}
+function newRun() {
+  const isAI = state.mode === 'ai';
+  const c = (state.mode === 'field' || state.mode === 'ai') ? activeClass() : (run()?.mode === 'ai' ? aiClass() : fieldClass());
+  const i = (state.mode === 'field' || state.mode === 'ai') ? activeInst() : (run()?.mode === 'ai' ? aiInst() : fieldInst());
+  if (!c) return;
+  const confidence = Math.round((0.55 + Math.random() * 0.4) * 100) / 100;
+  const decision = confidence < POLICY.confidenceThreshold ? 'A0 ask' : isAI ? 'A1 draft' : c.autonomy === 'A2' ? 'A2 apply + undo' : c.autonomy === 'A1' ? 'A1 draft' : 'A0 suggest';
+  const r = { id: `run-${String(Date.now()).slice(-6)}`, mode: isAI ? 'ai' : 'field', classId: c.id, instId: i?.id || c.id, output: isAI ? c.summary : c.output, confidence, decision, latency: Math.round(30 + Math.random() * 1500), status: confidence < POLICY.confidenceThreshold ? 'warn' : 'ok', evidence: isAI ? ['prompt', 'context', 'tools'] : ['context_snapshot', 'class_contract', 'landing'], model: isAI ? `${c.config?.provider || 'local'}/${c.config?.model || 'fast'}` : 'local/rules' };
+  RUNS.unshift(r); state.mode = 'runs'; state.runId = r.id; saveData(); updateHash(); renderAll(); showToast('已生成运行记录');
+}
+function savePolicy() {
+  POLICY = { autonomyCeiling: $('#policyAutonomy').value, confidenceThreshold: Number($('#policyThreshold').value) || 0.6, privacy: $('#policyPrivacy').value, fallback: $('#policyFallback').value, requireEvidence: $('#policyEvidence').checked, requireUndo: $('#policyUndo').checked, explain: $('#policyExplain').checked };
+  saveData(); renderAll(); showToast('Field Policy 已保存');
+}
+function handleAction(action) {
+  const c = activeClass(), i = activeInst();
+  if (action === 'new-class') { openClassModal(false); return; }
+  if (action === 'edit-class') { openClassModal(true); return; }
+  if (action === 'delete-class') { if (!c) return; confirmModal('删除类？', `会删除 ${c.id} 及其 ${c.instances.length} 个实例。`, '删除', () => { if (state.mode === 'ai') { AI_CLASSES = AI_CLASSES.filter(x => x.id !== c.id); state.aiClassId = AI_CLASSES[0]?.id || ''; } else { FIELD_CLASSES = FIELD_CLASSES.filter(x => x.id !== c.id); state.fieldClassId = FIELD_CLASSES[0]?.id || ''; } saveData(); ensureSelection(); updateHash(); renderAll(); showToast('类已删除'); }); return; }
+  if (action === 'new-instance') { openInstanceModal(false); return; }
+  if (action === 'edit-instance') { openInstanceModal(true); return; }
+  if (action === 'duplicate-instance') { if (!i || !c) return; const copy = deep(i); copy.id = `${i.id}.copy-${Date.now()}`; copy.name = `${i.name} 副本`; copy.rev = 1; copy.status = 'draft'; c.instances.push(copy); if (state.mode === 'ai') state.aiInstId = copy.id; else state.fieldInstId = copy.id; saveData(); updateHash(); renderAll(); showToast('实例已复制'); return; }
+  if (action === 'delete-instance') { if (!i || !c) return; confirmModal('删除实例？', `会删除 ${i.name}。`, '删除', () => { c.instances = c.instances.filter(x => x.id !== i.id); if (state.mode === 'ai') state.aiInstId = c.instances[0]?.id || ''; else state.fieldInstId = c.instances[0]?.id || ''; saveData(); ensureSelection(); updateHash(); renderAll(); showToast('实例已删除'); }); return; }
+  if (action === 'run-instance' || action === 'new-run') { newRun(); return; }
+  if (action === 'save-policy') { savePolicy(); return; }
+  if (action === 'reset-data') { confirmModal('重置示例数据？', '会覆盖本地新增/修改，恢复 23 FieldClass / 78 FieldInstance / 29 AIClass / 124 AIInstance。', '重置', () => { FIELD_CLASSES = deep(FIELD_DATA.classes); AI_CLASSES = deep(AI_DATA.classes); RUNS = []; POLICY = { ...DEFAULT_POLICY }; saveData(); ensureSelection(); updateHash(); renderAll(); showToast('示例数据已重置'); }); return; }
+}
+function init() {
+  parseHash(); ensureSelection(); renderAll();
+  $('#viewTabs').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (!b) return; state.mode = b.dataset.view; updateHash(); renderAll(); });
+  $('#modalRoot').addEventListener('click', e => { if (e.target.id === 'modalOverlay' || e.target.closest('[data-modal-close]')) closeModal(); });
+  window.addEventListener('hashchange', () => { parseHash(); ensureSelection(); renderAll(); });
+}
+init();
+})();
+
+</script>
+</body>
+</html>

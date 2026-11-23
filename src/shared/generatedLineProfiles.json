@@ -1,0 +1,348 @@
+{
+  "flow.screenshot-translate": {
+    "classId": "flow.screenshot-translate",
+    "nodes": [
+      {
+        "id": "capture",
+        "x": 30,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "截屏",
+        "kind": "point",
+        "pointClass": "screen.capture",
+        "pointInstance": "cap.region",
+        "role": "region"
+      },
+      {
+        "id": "ocr",
+        "x": 280,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "OCR",
+        "kind": "point",
+        "pointClass": "ocr.read",
+        "pointInstance": "ocr.zh.screen",
+        "role": "$sourceLang"
+      },
+      {
+        "id": "translate",
+        "x": 530,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "翻译",
+        "kind": "point",
+        "pointClass": "translate.text",
+        "pointInstance": "trans.en2zh",
+        "role": "$sourceLang → $targetLang"
+      },
+      {
+        "id": "overlay",
+        "x": 780,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "浮层",
+        "kind": "point",
+        "pointClass": "render.overlay",
+        "pointInstance": "overlay.toast",
+        "role": "if $overlay"
+      }
+    ],
+    "edges": [
+      {
+        "from": "capture",
+        "to": "ocr",
+        "label": "Image"
+      },
+      {
+        "from": "ocr",
+        "to": "translate",
+        "label": "Text"
+      },
+      {
+        "from": "translate",
+        "to": "overlay",
+        "label": "Text"
+      }
+    ]
+  },
+  "flow.invoice-archive": {
+    "classId": "flow.invoice-archive",
+    "nodes": [
+      {
+        "id": "watch",
+        "x": 20,
+        "y": 175,
+        "w": 140,
+        "h": 82,
+        "label": "监听目录",
+        "kind": "point",
+        "pointClass": "file.watch",
+        "pointInstance": "watch.inbox",
+        "role": "$watchDir"
+      },
+      {
+        "id": "foreach",
+        "x": 180,
+        "y": 175,
+        "w": 120,
+        "h": 82,
+        "label": "遍历文件",
+        "kind": "gate",
+        "gate": "foreach",
+        "role": "file in files"
+      },
+      {
+        "id": "ocr",
+        "x": 330,
+        "y": 175,
+        "w": 140,
+        "h": 82,
+        "label": "OCR",
+        "kind": "point",
+        "pointClass": "ocr.read",
+        "pointInstance": "ocr.zh.invoice",
+        "role": "$ocrLang"
+      },
+      {
+        "id": "extract",
+        "x": 490,
+        "y": 175,
+        "w": 140,
+        "h": 82,
+        "label": "提取发票",
+        "kind": "point",
+        "pointClass": "extract.invoice",
+        "pointInstance": "extract.vendor",
+        "role": "$vendorRules"
+      },
+      {
+        "id": "validate",
+        "x": 650,
+        "y": 175,
+        "w": 140,
+        "h": 82,
+        "label": "校验",
+        "kind": "point",
+        "pointClass": "validate.invoice",
+        "pointInstance": "validate.amount",
+        "role": "rules = $vendorRules"
+      },
+      {
+        "id": "if",
+        "x": 810,
+        "y": 175,
+        "w": 120,
+        "h": 82,
+        "label": "if 命中",
+        "kind": "gate",
+        "gate": "if",
+        "role": "ok?"
+      },
+      {
+        "id": "move",
+        "x": 960,
+        "y": 60,
+        "w": 140,
+        "h": 82,
+        "label": "移动归档",
+        "kind": "point",
+        "pointClass": "file.move",
+        "pointInstance": "move.archive",
+        "role": "to = $archiveDir"
+      },
+      {
+        "id": "notify",
+        "x": 960,
+        "y": 290,
+        "w": 140,
+        "h": 82,
+        "label": "未匹配通知",
+        "kind": "point",
+        "pointClass": "notify.tray",
+        "pointInstance": "notify.unmatched",
+        "role": "$(else)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "watch",
+        "to": "foreach",
+        "label": "File[]"
+      },
+      {
+        "from": "foreach",
+        "to": "ocr",
+        "label": "File"
+      },
+      {
+        "from": "ocr",
+        "to": "extract",
+        "label": "Text"
+      },
+      {
+        "from": "extract",
+        "to": "validate",
+        "label": "Invoice"
+      },
+      {
+        "from": "validate",
+        "to": "if",
+        "label": "Bool"
+      },
+      {
+        "from": "if",
+        "to": "move",
+        "label": "true"
+      },
+      {
+        "from": "if",
+        "to": "notify",
+        "label": "false"
+      }
+    ]
+  },
+  "flow.clipboard-to-file": {
+    "classId": "flow.clipboard-to-file",
+    "nodes": [
+      {
+        "id": "clip",
+        "x": 30,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "读剪贴板",
+        "kind": "point",
+        "pointClass": "input.clipboard",
+        "pointInstance": "clip.text",
+        "role": "format = text"
+      },
+      {
+        "id": "template",
+        "x": 270,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "模板",
+        "kind": "point",
+        "pointClass": "text.template",
+        "pointInstance": "template.markdown",
+        "role": "tpl = markdown"
+      },
+      {
+        "id": "write",
+        "x": 510,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "写文件",
+        "kind": "point",
+        "pointClass": "file.write",
+        "pointInstance": "write.append",
+        "role": "$path, append=$append"
+      },
+      {
+        "id": "notify",
+        "x": 750,
+        "y": 110,
+        "w": 140,
+        "h": 82,
+        "label": "通知",
+        "kind": "point",
+        "pointClass": "notify.toast",
+        "pointInstance": "notify.toast",
+        "role": "success"
+      }
+    ],
+    "edges": [
+      {
+        "from": "clip",
+        "to": "template",
+        "label": "Text"
+      },
+      {
+        "from": "template",
+        "to": "write",
+        "label": "Text"
+      },
+      {
+        "from": "write",
+        "to": "notify",
+        "label": "done"
+      }
+    ]
+  },
+  "flow.open-external-site": {
+    "classId": "flow.open-external-site",
+    "nodes": [
+      {
+        "id": "vpn",
+        "x": 30,
+        "y": 110,
+        "w": 160,
+        "h": 82,
+        "label": "VPN 保障",
+        "kind": "subflow",
+        "pointClass": "flow.ensure-vpn",
+        "pointInstance": "inst.ensure-vpn-ask",
+        "role": "vpnRequirement"
+      },
+      {
+        "id": "check",
+        "x": 280,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "可达性检查",
+        "kind": "point",
+        "pointClass": "net.reachable",
+        "pointInstance": "net.reachable.github",
+        "role": "host = url.host"
+      },
+      {
+        "id": "open",
+        "x": 530,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "打开 URL",
+        "kind": "point",
+        "pointClass": "sys.open",
+        "pointInstance": "open.browser.github",
+        "role": "url, kind=url"
+      },
+      {
+        "id": "notify",
+        "x": 780,
+        "y": 110,
+        "w": 150,
+        "h": 82,
+        "label": "通知",
+        "kind": "point",
+        "pointClass": "notify.toast",
+        "pointInstance": "notify.system",
+        "role": "success"
+      }
+    ],
+    "edges": [
+      {
+        "from": "vpn",
+        "to": "check",
+        "label": "GuardResult"
+      },
+      {
+        "from": "check",
+        "to": "open",
+        "label": "Bool"
+      },
+      {
+        "from": "open",
+        "to": "notify",
+        "label": "Bool"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1766 @@
+{
+  "body.file-preview": {
+    "classId": "body.file-preview",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.preview-file",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.preview-window",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "render.text",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "render.image",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.file-preview",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.file-preview/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-preview",
+      "permissions": [
+        "fs.read",
+        "window.open"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.ocr": {
+    "classId": "body.ocr",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.ocr.recognize",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.ocr-result",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "image.preprocess",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "ocr.text",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "ocr.table",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.ocr",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.ocr/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:body.ocr",
+      "permissions": [
+        "screen.capture",
+        "fs.read",
+        "clipboard.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.image-resizer": {
+    "classId": "body.image-resizer",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.resize-image",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.resize-dialog",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.read.image",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "image.resize",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.write.image",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.image-resizer",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.image-resizer/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-resizer",
+      "permissions": [
+        "fs.read",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.batch-rename": {
+    "classId": "body.batch-rename",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.rename-files",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.rename-dialog",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.diff",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.list",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "rename.plan",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.move",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.batch-rename",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.batch-rename/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:h-rename",
+      "permissions": [
+        "fs.read",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.pdf-toolkit": {
+    "classId": "body.pdf-toolkit",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.pdf-op",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.pdf-workspace",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "pdf.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "pdf.merge",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "pdf.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.pdf-toolkit",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.pdf-toolkit/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-toolkit",
+      "permissions": [
+        "fs.read",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.media-converter": {
+    "classId": "body.media-converter",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.convert-media",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.convert-dialog",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "media.probe",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "media.transcode",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.media-converter",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.media-converter/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:onverter",
+      "permissions": [
+        "fs.read",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.file-organizer": {
+    "classId": "body.file-organizer",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.organize-files",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.organize-preview",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.scan",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.classify",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.move",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.file-organizer",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.file-organizer/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:rganizer",
+      "permissions": [
+        "fs.read",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.advanced-paste": {
+    "classId": "body.advanced-paste",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.paste-transform",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.paste-preview",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "clipboard.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "text.transform",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "clipboard.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.advanced-paste",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.advanced-paste/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:ed-paste",
+      "permissions": [
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.clipboard-history": {
+    "classId": "body.clipboard-history",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.clipboard-history",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.clipboard-list",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "clipboard.watch",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "store.query",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "clipboard.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.clipboard-history",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.clipboard-history/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-history",
+      "permissions": [
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.color-picker": {
+    "classId": "body.color-picker",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.pick-color",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.color-inspector",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "screen.pick",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "color.convert",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "clipboard.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.color-picker",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.color-picker/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:r-picker",
+      "permissions": [
+        "screen.capture",
+        "clipboard.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.screen-ruler": {
+    "classId": "body.screen-ruler",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.measure-screen",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.hud.ruler",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "screen.region",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "measure.length",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "measure.angle",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.screen-ruler",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.screen-ruler/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:en-ruler",
+      "permissions": [
+        "screen.capture"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.window-layout": {
+    "classId": "body.window-layout",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.layout-windows",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.layout-editor",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.list",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.move",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.resize",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.window-layout",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.window-layout/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:w-layout",
+      "permissions": [
+        "process",
+        "window"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.always-on-top": {
+    "classId": "body.always-on-top",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.pin-window",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.pin-indicator",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.find",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.pin",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.restore",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.always-on-top",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.always-on-top/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:s-on-top",
+      "permissions": [
+        "window",
+        "process"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.awake": {
+    "classId": "body.awake",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.keep-awake",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.awake-status",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "power.state",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "power.keepAwake",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "timer.wait",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.awake",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.awake/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:dy.awake",
+      "permissions": [
+        "power"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.workspace": {
+    "classId": "body.workspace",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.open-workspace",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.workspace-launcher",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "process.launch",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "window.layout",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "workspace.restore",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.workspace",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.workspace/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:orkspace",
+      "permissions": [
+        "process",
+        "window"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.quick-launch": {
+    "classId": "body.quick-launch",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.launch-target",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.launch-dock",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.quick-launch",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "launch.search",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "launch.run",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "usage.rank",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.quick-launch",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.quick-launch/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:k-launch",
+      "permissions": [
+        "process",
+        "fs.read"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.system-monitor": {
+    "classId": "body.system-monitor",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.metric-stream",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.system-monitor",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.hud.system-status",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "sys.cpu.stats",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "sys.gpu.stats",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "sys.memory.stats",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.system-monitor",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.system-monitor/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-monitor",
+      "permissions": [
+        "process",
+        "sensor"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.service-health": {
+    "classId": "body.service-health",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.ensure-service",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.service-dashboard",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "service.status",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "service.start",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "net.reachable",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.service-health",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.service-health/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:e-health",
+      "permissions": [
+        "process",
+        "network"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.file-locksmith": {
+    "classId": "body.file-locksmith",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.find-file-lock",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.lock-list",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.handle",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "process.open",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "process.kill",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.file-locksmith",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.file-locksmith/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:ocksmith",
+      "permissions": [
+        "process",
+        "fs.read"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.hosts-editor": {
+    "classId": "body.hosts-editor",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.edit-hosts",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.text-editor",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.diff",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "hosts.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "hosts.validate",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "hosts.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.hosts-editor",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.hosts-editor/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:s-editor",
+      "permissions": [
+        "fs.read",
+        "fs.write",
+        "admin"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.env-vars": {
+    "classId": "body.env-vars",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.edit-env",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.key-value-editor",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "env.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "env.validate",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "env.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.env-vars",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.env-vars/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:env-vars",
+      "permissions": [
+        "env.read",
+        "env.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.external-access": {
+    "classId": "body.external-access",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.open-external-site",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "line",
+        "ref": "flow.ensure-vpn",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.site-launcher",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.settings.vpn",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "vpn.status",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "net.reachable",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "browser.open",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.external-access",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.external-access/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:l-access",
+      "permissions": [
+        "network",
+        "process",
+        "uia"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "336 MB",
+        "disk": "104 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚",
+      "previousVersion": "0.9.0"
+    }
+  },
+  "body.screenshot-translate": {
+    "classId": "body.screenshot-translate",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.screenshot-translate",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.hud.translate",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.settings.translate",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "screen.capture",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "ocr.text",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "translate.text",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.screenshot-translate",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.screenshot-translate/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:ranslate",
+      "permissions": [
+        "screen.capture",
+        "clipboard.write",
+        "network"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.ai-rewrite": {
+    "classId": "body.ai-rewrite",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.ai-rewrite",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.diff",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.prompt-preview",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "text.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "ai.rewrite",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "text.diff",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.ai-rewrite",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.ai-rewrite/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-rewrite",
+      "permissions": [
+        "network",
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.meeting-notes": {
+    "classId": "body.meeting-notes",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.transcribe",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "line",
+        "ref": "flow.summarize",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.notes",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "audio.capture",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "speech.transcribe",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "ai.summarize",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.meeting-notes",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.meeting-notes/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:ng-notes",
+      "permissions": [
+        "microphone",
+        "network",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.invoice-archive": {
+    "classId": "body.invoice-archive",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.batch-archive",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.table",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.settings.invoice",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "ocr.table",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "invoice.parse",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.move",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.invoice-archive",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.invoice-archive/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-archive",
+      "permissions": [
+        "fs.read",
+        "fs.write",
+        "ocr"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.suite": {
+    "classId": "body.suite",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.suite.launch",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.card-grid",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.settings.suite",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "body.activate",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "permission.check",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "surface.show",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.suite",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.suite/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:dy.suite",
+      "permissions": [
+        "process",
+        "network",
+        "fs.read"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "288 MB",
+        "disk": "92 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.web-clipper": {
+    "classId": "body.web-clipper",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.clip-page",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.clipper-preview",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "browser.read",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "html.toMarkdown",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.write",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.web-clipper",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.web-clipper/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:-clipper",
+      "permissions": [
+        "browser",
+        "fs.write",
+        "network"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  },
+  "body.backup-sync": {
+    "classId": "body.backup-sync",
+    "composition": [
+      {
+        "layer": "line",
+        "ref": "flow.backup-folder",
+        "role": "流程编排",
+        "required": true
+      },
+      {
+        "layer": "surface",
+        "ref": "surface.backup-status",
+        "role": "界面承载",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.scan",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "file.copy",
+        "role": "能力执行",
+        "required": true
+      },
+      {
+        "layer": "point",
+        "ref": "hash.verify",
+        "role": "能力执行",
+        "required": true
+      }
+    ],
+    "manifest": {
+      "id": "body.backup-sync",
+      "version": "1.0.0",
+      "channel": "stable",
+      "entry": "body://body.backup-sync/index.html",
+      "publisher": "Baiying Labs",
+      "signature": "valid",
+      "digest": "sha256:kup-sync",
+      "permissions": [
+        "fs.read",
+        "fs.write"
+      ],
+      "resources": {
+        "cpu": "4 vCPU",
+        "memory": "240 MB",
+        "disk": "80 MB"
+      }
+    },
+    "lifecycle": {
+      "stage": "active",
+      "installedAt": "2026-11-20",
+      "lastChecked": "刚刚"
+    }
+  }
+}

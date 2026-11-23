@@ -1,0 +1,1546 @@
+{
+  "sections": [
+    {
+      "id": "general",
+      "group": "General",
+      "icon": "⚙",
+      "color": "#22d3ee",
+      "title": "通用设置",
+      "desc": "应用级外观、语言、启动、通知、隐私、网络/更新、可访问性与高级选项。",
+      "groups": [
+        {
+          "label": "Appearance",
+          "desc": "全局视觉；Surface 只放布局与交互。",
+          "settings": [
+            {
+              "key": "general.theme",
+              "label": "Theme",
+              "desc": "应用主题；跟随系统时由 OS 决定。",
+              "type": "enum",
+              "default": "dark",
+              "options": [
+                "dark",
+                "light",
+                "system"
+              ],
+              "effect": "L0",
+              "initialSource": "user"
+            },
+            {
+              "key": "general.accent",
+              "label": "Accent color",
+              "desc": "强调色；用于选中、焦点与主操作。",
+              "type": "enum",
+              "default": "cyan",
+              "options": [
+                "cyan",
+                "blue",
+                "violet",
+                "amber"
+              ],
+              "effect": "L0",
+              "initialSource": "user"
+            },
+            {
+              "key": "general.fontScale",
+              "label": "Font scale",
+              "desc": "全局字体缩放，100% 为默认。",
+              "type": "number",
+              "default": 100,
+              "min": 80,
+              "max": 140,
+              "unit": "%",
+              "effect": "L0",
+              "initialSource": "user"
+            },
+            {
+              "key": "general.density",
+              "label": "UI density",
+              "desc": "comfortable 更适合阅读，compact 更适合高信息密度。",
+              "type": "enum",
+              "default": "comfortable",
+              "options": [
+                "comfortable",
+                "compact"
+              ],
+              "effect": "L0",
+              "initialSource": "user"
+            }
+          ]
+        },
+        {
+          "label": "Language & Region",
+          "desc": "应用语言与数字/日期格式。",
+          "settings": [
+            {
+              "key": "general.language",
+              "label": "Language",
+              "desc": "界面语言，即时生效。",
+              "type": "enum",
+              "default": "zh-CN",
+              "options": [
+                "zh-CN",
+                "en-US"
+              ],
+              "effect": "L0",
+              "initialSource": "user"
+            },
+            {
+              "key": "general.dateFormat",
+              "label": "Date format",
+              "desc": "日期显示格式。",
+              "type": "enum",
+              "default": "YYYY-MM-DD",
+              "options": [
+                "YYYY-MM-DD",
+                "DD/MM/YYYY",
+                "MM/DD/YYYY"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "general.numberFormat",
+              "label": "Number format",
+              "desc": "数字千分位/小数格式。",
+              "type": "enum",
+              "default": "1,234.56",
+              "options": [
+                "1,234.56",
+                "1.234,56",
+                "1 234,56"
+              ],
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Startup",
+          "desc": "应用启动与工作区恢复。",
+          "settings": [
+            {
+              "key": "general.launchAtLogin",
+              "label": "Launch at login",
+              "desc": "登录 Windows 后自动启动。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1"
+            },
+            {
+              "key": "general.startMinimized",
+              "label": "Start minimized",
+              "desc": "启动后进入托盘/最小化。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1"
+            },
+            {
+              "key": "general.restoreLastWorkspace",
+              "label": "Restore last workspace",
+              "desc": "恢复上次打开的工作区与面板布局。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Notifications",
+          "desc": "通知与提示行为。",
+          "settings": [
+            {
+              "key": "general.toastDuration",
+              "label": "Toast duration",
+              "desc": "轻提示停留时间。",
+              "type": "enum",
+              "default": "normal",
+              "options": [
+                "short",
+                "normal",
+                "long"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "general.doNotDisturb",
+              "label": "Do not disturb",
+              "desc": "暂停非关键通知。",
+              "type": "bool",
+              "default": false,
+              "effect": "L0"
+            },
+            {
+              "key": "general.sound",
+              "label": "Notification sound",
+              "desc": "通知是否播放声音。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Privacy & Telemetry",
+          "desc": "遥测、崩溃报告与使用数据。",
+          "settings": [
+            {
+              "key": "general.telemetry",
+              "label": "Telemetry",
+              "desc": "off 完全关闭；basic 只发匿名性能指标。",
+              "type": "enum",
+              "default": "basic",
+              "options": [
+                "off",
+                "basic",
+                "full"
+              ],
+              "effect": "L1",
+              "policy": true
+            },
+            {
+              "key": "general.crashReports",
+              "label": "Crash reports",
+              "desc": "崩溃时发送诊断包。",
+              "type": "bool",
+              "default": true,
+              "effect": "L1"
+            },
+            {
+              "key": "general.usageData",
+              "label": "Usage data",
+              "desc": "发送功能使用统计。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Network & Updates",
+          "desc": "代理、应用更新通道与检查。",
+          "settings": [
+            {
+              "key": "general.proxy",
+              "label": "Proxy",
+              "desc": "system 使用系统代理；也可填 http://host:port。",
+              "type": "string",
+              "default": "system",
+              "effect": "L1"
+            },
+            {
+              "key": "general.updateChannel",
+              "label": "Update channel",
+              "desc": "应用自身更新通道，不是 Body 更新。",
+              "type": "enum",
+              "default": "stable",
+              "options": [
+                "stable",
+                "beta",
+                "dev"
+              ],
+              "effect": "L1",
+              "initialSource": "user"
+            },
+            {
+              "key": "general.autoCheckUpdates",
+              "label": "Auto check updates",
+              "desc": "启动时检查应用更新。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Accessibility",
+          "desc": "对比度、动效与键盘提示。",
+          "settings": [
+            {
+              "key": "general.highContrast",
+              "label": "High contrast",
+              "desc": "增强边框与文本对比度。",
+              "type": "bool",
+              "default": false,
+              "effect": "L0"
+            },
+            {
+              "key": "general.reduceMotion",
+              "label": "Reduce motion",
+              "desc": "减少动画；应用设置只能比系统更严格。",
+              "type": "bool",
+              "default": false,
+              "effect": "L0"
+            },
+            {
+              "key": "general.keyboardHints",
+              "label": "Keyboard hints",
+              "desc": "显示快捷键提示。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Advanced",
+          "desc": "开发与实验选项。",
+          "settings": [
+            {
+              "key": "general.developerMode",
+              "label": "Developer mode",
+              "desc": "显示调试工具与实验入口。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1",
+              "advanced": true
+            },
+            {
+              "key": "general.experimentalFeatures",
+              "label": "Experimental features",
+              "desc": "启用未稳定的功能。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1",
+              "advanced": true
+            },
+            {
+              "key": "general.logLevel",
+              "label": "Log level",
+              "desc": "应用日志级别。",
+              "type": "enum",
+              "default": "info",
+              "options": [
+                "info",
+                "debug",
+                "warn",
+                "error"
+              ],
+              "effect": "L0",
+              "advanced": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "point",
+      "group": "Layers",
+      "icon": "◆",
+      "color": "#22d3ee",
+      "title": "点层设置",
+      "desc": "点运行时、效果/权限、registry 与 secrets。flow 重试/审批不在这里。",
+      "groups": [
+        {
+          "label": "Runtime",
+          "desc": "点执行的默认超时、并发与沙箱。",
+          "settings": [
+            {
+              "key": "point.defaultTimeoutMs",
+              "label": "Default timeout",
+              "desc": "点执行默认超时；单个 PointInstance 可覆盖。",
+              "type": "number",
+              "default": 12000,
+              "min": 1000,
+              "max": 120000,
+              "unit": "ms",
+              "effect": "L1",
+              "initialSource": "user"
+            },
+            {
+              "key": "point.maxConcurrency",
+              "label": "Max concurrency",
+              "desc": "同时运行的点实例上限。",
+              "type": "number",
+              "default": 4,
+              "min": 1,
+              "max": 32,
+              "effect": "L1"
+            },
+            {
+              "key": "point.sandbox",
+              "label": "Sandbox",
+              "desc": "strict 最安全；off 仅开发机。",
+              "type": "enum",
+              "default": "balanced",
+              "options": [
+                "strict",
+                "balanced",
+                "off"
+              ],
+              "effect": "L2",
+              "restart": "app"
+            }
+          ]
+        },
+        {
+          "label": "Effects & Permissions",
+          "desc": "效果等级与权限默认策略。",
+          "settings": [
+            {
+              "key": "point.maxEffect",
+              "label": "Max effect",
+              "desc": "单点允许的最高效果等级；policy 锁定。",
+              "type": "enum",
+              "default": "L2",
+              "options": [
+                "L0",
+                "L1",
+                "L2",
+                "L3"
+              ],
+              "effect": "L2",
+              "policy": true
+            },
+            {
+              "key": "point.requireApprovalForL2",
+              "label": "Require approval for L2",
+              "desc": "L2 点默认需要审批。",
+              "type": "bool",
+              "default": true,
+              "effect": "L2",
+              "policy": true
+            },
+            {
+              "key": "point.logInputs",
+              "label": "Log point inputs",
+              "desc": "可能含敏感数据；默认关闭。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1",
+              "policy": true
+            }
+          ]
+        },
+        {
+          "label": "Registry & Sources",
+          "desc": "点来源、签名与缓存。",
+          "settings": [
+            {
+              "key": "point.registryUrl",
+              "label": "Registry URL",
+              "desc": "点 registry 地址。",
+              "type": "string",
+              "default": "https://registry.local",
+              "effect": "L1"
+            },
+            {
+              "key": "point.allowUnsignedPoints",
+              "label": "Allow unsigned points",
+              "desc": "关闭时只加载签名点；开启需要 L3 确认。",
+              "type": "bool",
+              "default": false,
+              "effect": "L3",
+              "policy": true
+            },
+            {
+              "key": "point.cacheTtl",
+              "label": "Cache TTL",
+              "desc": "registry 缓存时间。",
+              "type": "number",
+              "default": 3600,
+              "min": 0,
+              "max": 86400,
+              "unit": "s",
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Secrets",
+          "desc": "凭据存储与显示策略。",
+          "settings": [
+            {
+              "key": "point.secretStore",
+              "label": "Secret store",
+              "desc": "os/keychain 使用系统凭据库；file 仅开发。",
+              "type": "enum",
+              "default": "os",
+              "options": [
+                "os",
+                "keychain",
+                "file"
+              ],
+              "effect": "L2"
+            },
+            {
+              "key": "point.revealPolicy",
+              "label": "Reveal policy",
+              "desc": "never 最安全；once 仅显示一次。",
+              "type": "enum",
+              "default": "never",
+              "options": [
+                "never",
+                "once",
+                "session"
+              ],
+              "effect": "L2",
+              "policy": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "line",
+      "group": "Layers",
+      "icon": "↝",
+      "color": "#3b82f6",
+      "title": "线层设置",
+      "desc": "flow 执行、重试/错误策略、审批闸门、trace/retention 与 scheduler。",
+      "groups": [
+        {
+          "label": "Execution",
+          "desc": "flow 超时、并发与重试。",
+          "settings": [
+            {
+              "key": "line.defaultTimeoutMs",
+              "label": "Default timeout",
+              "desc": "flow 默认超时。",
+              "type": "number",
+              "default": 30000,
+              "min": 1000,
+              "max": 600000,
+              "unit": "ms",
+              "effect": "L1"
+            },
+            {
+              "key": "line.maxParallelFlows",
+              "label": "Max parallel flows",
+              "desc": "同时运行的 flow 上限。",
+              "type": "number",
+              "default": 3,
+              "min": 1,
+              "max": 16,
+              "effect": "L1"
+            },
+            {
+              "key": "line.retryPolicy",
+              "label": "Retry policy",
+              "desc": "重试策略；点只声明可重试性，不拥有 retry。",
+              "type": "enum",
+              "default": "exponential",
+              "options": [
+                "none",
+                "linear",
+                "exponential"
+              ],
+              "effect": "L1"
+            },
+            {
+              "key": "line.maxRetries",
+              "label": "Max retries",
+              "desc": "最大重试次数。",
+              "type": "number",
+              "default": 2,
+              "min": 0,
+              "max": 10,
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Gates & Approvals",
+          "desc": "审批闸门与超时。",
+          "settings": [
+            {
+              "key": "line.requireApprovalForL2",
+              "label": "Require approval for L2",
+              "desc": "L2 flow 默认需要审批。",
+              "type": "bool",
+              "default": true,
+              "effect": "L2",
+              "policy": true
+            },
+            {
+              "key": "line.approvalTimeoutS",
+              "label": "Approval timeout",
+              "desc": "等待审批的秒数。",
+              "type": "number",
+              "default": 60,
+              "min": 5,
+              "max": 600,
+              "unit": "s",
+              "effect": "L1"
+            },
+            {
+              "key": "line.autoDenyOnTimeout",
+              "label": "Auto deny on timeout",
+              "desc": "超时自动拒绝；安全优先。",
+              "type": "bool",
+              "default": true,
+              "effect": "L2",
+              "policy": true
+            }
+          ]
+        },
+        {
+          "label": "Tracing & Retention",
+          "desc": "trace 采样、运行保留与日志级别。",
+          "settings": [
+            {
+              "key": "line.traceSampling",
+              "label": "Trace sampling",
+              "desc": "采样率越高越占性能/磁盘。",
+              "type": "number",
+              "default": 10,
+              "min": 0,
+              "max": 100,
+              "unit": "%",
+              "effect": "L1"
+            },
+            {
+              "key": "line.runRetentionDays",
+              "label": "Run retention",
+              "desc": "运行记录保留天数。",
+              "type": "number",
+              "default": 30,
+              "min": 1,
+              "max": 365,
+              "unit": "days",
+              "effect": "L1"
+            },
+            {
+              "key": "line.logLevel",
+              "label": "Log level",
+              "desc": "flow 日志级别。",
+              "type": "enum",
+              "default": "info",
+              "options": [
+                "info",
+                "debug",
+                "warn",
+                "error"
+              ],
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Scheduler",
+          "desc": "错过的调度与 timezone。",
+          "settings": [
+            {
+              "key": "line.missedRunPolicy",
+              "label": "Missed run policy",
+              "desc": "错过的定时 flow 如何处理。",
+              "type": "enum",
+              "default": "skip",
+              "options": [
+                "skip",
+                "runOnce",
+                "ask"
+              ],
+              "effect": "L1"
+            },
+            {
+              "key": "line.timezone",
+              "label": "Timezone",
+              "desc": "调度时区。",
+              "type": "string",
+              "default": "Asia/Shanghai",
+              "effect": "L0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface",
+      "group": "Layers",
+      "icon": "▦",
+      "color": "#8b5cf6",
+      "title": "面层设置",
+      "desc": "布局、面板、交互、动效、可访问性与显示格式。只影响呈现/交互。",
+      "groups": [
+        {
+          "label": "Layout & Panels",
+          "desc": "面板默认位置、宽度与表格密度。",
+          "settings": [
+            {
+              "key": "surface.defaultPanelSide",
+              "label": "Default panel side",
+              "desc": "新开面板默认在右/左。",
+              "type": "enum",
+              "default": "right",
+              "options": [
+                "right",
+                "left"
+              ],
+              "effect": "L0",
+              "initialSource": "user"
+            },
+            {
+              "key": "surface.panelWidth",
+              "label": "Default panel width",
+              "desc": "默认宽度；PanelInstance 可覆盖，用户调整后 remember。",
+              "type": "number",
+              "default": 380,
+              "min": 300,
+              "max": 620,
+              "unit": "px",
+              "effect": "L0",
+              "initialSource": "user"
+            },
+            {
+              "key": "surface.rememberPanelSize",
+              "label": "Remember panel size",
+              "desc": "记住用户拖拽后的面板尺寸。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            },
+            {
+              "key": "surface.tableDensity",
+              "label": "Table density",
+              "desc": "table/tree/list 的默认密度。",
+              "type": "enum",
+              "default": "comfortable",
+              "options": [
+                "comfortable",
+                "compact"
+              ],
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Interaction",
+          "desc": "双击、中键与滚轮行为。",
+          "settings": [
+            {
+              "key": "surface.doubleClickAction",
+              "label": "Double-click action",
+              "desc": "双击列表/卡片时的默认动作。",
+              "type": "enum",
+              "default": "open",
+              "options": [
+                "open",
+                "run",
+                "none"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "surface.middleClickAction",
+              "label": "Middle-click action",
+              "desc": "中键默认动作。",
+              "type": "enum",
+              "default": "none",
+              "options": [
+                "none",
+                "open",
+                "run"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "surface.wheelBehavior",
+              "label": "Wheel behavior",
+              "desc": "滚轮滚动或缩放。",
+              "type": "enum",
+              "default": "scroll",
+              "options": [
+                "scroll",
+                "zoom"
+              ],
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Motion",
+          "desc": "动效速度；reduce motion 在 General。",
+          "settings": [
+            {
+              "key": "surface.animationSpeed",
+              "label": "Animation speed",
+              "desc": "slow/normal/fast；受 reduce motion 约束。",
+              "type": "enum",
+              "default": "normal",
+              "options": [
+                "slow",
+                "normal",
+                "fast"
+              ],
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Accessibility",
+          "desc": "焦点环、读屏提示与焦点归还。",
+          "settings": [
+            {
+              "key": "surface.focusRing",
+              "label": "Focus ring",
+              "desc": "auto 跟随系统；always 始终显示。",
+              "type": "enum",
+              "default": "auto",
+              "options": [
+                "auto",
+                "always"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "surface.screenReaderHints",
+              "label": "Screen reader hints",
+              "desc": "为复杂面板提供额外读屏提示。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            },
+            {
+              "key": "surface.panelFocusReturn",
+              "label": "Return focus on close",
+              "desc": "关闭面板后回到触发元素。",
+              "type": "bool",
+              "default": true,
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Locale & Format",
+          "desc": "时间、周起始与度量。",
+          "settings": [
+            {
+              "key": "surface.timeFormat",
+              "label": "Time format",
+              "desc": "24h 或 12h。",
+              "type": "enum",
+              "default": "24h",
+              "options": [
+                "24h",
+                "12h"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "surface.firstDayOfWeek",
+              "label": "First day of week",
+              "desc": "日历周起始。",
+              "type": "enum",
+              "default": "monday",
+              "options": [
+                "monday",
+                "sunday"
+              ],
+              "effect": "L0"
+            },
+            {
+              "key": "surface.measurementSystem",
+              "label": "Measurement system",
+              "desc": "metric/imperial。",
+              "type": "enum",
+              "default": "metric",
+              "options": [
+                "metric",
+                "imperial"
+              ],
+              "effect": "L0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "group": "Layers",
+      "icon": "▣",
+      "color": "#f59e0b",
+      "title": "体层设置",
+      "desc": "已安装体、更新通道、信任/签名、权限、数据保留与隔离。",
+      "groups": [
+        {
+          "label": "Updates & Channels",
+          "desc": "体更新与应用更新分开。",
+          "settings": [
+            {
+              "key": "body.autoUpdate",
+              "label": "Auto update bodies",
+              "desc": "自动更新已安装体。",
+              "type": "bool",
+              "default": true,
+              "effect": "L1",
+              "initialSource": "user"
+            },
+            {
+              "key": "body.updateChannel",
+              "label": "Body update channel",
+              "desc": "体更新通道。",
+              "type": "enum",
+              "default": "stable",
+              "options": [
+                "stable",
+                "beta",
+                "dev"
+              ],
+              "effect": "L1"
+            },
+            {
+              "key": "body.allowPrerelease",
+              "label": "Allow prerelease",
+              "desc": "允许预发布体；生产环境通常关闭。",
+              "type": "bool",
+              "default": false,
+              "effect": "L2",
+              "policy": true
+            }
+          ]
+        },
+        {
+          "label": "Trust & Signatures",
+          "desc": "签名与发布者信任。",
+          "settings": [
+            {
+              "key": "body.requireSignature",
+              "label": "Require signature",
+              "desc": "关闭需要 L3 确认。",
+              "type": "bool",
+              "default": true,
+              "effect": "L3",
+              "policy": true
+            },
+            {
+              "key": "body.allowUnknownPublisher",
+              "label": "Allow unknown publisher",
+              "desc": "允许未知发布者；高风险。",
+              "type": "bool",
+              "default": false,
+              "effect": "L3",
+              "policy": true
+            },
+            {
+              "key": "body.verifyOnLaunch",
+              "label": "Verify on launch",
+              "desc": "启动时校验 digest/signature。",
+              "type": "bool",
+              "default": true,
+              "effect": "L2"
+            }
+          ]
+        },
+        {
+          "label": "Permissions",
+          "desc": "权限审查与请求日志。",
+          "settings": [
+            {
+              "key": "body.permissionReview",
+              "label": "Permission review",
+              "desc": "always 最安全；never 不建议。",
+              "type": "enum",
+              "default": "always",
+              "options": [
+                "always",
+                "firstRun",
+                "never"
+              ],
+              "effect": "L2"
+            },
+            {
+              "key": "body.requestLog",
+              "label": "Permission request log",
+              "desc": "记录权限请求。",
+              "type": "bool",
+              "default": true,
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Data & Retention",
+          "desc": "保留、备份与回滚版本。",
+          "settings": [
+            {
+              "key": "body.retentionDays",
+              "label": "Data retention",
+              "desc": "体数据保留天数。",
+              "type": "number",
+              "default": 90,
+              "min": 1,
+              "max": 3650,
+              "unit": "days",
+              "effect": "L1"
+            },
+            {
+              "key": "body.backupBeforeUpdate",
+              "label": "Backup before update",
+              "desc": "更新前备份。",
+              "type": "bool",
+              "default": true,
+              "effect": "L1"
+            },
+            {
+              "key": "body.rollbackKeepVersions",
+              "label": "Keep versions for rollback",
+              "desc": "至少保留 2 个版本。",
+              "type": "number",
+              "default": 2,
+              "min": 1,
+              "max": 5,
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Isolation",
+          "desc": "沙箱、网络与文件系统范围。",
+          "settings": [
+            {
+              "key": "body.sandbox",
+              "label": "Sandbox",
+              "desc": "strict/balanced/off。",
+              "type": "enum",
+              "default": "strict",
+              "options": [
+                "strict",
+                "balanced",
+                "off"
+              ],
+              "effect": "L2",
+              "restart": "body"
+            },
+            {
+              "key": "body.networkAccess",
+              "label": "Network access",
+              "desc": "ask/allow/deny。",
+              "type": "enum",
+              "default": "ask",
+              "options": [
+                "ask",
+                "allow",
+                "deny"
+              ],
+              "effect": "L2"
+            },
+            {
+              "key": "body.filesystemScope",
+              "label": "Filesystem scope",
+              "desc": "body/workspace/user。",
+              "type": "enum",
+              "default": "body",
+              "options": [
+                "body",
+                "workspace",
+                "user"
+              ],
+              "effect": "L2"
+            },
+            {
+              "key": "body.installDir",
+              "label": "Install directory",
+              "desc": "体安装目录。",
+              "type": "path",
+              "default": "%LOCALAPPDATA%\\Atom\\Bodies",
+              "effect": "L1",
+              "restart": "app"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "field",
+      "group": "Layers",
+      "icon": "✦",
+      "color": "#ec4899",
+      "title": "场层设置",
+      "desc": "模型 provider、上下文/记忆、routing、autonomy、safety、成本与评估。",
+      "groups": [
+        {
+          "label": "Providers & Models",
+          "desc": "模型接入；API key 只存 secretRef。",
+          "settings": [
+            {
+              "key": "field.provider",
+              "label": "Provider",
+              "desc": "openai/azure/openai-compatible/local。",
+              "type": "enum",
+              "default": "openai-compatible",
+              "options": [
+                "openai",
+                "azure",
+                "openai-compatible",
+                "local"
+              ],
+              "effect": "L1",
+              "initialSource": "user"
+            },
+            {
+              "key": "field.baseUrl",
+              "label": "Base URL",
+              "desc": "兼容 OpenAI 的 API base URL。",
+              "type": "string",
+              "default": "https://api.openai.com/v1",
+              "effect": "L1",
+              "initialSource": "user"
+            },
+            {
+              "key": "field.apiKeyRef",
+              "label": "API key",
+              "desc": "只保存 secretRef；不回显明文。",
+              "type": "secret",
+              "default": "env:OPENAI_API_KEY",
+              "effect": "L2",
+              "secret": true,
+              "initialSource": "user"
+            },
+            {
+              "key": "field.defaultModel",
+              "label": "Default model",
+              "desc": "auto 由 router 选择。",
+              "type": "string",
+              "default": "auto",
+              "effect": "L1",
+              "initialSource": "user"
+            }
+          ]
+        },
+        {
+          "label": "Context & Memory",
+          "desc": "上下文预算、记忆范围与引用。",
+          "settings": [
+            {
+              "key": "field.contextBudget",
+              "label": "Context budget",
+              "desc": "每次请求的 context token 预算。",
+              "type": "number",
+              "default": 32000,
+              "min": 1000,
+              "max": 200000,
+              "unit": "tokens",
+              "effect": "L1"
+            },
+            {
+              "key": "field.memoryScope",
+              "label": "Memory scope",
+              "desc": "session/workspace/global。",
+              "type": "enum",
+              "default": "workspace",
+              "options": [
+                "session",
+                "workspace",
+                "global"
+              ],
+              "effect": "L1"
+            },
+            {
+              "key": "field.citationPolicy",
+              "label": "Citation policy",
+              "desc": "高风险场景强制 always。",
+              "type": "enum",
+              "default": "whenAvailable",
+              "options": [
+                "always",
+                "whenAvailable",
+                "off"
+              ],
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Routing",
+          "desc": "模型路由与 fallback。",
+          "settings": [
+            {
+              "key": "field.routingMode",
+              "label": "Routing mode",
+              "desc": "auto/manual/fallback。",
+              "type": "enum",
+              "default": "auto",
+              "options": [
+                "auto",
+                "manual",
+                "fallback"
+              ],
+              "effect": "L1"
+            },
+            {
+              "key": "field.fallbackModel",
+              "label": "Fallback model",
+              "desc": "主模型失败时的 fallback。",
+              "type": "string",
+              "default": "auto",
+              "effect": "L1"
+            },
+            {
+              "key": "field.latencyBudget",
+              "label": "Latency budget",
+              "desc": "路由延迟预算。",
+              "type": "number",
+              "default": 8000,
+              "min": 500,
+              "max": 120000,
+              "unit": "ms",
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Autonomy",
+          "desc": "自主等级、审批与单次成本上限。",
+          "settings": [
+            {
+              "key": "field.autonomyLevel",
+              "label": "Autonomy level",
+              "desc": "A0 建议/A1 草稿/A2 自动可撤销/A3 禁止。",
+              "type": "enum",
+              "default": "A1",
+              "options": [
+                "A0",
+                "A1",
+                "A2",
+                "A3"
+              ],
+              "effect": "L2",
+              "initialSource": "user"
+            },
+            {
+              "key": "field.requireApprovalForL2",
+              "label": "Require approval for L2",
+              "desc": "不可被单次 run 绕过。",
+              "type": "bool",
+              "default": true,
+              "effect": "L2",
+              "policy": true
+            },
+            {
+              "key": "field.maxCostPerRun",
+              "label": "Max cost per run",
+              "desc": "单次运行成本上限。",
+              "type": "number",
+              "default": 0.5,
+              "min": 0,
+              "max": 100,
+              "unit": "USD",
+              "effect": "L1"
+            }
+          ]
+        },
+        {
+          "label": "Safety & Citations",
+          "desc": "内容过滤、secret redaction 与 prompt 日志。",
+          "settings": [
+            {
+              "key": "field.contentFilter",
+              "label": "Content filter",
+              "desc": "standard/strict/off。",
+              "type": "enum",
+              "default": "standard",
+              "options": [
+                "standard",
+                "strict",
+                "off"
+              ],
+              "effect": "L2"
+            },
+            {
+              "key": "field.redactSecrets",
+              "label": "Redact secrets",
+              "desc": "日志/诊断自动脱敏。",
+              "type": "bool",
+              "default": true,
+              "effect": "L2",
+              "policy": true
+            },
+            {
+              "key": "field.logPrompts",
+              "label": "Log prompts",
+              "desc": "可能含敏感数据；默认关闭。",
+              "type": "bool",
+              "default": false,
+              "effect": "L2",
+              "policy": true
+            }
+          ]
+        },
+        {
+          "label": "Cost & Limits",
+          "desc": "预算、单次上限与告警。",
+          "settings": [
+            {
+              "key": "field.monthlyBudget",
+              "label": "Monthly budget",
+              "desc": "月度预算。",
+              "type": "number",
+              "default": 50,
+              "min": 0,
+              "max": 10000,
+              "unit": "USD",
+              "effect": "L1"
+            },
+            {
+              "key": "field.perRunCap",
+              "label": "Per-run cap",
+              "desc": "单次运行上限。",
+              "type": "number",
+              "default": 0.5,
+              "min": 0,
+              "max": 100,
+              "unit": "USD",
+              "effect": "L1"
+            },
+            {
+              "key": "field.alertThreshold",
+              "label": "Alert threshold",
+              "desc": "预算告警阈值。",
+              "type": "number",
+              "default": 80,
+              "min": 1,
+              "max": 100,
+              "unit": "%",
+              "effect": "L0"
+            }
+          ]
+        },
+        {
+          "label": "Evaluation",
+          "desc": "保存时评估与回归集。",
+          "settings": [
+            {
+              "key": "field.evalOnSave",
+              "label": "Evaluate on save",
+              "desc": "保存配置时跑评估。",
+              "type": "bool",
+              "default": false,
+              "effect": "L1"
+            },
+            {
+              "key": "field.regressionSuite",
+              "label": "Regression suite",
+              "desc": "评估使用的回归集。",
+              "type": "string",
+              "default": "default",
+              "effect": "L1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "info",
+      "group": "Info",
+      "icon": "ⓘ",
+      "color": "#94a3b8",
+      "title": "信息",
+      "desc": "只读版本、运行时、数据位置、诊断、许可证、更新历史与支持动作。",
+      "info": true
+    }
+  ],
+  "infoCards": [
+    {
+      "title": "About",
+      "icon": "ⓘ",
+      "rows": [
+        [
+          "Version",
+          "1.4.2"
+        ],
+        [
+          "Build",
+          "2026.11.23"
+        ],
+        [
+          "Channel",
+          "stable"
+        ],
+        [
+          "Commit",
+          "9f2c4e7"
+        ]
+      ],
+      "actions": [
+        [
+          "Copy version",
+          "Version copied"
+        ]
+      ]
+    },
+    {
+      "title": "Runtime & Platform",
+      "icon": "▤",
+      "rows": [
+        [
+          "OS",
+          "Windows 11 24H2"
+        ],
+        [
+          "Arch",
+          "x64"
+        ],
+        [
+          "Runtime",
+          ".NET 9"
+        ],
+        [
+          "WebView",
+          "2.0"
+        ]
+      ],
+      "actions": [
+        [
+          "Copy diagnostics",
+          "Diagnostics copied"
+        ]
+      ]
+    },
+    {
+      "title": "Data Locations",
+      "icon": "⌂",
+      "rows": [
+        [
+          "Config",
+          "%APPDATA%/Atom/config"
+        ],
+        [
+          "Data",
+          "%LOCALAPPDATA%/Atom/data"
+        ],
+        [
+          "Cache",
+          "%LOCALAPPDATA%/Atom/cache"
+        ],
+        [
+          "Logs",
+          "%LOCALAPPDATA%/Atom/logs"
+        ]
+      ],
+      "actions": [
+        [
+          "Open data folder",
+          "Opening data folder…"
+        ],
+        [
+          "Open logs",
+          "Opening logs…"
+        ]
+      ]
+    },
+    {
+      "title": "Diagnostics & Logs",
+      "icon": "⌁",
+      "rows": [
+        [
+          "Log level",
+          "info"
+        ],
+        [
+          "Last error",
+          "none"
+        ],
+        [
+          "Trace sampling",
+          "10%"
+        ],
+        [
+          "Support bundle",
+          "redacted"
+        ]
+      ],
+      "actions": [
+        [
+          "Export support bundle",
+          "Support bundle queued"
+        ],
+        [
+          "Copy diagnostics",
+          "Diagnostics copied"
+        ]
+      ]
+    },
+    {
+      "title": "Licenses & Credits",
+      "icon": "§",
+      "rows": [
+        [
+          "App license",
+          "Proprietary"
+        ],
+        [
+          "OSS",
+          "42 packages"
+        ],
+        [
+          "Fonts",
+          "IBM Plex / Inter"
+        ],
+        [
+          "Assets",
+          "3rd-party credits"
+        ]
+      ],
+      "actions": [
+        [
+          "View licenses",
+          "Opening licenses…"
+        ]
+      ]
+    },
+    {
+      "title": "Updates",
+      "icon": "↻",
+      "rows": [
+        [
+          "Last check",
+          "2 min ago"
+        ],
+        [
+          "Current",
+          "1.4.2"
+        ],
+        [
+          "Available",
+          "none"
+        ],
+        [
+          "History",
+          "1.4.0 → 1.4.2"
+        ]
+      ],
+      "actions": [
+        [
+          "Check updates",
+          "Checking updates…"
+        ],
+        [
+          "Release notes",
+          "Opening release notes…"
+        ]
+      ]
+    },
+    {
+      "title": "Support / Reset",
+      "icon": "!",
+      "rows": [
+        [
+          "Reset settings",
+          "keeps data"
+        ],
+        [
+          "Reset app",
+          "deletes local data"
+        ],
+        [
+          "Safe mode",
+          "starts clean"
+        ],
+        [
+          "Backup",
+          "recommended"
+        ]
+      ],
+      "actions": [
+        [
+          "Reset settings",
+          "Reset settings requires confirmation"
+        ],
+        [
+          "Reset app",
+          "Reset app requires confirmation"
+        ]
+      ],
+      "danger": true
+    }
+  ]
+}

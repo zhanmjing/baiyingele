@@ -1,0 +1,102 @@
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="mark">P</div>
+      <div><b>Point Studio</b><span>点层界面 · 编译设置</span></div>
+    </div>
+    <nav id="tabs">
+      <button data-tab="matrix" class="on">点矩阵</button>
+      <button data-tab="instances">点实例</button>
+      <button data-tab="settings">编译设置</button>
+      <button data-tab="build">构建</button>
+    </nav>
+    <input class="search" id="search" placeholder="搜索 point class / instance / capability…">
+    <button class="build-btn" id="buildBtn">Build ▸</button>
+  </header>
+
+  <aside id="sidebar">
+    <div class="side-head">
+      <div class="kicker">Point Explorer</div>
+      <h2>点类目录</h2>
+      <p>按 domain / effect / capability 浏览。点击查看契约与实例。</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="classList" id="classList"></div>
+  </aside>
+
+  <main id="main">
+    <div class="main-head">
+      <div class="mh-icon" id="mhIcon">◆</div>
+      <div class="mh-text">
+        <div class="mh-kicker" id="mhKicker">POINT MATRIX</div>
+        <h1 id="mhTitle">点层可视化</h1>
+        <div class="mh-sub" id="mhSub">PointClass × PointInstance</div>
+      </div>
+      <div class="mh-badges" id="mhBadges"></div>
+    </div>
+
+    <section class="view on" id="view-matrix">
+      <div class="section-title">Class × Instance 矩阵 · 点击单元格查看实例</div>
+      <div class="matrix-wrap"><div class="matrix" id="matrix"></div></div>
+      <div class="legend">
+        <span><i style="background:#22c55e"></i>L0 / ok</span>
+        <span><i style="background:#22d3ee"></i>L1</span>
+        <span><i style="background:#f59e0b"></i>L2 / warn</span>
+        <span><i style="background:#ef4444"></i>L3 / error</span>
+        <span><i style="background:#475569"></i>disabled</span>
+        <span>空心 = 类 · 实心 = 实例</span>
+      </div>
+      <div class="section-title" style="margin-top:11px">选中实例 · 端口与绑定</div>
+      <div class="relation" id="relation"></div>
+    </section>
+
+    <section class="view" id="view-instances">
+      <div class="section-title">PointInstance 表 · 类、状态、revision、activation、binding</div>
+      <div class="matrix-wrap" style="max-height:calc(100% - 24px)"><table class="table" id="instTable"></table></div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="build-head">
+        <span class="section-title" style="margin:0">Build Profile</span>
+        <div class="seg" id="profileSeg"></div>
+        <span class="section-title" style="margin:0 0 0 8px">Target</span>
+        <select class="select" id="targetSel">
+          <option value="body-package">body-package</option>
+          <option value="point-pack">point-pack</option>
+          <option value="flow-bundle">flow-bundle</option>
+          <option value="plugin">plugin</option>
+          <option value="wasm">wasm</option>
+        </select>
+        <span class="badge amber" id="dirtyBadge">clean</span>
+        <span style="margin-left:auto;font:7px var(--mono);color:var(--faint)">Effective value + source badge</span>
+      </div>
+      <div id="settingsGroups"></div>
+    </section>
+
+    <section class="view" id="view-build">
+      <div class="section-title">Build Pipeline</div>
+      <div class="pipeline" id="pipeline"></div>
+      <div class="section-title">Diagnostics</div>
+      <div id="diags"></div>
+      <div class="section-title" style="margin-top:10px">Artifact</div>
+      <div id="artifact"></div>
+    </section>
+  </main>
+
+  <aside id="inspector"></aside>
+
+  <section id="dock">
+    <div class="dock-head">
+      <span>Run Console / Build Log</span>
+      <div class="dock-tabs" id="dockTabs">
+        <button class="dock-tab on" data-dock="build">build</button>
+        <button class="dock-tab" data-dock="runs">runs</button>
+        <button class="dock-tab" data-dock="problems">problems</button>
+      </div>
+      <button class="dock-clear" id="clearDock">clear</button>
+    </div>
+    <div class="dock-body" id="dockBody"></div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>

@@ -1,0 +1,57 @@
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="eyebrow">Body Layer</div>
+      <h1>体层可视化</h1>
+      <p>BodyClass 是产品蓝图；BodyInstance 是具体安装配置。点开一个类，看它由哪些面、线、点组成。</p>
+      <div class="stats">
+        <div class="stat"><b id="statClasses">29</b><span>classes</span></div>
+        <div class="stat"><b id="statInstances">82</b><span>instances</span></div>
+        <div class="stat"><b id="statP0">9</b><span>P0</span></div>
+      </div>
+    </div>
+    <div class="search-wrap"><input class="search" id="search" placeholder="搜索 body / 实例 / 描述…"></div>
+    <div class="filters" id="filters"></div>
+    <div class="prio-row" id="prioRow">
+      <button class="prio-btn on" data-prio="all">全部</button>
+      <button class="prio-btn" data-prio="P0">P0</button>
+      <button class="prio-btn" data-prio="P1">P1</button>
+      <button class="prio-btn" data-prio="P2">P2</button>
+    </div>
+    <div class="classList" id="classList"></div>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="hero-icon" id="heroIcon">◈</div>
+        <div class="hero-text">
+          <div class="hero-kicker">BodyClass</div>
+          <h1 id="heroName">文件预览</h1>
+          <div class="hero-id" id="heroId">body.file-preview@1.0.0</div>
+          <p class="hero-desc" id="heroDesc"></p>
+        </div>
+        <div class="hero-badges" id="heroBadges"></div>
+      </div>
+    </header>
+    <nav class="tabs" id="tabs">
+      <button class="tab on" data-tab="composition">组合</button>
+      <button class="tab" data-tab="instances">实例</button>
+      <button class="tab" data-tab="manifest">Manifest</button>
+      <button class="tab" data-tab="lifecycle">生命周期</button>
+    </nav>
+    <div id="content"></div>
+  </main>
+
+  <aside id="inspector">
+    <div class="insp-empty">选择左侧的 BodyClass，或点击实例卡片查看详情。</div>
+  </aside>
+</div>
+
+<div class="bubble" id="bubble">
+  <div class="top"><span class="badge" id="bubbleKind">BODY</span><span class="name" id="bubbleName">—</span><span class="status" id="bubbleStatus">running</span></div>
+  <div class="bar"><i id="bubbleBar"></i></div>
+  <div class="sub"><span id="bubbleSub">—</span><span id="bubblePct">0%</span></div>
+</div>
+<div class="toast" id="toast"></div>

@@ -1,0 +1,3140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dock Management · 启动坞编辑</title>
+<style>
+:root{--bg:#070b12;--panel:#0d1420;--card:#111a29;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.26);--ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;--amber:#f59e0b;--green:#22c55e;--red:#ef4444;--mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;--font:"Segoe UI","Microsoft YaHei",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+#app{display:grid;grid-template-rows:54px minmax(0,1fr);height:100%}
+header{display:flex;align-items:center;gap:10px;padding:0 13px;background:linear-gradient(180deg,#0e1725,#0a111c);border-bottom:1px solid var(--line);position:relative;z-index:10}
+.brand{display:flex;align-items:center;gap:8px;min-width:190px}.brand .mark{width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#08111c;font:800 12px var(--mono)}.brand b{font-size:13px}.brand span{display:block;font:7px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.top-stats{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-left:auto}.mini{font:6.8px var(--mono);padding:2px 4px;border-radius:3px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c;white-space:nowrap}.mini.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.06)}.mini.green{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.06)}.mini.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.06)}.mini.violet{color:#c4b5fd;border-color:rgba(139,92,246,.24);background:rgba(139,92,246,.06)}
+.btn{border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:6px;padding:5px 8px;font-size:8.5px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:3px;cursor:pointer}.btn:hover{color:#dbeafe;border-color:var(--line2)}.btn.primary{border-color:rgba(139,92,246,.36);background:rgba(139,92,246,.12);color:#ddd6fe}.btn.small{padding:3px 5px;font-size:7px}.btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.25)}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr) 330px;min-height:0}
+.left{border-right:1px solid var(--line);background:#0a111c;overflow-y:auto;padding:10px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.left::-webkit-scrollbar,main::-webkit-scrollbar,#inspector::-webkit-scrollbar{width:7px}.left::-webkit-scrollbar-thumb,main::-webkit-scrollbar-thumb,#inspector::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.pane-head{display:flex;align-items:center;gap:5px;margin:6px 2px 5px}.pane-head b{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.pane-head .count{font:6.5px var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:3px;padding:1px 3px}.pane-head button{margin-left:auto;border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:4px;width:18px;height:18px;line-height:1;font-size:10px}
+.flow-item{border:1px solid var(--line);border-radius:6px;background:#0e1826;padding:6px 7px;margin-bottom:4px;cursor:pointer}.flow-item:hover{border-color:var(--line2);background:#121f30}.flow-item.on{border-color:rgba(139,92,246,.45);background:rgba(139,92,246,.08)}.fi-top{display:flex;align-items:center;gap:4px}.fi-name{font-size:9px;font-weight:650;color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fi-ver{font:6px var(--mono);color:var(--faint);margin-left:auto;white-space:nowrap}.fi-id{font:6px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}.fi-meta{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}.fi-badge{font:6px var(--mono);color:#8fa2bb;border:1px solid var(--line);border-radius:2px;padding:1px 2px}
+.inst-item{border:1px solid var(--line);border-radius:5px;background:#0b1420;padding:5px 6px;margin-bottom:3px;cursor:pointer}.inst-item:hover{background:#121f30}.inst-item.on{border-color:rgba(34,211,238,.38);background:rgba(34,211,238,.06)}.ii-top{display:flex;align-items:center;gap:4px}.ii-name{font-size:8px;color:#b9c7da;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ii-rev{font:6px var(--mono);color:#a5f3fc;margin-left:auto}.ii-id{font:6px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}.ii-status{font:6px var(--mono);padding:1px 2px;border-radius:2px;border:1px solid var(--line);color:#86efac;margin-top:3px;display:inline-block}.ii-status.draft{color:#fcd34d;border-color:rgba(245,158,11,.22)}.ii-status.archived{color:#94a3b8}
+main{min-width:0;overflow-y:auto;padding:14px 16px 28px;background:radial-gradient(circle at 30% 0%,rgba(139,92,246,.045),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.hero{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px}.hero-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#171f33;border:1px solid rgba(139,92,246,.25);color:#c4b5fd;font:800 13px var(--mono);flex:0 0 38px}.hero-main{min-width:0;flex:1}.kicker{font:7px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}.hero h1{font-size:18px;margin:2px 0 2px}.hero p{margin:0;color:#94a8c0;font-size:10px;line-height:1.5}.hero-actions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.mode-tabs{display:flex;gap:2px;border:1px solid var(--line);border-radius:5px;padding:2px;background:#0a1420;align-self:flex-start}.mode-tabs button{border:none;background:transparent;color:#7e91a7;border-radius:3px;padding:4px 6px;font-size:7.5px}.mode-tabs button.on{background:rgba(139,92,246,.14);color:#ddd6fe}
+.stats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.graph-panel{border:1px solid var(--line);border-radius:8px;background:#0a1420;margin-bottom:9px;overflow:hidden}.panel-head{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}.panel-head b{font-size:8.5px;color:#dbeafe}.panel-head .sub{font:6.8px var(--mono);color:var(--faint)}.panel-head .right{margin-left:auto;display:flex;gap:4px;align-items:center}.graph-scroll{overflow:auto;max-height:440px;min-height:250px;background:#08101b}.canvas{position:relative;margin:12px}.canvas svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.node{position:absolute;border:1px solid var(--line2);border-radius:7px;background:#101b2a;padding:7px 7px 6px;cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s;overflow:hidden}.node:hover{background:#152238}.node.selected{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(34,211,238,.22),0 6px 18px rgba(0,0,0,.24)}.node.point.impl{border-color:rgba(34,197,94,.42)}.node.point.placeholder{border-style:dashed;border-color:rgba(245,158,11,.42);background:rgba(35,27,16,.7)}.node.gate{border-color:rgba(139,92,246,.38);background:rgba(24,20,38,.8)}.node.subflow{border-color:rgba(59,130,246,.4);background:rgba(15,26,45,.8)}.n-kind{font:6px var(--mono);letter-spacing:.08em;color:var(--faint);text-transform:uppercase}.n-label{font-size:9px;font-weight:650;color:#dbeafe;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-meta{font:6.5px var(--mono);color:#8fa2bb;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-pin{font:6px var(--mono);color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-badge{position:absolute;right:4px;bottom:4px;font:5.5px var(--mono);padding:1px 2px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#0a1420}.n-badge.ok{color:#86efac;border-color:rgba(34,197,94,.28)}.n-badge.sub{color:#93c5fd;border-color:rgba(59,130,246,.28)}.n-badge.ph{color:#fcd34d;border-color:rgba(245,158,11,.28)}.n-jump{position:absolute;right:4px;top:4px;width:16px;height:16px;border-radius:4px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.09);color:#86efac;font-size:8px;line-height:1;padding:0}
+.legend{display:flex;gap:9px;flex-wrap:wrap;padding:5px 8px;border-top:1px solid var(--line);font:6.8px var(--mono);color:var(--faint)}.legend span{display:flex;align-items:center;gap:3px}.legend i{width:6px;height:6px;border-radius:2px;display:inline-block}.legend i.impl{background:var(--green)}.legend i.ph{background:var(--amber)}.legend i.gate{background:var(--violet)}.legend i.sub{background:var(--blue)}
+.bind-panel{border:1px solid var(--line);border-radius:8px;background:#0a1420;overflow:hidden}.table-wrap{overflow:auto;max-height:290px}table{width:100%;border-collapse:collapse;font-size:8px}th{position:sticky;top:0;z-index:2;text-align:left;font:7px var(--mono);color:var(--faint);padding:6px 7px;border-bottom:1px solid var(--line);background:#0d1926;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}td{padding:6px 7px;border-bottom:1px solid rgba(148,163,184,.07);color:#9fb1c8;vertical-align:middle}.tr-node{cursor:pointer}.tr-node:hover td{background:#101d2c}.tr-node.on td{background:rgba(34,211,238,.05)}.mono{font-family:var(--mono);font-size:7px;color:#8fa2bb}.t-label{font-size:8.5px;color:#dbeafe}.t-sub{display:block;font:6.3px var(--mono);color:var(--faint);margin-top:1px;word-break:break-all}.pill{font:6px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);white-space:nowrap}.pill.ok{color:#86efac;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.05)}.pill.ph{color:#fcd34d;border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.05)}.pill.gate{color:#c4b5fd;border-color:rgba(139,92,246,.28);background:rgba(139,92,246,.06)}.pill.sub{color:#93c5fd;border-color:rgba(59,130,246,.28);background:rgba(59,130,246,.06)}.plink{font:6.8px var(--mono);color:#86efac;border:1px solid rgba(34,197,94,.28);border-radius:3px;padding:2px 4px;background:rgba(34,197,94,.06);white-space:nowrap}.plink:hover{background:rgba(34,197,94,.12)}
+#inspector{border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:12px 12px 32px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.insp-kicker{font:7px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}.insp-title{font-size:13px;margin:4px 0 2px;color:#dbeafe}.insp-id{font:8px var(--mono);color:#c4b5fd;word-break:break-all;margin-bottom:7px}.insp-section{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:8px;margin-bottom:7px}.lh{font:7px var(--mono);color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.kv{display:grid;grid-template-columns:60px 1fr;gap:3px 6px;font-size:8px;line-height:1.45}.kv .k{color:var(--faint);font-family:var(--mono)}.kv .v{color:#b9c7da;word-break:break-all}.note{font-size:7.5px;line-height:1.55;color:var(--faint);border-left:2px solid rgba(245,158,11,.4);padding-left:6px;margin-top:6px}.actions{display:flex;gap:4px;flex-wrap:wrap}.actions .btn{flex:1;min-width:70px}.insp-list{border:1px solid var(--line);border-radius:5px;overflow:auto;max-height:190px;background:#0a1420}.insp-row{display:flex;justify-content:space-between;gap:5px;padding:4px 6px;border-bottom:1px solid rgba(148,163,184,.07);font:6.8px var(--mono);color:#8fa2bb;cursor:pointer}.insp-row:hover,.insp-row.on{background:#121f30;color:#dbeafe}.empty{padding:24px 8px;text-align:center;color:var(--faint);font-size:9px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:7px 11px;border-radius:7px;font-size:9px;z-index:60;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1250px){.layout{grid-template-columns:225px minmax(0,1fr)}#inspector{display:none}}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.left{display:none}main{padding:10px}.hero{flex-wrap:wrap}.top-stats{display:none}}
+
+/* ===== dock management ===== */
+.panel-search{width:100%;border:1px solid var(--line);border-radius:5px;background:#08111b;color:#dbeafe;font:7px var(--mono);padding:5px 6px;outline:none;margin-bottom:6px}.panel-search::placeholder{color:#5f7188}
+.dock-stage{position:relative;border:1px solid var(--line2);border-radius:9px;background:radial-gradient(circle at 50% 20%,rgba(34,211,238,.06),transparent 45%),#08111b;padding:12px;margin-bottom:8px;overflow:auto}
+.dock-shell{width:min(100%,760px);margin:0 auto;border:1px solid rgba(148,163,184,.24);border-radius:13px;background:linear-gradient(180deg,rgba(15,25,39,.97),rgba(10,18,29,.97));box-shadow:0 20px 55px rgba(0,0,0,.42);overflow:hidden;position:relative}
+.dock-shell:before{content:"";position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(6,182,212,.7),rgba(139,92,246,.6),transparent)}
+.dock-head{display:flex;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid var(--line)}
+.dock-brand{display:flex;align-items:center;gap:5px;min-width:0}.dock-brand b{font:8px var(--mono);color:#dbeafe;white-space:nowrap}.dock-brand span{font:5.5px var(--mono);color:#5f7188;white-space:nowrap}
+.dock-tabs{display:flex;gap:2px;flex:1;min-width:0;overflow:auto}.dock-tab{border:1px solid transparent;border-radius:4px;background:transparent;color:#7e91a7;font:6.2px var(--mono);padding:3px 6px;white-space:nowrap}.dock-tab:hover{color:#dbeafe;background:#152238}.dock-tab.on{color:#a5f3fc;border-color:rgba(34,211,238,.24);background:rgba(34,211,238,.09)}
+.dock-tools{display:flex;gap:3px;flex:none}.dock-icon-btn{border:1px solid var(--line);background:#0d1826;color:#8fa2bb;border-radius:3px;width:18px;height:18px;font-size:8px;display:grid;place-items:center}
+.dock-grid{display:grid;grid-template-columns:repeat(var(--cols,6),minmax(0,1fr));gap:var(--gap,6px);padding:10px}
+.dock-tile{position:relative;border:1px solid transparent;border-radius:7px;background:transparent;padding:5px 3px 4px;min-height:calc(var(--tile,64px) + 9px);text-align:center;cursor:grab;transition:.12s;user-select:none}
+.dock-tile:hover{background:rgba(148,163,184,.07);border-color:var(--line);transform:translateY(-1px)}.dock-tile.on{border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.07);box-shadow:0 0 0 1px rgba(34,211,238,.12)}
+.dock-tile.dragging{opacity:.35}.dock-tile.drop-target{border-color:#22d3ee;background:rgba(34,211,238,.08)}
+.dock-tile-icon{width:calc(var(--tile,64px) * .58);height:calc(var(--tile,64px) * .58);border-radius:10px;display:grid;place-items:center;margin:0 auto 4px;font:7px var(--mono);background:linear-gradient(145deg,rgba(34,211,238,.16),rgba(59,130,246,.06));border:1px solid rgba(34,211,238,.2);color:#a5f3fc;overflow:hidden}
+.dock-tile[data-kind="flow"] .dock-tile-icon{background:linear-gradient(145deg,rgba(139,92,246,.2),rgba(59,130,246,.06));border-color:rgba(139,92,246,.24);color:#ddd6fe}
+.dock-label{font-size:6.5px;line-height:1.2;color:#9fb1c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dock-show-sub .dock-sub{display:block}.dock-sub{display:none;font:5px var(--mono);color:#5f7188;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.dock-hotkey{position:absolute;right:3px;top:3px;font:5px var(--mono);border:1px solid var(--line);border-radius:2px;padding:0 2px;background:#0a1420;color:#8fa2bb}
+.dock-map-dot{position:absolute;left:4px;top:4px;width:5px;height:5px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.6)}.dock-map-dot.ph{background:#f59e0b;box-shadow:none}
+.dock-foot{display:flex;align-items:center;gap:5px;padding:6px 9px;border-top:1px solid var(--line)}.dock-page{width:13px;height:3px;border-radius:9px;background:#22d3ee;opacity:.65}.dock-page.dim{width:3px;background:#334155;opacity:1}.dock-foot .grow{flex:1}
+.dock-template-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:8px}.dock-template{border:1px solid var(--line);border-radius:7px;background:#0d1826;padding:8px;cursor:pointer}.dock-template:hover{border-color:rgba(34,211,238,.3)}.dock-template b{display:block;font-size:8px;color:#dbeafe}.dock-template span{display:block;font:6px var(--mono);color:#5f7188;line-height:1.5;margin-top:3px}
+.dock-settings{border:1px solid var(--line);border-radius:7px;background:#0d1826;padding:8px;margin-bottom:8px}.dock-settings .row{display:flex;align-items:center;gap:5px;margin-bottom:5px;font:6.5px var(--mono);color:#8fa2bb}.dock-settings .row label{min-width:54px;color:#5f7188}.dock-settings input[type=range]{flex:1;accent-color:#22d3ee}.dock-settings input[type=number],.dock-settings select{border:1px solid var(--line);border-radius:3px;background:#08111b;color:#9fb1c8;font:6.5px var(--mono);padding:2px 3px}.dock-settings .chk{display:flex;gap:3px;align-items:center}.dock-settings .chk input{accent-color:#22d3ee}
+.target-tabs{display:flex;gap:3px;margin:6px 0}.target-tabs button{border:1px solid var(--line);border-radius:3px;padding:3px 7px;background:#0d1826;color:#7e91a7;font:6.5px var(--mono)}.target-tabs button.on{border-color:rgba(34,211,238,.28);background:rgba(34,211,238,.07);color:#a5f3fc}.target-search{width:100%;border:1px solid var(--line);border-radius:4px;background:#08111b;color:#dbeafe;padding:4px 6px;font:7px var(--mono);outline:none;margin-bottom:4px}.target-list{max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:4px;background:#08111b}.target-item{display:flex;align-items:center;gap:5px;width:100%;border:none;border-bottom:1px solid rgba(148,163,184,.07);background:transparent;color:#8fa2bb;text-align:left;padding:4px 6px;font:6.5px var(--mono)}.target-item:hover{background:#121f30}.target-item.on{background:rgba(34,211,238,.07);color:#dbeafe}.target-item .ti-main{min-width:0;flex:1}.target-item .ti-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.target-item .ti-sub{display:block;color:#5f7188;font-size:5.6px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.target-kind{font:5.5px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 2px;white-space:nowrap}.target-kind.point{color:#a5f3fc;border-color:rgba(34,211,238,.24)}.target-kind.line{color:#c4b5fd;border-color:rgba(139,92,246,.26)}.target-summary{display:flex;align-items:center;gap:5px;border:1px solid rgba(34,197,94,.2);border-radius:4px;background:rgba(34,197,94,.04);padding:4px 6px;margin-top:5px;font:6.5px var(--mono);color:#86efac;min-height:25px}
+.modal-overlay{position:fixed;inset:0;background:rgba(2,6,12,.68);backdrop-filter:blur(3px);z-index:50;display:grid;place-items:center;padding:14px}.modal{width:min(540px,100%);max-height:90vh;overflow:auto;border:1px solid var(--line2);border-radius:9px;background:#0d1724;padding:13px;box-shadow:0 24px 70px rgba(0,0,0,.55)}.modal h3{margin:0 0 4px;font-size:13px;color:#dbeafe}.modal p{margin:0 0 8px;font-size:7.5px;color:#8fa2bb;line-height:1.5}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.form-grid .full{grid-column:1/-1}.field label{display:block;font:6px var(--mono);color:#5f7188;text-transform:uppercase;margin-bottom:2px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:4px;background:#08111b;color:#dbeafe;font:7px var(--mono);padding:5px 6px;outline:none}.field textarea{min-height:40px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:5px;margin-top:9px}
+.tab-mini{border:1px solid var(--line);background:#111c2b;color:#8fa2bb;border-radius:2px;font:6px var(--mono);padding:1px 3px;margin-left:2px;cursor:pointer}.tab-mini:hover{color:#dbeafe;border-color:var(--line2)}
+.dock-shell.light{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,252,.96));border-color:rgba(15,23,42,.16)}.dock-shell.light .dock-head,.dock-shell.light .dock-foot{border-color:rgba(15,23,42,.12)}.dock-shell.light .dock-brand b,.dock-shell.light .dock-label{color:#0f172a}.dock-shell.light .dock-tab{color:#64748b}.dock-shell.light .dock-tab.on{color:#1d4ed8;border-color:rgba(37,99,235,.24);background:rgba(37,99,235,.08)}.dock-shell.light .dock-tile:hover{background:rgba(15,23,42,.05)}.dock-shell.light .dock-tile.on{background:rgba(6,182,212,.09);border-color:rgba(6,182,212,.35)}.dock-shell.light .dock-sub{color:#64748b}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><div class="mark">⌘</div><div><b>Dock Management</b><span>CLaunch Dock / Tabs / Tiles / Hotkeys</span></div></div>
+    <div class="top-stats" id="topStats"></div>
+    <a class="btn" href="surface-management.html#dock">← 面层管理</a>
+    <a class="btn" href="settings-workspace-settings-only.html#surface">⚙ 设置</a>
+  </header>
+  <div class="layout">
+    <aside class="left"><div id="leftPane"></div></aside>
+    <main id="main"></main>
+    <aside id="inspector"></aside>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DOCK_DATA = {
+  "tabs": [
+    {
+      "id": "common",
+      "name": "常用"
+    },
+    {
+      "id": "dev",
+      "name": "开发"
+    },
+    {
+      "id": "system",
+      "name": "系统"
+    },
+    {
+      "id": "tools",
+      "name": "工具"
+    },
+    {
+      "id": "web",
+      "name": "外网"
+    }
+  ],
+  "tiles": [
+    {
+      "id": "github",
+      "tab": "common",
+      "name": "GitHub",
+      "sub": "inst.site-github",
+      "kind": "flow",
+      "icon": "GH",
+      "hotkey": "1",
+      "target": "inst.site-github@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "youtube",
+      "tab": "common",
+      "name": "YouTube",
+      "sub": "inst.site-youtube",
+      "kind": "flow",
+      "icon": "▶",
+      "hotkey": "2",
+      "target": "inst.site-youtube@r3",
+      "effect": "L2"
+    },
+    {
+      "id": "vpn",
+      "tab": "common",
+      "name": "确保 VPN",
+      "sub": "inst.ensure-vpn-ask",
+      "kind": "flow",
+      "icon": "VPN",
+      "hotkey": "3",
+      "target": "inst.ensure-vpn-ask@r2",
+      "effect": "L2"
+    },
+    {
+      "id": "vscode",
+      "tab": "common",
+      "name": "VS Code",
+      "sub": "inst.open-app-vscode",
+      "kind": "flow",
+      "icon": "VS",
+      "hotkey": "4",
+      "target": "inst.open-app-vscode-project@r2",
+      "effect": "L1"
+    },
+    {
+      "id": "terminal",
+      "tab": "common",
+      "name": "终端",
+      "sub": "open.terminal",
+      "kind": "point",
+      "icon": ">_",
+      "hotkey": "5",
+      "target": "open.terminal@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "translate",
+      "tab": "common",
+      "name": "截图翻译",
+      "sub": "inst.screenshot-en-zh",
+      "kind": "flow",
+      "icon": "文",
+      "hotkey": "6",
+      "target": "inst.screenshot-en-zh@r4",
+      "effect": "L1"
+    },
+    {
+      "id": "invoice",
+      "tab": "common",
+      "name": "发票归档",
+      "sub": "inst.invoice-company",
+      "kind": "flow",
+      "icon": "¥",
+      "hotkey": "7",
+      "target": "inst.invoice-company@r6",
+      "effect": "L1"
+    },
+    {
+      "id": "clipboard",
+      "tab": "common",
+      "name": "剪贴板存文件",
+      "sub": "inst.clipboard-inbox",
+      "kind": "flow",
+      "icon": "▤",
+      "hotkey": "8",
+      "target": "inst.clipboard-inbox@r3",
+      "effect": "L1"
+    },
+    {
+      "id": "sysmon",
+      "tab": "common",
+      "name": "系统监控",
+      "sub": "sys.metrics.snapshot",
+      "kind": "point",
+      "icon": "◉",
+      "hotkey": "9",
+      "target": "sys.metrics.snapshot@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "settings",
+      "tab": "common",
+      "name": "设置",
+      "sub": "settings.open",
+      "kind": "point",
+      "icon": "⚙",
+      "hotkey": "0",
+      "target": "settings.open@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "google",
+      "tab": "common",
+      "name": "Google",
+      "sub": "inst.site-google",
+      "kind": "flow",
+      "icon": "G",
+      "hotkey": "",
+      "target": "inst.site-google@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "openai",
+      "tab": "common",
+      "name": "OpenAI",
+      "sub": "inst.site-openai",
+      "kind": "flow",
+      "icon": "AI",
+      "hotkey": "",
+      "target": "inst.site-openai@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "dev-github",
+      "tab": "dev",
+      "name": "GitHub",
+      "sub": "inst.site-github",
+      "kind": "flow",
+      "icon": "GH",
+      "hotkey": "1",
+      "target": "inst.site-github@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "dev-vscode",
+      "tab": "dev",
+      "name": "VS Code",
+      "sub": "inst.open-app-vscode",
+      "kind": "flow",
+      "icon": "VS",
+      "hotkey": "2",
+      "target": "inst.open-app-vscode-project@r2",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-terminal",
+      "tab": "dev",
+      "name": "终端",
+      "sub": "open.terminal",
+      "kind": "point",
+      "icon": ">_",
+      "hotkey": "3",
+      "target": "open.terminal@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-http",
+      "tab": "dev",
+      "name": "GitHub API",
+      "sub": "inst.http-github-status",
+      "kind": "flow",
+      "icon": "{}",
+      "hotkey": "4",
+      "target": "inst.http-github-status@r2",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-json",
+      "tab": "dev",
+      "name": "JSON 格式化",
+      "sub": "json.format",
+      "kind": "point",
+      "icon": "{}",
+      "hotkey": "5",
+      "target": "json.format@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "dev-regex",
+      "tab": "dev",
+      "name": "正则测试",
+      "sub": "text.regex",
+      "kind": "point",
+      "icon": ".*",
+      "hotkey": "6",
+      "target": "text.regex@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "dev-docker",
+      "tab": "dev",
+      "name": "Docker",
+      "sub": "inst.ensure-service-docker",
+      "kind": "flow",
+      "icon": "DK",
+      "hotkey": "7",
+      "target": "inst.ensure-service-docker@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-logs",
+      "tab": "dev",
+      "name": "运行日志",
+      "sub": "flow.run.logs",
+      "kind": "point",
+      "icon": "≡",
+      "hotkey": "8",
+      "target": "flow.run.logs@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-cpu",
+      "tab": "system",
+      "name": "CPU",
+      "sub": "sys.cpu.stats",
+      "kind": "point",
+      "icon": "CPU",
+      "hotkey": "1",
+      "target": "sys.cpu.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-gpu",
+      "tab": "system",
+      "name": "GPU",
+      "sub": "sys.gpu.stats",
+      "kind": "point",
+      "icon": "GPU",
+      "hotkey": "2",
+      "target": "sys.gpu.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-mem",
+      "tab": "system",
+      "name": "内存",
+      "sub": "sys.memory.stats",
+      "kind": "point",
+      "icon": "RAM",
+      "hotkey": "3",
+      "target": "sys.memory.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-net",
+      "tab": "system",
+      "name": "网速",
+      "sub": "sys.network.stats",
+      "kind": "point",
+      "icon": "NET",
+      "hotkey": "4",
+      "target": "sys.network.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-disk",
+      "tab": "system",
+      "name": "磁盘",
+      "sub": "sys.disk.stats",
+      "kind": "point",
+      "icon": "DSK",
+      "hotkey": "5",
+      "target": "sys.disk.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-uptime",
+      "tab": "system",
+      "name": "开机时长",
+      "sub": "sys.uptime",
+      "kind": "point",
+      "icon": "UP",
+      "hotkey": "6",
+      "target": "sys.uptime@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-temp",
+      "tab": "system",
+      "name": "温度",
+      "sub": "sys.sensors.temp",
+      "kind": "point",
+      "icon": "°C",
+      "hotkey": "7",
+      "target": "sys.sensors.temp@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-proc",
+      "tab": "system",
+      "name": "进程 Top",
+      "sub": "sys.process.top",
+      "kind": "point",
+      "icon": "TOP",
+      "hotkey": "8",
+      "target": "sys.process.top@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-service",
+      "tab": "system",
+      "name": "服务状态",
+      "sub": "service.status",
+      "kind": "point",
+      "icon": "SVC",
+      "hotkey": "9",
+      "target": "service.status@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-power",
+      "tab": "system",
+      "name": "电源",
+      "sub": "sys.power.status",
+      "kind": "point",
+      "icon": "PWR",
+      "hotkey": "0",
+      "target": "sys.power.status@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-ocr",
+      "tab": "tools",
+      "name": "OCR",
+      "sub": "ocr.read",
+      "kind": "point",
+      "icon": "OCR",
+      "hotkey": "1",
+      "target": "ocr.read@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-translate",
+      "tab": "tools",
+      "name": "翻译",
+      "sub": "translate.text",
+      "kind": "point",
+      "icon": "文",
+      "hotkey": "2",
+      "target": "translate.text@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "tool-clip",
+      "tab": "tools",
+      "name": "剪贴板",
+      "sub": "input.clipboard",
+      "kind": "point",
+      "icon": "▤",
+      "hotkey": "3",
+      "target": "input.clipboard@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-write",
+      "tab": "tools",
+      "name": "写文件",
+      "sub": "file.write",
+      "kind": "point",
+      "icon": "✎",
+      "hotkey": "4",
+      "target": "file.write@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "tool-hash",
+      "tab": "tools",
+      "name": "哈希",
+      "sub": "hash.sha256",
+      "kind": "point",
+      "icon": "#",
+      "hotkey": "5",
+      "target": "hash.sha256@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-zip",
+      "tab": "tools",
+      "name": "压缩",
+      "sub": "file.zip",
+      "kind": "point",
+      "icon": "ZIP",
+      "hotkey": "6",
+      "target": "file.zip@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "tool-color",
+      "tab": "tools",
+      "name": "取色",
+      "sub": "screen.color",
+      "kind": "point",
+      "icon": "◐",
+      "hotkey": "7",
+      "target": "screen.color@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-timer",
+      "tab": "tools",
+      "name": "计时器",
+      "sub": "timer.start",
+      "kind": "point",
+      "icon": "◷",
+      "hotkey": "8",
+      "target": "timer.start@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "web-github",
+      "tab": "web",
+      "name": "GitHub",
+      "sub": "inst.site-github",
+      "kind": "flow",
+      "icon": "GH",
+      "hotkey": "1",
+      "target": "inst.site-github@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-youtube",
+      "tab": "web",
+      "name": "YouTube",
+      "sub": "inst.site-youtube",
+      "kind": "flow",
+      "icon": "▶",
+      "hotkey": "2",
+      "target": "inst.site-youtube@r3",
+      "effect": "L2"
+    },
+    {
+      "id": "web-google",
+      "tab": "web",
+      "name": "Google",
+      "sub": "inst.site-google",
+      "kind": "flow",
+      "icon": "G",
+      "hotkey": "3",
+      "target": "inst.site-google@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-openai",
+      "tab": "web",
+      "name": "OpenAI",
+      "sub": "inst.site-openai",
+      "kind": "flow",
+      "icon": "AI",
+      "hotkey": "4",
+      "target": "inst.site-openai@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-x",
+      "tab": "web",
+      "name": "X",
+      "sub": "inst.site-x",
+      "kind": "flow",
+      "icon": "X",
+      "hotkey": "5",
+      "target": "inst.site-x@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-so",
+      "tab": "web",
+      "name": "StackOverflow",
+      "sub": "inst.site-so",
+      "kind": "flow",
+      "icon": "SO",
+      "hotkey": "6",
+      "target": "inst.site-so@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-bili",
+      "tab": "web",
+      "name": "Bilibili",
+      "sub": "inst.site-bili",
+      "kind": "flow",
+      "icon": "B",
+      "hotkey": "7",
+      "target": "inst.site-bili@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-reddit",
+      "tab": "web",
+      "name": "Reddit",
+      "sub": "inst.site-reddit",
+      "kind": "flow",
+      "icon": "R",
+      "hotkey": "8",
+      "target": "inst.site-reddit@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-gmail",
+      "tab": "web",
+      "name": "Gmail",
+      "sub": "inst.site-gmail",
+      "kind": "flow",
+      "icon": "M",
+      "hotkey": "9",
+      "target": "inst.site-gmail@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-maps",
+      "tab": "web",
+      "name": "Maps",
+      "sub": "inst.site-maps",
+      "kind": "flow",
+      "icon": "⌖",
+      "hotkey": "0",
+      "target": "inst.site-maps@r1",
+      "effect": "L2"
+    }
+  ]
+};
+const POINT_SEED = [
+  {
+    "id": "win.key.send",
+    "name": "发送快捷键",
+    "family": "hotkey",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 12,
+    "success": 99.2,
+    "updated": "2026-11-18",
+    "desc": "向目标窗口发送组合键；复制、粘贴、剪切只是不同 keys 的实例。",
+    "permissions": [
+      "input.send"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-copy",
+        "name": "复制",
+        "params": {
+          "keys": "Ctrl+C",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 8,
+        "lastRun": "2 分钟前",
+        "status": "stable",
+        "success": 99.4
+      },
+      {
+        "id": "i-paste",
+        "name": "粘贴",
+        "params": {
+          "keys": "Ctrl+V",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 7,
+        "lastRun": "2 分钟前",
+        "status": "stable",
+        "success": 99.1
+      },
+      {
+        "id": "i-cut",
+        "name": "剪切",
+        "params": {
+          "keys": "Ctrl+X",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 98.8
+      },
+      {
+        "id": "i-undo",
+        "name": "撤销",
+        "params": {
+          "keys": "Ctrl+Z",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 4,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99
+      },
+      {
+        "id": "i-select-all",
+        "name": "全选",
+        "params": {
+          "keys": "Ctrl+A",
+          "mode": "press",
+          "repeat": 1
+        },
+        "tags": [
+          "编辑"
+        ],
+        "usedBy": 2,
+        "lastRun": "3 天前",
+        "status": "stable",
+        "success": 99.6
+      }
+    ]
+  },
+  {
+    "id": "win.key.trigger",
+    "name": "监听快捷键",
+    "family": "hotkey",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 6,
+    "success": 98.6,
+    "updated": "2026-11-17",
+    "desc": "全局或按应用监听组合键，发出 trigger 事件；和发送快捷键共用 Hotkey 契约。",
+    "permissions": [
+      "input.registerHotkey"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-trigger-panel",
+        "name": "打开面板",
+        "params": {
+          "keys": "Ctrl+Alt+Space",
+          "scope": "global"
+        },
+        "tags": [
+          "入口"
+        ],
+        "usedBy": 5,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99
+      },
+      {
+        "id": "i-trigger-shot",
+        "name": "截图翻译",
+        "params": {
+          "keys": "Ctrl+Alt+T",
+          "scope": "global"
+        },
+        "tags": [
+          "截图",
+          "AI"
+        ],
+        "usedBy": 3,
+        "lastRun": "12 分钟前",
+        "status": "stable",
+        "success": 97.8
+      }
+    ]
+  },
+  {
+    "id": "win.window.control",
+    "name": "控制窗口",
+    "family": "window",
+    "version": "1.2.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 18,
+    "success": 96.4,
+    "updated": "2026-11-20",
+    "desc": "按 WindowSelector 找到顶层窗口，执行聚焦、移动、缩放、置顶、关闭等操作。",
+    "permissions": [
+      "window.read",
+      "window.control"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-focus-notepad",
+        "name": "聚焦记事本",
+        "params": {
+          "op": "focus",
+          "selector": {
+            "strategy": "process",
+            "process": "notepad.exe",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "error"
+          }
+        },
+        "tags": [
+          "常用"
+        ],
+        "usedBy": 4,
+        "lastRun": "5 分钟前",
+        "status": "stable",
+        "success": 98.2
+      },
+      {
+        "id": "i-move-chrome",
+        "name": "Chrome 移到副屏左半",
+        "params": {
+          "op": "move",
+          "monitor": 1,
+          "rect": "0,0,0.5,1",
+          "selector": {
+            "strategy": "process",
+            "process": "chrome.exe",
+            "title": "GitHub",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "error"
+          }
+        },
+        "tags": [
+          "多屏"
+        ],
+        "usedBy": 3,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 95.2
+      },
+      {
+        "id": "i-topmost",
+        "name": "当前窗口置顶切换",
+        "params": {
+          "op": "topmost",
+          "mode": "toggle",
+          "selector": {
+            "strategy": "foreground",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "error"
+          }
+        },
+        "tags": [
+          "窗口"
+        ],
+        "usedBy": 6,
+        "lastRun": "20 分钟前",
+        "status": "stable",
+        "success": 99.1
+      },
+      {
+        "id": "i-close-explorer",
+        "name": "关闭所有资源管理器",
+        "params": {
+          "op": "close",
+          "match": "all",
+          "selector": {
+            "strategy": "class",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "CabinetWClass",
+            "match": "all"
+          }
+        },
+        "tags": [
+          "危险"
+        ],
+        "usedBy": 1,
+        "lastRun": "昨天",
+        "status": "draft",
+        "success": 92
+      }
+    ]
+  },
+  {
+    "id": "win.window.query",
+    "name": "查询窗口",
+    "family": "window",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 9,
+    "success": 99,
+    "updated": "2026-11-12",
+    "desc": "只读查询顶层窗口，返回 WindowInfo[]；用于选择器测试、批量操作前预览。",
+    "permissions": [
+      "window.read"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-list-windows",
+        "name": "列出可见窗口",
+        "params": {
+          "limit": 50,
+          "sort": "z_order",
+          "selector": {
+            "strategy": "foreground",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "all"
+          }
+        },
+        "tags": [
+          "调试"
+        ],
+        "usedBy": 5,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.8
+      },
+      {
+        "id": "i-foreground",
+        "name": "当前前台窗口",
+        "params": {
+          "limit": 1,
+          "sort": "z_order",
+          "selector": {
+            "strategy": "foreground",
+            "process": "",
+            "title": "",
+            "titleMatch": "contains",
+            "className": "",
+            "match": "first"
+          }
+        },
+        "tags": [
+          "常用"
+        ],
+        "usedBy": 4,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.9
+      }
+    ]
+  },
+  {
+    "id": "win.open",
+    "name": "打开目标",
+    "family": "open",
+    "version": "1.1.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 14,
+    "success": 97.6,
+    "updated": "2026-11-19",
+    "desc": "一个类覆盖文件、文件夹、应用、URL；kind 参数决定解析路径与默认处理器。",
+    "permissions": [
+      "open.path",
+      "open.app",
+      "open.url"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-open-downloads",
+        "name": "打开下载文件夹",
+        "params": {
+          "kind": "folder",
+          "target": "%USERPROFILE%\\Downloads",
+          "app": "",
+          "args": ""
+        },
+        "tags": [
+          "常用"
+        ],
+        "usedBy": 6,
+        "lastRun": "10 分钟前",
+        "status": "stable",
+        "success": 99.5
+      },
+      {
+        "id": "i-open-github",
+        "name": "打开 GitHub",
+        "params": {
+          "kind": "url",
+          "target": "https://github.com",
+          "app": "",
+          "args": ""
+        },
+        "tags": [
+          "网页"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99.2
+      },
+      {
+        "id": "i-open-project",
+        "name": "用 VS Code 打开项目",
+        "params": {
+          "kind": "folder",
+          "target": "C:\\project",
+          "app": "code.exe",
+          "args": "."
+        },
+        "tags": [
+          "开发"
+        ],
+        "usedBy": 5,
+        "lastRun": "2 小时前",
+        "status": "stable",
+        "success": 96.8
+      }
+    ]
+  },
+  {
+    "id": "win.audio.volume",
+    "name": "控制系统音量",
+    "family": "settings",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 11,
+    "success": 99.3,
+    "updated": "2026-11-16",
+    "desc": "主音量与静音控制；action 参数覆盖 up/down/set/mute/toggle。应用音量放 P1。",
+    "permissions": [
+      "settings.audio.write"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-vol-up",
+        "name": "音量 +5",
+        "params": {
+          "action": "up",
+          "step": 5,
+          "level": 50,
+          "app": ""
+        },
+        "tags": [
+          "音量"
+        ],
+        "usedBy": 5,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.8
+      },
+      {
+        "id": "i-vol-toggle",
+        "name": "静音切换",
+        "params": {
+          "action": "toggle",
+          "step": 5,
+          "level": 50,
+          "app": ""
+        },
+        "tags": [
+          "音量"
+        ],
+        "usedBy": 4,
+        "lastRun": "30 分钟前",
+        "status": "stable",
+        "success": 99.9
+      },
+      {
+        "id": "i-vol-30",
+        "name": "设 30%",
+        "params": {
+          "action": "set",
+          "step": 5,
+          "level": 30,
+          "app": ""
+        },
+        "tags": [
+          "音量"
+        ],
+        "usedBy": 2,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99.6
+      }
+    ]
+  },
+  {
+    "id": "win.display.brightness",
+    "name": "控制亮度",
+    "family": "settings",
+    "version": "0.9.0",
+    "status": "draft",
+    "p0": true,
+    "official": true,
+    "usedBy": 5,
+    "success": 94.2,
+    "updated": "2026-11-20",
+    "desc": "内屏走 WMI、外屏走 DDC/CI；不支持时明确失败，不用假值。",
+    "permissions": [
+      "settings.display.brightness"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-bright-60",
+        "name": "内屏亮度 60%",
+        "params": {
+          "action": "set",
+          "value": 60,
+          "step": 10,
+          "monitor": "internal",
+          "method": "auto"
+        },
+        "tags": [
+          "亮度"
+        ],
+        "usedBy": 3,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 96.5
+      },
+      {
+        "id": "i-bright-up",
+        "name": "亮度 +10",
+        "params": {
+          "action": "up",
+          "value": 60,
+          "step": 10,
+          "monitor": "internal",
+          "method": "auto"
+        },
+        "tags": [
+          "亮度"
+        ],
+        "usedBy": 2,
+        "lastRun": "昨天",
+        "status": "draft",
+        "success": 91
+      }
+    ]
+  },
+  {
+    "id": "win.theme.mode",
+    "name": "深浅主题",
+    "family": "settings",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 8,
+    "success": 98.4,
+    "updated": "2026-11-15",
+    "desc": "写 AppsUseLightTheme / SystemUsesLightTheme 并广播 ImmersiveColorSet；部分应用需重启。",
+    "permissions": [
+      "settings.theme"
+    ],
+    "sideEffects": [
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-dark",
+        "name": "深色模式",
+        "params": {
+          "action": "set",
+          "mode": "dark",
+          "scope": "both"
+        },
+        "tags": [
+          "主题"
+        ],
+        "usedBy": 5,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 99
+      },
+      {
+        "id": "i-light-apps",
+        "name": "应用浅色",
+        "params": {
+          "action": "set",
+          "mode": "light",
+          "scope": "apps"
+        },
+        "tags": [
+          "主题"
+        ],
+        "usedBy": 3,
+        "lastRun": "3 天前",
+        "status": "stable",
+        "success": 97.2
+      }
+    ]
+  },
+  {
+    "id": "win.ocr.read",
+    "name": "OCR 识别",
+    "family": "capture",
+    "version": "1.1.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 16,
+    "success": 96.8,
+    "updated": "2026-11-18",
+    "desc": "从图片/截图提取文字；优先 Windows AI OCR，语言不支持时回退 PaddleOCR。",
+    "permissions": [
+      "screen.capture"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-ocr-auto",
+        "name": "截图转文字",
+        "params": {
+          "image": "$screenshot",
+          "lang": "auto",
+          "layout": true
+        },
+        "tags": [
+          "OCR"
+        ],
+        "usedBy": 9,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 97.5
+      },
+      {
+        "id": "i-ocr-en",
+        "name": "英文截图",
+        "params": {
+          "image": "$screenshot",
+          "lang": "en",
+          "layout": false
+        },
+        "tags": [
+          "OCR"
+        ],
+        "usedBy": 4,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 96
+      }
+    ]
+  },
+  {
+    "id": "win.clipboard.get",
+    "name": "读取剪贴板",
+    "family": "file",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 10,
+    "success": 99.5,
+    "updated": "2026-11-11",
+    "desc": "读取文本/图片/文件列表；format 参数决定输出类型。",
+    "permissions": [
+      "clipboard.read"
+    ],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-clip-text",
+        "name": "取文本",
+        "params": {
+          "format": "text"
+        },
+        "tags": [
+          "剪贴板"
+        ],
+        "usedBy": 7,
+        "lastRun": "刚刚",
+        "status": "stable",
+        "success": 99.7
+      },
+      {
+        "id": "i-clip-image",
+        "name": "取图片",
+        "params": {
+          "format": "image"
+        },
+        "tags": [
+          "剪贴板"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 98.9
+      }
+    ]
+  },
+  {
+    "id": "win.http.request",
+    "name": "HTTP 请求",
+    "family": "network",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 7,
+    "success": 97.8,
+    "updated": "2026-11-14",
+    "desc": "统一 GET/POST/PUT/DELETE，带超时、重试、SSRF 防护和响应大小限制。",
+    "permissions": [
+      "net.http"
+    ],
+    "sideEffects": [
+      "read",
+      "write"
+    ],
+    "instances": [
+      {
+        "id": "i-http-github",
+        "name": "GET GitHub API",
+        "params": {
+          "method": "GET",
+          "url": "https://api.github.com/repos/owner/repo",
+          "body": ""
+        },
+        "tags": [
+          "API"
+        ],
+        "usedBy": 4,
+        "lastRun": "2 小时前",
+        "status": "stable",
+        "success": 98.6
+      },
+      {
+        "id": "i-http-webhook",
+        "name": "POST Webhook",
+        "params": {
+          "method": "POST",
+          "url": "https://example.com/hook",
+          "body": "{\"event\":\"done\"}"
+        },
+        "tags": [
+          "API"
+        ],
+        "usedBy": 3,
+        "lastRun": "昨天",
+        "status": "draft",
+        "success": 94
+      }
+    ]
+  },
+  {
+    "id": "ui.form",
+    "name": "用户表单",
+    "family": "human",
+    "version": "0.8.0",
+    "status": "draft",
+    "p0": true,
+    "official": true,
+    "usedBy": 4,
+    "success": 97,
+    "updated": "2026-11-21",
+    "desc": "JSON Schema 驱动的表单；取消/超时返回明确状态，审批是 gate 不是这个类。",
+    "permissions": [],
+    "sideEffects": [
+      "read"
+    ],
+    "instances": [
+      {
+        "id": "i-form-confirm",
+        "name": "发布确认",
+        "params": {
+          "title": "确认发布",
+          "fields": "备注, 版本号"
+        },
+        "tags": [
+          "交互"
+        ],
+        "usedBy": 4,
+        "lastRun": "今天",
+        "status": "draft",
+        "success": 96.4
+      }
+    ]
+  },
+  {
+    "id": "ai.llm.complete",
+    "name": "LLM 补全",
+    "family": "ai",
+    "version": "1.0.0",
+    "status": "stable",
+    "p0": true,
+    "official": true,
+    "usedBy": 9,
+    "success": 97.4,
+    "updated": "2026-11-21",
+    "desc": "调用本地或云端模型补全/总结/翻译；模型是包资源，未加载时不占显存。",
+    "permissions": [
+      "ai.llm"
+    ],
+    "sideEffects": [
+      "read",
+      "network"
+    ],
+    "instances": [
+      {
+        "id": "i-llm-summarize",
+        "name": "总结选中文本",
+        "params": {
+          "model": "local.qwen3.5-7b",
+          "prompt": "请总结以下内容",
+          "temperature": 0.2,
+          "maxTokens": 1024
+        },
+        "tags": [
+          "AI"
+        ],
+        "usedBy": 5,
+        "lastRun": "1 小时前",
+        "status": "stable",
+        "success": 97.8
+      },
+      {
+        "id": "i-llm-translate",
+        "name": "翻译成英文",
+        "params": {
+          "model": "cloud.gpt-5.5",
+          "prompt": "Translate to English",
+          "temperature": 0.1,
+          "maxTokens": 800
+        },
+        "tags": [
+          "AI"
+        ],
+        "usedBy": 4,
+        "lastRun": "昨天",
+        "status": "stable",
+        "success": 96.6
+      }
+    ]
+  }
+];
+const LINE_DATA = {
+  "points": {
+    "screen.capture": {
+      "label": "截屏",
+      "icon": "▣",
+      "color": "#10b981"
+    },
+    "ocr.read": {
+      "label": "OCR",
+      "icon": "◎",
+      "color": "#f59e0b"
+    },
+    "translate.text": {
+      "label": "翻译",
+      "icon": "文",
+      "color": "#8b5cf6"
+    },
+    "render.overlay": {
+      "label": "浮层",
+      "icon": "◫",
+      "color": "#06b6d4"
+    },
+    "file.watch": {
+      "label": "文件监听",
+      "icon": "◉",
+      "color": "#3b82f6"
+    },
+    "extract.invoice": {
+      "label": "发票提取",
+      "icon": "⌁",
+      "color": "#ec4899"
+    },
+    "validate.invoice": {
+      "label": "发票校验",
+      "icon": "✓",
+      "color": "#22c55e"
+    },
+    "file.move": {
+      "label": "移动文件",
+      "icon": "↦",
+      "color": "#f97316"
+    },
+    "notify.tray": {
+      "label": "托盘通知",
+      "icon": "◔",
+      "color": "#94a3b8"
+    },
+    "input.clipboard": {
+      "label": "读剪贴板",
+      "icon": "▤",
+      "color": "#3b82f6"
+    },
+    "text.template": {
+      "label": "文本模板",
+      "icon": "{}",
+      "color": "#a78bfa"
+    },
+    "file.write": {
+      "label": "写文件",
+      "icon": "✎",
+      "color": "#f97316"
+    },
+    "notify.toast": {
+      "label": "Toast",
+      "icon": "◔",
+      "color": "#94a3b8"
+    },
+    "flow.ensure-vpn": {
+      "label": "VPN 保障",
+      "icon": "VPN",
+      "color": "#f59e0b"
+    },
+    "net.reachable": {
+      "label": "可达性",
+      "icon": "↔",
+      "color": "#06b6d4"
+    },
+    "sys.open": {
+      "label": "打开 URL",
+      "icon": "↗",
+      "color": "#3b82f6"
+    }
+  },
+  "pins": {
+    "cap.region": {
+      "pointClass": "screen.capture",
+      "rev": 2,
+      "params": {
+        "x": 0,
+        "y": 0,
+        "width": 800,
+        "height": 600
+      }
+    },
+    "ocr.zh.screen": {
+      "pointClass": "ocr.read",
+      "rev": 3,
+      "params": {
+        "lang": "zh",
+        "layout": true
+      }
+    },
+    "ocr.ja.screen": {
+      "pointClass": "ocr.read",
+      "rev": 1,
+      "params": {
+        "lang": "ja",
+        "layout": true
+      }
+    },
+    "trans.en2zh": {
+      "pointClass": "translate.text",
+      "rev": 1,
+      "params": {
+        "from": "en",
+        "to": "zh"
+      }
+    },
+    "trans.ja2zh": {
+      "pointClass": "translate.text",
+      "rev": 2,
+      "params": {
+        "from": "ja",
+        "to": "zh"
+      }
+    },
+    "overlay.toast": {
+      "pointClass": "render.overlay",
+      "rev": 2,
+      "params": {
+        "position": "bottom",
+        "duration": 2500
+      }
+    },
+    "watch.inbox": {
+      "pointClass": "file.watch",
+      "rev": 1,
+      "params": {
+        "dir": "C:\\inbox",
+        "events": [
+          "create"
+        ]
+      }
+    },
+    "ocr.zh.invoice": {
+      "pointClass": "ocr.read",
+      "rev": 4,
+      "params": {
+        "lang": "zh",
+        "layout": true
+      }
+    },
+    "ocr.en.invoice": {
+      "pointClass": "ocr.read",
+      "rev": 2,
+      "params": {
+        "lang": "en",
+        "layout": false
+      }
+    },
+    "extract.vendor": {
+      "pointClass": "extract.invoice",
+      "rev": 2,
+      "params": {
+        "rules": "company",
+        "fields": [
+          "vendor",
+          "amount",
+          "date"
+        ]
+      }
+    },
+    "extract.personal": {
+      "pointClass": "extract.invoice",
+      "rev": 1,
+      "params": {
+        "rules": "personal",
+        "fields": [
+          "amount",
+          "date"
+        ]
+      }
+    },
+    "validate.amount": {
+      "pointClass": "validate.invoice",
+      "rev": 1,
+      "params": {
+        "required": [
+          "vendor",
+          "amount"
+        ],
+        "maxAmount": 50000
+      }
+    },
+    "validate.personal": {
+      "pointClass": "validate.invoice",
+      "rev": 1,
+      "params": {
+        "required": [
+          "amount"
+        ],
+        "maxAmount": 5000
+      }
+    },
+    "move.archive": {
+      "pointClass": "file.move",
+      "rev": 2,
+      "params": {
+        "to": "C:\\archive\\company",
+        "overwrite": false
+      }
+    },
+    "notify.unmatched": {
+      "pointClass": "notify.tray",
+      "rev": 1,
+      "params": {
+        "title": "未匹配发票",
+        "level": "warning"
+      }
+    },
+    "clip.text": {
+      "pointClass": "input.clipboard",
+      "rev": 1,
+      "params": {
+        "format": "text"
+      }
+    },
+    "template.markdown": {
+      "pointClass": "text.template",
+      "rev": 2,
+      "params": {
+        "tpl": "# {text}"
+      }
+    },
+    "write.append": {
+      "pointClass": "file.write",
+      "rev": 3,
+      "params": {
+        "append": true,
+        "createDirs": true
+      }
+    },
+    "write.daily": {
+      "pointClass": "file.write",
+      "rev": 1,
+      "params": {
+        "append": false,
+        "createDirs": true
+      }
+    },
+    "notify.toast": {
+      "pointClass": "notify.toast",
+      "rev": 1,
+      "params": {
+        "title": "已保存",
+        "level": "success"
+      }
+    },
+    "inst.ensure-vpn-ask": {
+      "pointClass": "flow.ensure-vpn",
+      "rev": 2,
+      "params": {
+        "mode": "ask",
+        "autoConnect": false,
+        "timeoutSec": 30
+      }
+    },
+    "net.reachable.github": {
+      "pointClass": "net.reachable",
+      "rev": 1,
+      "params": {
+        "host": "github.com",
+        "port": 443,
+        "timeoutMs": 5000
+      }
+    },
+    "net.reachable.youtube": {
+      "pointClass": "net.reachable",
+      "rev": 1,
+      "params": {
+        "host": "www.youtube.com",
+        "port": 443,
+        "timeoutMs": 5000
+      }
+    },
+    "open.browser.github": {
+      "pointClass": "sys.open",
+      "rev": 1,
+      "params": {
+        "url": "https://github.com",
+        "kind": "url"
+      }
+    },
+    "open.browser.youtube": {
+      "pointClass": "sys.open",
+      "rev": 2,
+      "params": {
+        "url": "https://www.youtube.com",
+        "kind": "url"
+      }
+    },
+    "notify.system": {
+      "pointClass": "notify.toast",
+      "rev": 1,
+      "params": {
+        "level": "info",
+        "duration": 2500
+      }
+    }
+  },
+  "flows": [
+    {
+      "id": "flow.screenshot-translate",
+      "name": "截图翻译",
+      "family": "采集 → 转换 → 输出",
+      "version": "1.2.0",
+      "desc": "截屏 → OCR → 翻译 → 浮层；同一个类，不同语言/开关就是不同实例。",
+      "w": 1000,
+      "h": 320,
+      "params": [
+        {
+          "key": "sourceLang",
+          "label": "源语言",
+          "type": "enum",
+          "options": [
+            "en",
+            "ja",
+            "zh"
+          ],
+          "default": "en"
+        },
+        {
+          "key": "targetLang",
+          "label": "目标语言",
+          "type": "enum",
+          "options": [
+            "zh",
+            "en"
+          ],
+          "default": "zh"
+        },
+        {
+          "key": "overlay",
+          "label": "显示浮层",
+          "type": "bool",
+          "default": true
+        }
+      ],
+      "nodes": [
+        {
+          "id": "capture",
+          "x": 30,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "截屏",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "screen.capture",
+          "pointInstance": "cap.region",
+          "abstract": [
+            "region"
+          ],
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "image",
+              "type": "Image"
+            }
+          ]
+        },
+        {
+          "id": "ocr",
+          "x": 280,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "OCR",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "ocr.read",
+          "pointInstance": "ocr.zh.screen",
+          "abstract": [
+            "$sourceLang"
+          ],
+          "inputs": [
+            {
+              "name": "image",
+              "type": "Image"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ]
+        },
+        {
+          "id": "translate",
+          "x": 530,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "翻译",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "translate.text",
+          "pointInstance": "trans.en2zh",
+          "abstract": [
+            "$sourceLang → $targetLang"
+          ],
+          "inputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ]
+        },
+        {
+          "id": "overlay",
+          "x": 780,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "浮层",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "render.overlay",
+          "pointInstance": "overlay.toast",
+          "abstract": [
+            "if $overlay"
+          ],
+          "inputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ],
+          "outputs": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "capture",
+          "to": "ocr",
+          "label": "Image"
+        },
+        {
+          "from": "ocr",
+          "to": "translate",
+          "label": "Text"
+        },
+        {
+          "from": "translate",
+          "to": "overlay",
+          "label": "Text"
+        }
+      ],
+      "code": [
+        {
+          "text": "flow screenshotTranslate(sourceLang, targetLang, overlay) {",
+          "node": null
+        },
+        {
+          "text": "  shot       = screen.capture(region)",
+          "node": "capture"
+        },
+        {
+          "text": "  text       = ocr.read(shot, lang = sourceLang)",
+          "node": "ocr"
+        },
+        {
+          "text": "  translated = translate.text(text, from = sourceLang, to = targetLang)",
+          "node": "translate"
+        },
+        {
+          "text": "  if (overlay) render.overlay(translated)",
+          "node": "overlay"
+        },
+        {
+          "text": "}",
+          "node": null
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.en-zh",
+          "name": "英 → 中",
+          "rev": 4,
+          "args": {
+            "sourceLang": "en",
+            "targetLang": "zh",
+            "overlay": true
+          },
+          "pins": {
+            "capture": "cap.region",
+            "ocr": "ocr.zh.screen",
+            "translate": "trans.en2zh",
+            "overlay": "overlay.toast"
+          },
+          "trace": {
+            "capture": {
+              "ms": 120,
+              "status": "ok"
+            },
+            "ocr": {
+              "ms": 480,
+              "status": "ok"
+            },
+            "translate": {
+              "ms": 760,
+              "status": "ok"
+            },
+            "overlay": {
+              "ms": 90,
+              "status": "ok"
+            }
+          }
+        },
+        {
+          "id": "inst.ja-zh",
+          "name": "日 → 中",
+          "rev": 2,
+          "args": {
+            "sourceLang": "ja",
+            "targetLang": "zh",
+            "overlay": false
+          },
+          "pins": {
+            "capture": "cap.region",
+            "ocr": "ocr.ja.screen",
+            "translate": "trans.ja2zh",
+            "overlay": "overlay.toast"
+          },
+          "trace": {
+            "capture": {
+              "ms": 115,
+              "status": "ok"
+            },
+            "ocr": {
+              "ms": 510,
+              "status": "ok"
+            },
+            "translate": {
+              "ms": 820,
+              "status": "ok"
+            },
+            "overlay": {
+              "ms": 0,
+              "status": "skipped"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.invoice-archive",
+      "name": "发票归档",
+      "family": "批量 / 文件处理",
+      "version": "2.0.0",
+      "desc": "监听目录 → 遍历文件 → OCR → 提取 → 校验 → 分支移动/通知；规则不同是实例，图相同。",
+      "w": 1160,
+      "h": 430,
+      "params": [
+        {
+          "key": "watchDir",
+          "label": "监考目录",
+          "type": "folder",
+          "default": "C:\\inbox"
+        },
+        {
+          "key": "vendorRules",
+          "label": "供应商规则",
+          "type": "enum",
+          "options": [
+            "company",
+            "personal"
+          ],
+          "default": "company"
+        },
+        {
+          "key": "archiveDir",
+          "label": "归档目录",
+          "type": "folder",
+          "default": "C:\\archive"
+        },
+        {
+          "key": "ocrLang",
+          "label": "OCR 语言",
+          "type": "enum",
+          "options": [
+            "zh",
+            "en"
+          ],
+          "default": "zh"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "watch",
+          "x": 20,
+          "y": 175,
+          "w": 140,
+          "h": 82,
+          "label": "监听目录",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "file.watch",
+          "pointInstance": "watch.inbox",
+          "abstract": [
+            "$watchDir"
+          ],
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "files",
+              "type": "File[]"
+            }
+          ]
+        },
+        {
+          "id": "foreach",
+          "x": 180,
+          "y": 175,
+          "w": 120,
+          "h": 82,
+          "label": "遍历文件",
+          "kind": "gate",
+          "gate": "foreach",
+          "pointClass": null,
+          "pointInstance": null,
+          "abstract": [
+            "file in files"
+          ],
+          "inputs": [
+            {
+              "name": "files",
+              "type": "File[]"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "file",
+              "type": "File"
+            }
+          ]
+        },
+        {
+          "id": "ocr",
+          "x": 330,
+          "y": 175,
+          "w": 140,
+          "h": 82,
+          "label": "OCR",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "ocr.read",
+          "pointInstance": "ocr.zh.invoice",
+          "abstract": [
+            "$ocrLang"
+          ],
+          "inputs": [
+            {
+              "name": "file",
+              "type": "File"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ]
+        },
+        {
+          "id": "extract",
+          "x": 490,
+          "y": 175,
+          "w": 140,
+          "h": 82,
+          "label": "提取发票",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "extract.invoice",
+          "pointInstance": "extract.vendor",
+          "abstract": [
+            "$vendorRules"
+          ],
+          "inputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "invoice",
+              "type": "Invoice"
+            }
+          ]
+        },
+        {
+          "id": "validate",
+          "x": 650,
+          "y": 175,
+          "w": 140,
+          "h": 82,
+          "label": "校验",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "validate.invoice",
+          "pointInstance": "validate.amount",
+          "abstract": [
+            "rules = $vendorRules"
+          ],
+          "inputs": [
+            {
+              "name": "invoice",
+              "type": "Invoice"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "ok",
+              "type": "Bool"
+            }
+          ]
+        },
+        {
+          "id": "if",
+          "x": 810,
+          "y": 175,
+          "w": 120,
+          "h": 82,
+          "label": "if 命中",
+          "kind": "gate",
+          "gate": "if",
+          "pointClass": null,
+          "pointInstance": null,
+          "abstract": [
+            "ok?"
+          ],
+          "inputs": [
+            {
+              "name": "invoice",
+              "type": "Invoice"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "ok",
+              "type": "Bool"
+            },
+            {
+              "name": "else",
+              "type": "Bool"
+            }
+          ]
+        },
+        {
+          "id": "move",
+          "x": 960,
+          "y": 60,
+          "w": 140,
+          "h": 82,
+          "label": "移动归档",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "file.move",
+          "pointInstance": "move.archive",
+          "abstract": [
+            "to = $archiveDir"
+          ],
+          "inputs": [
+            {
+              "name": "file",
+              "type": "File"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "id": "notify",
+          "x": 960,
+          "y": 290,
+          "w": 140,
+          "h": 82,
+          "label": "未匹配通知",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "notify.tray",
+          "pointInstance": "notify.unmatched",
+          "abstract": [
+            "$(else)"
+          ],
+          "inputs": [
+            {
+              "name": "file",
+              "type": "File"
+            }
+          ],
+          "outputs": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "watch",
+          "to": "foreach",
+          "label": "File[]"
+        },
+        {
+          "from": "foreach",
+          "to": "ocr",
+          "label": "File"
+        },
+        {
+          "from": "ocr",
+          "to": "extract",
+          "label": "Text"
+        },
+        {
+          "from": "extract",
+          "to": "validate",
+          "label": "Invoice"
+        },
+        {
+          "from": "validate",
+          "to": "if",
+          "label": "Bool"
+        },
+        {
+          "from": "if",
+          "to": "move",
+          "label": "true",
+          "tone": "ok"
+        },
+        {
+          "from": "if",
+          "to": "notify",
+          "label": "false",
+          "tone": "warn"
+        }
+      ],
+      "code": [
+        {
+          "text": "flow invoiceArchive(watchDir, vendorRules, archiveDir, ocrLang) {",
+          "node": null
+        },
+        {
+          "text": "  files = file.watch(watchDir)",
+          "node": "watch"
+        },
+        {
+          "text": "  foreach (file in files) {",
+          "node": "foreach"
+        },
+        {
+          "text": "    text    = ocr.read(file, lang = ocrLang)",
+          "node": "ocr"
+        },
+        {
+          "text": "    invoice = extract.invoice(text, rules = vendorRules)",
+          "node": "extract"
+        },
+        {
+          "text": "    ok      = validate.invoice(invoice, rules = vendorRules)",
+          "node": "validate"
+        },
+        {
+          "text": "    if (ok) file.move(file, archiveDir)",
+          "node": "if"
+        },
+        {
+          "text": "    else    notify.unmatched(file)",
+          "node": "notify"
+        },
+        {
+          "text": "  }",
+          "node": null
+        },
+        {
+          "text": "}",
+          "node": null
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.company",
+          "name": "公司发票",
+          "rev": 6,
+          "args": {
+            "watchDir": "C:\\inbox",
+            "vendorRules": "company",
+            "archiveDir": "C:\\archive\\company",
+            "ocrLang": "zh"
+          },
+          "pins": {
+            "watch": "watch.inbox",
+            "ocr": "ocr.zh.invoice",
+            "extract": "extract.vendor",
+            "validate": "validate.amount",
+            "move": "move.archive",
+            "notify": "notify.unmatched"
+          },
+          "trace": {
+            "watch": {
+              "ms": 80,
+              "status": "ok"
+            },
+            "foreach": {
+              "ms": 20,
+              "status": "ok"
+            },
+            "ocr": {
+              "ms": 520,
+              "status": "ok"
+            },
+            "extract": {
+              "ms": 40,
+              "status": "ok"
+            },
+            "validate": {
+              "ms": 10,
+              "status": "ok"
+            },
+            "if": {
+              "ms": 1,
+              "status": "ok"
+            },
+            "move": {
+              "ms": 60,
+              "status": "ok"
+            },
+            "notify": {
+              "ms": 0,
+              "status": "skipped"
+            }
+          }
+        },
+        {
+          "id": "inst.personal",
+          "name": "个人发票",
+          "rev": 2,
+          "args": {
+            "watchDir": "C:\\inbox",
+            "vendorRules": "personal",
+            "archiveDir": "C:\\archive\\personal",
+            "ocrLang": "en"
+          },
+          "pins": {
+            "watch": "watch.inbox",
+            "ocr": "ocr.en.invoice",
+            "extract": "extract.personal",
+            "validate": "validate.personal",
+            "move": "move.archive",
+            "notify": "notify.unmatched"
+          },
+          "trace": {
+            "watch": {
+              "ms": 75,
+              "status": "ok"
+            },
+            "foreach": {
+              "ms": 18,
+              "status": "ok"
+            },
+            "ocr": {
+              "ms": 430,
+              "status": "ok"
+            },
+            "extract": {
+              "ms": 35,
+              "status": "ok"
+            },
+            "validate": {
+              "ms": 9,
+              "status": "ok"
+            },
+            "if": {
+              "ms": 1,
+              "status": "ok"
+            },
+            "move": {
+              "ms": 0,
+              "status": "skipped"
+            },
+            "notify": {
+              "ms": 50,
+              "status": "ok"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.clipboard-to-file",
+      "name": "剪贴板存文件",
+      "family": "输入 → 处理 → 保存",
+      "version": "1.0.0",
+      "desc": "读剪贴板 → 模板 → 写文件 → 通知；路径/追加开关不同就是不同实例。",
+      "w": 930,
+      "h": 300,
+      "params": [
+        {
+          "key": "path",
+          "label": "目标文件",
+          "type": "file",
+          "default": "~/inbox.md"
+        },
+        {
+          "key": "append",
+          "label": "追加写入",
+          "type": "bool",
+          "default": true
+        }
+      ],
+      "nodes": [
+        {
+          "id": "clip",
+          "x": 30,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "读剪贴板",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "input.clipboard",
+          "pointInstance": "clip.text",
+          "abstract": [
+            "format = text"
+          ],
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ]
+        },
+        {
+          "id": "template",
+          "x": 270,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "模板",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "text.template",
+          "pointInstance": "template.markdown",
+          "abstract": [
+            "tpl = markdown"
+          ],
+          "inputs": [
+            {
+              "name": "text",
+              "type": "Text"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "body",
+              "type": "Text"
+            }
+          ]
+        },
+        {
+          "id": "write",
+          "x": 510,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "写文件",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "file.write",
+          "pointInstance": "write.append",
+          "abstract": [
+            "$path, append=$append"
+          ],
+          "inputs": [
+            {
+              "name": "body",
+              "type": "Text"
+            }
+          ],
+          "outputs": []
+        },
+        {
+          "id": "notify",
+          "x": 750,
+          "y": 110,
+          "w": 140,
+          "h": 82,
+          "label": "通知",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "notify.toast",
+          "pointInstance": "notify.toast",
+          "abstract": [
+            "success"
+          ],
+          "inputs": [],
+          "outputs": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "clip",
+          "to": "template",
+          "label": "Text"
+        },
+        {
+          "from": "template",
+          "to": "write",
+          "label": "Text"
+        },
+        {
+          "from": "write",
+          "to": "notify",
+          "label": "done"
+        }
+      ],
+      "code": [
+        {
+          "text": "flow clipboardToFile(path, append) {",
+          "node": null
+        },
+        {
+          "text": "  text = input.clipboard.read(format = text)",
+          "node": "clip"
+        },
+        {
+          "text": "  body = text.template(text, tpl = markdown)",
+          "node": "template"
+        },
+        {
+          "text": "  file.write(path, body, append = append)",
+          "node": "write"
+        },
+        {
+          "text": "  notify.toast(\"saved\")",
+          "node": "notify"
+        },
+        {
+          "text": "}",
+          "node": null
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.inbox",
+          "name": "收件箱",
+          "rev": 3,
+          "args": {
+            "path": "~/inbox.md",
+            "append": true
+          },
+          "pins": {
+            "clip": "clip.text",
+            "template": "template.markdown",
+            "write": "write.append",
+            "notify": "notify.toast"
+          },
+          "trace": {
+            "clip": {
+              "ms": 20,
+              "status": "ok"
+            },
+            "template": {
+              "ms": 5,
+              "status": "ok"
+            },
+            "write": {
+              "ms": 15,
+              "status": "ok"
+            },
+            "notify": {
+              "ms": 10,
+              "status": "ok"
+            }
+          }
+        },
+        {
+          "id": "inst.daily",
+          "name": "每日笔记",
+          "rev": 1,
+          "args": {
+            "path": "~/daily/2026-11-23.md",
+            "append": false
+          },
+          "pins": {
+            "clip": "clip.text",
+            "template": "template.markdown",
+            "write": "write.daily",
+            "notify": "notify.toast"
+          },
+          "trace": {
+            "clip": {
+              "ms": 18,
+              "status": "ok"
+            },
+            "template": {
+              "ms": 4,
+              "status": "ok"
+            },
+            "write": {
+              "ms": 22,
+              "status": "ok"
+            },
+            "notify": {
+              "ms": 8,
+              "status": "ok"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.open-external-site",
+      "name": "打开外网网站",
+      "family": "外网访问 / Guard 组合",
+      "version": "1.0.0",
+      "desc": "解析站点策略 → 确保 VPN → 可选可达性检查 → 打开 URL → 通知。YouTube/GitHub 只是不同实例。",
+      "w": 1000,
+      "h": 320,
+      "params": [
+        {
+          "key": "url",
+          "label": "目标 URL",
+          "type": "text",
+          "required": true,
+          "default": "https://github.com"
+        },
+        {
+          "key": "vpnRequirement",
+          "label": "VPN 策略",
+          "type": "enum",
+          "options": [
+            "required",
+            "preferred",
+            "none"
+          ],
+          "default": "required"
+        },
+        {
+          "key": "checkReachability",
+          "label": "检查可达性",
+          "type": "bool",
+          "default": true
+        }
+      ],
+      "nodes": [
+        {
+          "id": "vpn",
+          "x": 30,
+          "y": 110,
+          "w": 160,
+          "h": 82,
+          "label": "VPN 保障",
+          "kind": "subflow",
+          "gate": null,
+          "pointClass": "flow.ensure-vpn",
+          "pointInstance": "inst.ensure-vpn-ask",
+          "abstract": [
+            "vpnRequirement"
+          ],
+          "inputs": [],
+          "outputs": [
+            {
+              "name": "guard",
+              "type": "GuardResult"
+            }
+          ]
+        },
+        {
+          "id": "check",
+          "x": 280,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "可达性检查",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "net.reachable",
+          "pointInstance": "net.reachable.github",
+          "abstract": [
+            "host = url.host"
+          ],
+          "inputs": [
+            {
+              "name": "guard",
+              "type": "GuardResult"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "reachable",
+              "type": "Bool"
+            }
+          ]
+        },
+        {
+          "id": "open",
+          "x": 530,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "打开 URL",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "sys.open",
+          "pointInstance": "open.browser.github",
+          "abstract": [
+            "url, kind=url"
+          ],
+          "inputs": [
+            {
+              "name": "reachable",
+              "type": "Bool"
+            }
+          ],
+          "outputs": [
+            {
+              "name": "opened",
+              "type": "Bool"
+            }
+          ]
+        },
+        {
+          "id": "notify",
+          "x": 780,
+          "y": 110,
+          "w": 150,
+          "h": 82,
+          "label": "通知",
+          "kind": "point",
+          "gate": null,
+          "pointClass": "notify.toast",
+          "pointInstance": "notify.system",
+          "abstract": [
+            "success"
+          ],
+          "inputs": [
+            {
+              "name": "opened",
+              "type": "Bool"
+            }
+          ],
+          "outputs": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "vpn",
+          "to": "check",
+          "label": "GuardResult"
+        },
+        {
+          "from": "check",
+          "to": "open",
+          "label": "Bool"
+        },
+        {
+          "from": "open",
+          "to": "notify",
+          "label": "Bool"
+        }
+      ],
+      "code": [
+        {
+          "text": "flow openExternalSite(url, vpnRequirement) {",
+          "node": null
+        },
+        {
+          "text": "  guard     = ensureVpn(vpnRequirement)",
+          "node": "vpn"
+        },
+        {
+          "text": "  reachable = net.reachable(url.host)",
+          "node": "check"
+        },
+        {
+          "text": "  opened    = sys.open(url)",
+          "node": "open"
+        },
+        {
+          "text": "  notify.toast(opened ? \"opened\" : guard.reason)",
+          "node": "notify"
+        },
+        {
+          "text": "}",
+          "node": null
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.site-github",
+          "name": "GitHub",
+          "rev": 1,
+          "args": {
+            "url": "https://github.com",
+            "vpnRequirement": "required",
+            "checkReachability": true
+          },
+          "pins": {
+            "vpn": "inst.ensure-vpn-ask",
+            "check": "net.reachable.github",
+            "open": "open.browser.github",
+            "notify": "notify.system"
+          },
+          "trace": {
+            "vpn": {
+              "ms": 1300,
+              "status": "ok"
+            },
+            "check": {
+              "ms": 60,
+              "status": "ok"
+            },
+            "open": {
+              "ms": 20,
+              "status": "ok"
+            },
+            "notify": {
+              "ms": 10,
+              "status": "ok"
+            }
+          }
+        },
+        {
+          "id": "inst.site-youtube",
+          "name": "YouTube",
+          "rev": 3,
+          "args": {
+            "url": "https://www.youtube.com",
+            "vpnRequirement": "required",
+            "checkReachability": true
+          },
+          "pins": {
+            "vpn": "inst.ensure-vpn-ask",
+            "check": "net.reachable.youtube",
+            "open": "open.browser.youtube",
+            "notify": "notify.system"
+          },
+          "trace": {
+            "vpn": {
+              "ms": 1500,
+              "status": "ok"
+            },
+            "check": {
+              "ms": 75,
+              "status": "ok"
+            },
+            "open": {
+              "ms": 25,
+              "status": "ok"
+            },
+            "notify": {
+              "ms": 10,
+              "status": "ok"
+            }
+          }
+        }
+      ]
+    }
+  ]
+};
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const deep = o => JSON.parse(JSON.stringify(o));
+const POINT_TARGETS = POINT_SEED.flatMap(c => c.instances.map(i => ({ id: `point:${c.id}/${i.id}`, kind: 'point', classId: c.id, className: c.name, instanceId: i.id, instanceName: i.name, label: `${c.name} / ${i.name}`, sub: `${c.id} / ${i.id}`, atomRef: `${c.id}/${i.id}`, href: `atom-catalog-management.html#${encodeURIComponent(c.id)}/${encodeURIComponent(i.id)}` })));
+const LINE_TARGETS = LINE_DATA.flows.flatMap(f => f.instances.map(i => ({ id: `line:${f.id}/${i.id}`, kind: 'line', flowId: f.id, flowName: f.name, instanceId: i.id, instanceName: i.name, label: `${f.name} / ${i.name}`, sub: `${f.id} / ${i.id}`, atomRef: `${i.id}@r${i.rev}`, href: `line-management.html#${encodeURIComponent(f.id)}/${encodeURIComponent(i.id)}` })));
+const ALL_TARGETS = [...POINT_TARGETS, ...LINE_TARGETS];
+function resolveTarget(tile) {
+  const base = String(tile.target || '').replace(/@r\d+$/, '');
+  const t = LINE_TARGETS.find(x => x.instanceId === base) || POINT_TARGETS.find(x => x.instanceId === base);
+  if (t) return { ...tile, kind: t.kind === 'point' ? 'point' : 'flow', target: t.atomRef, targetKind: t.kind, targetId: t.id, targetLabel: t.label, href: t.href, sub: tile.sub || t.label };
+  return { ...tile, targetKind: tile.kind === 'flow' ? 'line' : 'point', targetId: '', targetLabel: tile.sub || tile.target, href: '' };
+}
+let TABS = deep(DOCK_DATA.tabs);
+let TILES = deep(DOCK_DATA.tiles).map(resolveTarget);
+let SETTINGS = { tileSize: 64, columns: 6, gap: 6, theme: 'dark', showLabels: true, showSub: true, position: 'bottom' };
+const STORAGE = 'baiying.dockManager.v1';
+try {
+  const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null');
+  if (saved && Array.isArray(saved.tabs) && Array.isArray(saved.tiles) && saved.tabs.length) { TABS = saved.tabs; TILES = saved.tiles; SETTINGS = { ...SETTINGS, ...(saved.settings || {}) }; }
+} catch (_) {}
+const state = { tabId: TABS[0]?.id || '', tileId: '', query: '', draggingId: null, toastTimer: null };
+const tab = () => TABS.find(t => t.id === state.tabId) || TABS[0];
+const tabTiles = () => TILES.filter(t => t.tab === tab()?.id);
+const tile = () => TILES.find(t => t.id === state.tileId) || tabTiles()[0] || null;
+const stats = () => ({ tabs: TABS.length, tiles: TILES.length, flow: TILES.filter(t => t.kind === 'flow').length, point: TILES.filter(t => t.kind === 'point').length, mapped: TILES.filter(t => t.targetId && t.href).length });
+function saveData() { try { localStorage.setItem(STORAGE, JSON.stringify({ tabs: TABS, tiles: TILES, settings: SETTINGS, savedAt: new Date().toISOString() })); } catch (_) {} }
+function showToast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => t.classList.remove('show'), 1800); }
+function ensureSelection() { if (!TABS.some(t => t.id === state.tabId)) state.tabId = TABS[0]?.id || ''; const list = tabTiles(); if (!list.some(t => t.id === state.tileId)) state.tileId = list[0]?.id || ''; }
+function updateHash() { const h = `#${encodeURIComponent(state.tabId)}${state.tileId ? '/' + encodeURIComponent(state.tileId) : ''}`; if (location.hash !== h) history.replaceState(null, '', h); }
+function parseHash() {
+  const parts = (location.hash || '').replace(/^#/, '').split('/').map(decodeURIComponent).filter(Boolean);
+  if (parts[0] && TABS.some(t => t.id === parts[0])) state.tabId = parts[0];
+  if (parts[1] && TILES.some(t => t.id === parts[1])) state.tileId = parts[1];
+  ensureSelection();
+}
+function renderTopStats() {
+  const s = stats();
+  $('#topStats').innerHTML = `<span class="mini violet">${s.tabs} tabs</span><span class="mini cyan">${s.tiles} tiles</span><span class="mini">${s.flow} flow</span><span class="mini amber">${s.point} point</span><span class="mini green">${s.mapped} mapped</span><span class="mini">${s.tiles - s.mapped} 占位</span>`;
+}
+function renderLeft() {
+  const active = tab();
+  const all = tabTiles();
+  const q = state.query.trim().toLowerCase();
+  const list = q ? all.filter(t => [t.name, t.id, t.target, t.targetLabel, t.hotkey, t.kind, t.effect].join(' ').toLowerCase().includes(q)) : all;
+  $('#leftPane').innerHTML = `<div class="pane-head"><b>Launch Dock · Tabs</b><span class="count">${TABS.length}</span><button data-action="new-tab" title="新建 Tab">＋</button></div>
+    <input class="panel-search" id="dockSearch" placeholder="搜索 tile / target / hotkey…" value="${esc(state.query)}">
+    ${TABS.map(t => `<div class="flow-item ${t.id === active?.id ? 'on' : ''}" data-dock-tab="${esc(t.id)}"><div class="fi-top"><span class="fi-name">${esc(t.name)}</span><span class="fi-ver">${TILES.filter(x => x.tab === t.id).length}</span></div><div class="fi-id">${esc(t.id)}</div><div class="fi-meta"><button class="tab-mini" data-edit-tab="${esc(t.id)}" title="编辑 Tab">✎</button><button class="tab-mini" data-del-tab="${esc(t.id)}" title="删除 Tab">⌫</button></div></div>`).join('')}
+    <div class="pane-head" style="margin-top:10px"><b>${esc(active?.name || '')} · Tiles</b><span class="count">${list.length}</span><button data-action="new-tile" title="新建 Tile">＋</button></div>
+    ${list.map(t => `<div class="inst-item ${t.id === state.tileId ? 'on' : ''}" data-dock-tile="${esc(t.id)}"><div class="ii-top"><span class="ii-name">${esc(t.icon)} ${esc(t.name)}</span><span class="ii-rev">${esc(t.kind)}</span></div><div class="ii-id">${esc(t.targetLabel || t.target)}</div><span class="ii-status">${esc(t.effect)}${t.hotkey ? ' · ⌨' + esc(t.hotkey) : ''}</span></div>`).join('') || '<div class="empty">暂无 Tile</div>'}
+    <div style="margin-top:10px"><button class="btn" style="width:100%;justify-content:center" data-action="reset-data">↺ 重置示例启动坞</button></div>`;
+  const search = $('#dockSearch'); if (search) search.addEventListener('input', e => { state.query = e.target.value; renderLeft(); });
+  $$('#leftPane [data-dock-tab]').forEach(el => el.onclick = () => { state.tabId = el.dataset.dockTab; state.tileId = ''; ensureSelection(); updateHash(); renderAll(); });
+  $$('#leftPane [data-edit-tab]').forEach(b => b.onclick = e => { e.stopPropagation(); state.tabId = b.dataset.editTab; openTabModal(true); });
+  $$('#leftPane [data-del-tab]').forEach(b => b.onclick = e => { e.stopPropagation(); state.tabId = b.dataset.delTab; handleAction('delete-tab'); });
+  $$('#leftPane [data-dock-tile]').forEach(el => el.onclick = () => { state.tileId = el.dataset.dockTile; updateHash(); renderAll(); });
+  $$('#leftPane [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function dockPreview() {
+  const active = tab(), list = tabTiles(), t = tile();
+  return `<div class="dock-stage"><div class="dock-shell ${SETTINGS.theme === 'light' ? 'light' : ''} ${SETTINGS.showLabels ? 'dock-show-labels' : ''} ${SETTINGS.showSub ? 'dock-show-sub' : ''}" style="--tile:${SETTINGS.tileSize}px;--cols:${SETTINGS.columns};--gap:${SETTINGS.gap}px">
+    <div class="dock-head"><div class="dock-brand"><b>▣ CLaunch</b><span>${esc(active?.name || '')}</span></div><div class="dock-tabs">${TABS.map(x => `<button class="dock-tab ${x.id === active?.id ? 'on' : ''}" data-dock-tab-main="${esc(x.id)}">${esc(x.name)}</button>`).join('')}</div><div class="dock-tools"><button class="dock-icon-btn" data-action="new-tile">＋</button><button class="dock-icon-btn" data-action="new-tab">▤</button><button class="dock-icon-btn" data-action="edit-tab">✎</button><button class="dock-icon-btn" data-action="delete-tab">⌫</button></div></div>
+    <div class="dock-grid">${list.map(x => `<div class="dock-tile ${x.id === t?.id ? 'on' : ''}" draggable="true" data-dock-tile-main="${esc(x.id)}" data-kind="${esc(x.kind)}" title="${esc(x.targetLabel || x.target)}"><span class="dock-map-dot ${x.targetId && x.href ? '' : 'ph'}"></span>${x.hotkey ? `<span class="dock-hotkey">⌨${esc(x.hotkey)}</span>` : ''}<div class="dock-tile-icon">${esc(x.icon)}</div><div class="dock-label">${esc(x.name)}</div><div class="dock-sub">${esc(x.targetLabel || x.target)}</div></div>`).join('') || '<div class="empty" style="grid-column:1/-1">当前 Tab 没有 Tile。</div>'}</div>
+    <div class="dock-foot"><span class="dock-page"></span>${TABS.map(x => `<span class="dock-page ${x.id === active?.id ? '' : 'dim'}"></span>`).join('')}<span class="grow"></span><span class="mini">${list.length} tiles · ${SETTINGS.columns} cols · ${SETTINGS.tileSize}px</span></div>
+  </div></div>`;
+}
+function renderMain() {
+  const active = tab(), list = tabTiles(), t = tile();
+  const s = stats();
+  $('#main').innerHTML = `<div class="hero"><div class="hero-icon">⌘</div><div class="hero-main"><div class="kicker">SurfaceInstance · launch-dock.desktop@r1</div><h1>CLaunch 式启动坞</h1><p>分页、Tile、快捷键、拖拽排序、目标映射。点击 Tile 编辑；拖动 Tile 调整顺序。</p></div><div class="hero-actions"><button class="btn primary" data-action="new-tile">＋ Tile</button><button class="btn" data-action="new-tab">＋ Tab</button><button class="btn" data-action="reset-data">↺ 重置</button></div></div>
+    <div class="stats"><span class="mini violet">${s.tabs} tabs</span><span class="mini cyan">${s.tiles} tiles</span><span class="mini">${s.flow} flow</span><span class="mini amber">${s.point} point</span><span class="mini green">${s.mapped} mapped</span><span class="mini">${s.tiles - s.mapped} 占位</span></div>
+    ${dockPreview()}
+    <div class="bind-panel"><div class="panel-head"><b>${esc(active?.name || '')} · Tiles</b><span class="sub">drag to reorder</span><span class="right"><span class="mini">${list.length} tiles</span></span></div><div class="table-wrap"><table><thead><tr><th>Tile</th><th>Kind</th><th>Target</th><th>Hotkey</th><th>Effect</th><th>Status</th><th>Action</th></tr></thead><tbody>${list.map(x => `<tr class="tr-node ${x.id === t?.id ? 'on' : ''}" data-dock-row="${esc(x.id)}"><td><span class="t-label">${esc(x.icon)} ${esc(x.name)}</span><span class="t-sub">${esc(x.id)}</span></td><td><span class="kind-badge ${x.kind}">${x.kind === 'flow' ? 'FLOW' : 'POINT'}</span></td><td class="mono">${esc(x.targetLabel || x.target)}</td><td class="mono">${x.hotkey ? '⌨ ' + esc(x.hotkey) : '—'}</td><td class="mono">${esc(x.effect)}</td><td>${x.targetId && x.href ? '<span class="pill ok">mapped</span>' : '<span class="pill ph">占位</span>'}</td><td>${x.href ? `<a class="plink" href="${esc(x.href)}">打开 ↗</a>` : '<span class="pill ph">待接入</span>'}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">暂无 Tile。</td></tr>'}</tbody></table></div></div>`;
+  $$('#main [data-dock-tab-main]').forEach(b => b.onclick = () => { state.tabId = b.dataset.dockTabMain; state.tileId = ''; ensureSelection(); updateHash(); renderAll(); });
+  $$('#main [data-dock-tile-main]').forEach(el => {
+    el.onclick = () => { state.tileId = el.dataset.dockTileMain; updateHash(); renderAll(); };
+    el.addEventListener('dragstart', e => { state.draggingId = el.dataset.dockTileMain; el.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+    el.addEventListener('dragend', () => { state.draggingId = null; el.classList.remove('dragging'); $$('#main .dock-tile').forEach(x => x.classList.remove('drop-target')); });
+    el.addEventListener('dragover', e => { e.preventDefault(); if (state.draggingId && state.draggingId !== el.dataset.dockTileMain) el.classList.add('drop-target'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drop-target'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drop-target'); if (!state.draggingId || state.draggingId === el.dataset.dockTileMain) return; reorderTiles(state.draggingId, el.dataset.dockTileMain); });
+  });
+  $$('#main [data-dock-row]').forEach(el => el.onclick = () => { state.tileId = el.dataset.dockRow; updateHash(); renderAll(); });
+  $$('#main [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+  $$('#main .plink').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+}
+function reorderTiles(fromId, toId) {
+  const from = TILES.findIndex(t => t.id === fromId), to = TILES.findIndex(t => t.id === toId);
+  if (from < 0 || to < 0) return;
+  const [item] = TILES.splice(from, 1); TILES.splice(to, 0, item); state.tileId = fromId; saveData(); updateHash(); renderAll(); showToast('Tile 顺序已更新');
+}
+function renderInspector() {
+  const t = tile(), active = tab();
+  if (!t) {
+    $('#inspector').innerHTML = `<div class="insp-kicker">Launch Dock</div><div class="insp-title">CLaunch 式启动坞</div><div class="insp-id">launch-dock.desktop@r1</div>${dockSettingsHTML()}`;
+    bindSettings(); return;
+  }
+  $('#inspector').innerHTML = `<div class="insp-kicker">Dock Tile · ${esc(t.kind)}</div><div class="insp-title">${esc(t.icon)} ${esc(t.name)}</div><div class="insp-id">${esc(t.id)} · ${esc(t.tab)}</div>
+    <div class="insp-section"><div class="lh">Tile</div><div class="kv"><div class="k">kind</div><div class="v">${esc(t.kind)}</div><div class="k">target</div><div class="v">${esc(t.targetLabel || t.target)}</div><div class="k">atomRef</div><div class="v">${esc(t.target)}</div><div class="k">effect</div><div class="v">${esc(t.effect)}</div><div class="k">hotkey</div><div class="v">${t.hotkey ? '⌨ ' + esc(t.hotkey) : '—'}</div><div class="k">status</div><div class="v">${t.targetId && t.href ? 'mapped' : 'placeholder'}</div></div></div>
+    ${t.href ? `<div class="insp-section"><div class="lh">Target</div><a class="btn primary" style="width:100%" href="${esc(t.href)}">打开目标实例 ↗</a></div>` : '<div class="insp-section"><div class="lh">Target</div><div class="note">该 Tile target 尚未接入点层/线层实例；编辑时可选择实际实例。</div></div>'}
+    <div class="insp-section"><div class="lh">Actions</div><div class="actions"><button class="btn" data-action="edit-tile">✎ 编辑</button><button class="btn" data-action="duplicate-tile">⧉ 复制</button><button class="btn danger" data-action="delete-tile">⌫ 删除</button></div></div>
+    ${dockSettingsHTML()}`;
+  $$('#inspector [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+  bindSettings();
+}
+function dockSettingsHTML() {
+  return `<div class="insp-section"><div class="lh">Dock Settings</div><div class="dock-settings"><div class="row"><label>tile</label><input id="setTile" type="range" min="48" max="86" value="${SETTINGS.tileSize}"><span class="mono">${SETTINGS.tileSize}px</span></div><div class="row"><label>columns</label><input id="setCols" type="number" min="4" max="8" value="${SETTINGS.columns}"><label>gap</label><input id="setGap" type="number" min="2" max="16" value="${SETTINGS.gap}"></div><div class="row"><label>theme</label><select id="setTheme"><option value="dark" ${SETTINGS.theme === 'dark' ? 'selected' : ''}>dark</option><option value="light" ${SETTINGS.theme === 'light' ? 'selected' : ''}>light</option></select><label class="chk"><input type="checkbox" id="setLabels" ${SETTINGS.showLabels ? 'checked' : ''}> labels</label><label class="chk"><input type="checkbox" id="setSub" ${SETTINGS.showSub ? 'checked' : ''}> sub</label></div></div></div>`;
+}
+function bindSettings() {
+  const bind = (id, fn) => { const el = $('#' + id); if (el) el.addEventListener('input', e => { fn(e); saveData(); renderMain(); }); };
+  bind('setTile', e => { SETTINGS.tileSize = Number(e.target.value); });
+  bind('setCols', e => { SETTINGS.columns = Number(e.target.value); });
+  bind('setGap', e => { SETTINGS.gap = Number(e.target.value); });
+  const th = $('#setTheme'); if (th) th.addEventListener('change', e => { SETTINGS.theme = e.target.value; saveData(); renderMain(); });
+  const lb = $('#setLabels'); if (lb) lb.addEventListener('change', e => { SETTINGS.showLabels = e.target.checked; saveData(); renderMain(); });
+  const sb = $('#setSub'); if (sb) sb.addEventListener('change', e => { SETTINGS.showSub = e.target.checked; saveData(); renderMain(); });
+}
+function renderAll() { renderTopStats(); renderLeft(); renderMain(); renderInspector(); }
+function openModal(html) { $('#modalRoot').innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal">${html}</div></div>`; }
+function closeModal() { $('#modalRoot').innerHTML = ''; }
+function confirmModal(title, message, label, onConfirm) {
+  openModal(`<h3>${esc(title)}</h3><p>${esc(message)}</p><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn danger" id="modalConfirm">${esc(label)}</button></div>`);
+  $('#modalConfirm').onclick = () => { closeModal(); onConfirm(); };
+}
+function openTabModal(edit = false) {
+  const t = edit ? tab() : null;
+  openModal(`<h3>${edit ? '编辑 Tab' : '新建 Tab'}</h3><p>CLaunch 分页：每个 Tab 是一页 Tile。</p><div class="form-grid"><div class="field"><label>ID</label><input id="mTabId" value="${esc(t?.id || 'tab.custom')}" ${edit ? 'disabled' : ''}></div><div class="field"><label>名称</label><input id="mTabName" value="${esc(t?.name || '新分页')}"></div></div><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="tabSave">${edit ? '保存' : '创建'}</button></div>`);
+  $('#tabSave').onclick = () => {
+    const id = $('#mTabId').value.trim(), name = $('#mTabName').value.trim();
+    if (!id || !name) { showToast('ID 和名称必填'); return; }
+    if (!edit && TABS.some(x => x.id === id)) { showToast('Tab ID 已存在'); return; }
+    if (edit) { t.name = name; showToast('Tab 已更新'); }
+    else { TABS.push({ id, name }); state.tabId = id; state.tileId = ''; showToast('Tab 已创建'); }
+    saveData(); closeModal(); ensureSelection(); updateHash(); renderAll();
+  };
+}
+function openTileModal(edit = false) {
+  const t = edit ? tile() : null;
+  if (!t && !tab()) return;
+  let selectedTargetId = t?.targetId || '';
+  let targetKind = t?.targetKind || (t && t.kind === 'flow' ? 'line' : 'point');
+  openModal(`<h3>${edit ? '编辑 Tile' : '新建 Tile'}</h3><p>Tile = 图标 + 名称 + 目标实例 + 快捷键。目标可选点层或线层实例。</p>
+    <div class="form-grid"><div class="field"><label>名称</label><input id="mTileName" value="${esc(t?.name || 'New Tile')}"></div><div class="field"><label>icon</label><input id="mTileIcon" value="${esc(t?.icon || '▣')}"></div><div class="field"><label>kind</label><select id="mTileKind"><option value="flow" ${t?.kind === 'flow' ? 'selected' : ''}>flow</option><option value="point" ${t?.kind === 'point' ? 'selected' : ''}>point</option></select></div><div class="field"><label>effect</label><select id="mTileEffect">${['L0', 'L1', 'L2'].map(x => `<option value="${x}" ${(t?.effect || 'L1') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>hotkey</label><input id="mTileHotkey" maxlength="2" value="${esc(t?.hotkey || '')}"></div><div class="field"><label>tab</label><select id="mTileTab">${TABS.map(x => `<option value="${x.id}" ${(t?.tab || state.tabId) === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div></div>
+    <div class="target-tabs"><button data-target-kind="point" class="${targetKind === 'point' ? 'on' : ''}">点层实例 · ${POINT_TARGETS.length}</button><button data-target-kind="line" class="${targetKind === 'line' ? 'on' : ''}">线层实例 · ${LINE_TARGETS.length}</button></div><input class="target-search" id="targetSearch" placeholder="搜索实例 / class / flow…"><div class="target-list" id="targetList"></div><div class="target-summary" id="targetSummary"></div>
+    <div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="tileSave">${edit ? '保存' : '创建'}</button></div>`);
+  const renderTargets = () => {
+    const q = ($('#targetSearch')?.value || '').trim().toLowerCase();
+    const list = (targetKind === 'point' ? POINT_TARGETS : LINE_TARGETS).filter(x => !q || [x.label, x.sub, x.atomRef].join(' ').toLowerCase().includes(q));
+    $('#targetList').innerHTML = list.map(x => `<button class="target-item ${x.id === selectedTargetId ? 'on' : ''}" data-target-id="${esc(x.id)}"><span class="target-kind ${x.kind}">${x.kind === 'point' ? 'POINT' : 'LINE'}</span><span class="ti-main"><span class="ti-label">${esc(x.label)}</span><span class="ti-sub">${esc(x.sub)}</span></span><span style="color:#5f7188">选择</span></button>`).join('') || '<div class="empty">没有匹配实例。</div>';
+    $$('#targetList [data-target-id]').forEach(el => el.onclick = () => { selectedTargetId = el.dataset.targetId; const target = ALL_TARGETS.find(x => x.id === selectedTargetId); if (target) $('#mTileKind').value = target.kind === 'point' ? 'point' : 'flow'; renderTargets(); updateSummary(); });
+    updateSummary();
+  };
+  const updateSummary = () => {
+    const x = ALL_TARGETS.find(y => y.id === selectedTargetId);
+    $('#targetSummary').innerHTML = x ? `<span class="target-kind ${x.kind}">${x.kind === 'point' ? 'POINT' : 'LINE'}</span><b>${esc(x.label)}</b><span style="color:#5f7188">${esc(x.atomRef)}</span>` : '<span style="color:#fcd34d">未选择目标 · 保存前请选择点层或线层实例</span>';
+  };
+  $$('#modalRoot [data-target-kind]').forEach(b => b.onclick = () => { targetKind = b.dataset.targetKind; selectedTargetId = ''; $$('#modalRoot [data-target-kind]').forEach(x => x.classList.toggle('on', x.dataset.targetKind === targetKind)); renderTargets(); });
+  $('#targetSearch').addEventListener('input', renderTargets); renderTargets();
+  $('#tileSave').onclick = () => {
+    const name = $('#mTileName').value.trim(); if (!name) { showToast('名称必填'); return; }
+    const target = ALL_TARGETS.find(x => x.id === selectedTargetId);
+    if (!target) { showToast('请选择点层或线层实例'); return; }
+    const data = { name, icon: $('#mTileIcon').value.trim() || '▣', kind: target.kind === 'point' ? 'point' : 'flow', effect: $('#mTileEffect').value, hotkey: $('#mTileHotkey').value.trim(), tab: $('#mTileTab').value, target: target.atomRef, targetKind: target.kind, targetId: target.id, targetLabel: target.label, href: target.href, sub: target.label };
+    if (edit) Object.assign(t, data); else TILES.push({ ...data, id: `tile-${Date.now()}` });
+    state.tabId = data.tab; state.tileId = edit ? t.id : TILES[TILES.length - 1].id; saveData(); closeModal(); updateHash(); renderAll(); showToast(edit ? 'Tile 已更新' : 'Tile 已创建');
+  };
+}
+function handleAction(action) {
+  const t = tile(), active = tab();
+  if (action === 'new-tab') { openTabModal(false); return; }
+  if (action === 'edit-tab') { openTabModal(true); return; }
+  if (action === 'delete-tab') {
+    if (TABS.length <= 1) { showToast('至少保留一个 Tab'); return; }
+    const n = TILES.filter(x => x.tab === active.id).length;
+    confirmModal('删除 Tab？', `会删除 ${active.name} 及其 ${n} 个 Tile。`, '删除', () => { TABS = TABS.filter(x => x.id !== active.id); TILES = TILES.filter(x => x.tab !== active.id); state.tabId = TABS[0]?.id || ''; state.tileId = ''; saveData(); ensureSelection(); updateHash(); renderAll(); showToast('Tab 已删除'); }); return;
+  }
+  if (action === 'new-tile') { openTileModal(false); return; }
+  if (action === 'edit-tile') { openTileModal(true); return; }
+  if (action === 'duplicate-tile') { if (!t) return; const copy = deep(t); copy.id = `${t.id}.copy-${Date.now()}`; copy.name = `${t.name} 副本`; TILES.push(copy); state.tileId = copy.id; saveData(); updateHash(); renderAll(); showToast('Tile 已复制'); return; }
+  if (action === 'delete-tile') { if (!t) return; confirmModal('删除 Tile？', `会删除 ${t.name}。`, '删除', () => { TILES = TILES.filter(x => x.id !== t.id); state.tileId = ''; saveData(); ensureSelection(); updateHash(); renderAll(); showToast('Tile 已删除'); }); return; }
+  if (action === 'reset-data') { confirmModal('重置示例启动坞？', '会覆盖本地新增/修改，恢复 5 Tabs / 48 Tiles。', '重置', () => { TABS = deep(DOCK_DATA.tabs); TILES = deep(DOCK_DATA.tiles).map(resolveTarget); SETTINGS = { tileSize: 64, columns: 6, gap: 6, theme: 'dark', showLabels: true, showSub: true, position: 'bottom' }; state.tabId = TABS[0].id; state.tileId = ''; saveData(); ensureSelection(); updateHash(); renderAll(); showToast('示例启动坞已重置'); }); return; }
+}
+function init() {
+  parseHash(); ensureSelection(); renderAll();
+  $('#modalRoot').addEventListener('click', e => { if (e.target.id === 'modalOverlay' || e.target.closest('[data-modal-close]')) closeModal(); });
+  window.addEventListener('hashchange', () => { parseHash(); ensureSelection(); renderAll(); });
+}
+init();
+})();
+
+</script>
+</body>
+</html>

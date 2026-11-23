@@ -1,0 +1,772 @@
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const clamp = (x, a, b) => x < a ? a : x > b ? b : x;
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const smooth = (a, b, x) => ease((x - a) / Math.max(1e-6, b - a));
+const lerpV = (a, b, t) => ({ x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), z: lerp(a.z, b.z, t) });
+const avg = (arr) => arr.reduce((a, p) => ({ x: a.x + p.x / arr.length, y: a.y + p.y / arr.length, z: a.z + p.z / arr.length }), { x: 0, y: 0, z: 0 });
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const levelColor = { L0: '#22c55e', L1: '#3b82f6', L2: '#f59e0b', L3: '#ef4444' };
+const TAU = Math.PI * 2;
+
+const canvas = $('#gl');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+
+const state = {
+  yaw: 0.72, pitch: 0.34, dist: 15.2,
+  explode: 0, targetExplode: 0,
+  autoRotate: true, field: true,
+  running: false, runStart: 0, runProgress: 0, runs: 0,
+  time: 0, dragging: false, lastX: 0, lastY: 0, moved: 0,
+  selection: null, hover: null,
+  show: { points: true, lines: true, surfaces: true, body: true }
+};
+
+const CAM_FOV = 760;
+let pickables = [];
+
+/* ============================================================
+   1. 场景数据：一个 body，三个 surface，六条 flow，二十二个 point
+   ============================================================ */
+const BODY = {
+  id: 'body.external-access.work',
+  classId: 'body.external-access',
+  version: '1.0.0',
+  revision: 3,
+  permissions: ['network', 'process', 'uia'],
+  base: { x: 0, y: 0, z: 0 },
+  size: { w: 9.2, h: 5.6, d: 7.6 }
+};
+
+const SURFACES = [
+  {
+    id: 'surface.site-launcher', instance: 'surface.site-launcher@r3', classId: 'surface.site-launcher@1.0.0',
+    color: '#38bdf8', base: { x: -1.8, y: 0.2, z: -1.8 }, w: 5.0, h: 3.0, yaw: -0.35, tilt: 0.06,
+    data: 'FlowInstance registry', actions: 'runFlow · openSettings',
+    lines: [
+      {
+        id: 'flow.open-external-site', instance: 'inst.site-github@r1', classId: 'flow.open-external-site@1.0.0',
+        slots: ['vpn.status', 'net.reachable', 'browser.open', 'surface.show'],
+        points: [
+          { id: 'vpn.status', label: 'vpn.status', x: -1.8, y: -0.72, level: 'L0', cls: 'vpn.status', inst: 'vpn.default.status@r1', params: '{ profile: "work" }' },
+          { id: 'net.reachable', label: 'net.reachable', x: -0.6, y: -0.72, level: 'L0', cls: 'net.reachable', inst: 'net.reachable.default@r1', params: '{ url: "github.com" }' },
+          { id: 'browser.open', label: 'browser.open', x: 0.6, y: -0.10, level: 'L1', cls: 'browser.open', inst: 'browser.open.chrome@r1', params: '{ target: "_blank" }' },
+          { id: 'surface.show', label: 'surface.show', x: 1.8, y: 0.55, level: 'L0', cls: 'surface.show', inst: 'window.present.preview@r1', params: '{ placement: "main" }' }
+        ]
+      },
+      {
+        id: 'flow.ensure-vpn', instance: 'inst.ensure-vpn-ask@r2', classId: 'flow.ensure-vpn@1.0.0',
+        slots: ['vpn.status', 'vpn.start', 'vpn.wait', 'vpn.ready'],
+        points: [
+          { id: 'vpn.status.2', label: 'vpn.status', x: -1.8, y: 0.82, level: 'L0', cls: 'vpn.status', inst: 'vpn.default.status@r1', params: '{ profile: "work" }' },
+          { id: 'vpn.start', label: 'vpn.start', x: -0.6, y: 0.82, level: 'L1', cls: 'vpn.start', inst: 'vpn.start.work@r1', params: '{ profile: "work" }' },
+          { id: 'vpn.wait', label: 'vpn.wait', x: 0.6, y: 0.28, level: 'L1', cls: 'vpn.wait', inst: 'vpn.wait.connected@r1', params: '{ timeoutMs: 12000 }' },
+          { id: 'vpn.ready', label: 'vpn.ready', x: 1.8, y: 0.28, level: 'L0', cls: 'vpn.ready', inst: 'vpn.ready.default@r1', params: '{}' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'surface.settings.vpn', instance: 'surface.settings.vpn@r2', classId: 'surface.settings.vpn@1.0.0',
+    color: '#f59e0b', base: { x: 1.9, y: -0.3, z: 0.9 }, w: 4.6, h: 2.7, yaw: 0.55, tilt: -0.05,
+    data: 'SettingValue[]', actions: 'saveSettings · testVpn',
+    lines: [
+      {
+        id: 'flow.vpn-profile', instance: 'inst.vpn-profile.work@r1', classId: 'flow.vpn-profile@1.0.0',
+        slots: ['settings.read', 'vpn.profile', 'settings.write'],
+        points: [
+          { id: 'settings.read', label: 'settings.read', x: -1.5, y: 0.62, level: 'L0', cls: 'settings.read', inst: 'settings.read.vpn@r1', params: '{}' },
+          { id: 'vpn.profile', label: 'vpn.profile', x: 0.0, y: 0.62, level: 'L1', cls: 'vpn.profile', inst: 'vpn.profile.work@r1', params: '{ name: "work" }' },
+          { id: 'settings.write', label: 'settings.write', x: 1.5, y: 0.62, level: 'L1', cls: 'settings.write', inst: 'settings.write.vpn@r1', params: '{ scope: "user" }' }
+        ]
+      },
+      {
+        id: 'flow.vpn-test', instance: 'inst.vpn-test.work@r1', classId: 'flow.vpn-test@1.0.0',
+        slots: ['vpn.test', 'latency', 'notify'],
+        points: [
+          { id: 'vpn.test', label: 'vpn.test', x: -1.5, y: -0.62, level: 'L0', cls: 'vpn.test', inst: 'vpn.test.default@r1', params: '{}' },
+          { id: 'latency', label: 'latency', x: 0.0, y: -0.18, level: 'L0', cls: 'net.latency', inst: 'net.latency.default@r1', params: '{ samples: 3 }' },
+          { id: 'notify', label: 'notify', x: 1.5, y: -0.62, level: 'L1', cls: 'notify.toast', inst: 'notify.toast.default@r1', params: '{ durationMs: 2400 }' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'surface.run-history.vpn', instance: 'surface.run-history.vpn@r2', classId: 'surface.run-history.vpn@1.0.0',
+    color: '#22c55e', base: { x: 0.1, y: 1.55, z: 2.2 }, w: 4.4, h: 2.4, yaw: -0.12, tilt: 0.10,
+    data: 'FlowRun + PointRun', actions: 'replay · filterErrors',
+    lines: [
+      {
+        id: 'flow.run-audit', instance: 'inst.run-audit.vpn@r1', classId: 'flow.run-audit@1.0.0',
+        slots: ['run.read', 'run.filter', 'run.trace', 'surface.show'],
+        points: [
+          { id: 'run.read', label: 'run.read', x: -1.6, y: 0.55, level: 'L0', cls: 'run.read', inst: 'run.read.sqlite@r1', params: '{}' },
+          { id: 'run.filter', label: 'run.filter', x: -0.5, y: 0.55, level: 'L0', cls: 'run.filter', inst: 'run.filter.errors@r1', params: '{ onlyErrors: true }' },
+          { id: 'run.trace', label: 'run.trace', x: 0.6, y: -0.05, level: 'L0', cls: 'run.trace', inst: 'run.trace.default@r1', params: '{}' },
+          { id: 'surface.show.3', label: 'surface.show', x: 1.6, y: -0.55, level: 'L0', cls: 'surface.show', inst: 'window.present.run@r1', params: '{}' }
+        ]
+      },
+      {
+        id: 'flow.run-replay', instance: 'inst.run-replay.vpn@r1', classId: 'flow.run-replay@1.0.0',
+        slots: ['run.load', 'replay.step', 'compare', 'surface.show'],
+        points: [
+          { id: 'run.load', label: 'run.load', x: -1.6, y: -0.55, level: 'L0', cls: 'run.load', inst: 'run.load.sqlite@r1', params: '{}' },
+          { id: 'replay.step', label: 'replay.step', x: -0.5, y: -0.55, level: 'L1', cls: 'replay.step', inst: 'replay.step.default@r1', params: '{ speed: 1 }' },
+          { id: 'compare', label: 'compare', x: 0.6, y: -0.05, level: 'L0', cls: 'run.compare', inst: 'run.compare.default@r1', params: '{}' },
+          { id: 'surface.show.4', label: 'surface.show', x: 1.6, y: 0.55, level: 'L0', cls: 'surface.show', inst: 'window.present.run@r1', params: '{}' }
+        ]
+      }
+    ]
+  }
+];
+
+SURFACES.forEach((s, i) => { s._index = i; });
+
+const LINES = [];
+SURFACES.forEach(s => s.lines.forEach(l => {
+  l._surface = s;
+  l._index = LINES.length;
+  LINES.push(l);
+}));
+
+const POINTS = [];
+LINES.forEach(l => l.points.forEach((p, pi) => {
+  p._line = l;
+  p._pi = pi;
+  p._index = POINTS.length;
+  POINTS.push(p);
+}));
+
+const LAYER_SURF = [
+  { x: -2.9, y: 1.25, z: 0, scale: 0.62 },
+  { x: 0.0, y: 1.25, z: 0, scale: 0.62 },
+  { x: 2.9, y: 1.25, z: 0, scale: 0.62 }
+];
+const LAYER_BODY = { x: 0, y: 3.55, z: 0, w: 8.6, h: 1.55, d: 6.6 };
+
+/* ============================================================
+   2. 几何变换
+   ============================================================ */
+function surfaceLayout(s, e) {
+  const t = smooth(0.02, 0.55, e);
+  const L = LAYER_SURF[s._index] || LAYER_SURF[0];
+  return {
+    cx: lerp(s.base.x, L.x, t),
+    cy: lerp(s.base.y, L.y, t),
+    cz: lerp(s.base.z, L.z, t),
+    yaw: lerp(s.yaw, 0, t),
+    tilt: lerp(s.tilt, 0, t),
+    scale: lerp(1, L.scale, t)
+  };
+}
+
+function surfacePoint(layout, local) {
+  const cy = Math.cos(layout.yaw), sy = Math.sin(layout.yaw);
+  const ct = Math.cos(layout.tilt), st = Math.sin(layout.tilt);
+  const x0 = local.x * layout.scale;
+  const y0 = local.y * layout.scale;
+  const z0 = (local.z || 0) * layout.scale;
+  const y1 = y0 * ct - z0 * st;
+  const z1 = y0 * st + z0 * ct;
+  return {
+    x: layout.cx + x0 * cy - z1 * sy,
+    y: layout.cy + y1,
+    z: layout.cz + x0 * sy + z1 * cy
+  };
+}
+
+function nestedLayout(s) {
+  return { cx: s.base.x, cy: s.base.y, cz: s.base.z, yaw: s.yaw, tilt: s.tilt, scale: 1 };
+}
+
+function bodyLayout(e) {
+  const t = smooth(0.0, 0.45, e);
+  return {
+    cx: lerp(BODY.base.x, LAYER_BODY.x, t),
+    cy: lerp(BODY.base.y, LAYER_BODY.y, t),
+    cz: lerp(BODY.base.z, LAYER_BODY.z, t),
+    w: lerp(BODY.size.w, LAYER_BODY.w, t),
+    h: lerp(BODY.size.h, LAYER_BODY.h, t),
+    d: lerp(BODY.size.d, LAYER_BODY.d, t)
+  };
+}
+
+function lineLayerCenter(i) {
+  const n = Math.max(1, LINES.length - 1);
+  return { x: n === 0 ? 0 : -4.2 + 8.4 * i / n, y: -0.9, z: i % 2 ? 0.9 : -0.9 };
+}
+
+function linePoints(l, e) {
+  const sl = surfaceLayout(l._surface, e);
+  const attached = l.points.map(p => surfacePoint(sl, p));
+  const nested = l.points.map(p => surfacePoint(nestedLayout(l._surface), p));
+  const nc = avg(nested);
+  const tc = lineLayerCenter(l._index);
+  const t = smooth(0.25, 0.82, e);
+  const target = nested.map(p => ({
+    x: tc.x + (p.x - nc.x) * 0.55,
+    y: tc.y + (p.y - nc.y) * 0.55,
+    z: tc.z + (p.z - nc.z) * 0.55
+  }));
+  return attached.map((p, i) => lerpV(p, target[i], t));
+}
+
+function pointLayerPos(i) {
+  const cols = 6;
+  const col = i % cols, row = Math.floor(i / cols);
+  return { x: -4.0 + col * 1.6, y: -2.75, z: -1.0 + row * 0.68 };
+}
+
+function pointPos(p, e) {
+  const lp = linePoints(p._line, e)[p._pi];
+  const t = smooth(0.5, 1.0, e);
+  return lerpV(lp, pointLayerPos(p._index), t);
+}
+
+/* ============================================================
+   3. 摄像机与画布
+   ============================================================ */
+function project(p) {
+  const cy = Math.cos(state.yaw), sy = Math.sin(state.yaw);
+  const x1 = p.x * cy - p.z * sy;
+  const z1 = p.x * sy + p.z * cy;
+  const cp = Math.cos(state.pitch), sp = Math.sin(state.pitch);
+  const y1 = p.y * cp - z1 * sp;
+  const z2 = p.y * sp + z1 * cp;
+  const depth = Math.max(1.0, state.dist + z2);
+  const s = CAM_FOV / depth;
+  return { x: W / 2 + x1 * s, y: H / 2 - y1 * s, z: depth, s };
+}
+
+function resize() {
+  const r = canvas.getBoundingClientRect();
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = Math.max(1, r.width);
+  H = Math.max(1, r.height);
+  canvas.width = Math.floor(W * DPR);
+  canvas.height = Math.floor(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+window.addEventListener('resize', resize);
+
+function poly(pts) {
+  ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+  ctx.closePath();
+}
+
+function roundRect(x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/* ============================================================
+   4. 绘制
+   ============================================================ */
+function bodyCorners(L) {
+  const { cx, cy, cz, w, h, d } = L;
+  const x = w / 2, y = h / 2, z = d / 2;
+  return [
+    { x: cx - x, y: cy - y, z: cz - z }, { x: cx + x, y: cy - y, z: cz - z },
+    { x: cx + x, y: cy + y, z: cz - z }, { x: cx - x, y: cy + y, z: cz - z },
+    { x: cx - x, y: cy - y, z: cz + z }, { x: cx + x, y: cy - y, z: cz + z },
+    { x: cx + x, y: cy + y, z: cz + z }, { x: cx - x, y: cy + y, z: cz + z }
+  ];
+}
+
+const BODY_FACES = [[0,1,2,3],[4,5,6,7],[0,1,5,4],[3,2,6,7],[0,3,7,4],[1,2,6,5]];
+const BODY_EDGES = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+
+function drawField(e) {
+  if (!state.field) return;
+  const L = bodyLayout(e);
+  const c = project({ x: L.cx, y: L.cy, z: L.cz });
+  const r = Math.max(120, 160 * (15 / state.dist));
+  const g = ctx.createRadialGradient(c.x, c.y, 10, c.x, c.y, r * 1.8);
+  g.addColorStop(0, 'rgba(34,211,238,0.08)');
+  g.addColorStop(0.45, 'rgba(59,130,246,0.035)');
+  g.addColorStop(1, 'rgba(34,211,238,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(c.x, c.y, r * 1.8, 0, TAU); ctx.fill();
+
+  // 场的粒子：不是实体，是包围体的环境
+  for (let i = 0; i < 46; i++) {
+    const th = i * 2.399963;
+    const ph = Math.acos(1 - 2 * ((i + 0.5) / 46));
+    const rr = 1.18 + 0.16 * Math.sin(i * 1.7 + state.time * 0.0005);
+    const p = {
+      x: L.cx + L.w * 0.5 * rr * Math.sin(ph) * Math.cos(th),
+      y: L.cy + L.h * 0.5 * rr * Math.cos(ph),
+      z: L.cz + L.d * 0.5 * rr * Math.sin(ph) * Math.sin(th)
+    };
+    const q = project(p);
+    if (q.z <= 1) continue;
+    ctx.fillStyle = `rgba(34,211,238,${0.10 + 0.10 * (1 - (q.z - state.dist) / 8)})`;
+    ctx.beginPath(); ctx.arc(q.x, q.y, 1.2 + 0.5 * Math.sin(i + state.time * 0.002), 0, TAU); ctx.fill();
+  }
+}
+
+function drawBodyShell(e) {
+  if (!state.show.body) return;
+  const L = bodyLayout(e);
+  const c = bodyCorners(L).map(project);
+  const sel = state.selection && state.selection.kind === 'body';
+  for (const f of BODY_FACES) {
+    poly(f.map(i => c[i]));
+    ctx.fillStyle = sel ? 'rgba(34,211,238,0.045)' : 'rgba(34,211,238,0.020)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(34,211,238,0.12)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+  // x-ray cage：最后再画一次，让内容可见
+  for (const [a, b] of BODY_EDGES) {
+    ctx.beginPath(); ctx.moveTo(c[a].x, c[a].y); ctx.lineTo(c[b].x, c[b].y);
+    ctx.strokeStyle = sel ? 'rgba(103,232,249,0.85)' : 'rgba(34,211,238,0.38)';
+    ctx.lineWidth = sel ? 1.8 : 1.0;
+    ctx.stroke();
+  }
+  const top = project({ x: L.cx, y: L.cy + L.h / 2 + 0.32, z: L.cz });
+  ctx.font = '600 11px "Cascadia Code", Consolas, monospace';
+  ctx.fillStyle = 'rgba(165,243,252,0.92)';
+  ctx.textAlign = 'center';
+  ctx.fillText('BODY · body.external-access.work@r3', top.x, top.y);
+  ctx.font = '9px "Cascadia Code", Consolas, monospace';
+  ctx.fillStyle = 'rgba(103,232,249,0.55)';
+  ctx.fillText('BodyClass v1.0.0 · 3 surfaces · 6 flows', top.x, top.y + 13);
+  ctx.textAlign = 'left';
+
+  pickables.push({ kind: 'body', obj: BODY, center: project({ x: L.cx, y: L.cy, z: L.cz }), radius: 140 });
+}
+
+function drawBodyCage(e) {
+  if (!state.show.body) return;
+  const L = bodyLayout(e);
+  const c = bodyCorners(L).map(project);
+  const sel = state.selection && state.selection.kind === 'body';
+  for (const [a, b] of BODY_EDGES) {
+    ctx.beginPath(); ctx.moveTo(c[a].x, c[a].y); ctx.lineTo(c[b].x, c[b].y);
+    ctx.strokeStyle = sel ? 'rgba(103,232,249,0.38)' : 'rgba(34,211,238,0.16)';
+    ctx.lineWidth = sel ? 1.3 : 0.8;
+    ctx.stroke();
+  }
+}
+
+function drawSurface(s, e) {
+  if (!state.show.surfaces) return;
+  const sl = surfaceLayout(s, e);
+  const w = s.w / 2, h = s.h / 2;
+  const corners = [surfacePoint(sl, { x: -w, y: -h }), surfacePoint(sl, { x: w, y: -h }), surfacePoint(sl, { x: w, y: h }), surfacePoint(sl, { x: -w, y: h })];
+  const pts = corners.map(project);
+  const center = project(surfacePoint(sl, { x: 0, y: 0 }));
+  const sel = state.selection && state.selection.kind === 'surface' && state.selection.obj === s;
+  const hov = state.hover && state.hover.kind === 'surface' && state.hover.obj === s;
+  const g = ctx.createLinearGradient(pts[0].x, pts[0].y, pts[2].x, pts[2].y);
+  g.addColorStop(0, s.color + '22');
+  g.addColorStop(0.55, s.color + '0e');
+  g.addColorStop(1, s.color + '18');
+  poly(pts); ctx.fillStyle = g; ctx.fill();
+  ctx.strokeStyle = sel ? s.color : hov ? s.color + 'cc' : s.color + '66';
+  ctx.lineWidth = sel ? 2.0 : 1.0; ctx.stroke();
+
+  // 网格
+  for (let i = 1; i < 4; i++) {
+    const x = -w + (s.w * i / 4);
+    const a = project(surfacePoint(sl, { x, y: -h }));
+    const b = project(surfacePoint(sl, { x, y: h }));
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = s.color + '1c'; ctx.lineWidth = 0.6; ctx.stroke();
+  }
+  for (let i = 1; i < 3; i++) {
+    const y = -h + (s.h * i / 3);
+    const a = project(surfacePoint(sl, { x: -w, y }));
+    const b = project(surfacePoint(sl, { x: w, y }));
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+    ctx.strokeStyle = s.color + '1c'; ctx.lineWidth = 0.6; ctx.stroke();
+  }
+
+  // 标签
+  const label = project(surfacePoint(sl, { x: 0, y: h + 0.18 }));
+  ctx.font = '600 9.5px "Cascadia Code", Consolas, monospace';
+  ctx.fillStyle = s.color + 'dd';
+  ctx.textAlign = 'center';
+  ctx.fillText(s.instance, label.x, label.y);
+  ctx.textAlign = 'left';
+
+  pickables.push({ kind: 'surface', obj: s, poly: pts, center });
+
+  // 场/面关系：面上的小光点
+  if (state.field) {
+    for (let i = 0; i < 3; i++) {
+      const a = state.time * 0.0002 + i * 2.1 + s._index;
+      const p = project(surfacePoint(sl, { x: Math.cos(a) * w * 0.8, y: Math.sin(a * 1.3) * h * 0.7 }));
+      ctx.fillStyle = s.color + '55';
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, TAU); ctx.fill();
+    }
+  }
+}
+
+function drawLine(l, e) {
+  if (!state.show.lines) return;
+  const wp = linePoints(l, e);
+  const pts = wp.map(project);
+  const s = l._surface;
+  const sel = state.selection && state.selection.kind === 'line' && state.selection.obj === l;
+  const hov = state.hover && state.hover.kind === 'line' && state.hover.obj === l;
+  const color = s.color;
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = sel ? 20 : 12;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = sel ? 3.4 : 2.2;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+  ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(255,255,255,0.34)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+  ctx.stroke();
+
+  // 粒子
+  const speed = state.running ? 0.00055 : 0.00016;
+  const count = state.running ? 3 : 1;
+  for (let j = 0; j < count; j++) {
+    const t = (state.time * speed + l._index * 0.17 + j / count) % 1;
+    const p = pointOnPolyline(pts, t);
+    if (!p) continue;
+    ctx.fillStyle = '#e0f2fe';
+    ctx.shadowColor = color; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.arc(p.x, p.y, state.running ? 2.6 : 1.8, 0, TAU); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  pickables.push({ kind: 'line', obj: l, pts });
+}
+
+function drawPoint(p, e) {
+  if (!state.show.points) return;
+  const wp = pointPos(p, e);
+  const q = project(wp);
+  const color = levelColor[p.level] || '#94a3b8';
+  const sel = state.selection && state.selection.kind === 'point' && state.selection.obj === p;
+  const hov = state.hover && state.hover.kind === 'point' && state.hover.obj === p;
+  const base = 4.4 + clamp(q.s * 0.025, 0, 2.2);
+  const pulse = state.running ? 1 + 0.35 * Math.sin(state.time * 0.012 + p._index * 0.9) : 1;
+  const r = base * pulse;
+  const g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, r * 4.2);
+  g.addColorStop(0, color + '88');
+  g.addColorStop(0.25, color + '33');
+  g.addColorStop(1, color + '00');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(q.x, q.y, r * 4.2, 0, TAU); ctx.fill();
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.beginPath(); ctx.arc(q.x - r * 0.25, q.y - r * 0.3, Math.max(0.7, r * 0.28), 0, TAU); ctx.fill();
+  if (sel || hov) {
+    ctx.strokeStyle = sel ? '#fff' : color;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(q.x, q.y, r + 5, 0, TAU); ctx.stroke();
+  }
+  if (sel || hov) {
+    ctx.font = '9.5px "Cascadia Code", Consolas, monospace';
+    ctx.fillStyle = 'rgba(226,240,255,0.92)';
+    ctx.fillText(p.label, q.x + r + 7, q.y + 3);
+  }
+  pickables.push({ kind: 'point', obj: p, x: q.x, y: q.y, radius: 13 });
+}
+
+function pointOnPolyline(pts, t) {
+  if (!pts || pts.length < 2) return null;
+  const segs = [];
+  let total = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const d = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+    segs.push(d); total += d;
+  }
+  if (total <= 0) return pts[0];
+  let target = t * total;
+  for (let i = 1; i < pts.length; i++) {
+    if (target <= segs[i - 1]) {
+      const k = target / segs[i - 1];
+      return { x: lerp(pts[i - 1].x, pts[i].x, k), y: lerp(pts[i - 1].y, pts[i].y, k) };
+    }
+    target -= segs[i - 1];
+  }
+  return pts[pts.length - 1];
+}
+
+function drawAxisLabels(e) {
+  const a = smooth(0.55, 0.95, e);
+  if (a <= 0.01) return;
+  const rows = [
+    { y: bodyLayout(e).cy, label: '体', color: '#67e8f9' },
+    { y: LAYER_SURF[0].y, label: '面', color: '#93c5fd' },
+    { y: -0.9, label: '线', color: '#c4b5fd' },
+    { y: -2.75, label: '点', color: '#86efac' }
+  ];
+  const x = -5.7;
+  const top = project({ x, y: 4.3, z: 0 });
+  const bot = project({ x, y: -3.3, z: 0 });
+  ctx.strokeStyle = `rgba(148,163,184,${0.22 * a})`;
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(bot.x, bot.y); ctx.stroke();
+  rows.forEach(row => {
+    const p = project({ x, y: row.y, z: 0 });
+    ctx.fillStyle = `rgba(148,163,184,${0.45 * a})`;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, TAU); ctx.fill();
+    ctx.font = '600 11px "Microsoft YaHei", sans-serif';
+    ctx.fillStyle = row.color;
+    ctx.globalAlpha = a;
+    ctx.fillText(row.label, p.x - 19, p.y + 4);
+    ctx.globalAlpha = 1;
+  });
+}
+
+function drawSelectionHints() {
+  if (!state.hover || state.hover.kind !== 'surface') return;
+  const s = state.hover.obj;
+  const sl = surfaceLayout(s, state.explode);
+  const w = s.w / 2, h = s.h / 2;
+  const pts = [surfacePoint(sl, { x: -w, y: -h }), surfacePoint(sl, { x: w, y: -h }), surfacePoint(sl, { x: w, y: h }), surfacePoint(sl, { x: -w, y: h })].map(project);
+  poly(pts);
+  ctx.strokeStyle = s.color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  pickables = [];
+  const e = state.explode;
+
+  drawField(e);
+  drawBodyShell(e);
+
+  const items = [];
+  SURFACES.forEach(s => items.push({ kind: 'surface', obj: s, depth: project(surfacePoint(surfaceLayout(s, e), { x: 0, y: 0 })).z }));
+  LINES.forEach(l => {
+    const pts = linePoints(l, e).map(project);
+    const d = pts.reduce((a, p) => a + p.z / pts.length, 0);
+    items.push({ kind: 'line', obj: l, depth: d, pts });
+  });
+  POINTS.forEach(p => {
+    const q = project(pointPos(p, e));
+    items.push({ kind: 'point', obj: p, depth: q.z });
+  });
+  items.sort((a, b) => b.depth - a.depth);
+  for (const it of items) {
+    if (it.kind === 'surface') drawSurface(it.obj, e);
+    else if (it.kind === 'line') drawLine(it.obj, e);
+    else drawPoint(it.obj, e);
+  }
+
+  drawBodyCage(e);
+  drawAxisLabels(e);
+  drawSelectionHints();
+  updateStatus();
+}
+
+/* ============================================================
+   5. 交互
+   ============================================================ */
+function pointInPoly(x, y, pts) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y, xj = pts[j].x, yj = pts[j].y;
+    const inter = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-9) + xi);
+    if (inter) inside = !inside;
+  }
+  return inside;
+}
+
+function distToSeg(px, py, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const len2 = dx * dx + dy * dy;
+  if (!len2) return Math.hypot(px - a.x, py - a.y);
+  let t = ((px - a.x) * dx + (py - a.y) * dy) / len2;
+  t = clamp(t, 0, 1);
+  return Math.hypot(px - (a.x + t * dx), py - (a.y + t * dy));
+}
+
+function hitTest(x, y) {
+  // points first
+  let best = null, bd = 14;
+  for (const p of pickables) {
+    if (p.kind !== 'point') continue;
+    const d = Math.hypot(x - p.x, y - p.y);
+    if (d < bd) { bd = d; best = { kind: 'point', obj: p.obj }; }
+  }
+  if (best) return best;
+  // lines
+  bd = 9;
+  for (const p of pickables) {
+    if (p.kind !== 'line') continue;
+    for (let i = 1; i < p.pts.length; i++) {
+      const d = distToSeg(x, y, p.pts[i - 1], p.pts[i]);
+      if (d < bd) { bd = d; best = { kind: 'line', obj: p.obj }; }
+    }
+  }
+  if (best) return best;
+  // surfaces
+  for (const p of pickables) {
+    if (p.kind === 'surface' && pointInPoly(x, y, p.poly)) return { kind: 'surface', obj: p.obj };
+  }
+  // body
+  for (const p of pickables) {
+    if (p.kind === 'body' && Math.hypot(x - p.center.x, y - p.center.y) < p.radius) return { kind: 'body', obj: p.obj };
+  }
+  return null;
+}
+
+function inspectorHTML(sel) {
+  if (!sel) return '<div class="empty">点击点 / 线 / 面 / 体查看详情。拖拽旋转，滚轮缩放。</div>';
+  if (sel.kind === 'body') {
+    const b = BODY;
+    return `<h3>体 · ${esc(b.id)}</h3><div class="sub">BodyClass ${esc(b.classId)}@${esc(b.version)} · revision ${b.revision}</div>
+      <div class="kv"><div class="k">surfaces</div><div class="v">${SURFACES.length}</div><div class="k">flows</div><div class="v">${LINES.length}</div><div class="k">points</div><div class="v">${POINTS.length}</div><div class="k">permissions</div><div class="v">${b.permissions.map(x => `<span class="pill">${esc(x)}</span>`).join('')}</div><div class="k">state</div><div class="v">active · installed</div></div>`;
+  }
+  if (sel.kind === 'surface') {
+    const s = sel.obj;
+    return `<h3>面 · ${esc(s.id)}</h3><div class="sub">${esc(s.instance)} · ${esc(s.classId)}</div>
+      <div class="kv"><div class="k">data</div><div class="v">${esc(s.data)}</div><div class="k">actions</div><div class="v">${esc(s.actions)}</div><div class="k">lines</div><div class="v">${s.lines.map(l => esc(l.id)).join(' · ')}</div><div class="k">placement</div><div class="v">main / settings</div></div>`;
+  }
+  if (sel.kind === 'line') {
+    const l = sel.obj;
+    const maxLevel = l.points.some(p => p.level === 'L3') ? 'L3' : l.points.some(p => p.level === 'L2') ? 'L2' : l.points.some(p => p.level === 'L1') ? 'L1' : 'L0';
+    return `<h3>线 · ${esc(l.id)}</h3><div class="sub">${esc(l.instance)} · ${esc(l.classId)}</div>
+      <div class="kv"><div class="k">slots</div><div class="v">${l.slots.map(x => `<span class="pill">${esc(x)}</span>`).join('')}</div><div class="k">points</div><div class="v">${l.points.length}</div><div class="k">max effect</div><div class="v"><span class="pill ${maxLevel.toLowerCase()}">${maxLevel}</span></div><div class="k">surface</div><div class="v">${esc(l._surface.id)}</div></div>`;
+  }
+  const p = sel.obj;
+  return `<h3>点 · ${esc(p.label)}</h3><div class="sub">${esc(p.inst)} · ${esc(p.cls)}</div>
+    <div class="kv"><div class="k">level</div><div class="v"><span class="pill ${p.level.toLowerCase()}">${p.level}</span></div><div class="k">params</div><div class="v"><code>${esc(p.params)}</code></div><div class="k">flow</div><div class="v">${esc(p._line.id)}</div><div class="k">revision</div><div class="v">r1</div></div>`;
+}
+
+function inspect(sel) {
+  state.selection = sel;
+  $('#inspector').innerHTML = inspectorHTML(sel);
+  draw();
+}
+
+function updateStatus() {
+  const st = $('#status');
+  if (state.running) st.innerHTML = `FlowRun · <b>${Math.round(state.runProgress * 100)}%</b> · ${state.runs} runs`;
+  else st.innerHTML = `idle · <b>${state.runs}</b> runs`;
+}
+
+function startRun() {
+  if (state.running) {
+    state.running = false;
+    $('#runBtn').textContent = '▶ 模拟运行';
+    $('#runbar').classList.remove('show');
+    updateStatus();
+    return;
+  }
+  state.running = true;
+  state.runStart = performance.now();
+  state.runProgress = 0;
+  state.runs++;
+  $('#runBtn').textContent = '■ 停止';
+  $('#runbar').classList.add('show');
+  $('#runbarFill').style.width = '0%';
+  updateStatus();
+}
+
+function resetView() {
+  state.yaw = 0.72; state.pitch = 0.34; state.dist = 15.2;
+}
+
+/* ============================================================
+   6. 事件与动画
+   ============================================================ */
+canvas.addEventListener('pointerdown', (e) => {
+  canvas.setPointerCapture(e.pointerId);
+  state.dragging = true;
+  state.moved = 0;
+  state.lastX = e.clientX;
+  state.lastY = e.clientY;
+  canvas.classList.add('dragging');
+});
+canvas.addEventListener('pointermove', (e) => {
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  if (state.dragging) {
+    const dx = e.clientX - state.lastX, dy = e.clientY - state.lastY;
+    state.lastX = e.clientX; state.lastY = e.clientY;
+    state.moved += Math.abs(dx) + Math.abs(dy);
+    state.yaw += dx * 0.008;
+    state.pitch = clamp(state.pitch + dy * 0.006, -1.15, 1.15);
+  } else {
+    const hit = hitTest(mx, my);
+    state.hover = hit;
+    canvas.style.cursor = hit ? 'pointer' : 'grab';
+  }
+});
+canvas.addEventListener('pointerup', (e) => {
+  canvas.classList.remove('dragging');
+  const wasDrag = state.moved > 5;
+  state.dragging = false;
+  if (!wasDrag) {
+    const r = canvas.getBoundingClientRect();
+    const hit = hitTest(e.clientX - r.left, e.clientY - r.top);
+    if (hit) inspect(hit);
+  }
+});
+canvas.addEventListener('pointercancel', () => { state.dragging = false; canvas.classList.remove('dragging'); });
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  state.dist = clamp(state.dist + e.deltaY * 0.012, 8.5, 30);
+}, { passive: false });
+
+$('#explode').addEventListener('input', (e) => {
+  const v = +e.target.value;
+  state.targetExplode = v / 100;
+  $('#explodeV').textContent = v + '%';
+});
+$('#autoRotate').addEventListener('change', e => { state.autoRotate = e.target.checked; });
+$('#showPoints').addEventListener('change', e => { state.show.points = e.target.checked; });
+$('#showLines').addEventListener('change', e => { state.show.lines = e.target.checked; });
+$('#showSurfaces').addEventListener('change', e => { state.show.surfaces = e.target.checked; });
+$('#showBody').addEventListener('change', e => { state.show.body = e.target.checked; });
+$('#showField').addEventListener('change', e => { state.field = e.target.checked; });
+$('#runBtn').addEventListener('click', startRun);
+$('#resetBtn').addEventListener('click', resetView);
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); startRun(); }
+  if (e.key === 'r' || e.key === 'R') resetView();
+  if (e.key === 'Escape') { state.selection = null; $('#inspector').innerHTML = inspectorHTML(null); }
+});
+
+function frame(t) {
+  state.time = t;
+  if (state.autoRotate && !state.dragging) state.yaw += 0.00085;
+  state.explode += (state.targetExplode - state.explode) * 0.12;
+  if (state.running) {
+    state.runProgress = clamp((t - state.runStart) / 4200, 0, 1);
+    $('#runbarFill').style.width = (state.runProgress * 100) + '%';
+    if (state.runProgress >= 1) {
+      state.running = false;
+      $('#runBtn').textContent = '▶ 模拟运行';
+      $('#runbar').classList.remove('show');
+    }
+  }
+  draw();
+  requestAnimationFrame(frame);
+}
+
+resize();
+$('#inspector').innerHTML = inspectorHTML(null);
+requestAnimationFrame(frame);
+})();

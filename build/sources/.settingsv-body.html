@@ -1,0 +1,41 @@
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="mark">⚙</div>
+      <div><b>Settings</b><span>Settings Workspace</span></div>
+    </div>
+    <select class="section-sel" id="sectionSel"></select>
+    <div class="scope">
+      <label>Scope</label>
+      <select id="scopeSel">
+        <option value="User">User</option>
+        <option value="Workspace">Workspace</option>
+        <option value="Machine">Machine</option>
+        <option value="Policy">Policy</option>
+      </select>
+    </div>
+    <input class="search" id="search" placeholder="搜索设置…  Cmd/Ctrl+K">
+    <button class="btn primary" id="applyBtn" disabled>Apply</button>
+    <button class="btn more-btn" id="moreBtn">⋯</button>
+    <div class="more-menu" id="moreMenu">
+      <button data-more="import">Import settings…</button>
+      <button data-more="export">Export settings…</button>
+      <button data-more="close">Close</button>
+    </div>
+  </header>
+
+  <nav id="nav"></nav>
+
+  <main id="main"></main>
+
+  <aside id="changes"></aside>
+
+  <footer id="status">
+    <span class="dot"></span>
+    <span id="statusLeft">Settings · User scope · clean</span>
+    <span class="grow"></span>
+    <span id="statusRight">v1.4.2 · build 2026.11.23</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>

@@ -1,0 +1,2055 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>原子工坊 · 点层管理 / 可视化（类 / 实例）</title>
+<style>
+  :root {
+    --bg: #0b1120;
+    --surface: #0F172A;
+    --raised: #1E293B;
+    --overlay: #020617;
+    --text: #E2E8F0;
+    --muted: #94A3B8;
+    --primary: #3B82F6;
+    --success: #22C55E;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --new: #8B5CF6;
+    --border: rgba(148, 163, 184, .14);
+    --border-strong: rgba(148, 163, 184, .28);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 18px 50px rgba(0, 0, 0, .35);
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, "SFMono-Regular", monospace;
+  }
+  [data-theme="light"] {
+    --bg: #eef2f7;
+    --surface: #ffffff;
+    --raised: #f8fafc;
+    --overlay: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: rgba(15, 23, 42, .10);
+    --border-strong: rgba(15, 23, 42, .18);
+    --shadow: 0 18px 50px rgba(15, 23, 42, .12);
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(900px 520px at 8% -12%, rgba(59, 130, 246, .16), transparent 62%),
+      radial-gradient(760px 460px at 92% -6%, rgba(139, 92, 246, .12), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: 14px;
+  }
+  button, input, select, textarea { font: inherit; }
+  button { cursor: pointer; }
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter: blur(18px);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+  .brand { display: flex; align-items: center; gap: 11px; min-width: 190px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--primary), var(--new));
+    color: white; font-size: 18px; font-weight: 700;
+    box-shadow: 0 8px 22px rgba(59, 130, 246, .28);
+  }
+  .brand-title { font-size: 14px; font-weight: 700; letter-spacing: .02em; }
+  .brand-sub { font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+
+  .search {
+    flex: 1; max-width: 560px; height: 36px;
+    display: flex; align-items: center; gap: 9px;
+    padding: 0 11px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--muted);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, .14); }
+  .search input {
+    flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+    color: var(--text); font-size: 13px;
+  }
+  .search input::placeholder { color: var(--muted); }
+  .search kbd {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 5px; padding: 2px 5px;
+    background: rgba(255,255,255,.03);
+  }
+  .top-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .segmented {
+    display: flex; padding: 3px; gap: 2px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 9px;
+  }
+  .segmented button {
+    border: 0; background: transparent; color: var(--muted);
+    padding: 6px 10px; border-radius: 6px; font-size: 12px;
+    transition: background .12s, color .12s;
+  }
+  .segmented button.active { background: var(--raised); color: var(--text); box-shadow: 0 1px 0 rgba(255,255,255,.04) inset; }
+  .btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    padding: 8px 12px; border-radius: 9px; font-size: 12px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    transition: transform .08s, border-color .12s, background .12s;
+  }
+  .btn:hover { border-color: var(--border-strong); background: color-mix(in srgb, var(--raised) 70%, transparent); }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: var(--primary); border-color: transparent; color: white; font-weight: 600; box-shadow: 0 8px 20px rgba(59,130,246,.22); }
+  .btn.primary:hover { background: #4f8ff7; }
+  .btn.ghost { background: transparent; }
+  .btn.icon { width: 34px; height: 34px; padding: 0; }
+  .btn.danger { color: #fecaca; border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.08); }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 390px;
+    min-height: calc(100vh - 64px);
+  }
+  .sidebar {
+    padding: 18px 14px 26px;
+    border-right: 1px solid var(--border);
+    position: sticky; top: 64px;
+    height: calc(100vh - 64px);
+    overflow: auto;
+  }
+  .side-label {
+    font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted); padding: 0 8px; margin: 6px 0 8px;
+  }
+  .family-nav { display: flex; flex-direction: column; gap: 2px; }
+  .family-item {
+    width: 100%; display: flex; align-items: center; gap: 9px;
+    padding: 8px 9px; border: 0; border-radius: 8px;
+    background: transparent; color: var(--muted); text-align: left;
+    font-size: 12px; border-left: 2px solid transparent;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  .family-item:hover { background: rgba(255,255,255,.035); color: var(--text); }
+  .family-item.active { background: rgba(59,130,246,.10); color: var(--text); border-left-color: var(--primary); }
+  .family-item .ficon {
+    width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center;
+    font-size: 12px; background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c);
+  }
+  .family-item .fcount { margin-left: auto; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .saved-views { display: flex; flex-direction: column; gap: 2px; }
+  .saved-views button {
+    border: 0; background: transparent; color: var(--muted); text-align: left;
+    padding: 7px 9px; border-radius: 7px; font-size: 12px;
+  }
+  .saved-views button:hover { background: rgba(255,255,255,.035); color: var(--text); }
+  .side-foot { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .legend { display: flex; flex-direction: column; gap: 7px; font-size: 11px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .reset-link { margin-top: 16px; width: 100%; font-size: 11px; color: var(--muted); background: transparent; border: 0; text-align: left; padding: 0 8px; }
+  .reset-link:hover { color: var(--danger); }
+
+  .main { padding: 24px 26px 90px; min-width: 0; }
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .stat {
+    background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 70%), var(--raised);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 15px;
+  }
+  .stat .label { font-size: 10px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+  .stat .value { font-size: 23px; font-weight: 720; margin-top: 7px; letter-spacing: -.02em; }
+  .stat .hint { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  .main-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+  .main-head h1 { font-size: 20px; margin: 0; letter-spacing: -.02em; }
+  .main-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+  .chip {
+    border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+    padding: 5px 9px; border-radius: 999px; font-size: 11px;
+  }
+  .chip.active { color: #bfdbfe; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.10); }
+
+  .class-card {
+    background: linear-gradient(180deg, rgba(255,255,255,.024), transparent 42%), var(--raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+    transition: border-color .15s, transform .15s;
+    animation: cardIn .22s ease-out both;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  .class-card:hover { border-color: var(--border-strong); }
+  .class-head { display: flex; align-items: flex-start; gap: 13px; padding: 15px 17px 12px; }
+  .class-icon {
+    width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center;
+    font-size: 19px; color: var(--c);
+    background: color-mix(in srgb, var(--c) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c) 26%, transparent);
+    flex: 0 0 auto;
+  }
+  .class-main { min-width: 0; flex: 1; }
+  .class-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .class-title { font-size: 15px; font-weight: 680; letter-spacing: -.01em; }
+  .class-id { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .class-desc { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.55; }
+  .class-meta { display: flex; align-items: center; gap: 14px; margin-left: auto; flex: 0 0 auto; }
+  .meta-block { text-align: right; }
+  .meta-block .m { font-size: 15px; font-weight: 680; }
+  .meta-block .l { font-size: 9px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 999px; font-size: 10px; line-height: 1.2;
+    border: 1px solid var(--border); color: var(--muted); background: rgba(255,255,255,.02);
+    white-space: nowrap;
+  }
+  .badge.stable { color: #86efac; border-color: rgba(34,197,94,.26); background: rgba(34,197,94,.08); }
+  .badge.draft { color: #fcd34d; border-color: rgba(245,158,11,.26); background: rgba(245,158,11,.08); }
+  .badge.deprecated { color: #fca5a5; border-color: rgba(239,68,68,.26); background: rgba(239,68,68,.08); }
+  .badge.archived { color: #cbd5e1; border-color: rgba(148,163,184,.22); background: rgba(148,163,184,.08); }
+  .badge.p0 { color: #93c5fd; border-color: rgba(59,130,246,.3); background: rgba(59,130,246,.10); }
+  .badge.official { color: #c4b5fd; border-color: rgba(139,92,246,.3); background: rgba(139,92,246,.10); }
+  .badge.warn { color: #fcd34d; border-color: rgba(245,158,11,.26); background: rgba(245,158,11,.08); }
+
+  .instance-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .instance-table th {
+    text-align: left; padding: 7px 16px;
+    font-size: 9px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+    border-top: 1px solid var(--border); background: rgba(255,255,255,.015);
+  }
+  .instance-table td { padding: 10px 16px; border-top: 1px solid var(--border); vertical-align: middle; }
+  .instance-row { cursor: pointer; transition: background .12s; }
+  .instance-row:hover { background: rgba(59,130,246,.065); }
+  .instance-row.selected { background: rgba(59,130,246,.10); }
+  .instance-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex: 0 0 auto; }
+  .dot.draft { background: var(--warning); }
+  .dot.archived { background: var(--muted); }
+  .param {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    background: rgba(2,6,23,.42); border: 1px solid var(--border);
+    padding: 3px 6px; border-radius: 5px;
+    display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .muted { color: var(--muted); }
+  .mono { font-family: var(--mono); }
+  .row-actions { display: flex; gap: 4px; justify-content: flex-end; opacity: .35; transition: opacity .12s; }
+  .instance-row:hover .row-actions { opacity: 1; }
+  .mini-btn {
+    width: 25px; height: 25px; border-radius: 6px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); display: grid; place-items: center; font-size: 12px;
+  }
+  .mini-btn:hover { color: var(--text); border-color: var(--border-strong); background: rgba(255,255,255,.04); }
+
+  .empty {
+    border: 1px dashed var(--border-strong); border-radius: var(--radius);
+    padding: 48px 20px; text-align: center; color: var(--muted);
+  }
+  .empty strong { display: block; color: var(--text); font-size: 15px; margin-bottom: 6px; }
+
+  .inspector {
+    border-left: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    position: sticky; top: 64px;
+    height: calc(100vh - 64px);
+    overflow: auto;
+    padding: 20px 20px 40px;
+  }
+  .inspector-empty { color: var(--muted); font-size: 12px; line-height: 1.7; padding-top: 34px; text-align: center; }
+  .inspector-empty .big { font-size: 28px; opacity: .5; margin-bottom: 10px; }
+  .inspector-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .inspector-head .close { margin-left: auto; }
+  .inspector-kicker { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .inspector-title { font-size: 18px; font-weight: 720; letter-spacing: -.02em; line-height: 1.25; }
+  .inspector-id { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; word-break: break-all; }
+  .section { margin-top: 20px; }
+  .section-title { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .kv { display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; font-size: 12px; }
+  .kv .k { color: var(--muted); }
+  .kv .v { text-align: right; }
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .field label { font-size: 10px; color: var(--muted); letter-spacing: .04em; }
+  .input, select, textarea {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 8px 10px; font-size: 12px; outline: 0;
+    transition: border-color .12s, box-shadow .12s;
+  }
+  .input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.14); }
+  textarea { min-height: 62px; resize: vertical; font-family: var(--mono); font-size: 11px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .key-capture { display: flex; gap: 8px; }
+  .key-capture .input { flex: 1; font-family: var(--mono); }
+  .key-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+  .key-chip {
+    font-family: var(--mono); font-size: 11px; padding: 3px 7px; border-radius: 5px;
+    border: 1px solid var(--border); background: rgba(59,130,246,.08); color: #bfdbfe;
+  }
+  pre.json {
+    background: var(--overlay); border: 1px solid var(--border); border-radius: 8px;
+    padding: 11px; font-family: var(--mono); font-size: 10px; line-height: 1.6;
+    color: #cbd5e1; overflow: auto; margin: 0; max-height: 220px;
+  }
+  [data-theme="light"] pre.json { color: #334155; }
+  .inspector-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 16px; }
+  .inspector-actions .btn { flex: 1; min-width: 90px; }
+
+  .catalog-table { width: 100%; border-collapse: collapse; background: var(--raised); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .catalog-table th { text-align: left; padding: 10px 12px; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .catalog-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
+  .catalog-table tr.class-row { cursor: pointer; background: rgba(255,255,255,.015); }
+  .catalog-table tr.class-row:hover { background: rgba(59,130,246,.06); }
+  .catalog-table tr.instance-row td:first-child { padding-left: 34px; }
+  .catalog-table .chev { display: inline-block; width: 14px; color: var(--muted); transition: transform .12s; }
+  .catalog-table .chev.open { transform: rotate(90deg); }
+
+  .graph-row { display: grid; grid-template-columns: 250px 34px minmax(0, 1fr); align-items: stretch; margin-bottom: 14px; }
+  .graph-class {
+    background: linear-gradient(180deg, rgba(255,255,255,.025), transparent), var(--raised);
+    border: 1px solid var(--border); border-left: 3px solid var(--c);
+    border-radius: 10px; padding: 12px 13px; cursor: pointer;
+  }
+  .graph-class:hover { border-color: var(--border-strong); }
+  .graph-class .g-icon { font-size: 17px; color: var(--c); }
+  .graph-class .g-title { font-size: 13px; font-weight: 680; margin-top: 6px; }
+  .graph-class .g-id { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 3px; }
+  .graph-connector { position: relative; }
+  .graph-connector::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--border-strong); }
+  .graph-instances { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; padding: 10px 12px; border-left: 1px dashed var(--border-strong); }
+  .graph-instance {
+    border: 1px solid var(--border); background: var(--surface); border-radius: 7px;
+    padding: 7px 9px; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 7px;
+  }
+  .graph-instance:hover { border-color: var(--primary); background: rgba(59,130,246,.08); }
+  .graph-instance .pi { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+
+  .modal-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(2,6,23,.68); backdrop-filter: blur(5px); display: grid; place-items: center; padding: 20px; }
+  .modal {
+    width: min(520px, 100%); background: var(--raised); border: 1px solid var(--border-strong);
+    border-radius: 14px; box-shadow: var(--shadow); padding: 20px;
+    animation: modalIn .18s ease-out both;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: none; } }
+  .modal h3 { margin: 0 0 4px; font-size: 17px; }
+  .modal p { margin: 0 0 16px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; z-index: 100;
+    transform: translate(-50%, 18px); opacity: 0; pointer-events: none;
+    background: var(--raised); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: 10px; padding: 10px 14px; font-size: 12px; box-shadow: var(--shadow);
+    transition: opacity .18s, transform .18s; max-width: min(520px, calc(100vw - 32px));
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast .t-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--success); margin-right: 7px; }
+
+  @media (max-width: 1280px) {
+    .workspace { grid-template-columns: 200px minmax(0, 1fr) 340px; }
+    .class-meta { gap: 10px; }
+  }
+  @media (max-width: 1080px) {
+    .workspace { grid-template-columns: 190px minmax(0, 1fr); }
+    .inspector {
+      position: fixed; right: 0; top: 64px; width: min(390px, 92vw); z-index: 50;
+      background: var(--surface); box-shadow: var(--shadow);
+      transform: translateX(105%); transition: transform .18s ease-out;
+    }
+    .inspector.open { transform: none; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 760px) {
+    .topbar { height: auto; min-height: 64px; flex-wrap: wrap; padding: 10px 14px; gap: 10px; }
+    .brand { min-width: 0; flex: 1; }
+    .search { order: 3; flex-basis: 100%; max-width: none; }
+    .segmented { display: none; }
+    .workspace { display: block; }
+    .sidebar { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); padding: 12px 14px; }
+    .family-nav { flex-direction: row; flex-wrap: wrap; }
+    .family-item { width: auto; border-left: 0; border-bottom: 2px solid transparent; padding: 6px 8px; }
+    .family-item.active { border-left: 0; border-bottom-color: var(--primary); }
+    .saved-views { flex-direction: row; flex-wrap: wrap; }
+    .side-foot { display: none; }
+    .main { padding: 16px 14px 80px; }
+    .stats { gap: 8px; }
+    .stat .value { font-size: 19px; }
+    .main-head { flex-direction: column; align-items: flex-start; }
+    .class-head { flex-wrap: wrap; }
+    .class-meta { width: 100%; justify-content: flex-start; margin-left: 55px; }
+    .instance-table th:nth-child(3), .instance-table td:nth-child(3),
+    .instance-table th:nth-child(4), .instance-table td:nth-child(4) { display: none; }
+    .instance-table td, .instance-table th { padding-left: 10px; padding-right: 10px; }
+    .graph-row { grid-template-columns: 1fr; gap: 8px; }
+    .graph-connector { display: none; }
+    .graph-instances { border-left: 0; padding: 0 0 0 12px; }
+    .catalog-table th:nth-child(2), .catalog-table td:nth-child(2),
+    .catalog-table th:nth-child(5), .catalog-table td:nth-child(5) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">◈</div>
+      <div>
+        <div class="brand-title">原子工坊</div>
+        <div class="brand-sub">Point Layer · 管理 / 可视化</div>
+      </div>
+    </div>
+    <label class="search">
+      <span aria-hidden="true">⌕</span>
+      <input id="searchInput" type="search" placeholder="搜索类、实例、参数…" autocomplete="off" />
+      <kbd>/</kbd>
+    </label>
+    <div class="top-actions">
+      <div class="segmented" id="viewSwitch" role="tablist" aria-label="视图切换">
+        <button data-view="cards" class="active" role="tab">卡片</button>
+        <button data-view="table" role="tab">表格</button>
+        <button data-view="graph" role="tab">图谱</button>
+      </div>
+      <button class="btn icon ghost" id="themeBtn" title="切换深浅主题" aria-label="切换主题">☾</button>
+      <button class="btn primary" id="newInstanceBtn">+ 新建实例</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="side-label">功能家族</div>
+      <nav class="family-nav" id="familyNav"></nav>
+      <div class="side-label" style="margin-top:20px">保存视图</div>
+      <div class="saved-views" id="savedViews">
+        <button data-filter="all">全部</button>
+        <button data-filter="p0">P0 核心</button>
+        <button data-filter="draft">草稿</button>
+        <button data-filter="archived">已归档</button>
+      </div>
+      <div class="side-foot">
+        <div class="side-label">图例</div>
+        <div class="legend">
+          <span><i style="background:var(--success)"></i>stable 可用</span>
+          <span><i style="background:var(--warning)"></i>draft / beta</span>
+          <span><i style="background:var(--danger)"></i>deprecated</span>
+          <span><i style="background:var(--muted)"></i>archived</span>
+        </div>
+        <button class="reset-link" id="resetBtn">↺ 重置演示数据</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="stats" id="stats"></section>
+      <div class="main-head">
+        <div>
+          <h1 id="pageTitle">类与实例</h1>
+          <p id="pageSub">点层 = 类 + 参数 = 实例；实例不复制类实现。</p>
+        </div>
+        <div class="chips" id="filterChips"></div>
+      </div>
+      <section id="content"></section>
+    </main>
+
+    <aside class="inspector" id="inspector"></aside>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ---------- data ---------- */
+const FAMILIES = [
+  { id: 'hotkey',   name: '快捷键',   icon: '⌨', color: '#3B82F6' },
+  { id: 'window',   name: '窗口',     icon: '▣', color: '#8B5CF6' },
+  { id: 'open',     name: '打开',     icon: '↗', color: '#06B6D4' },
+  { id: 'settings', name: '系统设置', icon: '◐', color: '#F59E0B' },
+  { id: 'capture',  name: '捕获/感知', icon: '◎', color: '#10B981' },
+  { id: 'file',     name: '文件/数据', icon: '▤', color: '#EC4899' },
+  { id: 'network',  name: '网络',     icon: '⌁', color: '#84CC16' },
+  { id: 'human',    name: '人机交互', icon: '☷', color: '#EF4444' },
+  { id: 'security', name: '安全/身份', icon: '⚿', color: '#64748B' }
+];
+
+const SEED = [
+  {
+    id: 'win.key.send', name: '发送快捷键', family: 'hotkey', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 12, success: 99.2, updated: '2026-11-18',
+    desc: '向目标窗口发送组合键；复制、粘贴、剪切只是不同 keys 的实例。',
+    permissions: ['input.send'], sideEffects: ['write'],
+    instances: [
+      { id: 'i-copy', name: '复制', params: { keys: 'Ctrl+C', mode: 'press', repeat: 1 }, tags: ['编辑'], usedBy: 8, lastRun: '2 分钟前', status: 'stable', success: 99.4 },
+      { id: 'i-paste', name: '粘贴', params: { keys: 'Ctrl+V', mode: 'press', repeat: 1 }, tags: ['编辑'], usedBy: 7, lastRun: '2 分钟前', status: 'stable', success: 99.1 },
+      { id: 'i-cut', name: '剪切', params: { keys: 'Ctrl+X', mode: 'press', repeat: 1 }, tags: ['编辑'], usedBy: 3, lastRun: '昨天', status: 'stable', success: 98.8 },
+      { id: 'i-undo', name: '撤销', params: { keys: 'Ctrl+Z', mode: 'press', repeat: 1 }, tags: ['编辑'], usedBy: 4, lastRun: '昨天', status: 'stable', success: 99.0 },
+      { id: 'i-select-all', name: '全选', params: { keys: 'Ctrl+A', mode: 'press', repeat: 1 }, tags: ['编辑'], usedBy: 2, lastRun: '3 天前', status: 'stable', success: 99.6 }
+    ]
+  },
+  {
+    id: 'win.key.trigger', name: '监听快捷键', family: 'hotkey', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 6, success: 98.6, updated: '2026-11-17',
+    desc: '全局或按应用监听组合键，发出 trigger 事件；和发送快捷键共用 Hotkey 契约。',
+    permissions: ['input.registerHotkey'], sideEffects: ['read'],
+    instances: [
+      { id: 'i-trigger-panel', name: '打开面板', params: { keys: 'Ctrl+Alt+Space', scope: 'global' }, tags: ['入口'], usedBy: 5, lastRun: '刚刚', status: 'stable', success: 99.0 },
+      { id: 'i-trigger-shot', name: '截图翻译', params: { keys: 'Ctrl+Alt+T', scope: 'global' }, tags: ['截图', 'AI'], usedBy: 3, lastRun: '12 分钟前', status: 'stable', success: 97.8 }
+    ]
+  },
+  {
+    id: 'win.window.control', name: '控制窗口', family: 'window', version: '1.2.0',
+    status: 'stable', p0: true, official: true, usedBy: 18, success: 96.4, updated: '2026-11-20',
+    desc: '按 WindowSelector 找到顶层窗口，执行聚焦、移动、缩放、置顶、关闭等操作。',
+    permissions: ['window.read', 'window.control'], sideEffects: ['write'],
+    instances: [
+      { id: 'i-focus-notepad', name: '聚焦记事本', params: { op: 'focus', selector: { strategy: 'process', process: 'notepad.exe', title: '', titleMatch: 'contains', className: '', match: 'error' } }, tags: ['常用'], usedBy: 4, lastRun: '5 分钟前', status: 'stable', success: 98.2 },
+      { id: 'i-move-chrome', name: 'Chrome 移到副屏左半', params: { op: 'move', monitor: 1, rect: '0,0,0.5,1', selector: { strategy: 'process', process: 'chrome.exe', title: 'GitHub', titleMatch: 'contains', className: '', match: 'error' } }, tags: ['多屏'], usedBy: 3, lastRun: '1 小时前', status: 'stable', success: 95.2 },
+      { id: 'i-topmost', name: '当前窗口置顶切换', params: { op: 'topmost', mode: 'toggle', selector: { strategy: 'foreground', process: '', title: '', titleMatch: 'contains', className: '', match: 'error' } }, tags: ['窗口'], usedBy: 6, lastRun: '20 分钟前', status: 'stable', success: 99.1 },
+      { id: 'i-close-explorer', name: '关闭所有资源管理器', params: { op: 'close', match: 'all', selector: { strategy: 'class', process: '', title: '', titleMatch: 'contains', className: 'CabinetWClass', match: 'all' } }, tags: ['危险'], usedBy: 1, lastRun: '昨天', status: 'draft', success: 92.0 }
+    ]
+  },
+  {
+    id: 'win.window.query', name: '查询窗口', family: 'window', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 9, success: 99.0, updated: '2026-11-12',
+    desc: '只读查询顶层窗口，返回 WindowInfo[]；用于选择器测试、批量操作前预览。',
+    permissions: ['window.read'], sideEffects: ['read'],
+    instances: [
+      { id: 'i-list-windows', name: '列出可见窗口', params: { limit: 50, sort: 'z_order', selector: { strategy: 'foreground', process: '', title: '', titleMatch: 'contains', className: '', match: 'all' } }, tags: ['调试'], usedBy: 5, lastRun: '刚刚', status: 'stable', success: 99.8 },
+      { id: 'i-foreground', name: '当前前台窗口', params: { limit: 1, sort: 'z_order', selector: { strategy: 'foreground', process: '', title: '', titleMatch: 'contains', className: '', match: 'first' } }, tags: ['常用'], usedBy: 4, lastRun: '刚刚', status: 'stable', success: 99.9 }
+    ]
+  },
+  {
+    id: 'win.open', name: '打开目标', family: 'open', version: '1.1.0',
+    status: 'stable', p0: true, official: true, usedBy: 14, success: 97.6, updated: '2026-11-19',
+    desc: '一个类覆盖文件、文件夹、应用、URL；kind 参数决定解析路径与默认处理器。',
+    permissions: ['open.path', 'open.app', 'open.url'], sideEffects: ['write'],
+    instances: [
+      { id: 'i-open-downloads', name: '打开下载文件夹', params: { kind: 'folder', target: '%USERPROFILE%\\Downloads', app: '', args: '' }, tags: ['常用'], usedBy: 6, lastRun: '10 分钟前', status: 'stable', success: 99.5 },
+      { id: 'i-open-github', name: '打开 GitHub', params: { kind: 'url', target: 'https://github.com', app: '', args: '' }, tags: ['网页'], usedBy: 3, lastRun: '昨天', status: 'stable', success: 99.2 },
+      { id: 'i-open-project', name: '用 VS Code 打开项目', params: { kind: 'folder', target: 'C:\\project', app: 'code.exe', args: '.' }, tags: ['开发'], usedBy: 5, lastRun: '2 小时前', status: 'stable', success: 96.8 }
+    ]
+  },
+  {
+    id: 'win.audio.volume', name: '控制系统音量', family: 'settings', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 11, success: 99.3, updated: '2026-11-16',
+    desc: '主音量与静音控制；action 参数覆盖 up/down/set/mute/toggle。应用音量放 P1。',
+    permissions: ['settings.audio.write'], sideEffects: ['write'],
+    instances: [
+      { id: 'i-vol-up', name: '音量 +5', params: { action: 'up', step: 5, level: 50, app: '' }, tags: ['音量'], usedBy: 5, lastRun: '刚刚', status: 'stable', success: 99.8 },
+      { id: 'i-vol-toggle', name: '静音切换', params: { action: 'toggle', step: 5, level: 50, app: '' }, tags: ['音量'], usedBy: 4, lastRun: '30 分钟前', status: 'stable', success: 99.9 },
+      { id: 'i-vol-30', name: '设 30%', params: { action: 'set', step: 5, level: 30, app: '' }, tags: ['音量'], usedBy: 2, lastRun: '昨天', status: 'stable', success: 99.6 }
+    ]
+  },
+  {
+    id: 'win.display.brightness', name: '控制亮度', family: 'settings', version: '0.9.0',
+    status: 'draft', p0: true, official: true, usedBy: 5, success: 94.2, updated: '2026-11-20',
+    desc: '内屏走 WMI、外屏走 DDC/CI；不支持时明确失败，不用假值。',
+    permissions: ['settings.display.brightness'], sideEffects: ['write'],
+    instances: [
+      { id: 'i-bright-60', name: '内屏亮度 60%', params: { action: 'set', value: 60, step: 10, monitor: 'internal', method: 'auto' }, tags: ['亮度'], usedBy: 3, lastRun: '1 小时前', status: 'stable', success: 96.5 },
+      { id: 'i-bright-up', name: '亮度 +10', params: { action: 'up', value: 60, step: 10, monitor: 'internal', method: 'auto' }, tags: ['亮度'], usedBy: 2, lastRun: '昨天', status: 'draft', success: 91.0 }
+    ]
+  },
+  {
+    id: 'win.theme.mode', name: '深浅主题', family: 'settings', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 8, success: 98.4, updated: '2026-11-15',
+    desc: '写 AppsUseLightTheme / SystemUsesLightTheme 并广播 ImmersiveColorSet；部分应用需重启。',
+    permissions: ['settings.theme'], sideEffects: ['write'],
+    instances: [
+      { id: 'i-dark', name: '深色模式', params: { action: 'set', mode: 'dark', scope: 'both' }, tags: ['主题'], usedBy: 5, lastRun: '昨天', status: 'stable', success: 99.0 },
+      { id: 'i-light-apps', name: '应用浅色', params: { action: 'set', mode: 'light', scope: 'apps' }, tags: ['主题'], usedBy: 3, lastRun: '3 天前', status: 'stable', success: 97.2 }
+    ]
+  },
+  {
+    id: 'win.ocr.read', name: 'OCR 识别', family: 'capture', version: '1.1.0',
+    status: 'stable', p0: true, official: true, usedBy: 16, success: 96.8, updated: '2026-11-18',
+    desc: '从图片/截图提取文字；优先 Windows AI OCR，语言不支持时回退 PaddleOCR。',
+    permissions: ['screen.capture'], sideEffects: ['read'],
+    instances: [
+      { id: 'i-ocr-auto', name: '截图转文字', params: { image: '$screenshot', lang: 'auto', layout: true }, tags: ['OCR'], usedBy: 9, lastRun: '刚刚', status: 'stable', success: 97.5 },
+      { id: 'i-ocr-en', name: '英文截图', params: { image: '$screenshot', lang: 'en', layout: false }, tags: ['OCR'], usedBy: 4, lastRun: '1 小时前', status: 'stable', success: 96.0 }
+    ]
+  },
+  {
+    id: 'win.clipboard.get', name: '读取剪贴板', family: 'file', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 10, success: 99.5, updated: '2026-11-11',
+    desc: '读取文本/图片/文件列表；format 参数决定输出类型。',
+    permissions: ['clipboard.read'], sideEffects: ['read'],
+    instances: [
+      { id: 'i-clip-text', name: '取文本', params: { format: 'text' }, tags: ['剪贴板'], usedBy: 7, lastRun: '刚刚', status: 'stable', success: 99.7 },
+      { id: 'i-clip-image', name: '取图片', params: { format: 'image' }, tags: ['剪贴板'], usedBy: 3, lastRun: '昨天', status: 'stable', success: 98.9 }
+    ]
+  },
+  {
+    id: 'win.http.request', name: 'HTTP 请求', family: 'network', version: '1.0.0',
+    status: 'stable', p0: true, official: true, usedBy: 7, success: 97.8, updated: '2026-11-14',
+    desc: '统一 GET/POST/PUT/DELETE，带超时、重试、SSRF 防护和响应大小限制。',
+    permissions: ['net.http'], sideEffects: ['read', 'write'],
+    instances: [
+      { id: 'i-http-github', name: 'GET GitHub API', params: { method: 'GET', url: 'https://api.github.com/repos/owner/repo', body: '' }, tags: ['API'], usedBy: 4, lastRun: '2 小时前', status: 'stable', success: 98.6 },
+      { id: 'i-http-webhook', name: 'POST Webhook', params: { method: 'POST', url: 'https://example.com/hook', body: '{"event":"done"}' }, tags: ['API'], usedBy: 3, lastRun: '昨天', status: 'draft', success: 94.0 }
+    ]
+  },
+  {
+    id: 'ui.form', name: '用户表单', family: 'human', version: '0.8.0',
+    status: 'draft', p0: true, official: true, usedBy: 4, success: 97.0, updated: '2026-11-21',
+    desc: 'JSON Schema 驱动的表单；取消/超时返回明确状态，审批是 gate 不是这个类。',
+    permissions: [], sideEffects: ['read'],
+    instances: [
+      { id: 'i-form-confirm', name: '发布确认', params: { title: '确认发布', fields: '备注, 版本号' }, tags: ['交互'], usedBy: 4, lastRun: '今天', status: 'draft', success: 96.4 }
+    ]
+  }
+];
+
+/* ---------- helpers ---------- */
+const LS_KEY = 'baiying.atomCatalog.v1';
+const THEME_KEY = 'baiying.atomCatalog.theme';
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const clone = (v) => JSON.parse(JSON.stringify(v));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const familyById = (id) => FAMILIES.find((f) => f.id === id) || FAMILIES[0];
+const classById = (id) => data.find((c) => c.id === id);
+const instanceById = (classId, instanceId) => classById(classId)?.instances.find((i) => i.id === instanceId);
+const statusLabel = (s) => ({ stable: 'stable', draft: 'draft', deprecated: 'deprecated', archived: 'archived' }[s] || s || 'stable');
+
+function deepClone(v) { return JSON.parse(JSON.stringify(v)); }
+function loadData() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return deepClone(SEED);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || !parsed.length) return deepClone(SEED);
+    return parsed;
+  } catch (_) { return deepClone(SEED); }
+}
+function saveData() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch (_) {}
+}
+let data = loadData();
+const state = {
+  family: 'all',
+  filter: 'all',
+  query: '',
+  view: 'cards',
+  selected: null,
+  expanded: new Set([data[0]?.id].filter(Boolean)),
+  recording: false
+};
+
+function setPath(obj, path, value) {
+  const parts = path.split('.');
+  let cur = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const k = parts[i];
+    if (typeof cur[k] !== 'object' || cur[k] === null) cur[k] = {};
+    cur = cur[k];
+  }
+  cur[parts[parts.length - 1]] = value;
+}
+function getPath(obj, path) {
+  return path.split('.').reduce((cur, k) => (cur == null ? undefined : cur[k]), obj);
+}
+function shortUrl(url) {
+  if (!url) return '';
+  return url.replace(/^https?:\/\//, '').replace(/\/$/, '').slice(0, 30);
+}
+function selectorSummary(sel = {}) {
+  if (!sel || typeof sel !== 'object') return 'foreground';
+  if (sel.strategy === 'foreground') return 'foreground';
+  const bits = [];
+  if (sel.process) bits.push(`process:${sel.process}`);
+  if (sel.className) bits.push(`class:${sel.className}`);
+  if (sel.title) bits.push(`title~${sel.title}`);
+  if (!bits.length) return sel.strategy || 'foreground';
+  return bits.join(' · ');
+}
+function paramSummary(cls, p = {}) {
+  switch (cls.id) {
+    case 'win.key.send': return `${p.keys || '—'} · ${p.mode || 'press'}${p.repeat > 1 ? ` ×${p.repeat}` : ''}`;
+    case 'win.key.trigger': return `${p.keys || '—'} · ${p.scope || 'global'}`;
+    case 'win.window.control': return `${p.op || 'focus'} · ${selectorSummary(p.selector)}`;
+    case 'win.window.query': return `${selectorSummary(p.selector)} · limit ${p.limit ?? 20}`;
+    case 'win.open': return `${p.kind || 'auto'} · ${p.target || '—'}${p.app ? ` · ${p.app}` : ''}`;
+    case 'win.audio.volume': return `${p.action || 'toggle'}${p.level != null ? ` ${p.level}%` : ''}${p.step ? ` +${p.step}` : ''}${p.app ? ` · ${p.app}` : ''}`;
+    case 'win.display.brightness': return `${p.action || 'set'} ${p.value ?? ''}${p.monitor ? ` · ${p.monitor}` : ''}`;
+    case 'win.theme.mode': return `${p.mode || 'dark'} · ${p.scope || 'both'}`;
+    case 'win.ocr.read': return `${p.lang || 'auto'}${p.layout ? ' · layout' : ''}`;
+    case 'win.clipboard.get': return `${p.format || 'text'}`;
+    case 'win.http.request': return `${p.method || 'GET'} ${shortUrl(p.url)}`;
+    case 'ui.form': return p.title || '表单';
+    default: return JSON.stringify(p).slice(0, 52);
+  }
+}
+function classSchema(cls) {
+  const p = cls.instances[0]?.params || {};
+  const properties = {};
+  Object.keys(p).forEach((k) => {
+    const v = p[k];
+    properties[k] = { type: v === null ? 'null' : Array.isArray(v) ? 'array' : typeof v };
+  });
+  return { type: 'object', properties, required: Object.keys(properties) };
+}
+function defaultParams(classId) {
+  switch (classId) {
+    case 'win.key.send': return { keys: 'Ctrl+Shift+K', mode: 'press', repeat: 1 };
+    case 'win.key.trigger': return { keys: 'Ctrl+Alt+K', scope: 'global' };
+    case 'win.window.control': return { op: 'focus', selector: { strategy: 'foreground', process: '', title: '', titleMatch: 'contains', className: '', match: 'error' } };
+    case 'win.window.query': return { limit: 20, sort: 'z_order', selector: { strategy: 'foreground', process: '', title: '', titleMatch: 'contains', className: '', match: 'all' } };
+    case 'win.open': return { kind: 'folder', target: '%USERPROFILE%\\Downloads', app: '', args: '' };
+    case 'win.audio.volume': return { action: 'toggle', step: 5, level: 50, app: '' };
+    case 'win.display.brightness': return { action: 'set', value: 60, step: 10, monitor: 'internal', method: 'auto' };
+    case 'win.theme.mode': return { action: 'set', mode: 'dark', scope: 'both' };
+    case 'win.ocr.read': return { image: '$screenshot', lang: 'auto', layout: true };
+    case 'win.clipboard.get': return { format: 'text' };
+    case 'win.http.request': return { method: 'GET', url: 'https://example.com', body: '' };
+    case 'ui.form': return { title: '确认操作', fields: '备注' };
+    default: return {};
+  }
+}
+function avgSuccess() {
+  const all = data.flatMap((c) => c.instances).filter((i) => i.status !== 'archived');
+  if (!all.length) return '—';
+  return (all.reduce((a, i) => a + (Number(i.success) || 0), 0) / all.length).toFixed(1) + '%';
+}
+function totalInstances() { return data.reduce((n, c) => n + c.instances.length, 0); }
+function activeInstances() { return data.flatMap((c) => c.instances).filter((i) => i.status !== 'archived').length; }
+function selectedInstance() {
+  if (!state.selected || state.selected.type !== 'instance') return null;
+  return instanceById(state.selected.classId, state.selected.instanceId);
+}
+function selectedClass() {
+  if (!state.selected) return null;
+  return classById(state.selected.classId);
+}
+/* ---------- filtering ---------- */
+function classMatchesQuery(c) {
+  const q = state.query.trim().toLowerCase();
+  if (!q) return true;
+  const hay = [c.name, c.id, c.desc, familyById(c.family).name, ...(c.permissions || [])].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+function instanceMatchesQuery(c, i) {
+  const q = state.query.trim().toLowerCase();
+  if (!q) return true;
+  const hay = [i.name, i.id, paramSummary(c, i.params), ...(i.tags || []), JSON.stringify(i.params)].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+function visibleInstances(c) {
+  let list = c.instances.slice();
+  if (state.filter === 'archived') list = list.filter((i) => i.status === 'archived');
+  else list = list.filter((i) => i.status !== 'archived');
+  if (state.filter === 'draft') list = list.filter((i) => i.status === 'draft');
+  if (state.query.trim()) {
+    if (!classMatchesQuery(c)) list = list.filter((i) => instanceMatchesQuery(c, i));
+  }
+  return list;
+}
+function filteredClasses() {
+  let list = data.slice();
+  if (state.family !== 'all') list = list.filter((c) => c.family === state.family);
+  if (state.filter === 'p0') list = list.filter((c) => c.p0);
+  if (state.filter === 'draft') list = list.filter((c) => c.status === 'draft' || c.instances.some((i) => i.status === 'draft'));
+  if (state.filter === 'archived') list = list.filter((c) => c.status === 'archived' || c.instances.some((i) => i.status === 'archived'));
+  if (state.filter === 'all') list = list.filter((c) => c.status !== 'archived');
+  if (state.query.trim()) list = list.filter((c) => classMatchesQuery(c) || c.instances.some((i) => instanceMatchesQuery(c, i)));
+  return list;
+}
+
+/* ---------- render: chrome ---------- */
+function renderSidebar() {
+  const total = data.filter((c) => c.status !== 'archived').length;
+  const all = `<button class="family-item ${state.family === 'all' ? 'active' : ''}" data-family="all">
+      <span class="ficon" style="--c:#3B82F6">◈</span><span>全部</span><span class="fcount">${total}</span>
+    </button>`;
+  const items = FAMILIES.map((f) => {
+    const count = data.filter((c) => c.family === f.id && c.status !== 'archived').length;
+    return `<button class="family-item ${state.family === f.id ? 'active' : ''}" data-family="${f.id}">
+      <span class="ficon" style="--c:${f.color}">${f.icon}</span><span>${f.name}</span><span class="fcount">${count}</span>
+    </button>`;
+  }).join('');
+  $('#familyNav').innerHTML = all + items;
+  $$('#savedViews button').forEach((b) => b.classList.toggle('active', b.dataset.filter === state.filter));
+}
+
+function renderStats() {
+  const p0 = data.filter((c) => c.p0 && c.status !== 'archived').length;
+  const stats = [
+    ['原子类', data.filter((c) => c.status !== 'archived').length, '个类 · 版本化'],
+    ['实例', activeInstances(), `共 ${totalInstances()} 个 · 含归档`],
+    ['P0 核心', p0, '首批交付范围'],
+    ['平均成功率', avgSuccess(), '实例运行统计']
+  ];
+  $('#stats').innerHTML = stats.map(([label, value, hint]) => `
+    <div class="stat"><div class="label">${label}</div><div class="value">${value}</div><div class="hint">${hint}</div></div>
+  `).join('');
+}
+
+function renderChips() {
+  const fam = state.family === 'all' ? '全部家族' : familyById(state.family).name;
+  const filterLabel = { all: '全部', p0: 'P0 核心', draft: '草稿', archived: '已归档' }[state.filter] || state.filter;
+  const chips = [`<span class="chip active">${esc(fam)}</span>`, `<span class="chip active">${filterLabel}</span>`];
+  if (state.query.trim()) chips.push(`<span class="chip active">搜索：${esc(state.query.trim())}</span>`);
+  $('#filterChips').innerHTML = chips.join('');
+}
+
+function renderContent() {
+  const list = filteredClasses();
+  const fam = state.family === 'all' ? '全部功能家族' : familyById(state.family).name;
+  $('#pageTitle').textContent = state.family === 'all' ? '类与实例' : fam;
+  $('#pageSub').textContent = `${list.length} 个类 · ${list.reduce((n, c) => n + visibleInstances(c).length, 0)} 个可见实例 · 点类或实例打开 Inspector`;
+  if (!list.length) {
+    $('#content').innerHTML = `<div class="empty"><strong>没有匹配的类或实例</strong>试试清空搜索、切换家族，或新建一个实例。</div>`;
+    return;
+  }
+  if (state.view === 'table') $('#content').innerHTML = renderTable(list);
+  else if (state.view === 'graph') $('#content').innerHTML = renderGraph(list);
+  else $('#content').innerHTML = list.map(renderClassCard).join('');
+}
+
+/* ---------- render: cards ---------- */
+function badge(status) {
+  return `<span class="badge ${status}">${statusLabel(status)}</span>`;
+}
+function renderClassCard(c) {
+  const fam = familyById(c.family);
+  const instances = visibleInstances(c);
+  const rows = instances.map((i) => {
+    const selected = state.selected?.type === 'instance' && state.selected.instanceId === i.id;
+    return `<tr class="instance-row ${selected ? 'selected' : ''}" data-class="${c.id}" data-instance="${i.id}">
+      <td><div class="instance-name"><span class="dot ${i.status}"></span>${esc(i.name)}</div><div class="muted mono" style="font-size:9px;margin-left:14px">${esc(i.id)}</div></td>
+      <td><span class="param" title="${esc(JSON.stringify(i.params))}">${esc(paramSummary(c, i.params))}</span></td>
+      <td class="muted">${i.usedBy ?? 0}</td>
+      <td class="muted">${esc(i.lastRun || '未运行')}</td>
+      <td>${badge(i.status)}</td>
+      <td><div class="row-actions">
+        <button class="mini-btn" data-action="run" data-class="${c.id}" data-instance="${i.id}" title="运行测试">▶</button>
+        <button class="mini-btn" data-action="edit" data-class="${c.id}" data-instance="${i.id}" title="编辑">✎</button>
+        <button class="mini-btn" data-action="duplicate" data-class="${c.id}" data-instance="${i.id}" title="复制">⧉</button>
+        <button class="mini-btn" data-action="${i.status === 'archived' ? 'restore' : 'archive'}" data-class="${c.id}" data-instance="${i.id}" title="${i.status === 'archived' ? '恢复' : '归档'}">${i.status === 'archived' ? '↺' : '⌫'}</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  return `<article class="class-card" data-class="${c.id}">
+    <div class="class-head" data-class="${c.id}">
+      <div class="class-icon" style="--c:${fam.color}">${fam.icon}</div>
+      <div class="class-main">
+        <div class="class-title-row">
+          <span class="class-title">${esc(c.name)}</span>
+          ${badge(c.status)}
+          ${c.p0 ? '<span class="badge p0">P0</span>' : ''}
+          ${c.official ? '<span class="badge official">official</span>' : ''}
+          <span class="badge">v${esc(c.version)}</span>
+        </div>
+        <div class="class-id">${esc(c.id)}</div>
+        <div class="class-desc">${esc(c.desc)}</div>
+      </div>
+      <div class="class-meta">
+        <div class="meta-block"><div class="m">${c.instances.filter((i) => i.status !== 'archived').length}</div><div class="l">实例</div></div>
+        <div class="meta-block"><div class="m">${c.usedBy ?? 0}</div><div class="l">被引用</div></div>
+        <div class="meta-block"><div class="m">${c.success ?? '—'}%</div><div class="l">成功率</div></div>
+      </div>
+    </div>
+    <table class="instance-table">
+      <thead><tr><th>实例</th><th>参数摘要</th><th>引用</th><th>最近运行</th><th>状态</th><th></th></tr></thead>
+      <tbody>${rows || `<tr><td colspan="6" class="muted" style="padding:16px">这个类还没有实例。</td></tr>`}</tbody>
+    </table>
+  </article>`;
+}
+
+/* ---------- render: table ---------- */
+function renderTable(list) {
+  const head = `<thead><tr><th>类 / 实例</th><th>家族</th><th>版本 / 参数</th><th>状态</th><th>引用</th><th>成功率</th><th></th></tr></thead>`;
+  const body = list.map((c) => {
+    const fam = familyById(c.family);
+    const expanded = state.expanded.has(c.id);
+    const instances = visibleInstances(c);
+    const classRow = `<tr class="class-row" data-class-row="${c.id}">
+      <td><span class="chev ${expanded ? 'open' : ''}">▸</span> <span style="color:${fam.color}">${fam.icon}</span> <strong>${esc(c.name)}</strong> <span class="muted mono" style="font-size:9px">${esc(c.id)}</span></td>
+      <td class="muted">${fam.name}</td>
+      <td class="muted">v${esc(c.version)} · ${c.instances.filter((i) => i.status !== 'archived').length} 个实例</td>
+      <td>${badge(c.status)}${c.p0 ? ' <span class="badge p0">P0</span>' : ''}</td>
+      <td class="muted">${c.usedBy ?? 0}</td>
+      <td class="muted">${c.success ?? '—'}%</td>
+      <td><button class="mini-btn" data-action="new-instance" data-class="${c.id}" title="新建实例">＋</button></td>
+    </tr>`;
+    const instRows = expanded ? instances.map((i) => `<tr class="instance-row" data-class="${c.id}" data-instance="${i.id}">
+      <td><span class="muted" style="margin-right:8px">└</span><span class="dot ${i.status}" style="display:inline-block;margin-right:7px"></span>${esc(i.name)}</td>
+      <td class="muted">${esc(paramSummary(c, i.params))}</td>
+      <td>${badge(i.status)}</td>
+      <td class="muted">${i.usedBy ?? 0}</td>
+      <td class="muted">${esc(i.lastRun || '未运行')}</td>
+      <td class="muted">${i.success ?? '—'}%</td>
+      <td><div class="row-actions" style="opacity:1">
+        <button class="mini-btn" data-action="run" data-class="${c.id}" data-instance="${i.id}">▶</button>
+        <button class="mini-btn" data-action="edit" data-class="${c.id}" data-instance="${i.id}">✎</button>
+      </div></td>
+    </tr>`).join('') : '';
+    return classRow + instRows;
+  }).join('');
+  return `<table class="catalog-table">${head}<tbody>${body}</tbody></table>`;
+}
+
+/* ---------- render: graph ---------- */
+function renderGraph(list) {
+  return list.map((c) => {
+    const fam = familyById(c.family);
+    const instances = visibleInstances(c);
+    return `<div class="graph-row">
+      <div class="graph-class" data-class="${c.id}" style="--c:${fam.color}">
+        <div class="g-icon">${fam.icon}</div>
+        <div class="g-title">${esc(c.name)}</div>
+        <div class="g-id">${esc(c.id)} · v${esc(c.version)}</div>
+        <div style="margin-top:8px">${badge(c.status)} ${c.p0 ? '<span class="badge p0">P0</span>' : ''}</div>
+      </div>
+      <div class="graph-connector"></div>
+      <div class="graph-instances">
+        ${instances.length ? instances.map((i) => `<button class="graph-instance" data-class="${c.id}" data-instance="${i.id}">
+          <span class="dot ${i.status}"></span>${esc(i.name)}<span class="pi">${esc(paramSummary(c, i.params))}</span>
+        </button>`).join('') : '<span class="muted" style="font-size:11px">这个类还没有可见实例</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- render: inspector ---------- */
+function field(label, path, value, attrs = '') {
+  return `<div class="field"><label>${label}</label><input class="input" data-field="${path}" value="${esc(value ?? '')}" ${attrs}></div>`;
+}
+function numberField(label, path, value, attrs = '') {
+  return field(label, path, value, `type="number" data-type="number" ${attrs}`);
+}
+function selectField(label, path, value, options) {
+  return `<div class="field"><label>${label}</label><select data-field="${path}">${options.map((o) => {
+    const v = typeof o === 'string' ? o : o[0];
+    const t = typeof o === 'string' ? o : o[1];
+    return `<option value="${esc(v)}" ${String(value) === String(v) ? 'selected' : ''}>${esc(t)}</option>`;
+  }).join('')}</select></div>`;
+}
+function textareaField(label, path, value, attrs = '') {
+  return `<div class="field"><label>${label}</label><textarea data-field="${path}" ${attrs}>${esc(value ?? '')}</textarea></div>`;
+}
+function checkboxField(label, path, checked) {
+  return `<div class="field" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" data-field="${path}" data-type="boolean" ${checked ? 'checked' : ''}><label style="margin:0">${label}</label></div>`;
+}
+function keyChips(keys) {
+  if (!keys) return '';
+  return `<div class="key-chips">${String(keys).split('+').map((k) => `<span class="key-chip">${esc(k)}</span>`).join('')}</div>`;
+}
+
+function renderInstanceForm(c, i) {
+  const p = i.params || {};
+  const sel = p.selector || {};
+  const keyInput = `<div class="field"><label>组合键</label><div class="key-capture">
+      <input class="input" id="hotkeyInput" data-field="keys" value="${esc(p.keys || '')}" placeholder="点击录制，或手动输入 Ctrl+C">
+      <button class="btn" data-action="record" type="button">${state.recording ? '录制中…' : '● 录制'}</button>
+    </div>${state.recording ? '<div class="muted" style="font-size:10px;margin-top:6px">请按下组合键；Esc 取消，Backspace 清除。</div>' : keyChips(p.keys)}</div>`;
+
+  if (c.id === 'win.key.send') {
+    return keyInput
+      + `<div class="field-row">${selectField('按键方式', 'mode', p.mode || 'press', ['press', 'down', 'up'])}${numberField('重复次数', 'repeat', p.repeat ?? 1, 'min="1"')}</div>`;
+  }
+  if (c.id === 'win.key.trigger') {
+    return keyInput + selectField('作用域', 'scope', p.scope || 'global', [['global', '全局'], ['app', '当前应用']]);
+  }
+  if (c.id === 'win.window.control') {
+    return selectField('操作', 'op', p.op || 'focus', ['focus', 'move', 'resize', 'minimize', 'maximize', 'restore', 'topmost', 'close'])
+      + `<div class="field-row">${selectField('选择策略', 'selector.strategy', sel.strategy || 'foreground', ['foreground', 'process', 'class', 'title', 'under_cursor'])}${field('进程名', 'selector.process', sel.process || '', 'placeholder="chrome.exe"')}</div>`
+      + `<div class="field-row">${field('标题包含', 'selector.title', sel.title || '', 'placeholder="GitHub"')}${selectField('标题匹配', 'selector.titleMatch', sel.titleMatch || 'contains', ['contains', 'exact', 'regex'])}</div>`
+      + `<div class="field-row">${field('窗口类', 'selector.className', sel.className || '', 'placeholder="CabinetWClass"')}${selectField('多匹配策略', 'selector.match', sel.match || 'error', ['error', 'first', 'last', 'all'])}</div>`
+      + `<div class="field-row">${field('目标显示器', 'monitor', p.monitor ?? '', 'placeholder="1" data-type="number"')}${field('矩形 x,y,w,h', 'rect', p.rect || '', 'placeholder="0,0,0.5,1"')}</div>`;
+  }
+  if (c.id === 'win.window.query') {
+    return `<div class="field-row">${selectField('选择策略', 'selector.strategy', sel.strategy || 'foreground', ['foreground', 'process', 'class', 'title', 'under_cursor'])}${numberField('数量上限', 'limit', p.limit ?? 20, 'min="1"')}</div>`
+      + selectField('排序', 'sort', p.sort || 'z_order', [['z_order', 'Z 顺序'], ['title', '标题'], ['process', '进程']])
+      + `<div class="field-row">${field('进程名', 'selector.process', sel.process || '')}${field('窗口类', 'selector.className', sel.className || '')}</div>`;
+  }
+  if (c.id === 'win.open') {
+    return selectField('目标类型', 'kind', p.kind || 'folder', [['auto', '自动'], ['file', '文件'], ['folder', '文件夹'], ['app', '软件'], ['url', 'URL']])
+      + field('目标', 'target', p.target || '', 'placeholder="C:\\path 或 https://..."')
+      + `<div class="field-row">${field('指定应用（可选）', 'app', p.app || '', 'placeholder="code.exe"')}${field('参数（逗号分隔）', 'args', Array.isArray(p.args) ? p.args.join(', ') : (p.args || ''), 'data-type="array"')}</div>`;
+  }
+  if (c.id === 'win.audio.volume') {
+    return `<div class="field-row">${selectField('动作', 'action', p.action || 'toggle', ['up', 'down', 'set', 'mute', 'unmute', 'toggle'])}${numberField('步长', 'step', p.step ?? 5, 'min="1" max="100"')}</div>`
+      + `<div class="field-row">${numberField('目标音量 %', 'level', p.level ?? 50, 'min="0" max="100"')}${field('应用（可选）', 'app', p.app || '', 'placeholder="cloudmusic.exe"')}</div>`;
+  }
+  if (c.id === 'win.display.brightness') {
+    return `<div class="field-row">${selectField('动作', 'action', p.action || 'set', ['up', 'down', 'set'])}${numberField('目标亮度 %', 'value', p.value ?? 60, 'min="0" max="100"')}</div>`
+      + `<div class="field-row">${selectField('显示器', 'monitor', p.monitor || 'internal', [['internal', '内屏'], ['external', '外屏'], ['all', '全部']])}${selectField('方式', 'method', p.method || 'auto', ['auto', 'wmi', 'ddc'])}</div>`;
+  }
+  if (c.id === 'win.theme.mode') {
+    return `<div class="field-row">${selectField('动作', 'action', p.action || 'set', ['set', 'toggle'])}${selectField('模式', 'mode', p.mode || 'dark', ['dark', 'light'])}</div>`
+      + selectField('范围', 'scope', p.scope || 'both', [['both', '系统 + 应用'], ['apps', '仅应用'], ['system', '仅系统']]);
+  }
+  if (c.id === 'win.ocr.read') {
+    return field('图片 Artifact', 'image', p.image || '$screenshot', 'placeholder="$screenshot"')
+      + `<div class="field-row">${selectField('语言', 'lang', p.lang || 'auto', ['auto', 'zh', 'en', 'ja'])}${checkboxField('输出布局 blocks', 'layout', !!p.layout)}</div>`;
+  }
+  if (c.id === 'win.clipboard.get') {
+    return selectField('格式', 'format', p.format || 'text', [['text', '文本'], ['image', '图片'], ['files', '文件列表'], ['html', 'HTML']]);
+  }
+  if (c.id === 'win.http.request') {
+    return `<div class="field-row">${selectField('方法', 'method', p.method || 'GET', ['GET', 'POST', 'PUT', 'DELETE'])}${field('URL', 'url', p.url || '', 'placeholder="https://..."')}</div>`
+      + textareaField('Body', 'body', p.body || '', 'placeholder="{...}"');
+  }
+  if (c.id === 'ui.form') {
+    return field('标题', 'title', p.title || '')
+      + textareaField('字段（逗号/换行分隔）', 'fields', Array.isArray(p.fields) ? p.fields.join(', ') : (p.fields || ''), 'data-type="lines"');
+  }
+  return `<pre class="json">${esc(JSON.stringify(p, null, 2))}</pre>`;
+}
+
+function renderInspector() {
+  const box = $('#inspector');
+  if (!state.selected) {
+    box.classList.remove('open');
+    box.innerHTML = `<div class="inspector-empty"><div class="big">◇</div><strong>Inspector</strong><br>点击左侧的类或实例，查看契约、参数和实例。</div>`;
+    return;
+  }
+  const c = selectedClass();
+  if (!c) { state.selected = null; renderInspector(); return; }
+  const fam = familyById(c.family);
+  if (state.selected.type === 'class') {
+    const instances = c.instances;
+    box.classList.add('open');
+    box.innerHTML = `
+      <div class="inspector-head">
+        <div>
+          <div class="inspector-kicker">原子类 · CLASS</div>
+          <div class="inspector-title">${esc(c.name)}</div>
+          <div class="inspector-id">${esc(c.id)} · v${esc(c.version)}</div>
+        </div>
+        <button class="btn icon ghost close" data-action="close-inspector" aria-label="关闭">✕</button>
+      </div>
+      <div class="class-title-row">${badge(c.status)}${c.p0 ? '<span class="badge p0">P0</span>' : ''}${c.official ? '<span class="badge official">official</span>' : ''}<span class="badge">${fam.name}</span></div>
+      <div class="class-desc" style="margin-top:10px">${esc(c.desc)}</div>
+      <div class="section"><div class="section-title">契约</div>
+        <div class="kv">
+          <span class="k">权限</span><span class="v mono">${esc((c.permissions || []).join(', ') || '—')}</span>
+          <span class="k">副作用</span><span class="v mono">${esc((c.sideEffects || []).join(', ') || '—')}</span>
+          <span class="k">实例数</span><span class="v">${c.instances.length}</span>
+          <span class="k">被引用</span><span class="v">${c.usedBy ?? 0}</span>
+          <span class="k">成功率</span><span class="v">${c.success ?? '—'}%</span>
+          <span class="k">更新时间</span><span class="v muted">${esc(c.updated || '—')}</span>
+        </div>
+      </div>
+      <div class="section"><div class="section-title">参数 Schema（示例）</div><pre class="json">${esc(JSON.stringify(classSchema(c), null, 2))}</pre></div>
+      <div class="section"><div class="section-title">实例 · ${instances.length}</div>
+        ${instances.map((i) => `<div class="instance-row" data-class="${c.id}" data-instance="${i.id}" style="padding:8px 0;border-top:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px"><span class="dot ${i.status}"></span><strong style="font-size:12px">${esc(i.name)}</strong><span class="badge ${i.status}" style="margin-left:auto">${statusLabel(i.status)}</span></div>
+          <div class="muted mono" style="font-size:9px;margin-top:3px">${esc(paramSummary(c, i.params))}</div>
+        </div>`).join('') || '<div class="muted" style="font-size:11px">暂无实例。</div>'}
+      </div>
+      <div class="inspector-actions">
+        <button class="btn primary" data-action="new-instance" data-class="${c.id}">＋ 新建实例</button>
+        <button class="btn" data-action="edit-class" data-class="${c.id}">编辑类</button>
+        <button class="btn danger" data-action="archive-class" data-class="${c.id}">归档类</button>
+      </div>`;
+    return;
+  }
+
+  const i = instanceById(c.id, state.selected.instanceId);
+  if (!i) { state.selected = null; renderInspector(); return; }
+  box.classList.add('open');
+  box.innerHTML = `
+    <div class="inspector-head">
+      <div>
+        <div class="inspector-kicker">实例 · INSTANCE</div>
+        <div class="inspector-title">${esc(i.name)}</div>
+        <div class="inspector-id">${esc(i.id)} · ${esc(c.id)}@${esc(c.version)}</div>
+      </div>
+      <button class="btn icon ghost close" data-action="close-inspector" aria-label="关闭">✕</button>
+    </div>
+    <div class="class-title-row">${badge(i.status)}<span class="badge">${esc(c.name)}</span><button class="badge" data-action="jump-class" data-class="${c.id}" style="cursor:pointer">查看类 →</button></div>
+    <div class="section"><div class="section-title">参数 · ${esc(c.name)}</div>${renderInstanceForm(c, i)}</div>
+    <div class="section"><div class="section-title">参数预览</div><pre class="json">${esc(JSON.stringify(i.params, null, 2))}</pre></div>
+    <div class="section"><div class="section-title">运行与引用</div>
+      <div class="kv">
+        <span class="k">被引用</span><span class="v">${i.usedBy ?? 0}</span>
+        <span class="k">最近运行</span><span class="v">${esc(i.lastRun || '未运行')}</span>
+        <span class="k">成功率</span><span class="v">${i.success ?? '—'}%</span>
+        <span class="k">revision</span><span class="v">${i.revision ?? 1}</span>
+      </div>
+    </div>
+    <div class="inspector-actions">
+      <button class="btn primary" data-action="save-instance" data-class="${c.id}" data-instance="${i.id}">保存</button>
+      <button class="btn" data-action="run" data-class="${c.id}" data-instance="${i.id}">▶ 运行测试</button>
+      <button class="btn" data-action="duplicate" data-class="${c.id}" data-instance="${i.id}">⧉ 复制</button>
+      <button class="btn ${i.status === 'archived' ? '' : 'danger'}" data-action="${i.status === 'archived' ? 'restore' : 'archive'}" data-class="${c.id}" data-instance="${i.id}">${i.status === 'archived' ? '↺ 恢复' : '⌫ 归档'}</button>
+    </div>`;
+}
+/* ---------- interactions ---------- */
+let toastTimer = null;
+let recordHandler = null;
+let modalConfirmAction = null;
+
+function showToast(message, type = 'success') {
+  const t = $('#toast');
+  if (!t) return;
+  t.innerHTML = `<span class="t-dot" style="background:${type === 'error' ? 'var(--danger)' : 'var(--success)'}"></span>${esc(message)}`;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+function renderAll() {
+  renderSidebar();
+  renderStats();
+  renderChips();
+  renderContent();
+  renderInspector();
+}
+function selectClass(classId) {
+  state.selected = { type: 'class', classId };
+  renderContent();
+  renderInspector();
+}
+function selectInstance(classId, instanceId) {
+  state.selected = { type: 'instance', classId, instanceId };
+  renderContent();
+  renderInspector();
+}
+function readFormParams() {
+  const params = {};
+  $$('#inspector [data-field]').forEach((el) => {
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.dataset.type === 'number') v = v === '' ? null : Number(v);
+    if (el.dataset.type === 'array') v = String(v).split(',').map((s) => s.trim()).filter(Boolean);
+    if (el.dataset.type === 'lines') v = String(v).split(/[,，\n]/).map((s) => s.trim()).filter(Boolean);
+    setPath(params, el.dataset.field, v);
+  });
+  return params;
+}
+function validateParams(c, p) {
+  if ((c.id === 'win.key.send' || c.id === 'win.key.trigger') && !p.keys) return '请先录制或输入组合键';
+  if (c.id === 'win.open' && !p.target) return '请填写目标路径或 URL';
+  if (c.id === 'win.http.request' && !p.url) return '请填写请求 URL';
+  if (c.id === 'win.audio.volume' && p.action === 'set' && (p.level == null || p.level < 0 || p.level > 100)) return '音量需在 0–100';
+  if (c.id === 'win.display.brightness' && (p.value == null || p.value < 0 || p.value > 100)) return '亮度需在 0–100';
+  return null;
+}
+function saveInstance(classId, instanceId) {
+  if (state.recording) stopRecording();
+  const c = classById(classId);
+  const i = instanceById(classId, instanceId);
+  if (!c || !i) return;
+  const params = readFormParams();
+  const err = validateParams(c, params);
+  if (err) { showToast(err, 'error'); return; }
+  i.params = params;
+  i.revision = (i.revision || 1) + 1;
+  if (!i.lastRun) i.lastRun = '尚未运行';
+  saveData();
+  renderAll();
+  showToast(`已保存「${i.name}」· revision ${i.revision}`);
+}
+function runInstance(classId, instanceId) {
+  const c = classById(classId);
+  const i = instanceById(classId, instanceId);
+  if (!c || !i) return;
+  if (i.status === 'archived') { showToast('已归档实例，先恢复再运行', 'error'); return; }
+  const err = validateParams(c, i.params);
+  if (err) { showToast(err, 'error'); return; }
+  i.lastRun = '刚刚';
+  i.success = Math.min(99.9, Number((Number(i.success || 96) + 0.2).toFixed(1)));
+  saveData();
+  renderContent();
+  renderInspector();
+  showToast(`运行成功 · ${c.name} / ${i.name} · 128 ms`);
+}
+function duplicateInstance(classId, instanceId) {
+  const c = classById(classId);
+  const i = instanceById(classId, instanceId);
+  if (!c || !i) return;
+  const copy = deepClone(i);
+  copy.id = `i-${Date.now().toString(36)}`;
+  copy.name = `${i.name} 副本`;
+  copy.revision = 1;
+  copy.lastRun = '尚未运行';
+  copy.status = 'draft';
+  copy.usedBy = 0;
+  c.instances.push(copy);
+  state.selected = { type: 'instance', classId, instanceId: copy.id };
+  saveData();
+  renderAll();
+  showToast(`已复制为「${copy.name}」`);
+}
+function restoreInstance(classId, instanceId) {
+  const i = instanceById(classId, instanceId);
+  if (!i) return;
+  i.status = 'stable';
+  saveData();
+  renderAll();
+  showToast(`已恢复「${i.name}」`);
+}
+function archiveInstance(classId, instanceId) {
+  const i = instanceById(classId, instanceId);
+  if (!i) return;
+  if (i.status === 'archived') { restoreInstance(classId, instanceId); return; }
+  confirmModal('归档实例？', `「${i.name}」被 ${i.usedBy || 0} 条流程引用。归档不会删除引用，但会标记不可用；可在“已归档”视图恢复。`, '归档', () => {
+    i.status = 'archived';
+    saveData();
+    renderAll();
+    showToast(`已归档「${i.name}」`);
+  });
+}
+function archiveClass(classId) {
+  const c = classById(classId);
+  if (!c) return;
+  if (c.instances.length) { showToast(`「${c.name}」下还有 ${c.instances.length} 个实例，先归档或迁移实例`, 'error'); return; }
+  confirmModal('归档类？', `「${c.name}」没有实例。归档后会从默认视图消失，但版本和审计记录保留。`, '归档', () => {
+    c.status = 'archived';
+    state.selected = null;
+    saveData();
+    renderAll();
+    showToast(`已归档「${c.name}」`);
+  });
+}
+function handleAction(el) {
+  const a = el.dataset.action;
+  const cid = el.dataset.class;
+  const iid = el.dataset.instance;
+  if (a === 'close-inspector') { state.selected = null; renderContent(); renderInspector(); return; }
+  if (a === 'jump-class') { selectClass(cid); return; }
+  if (a === 'edit') { selectInstance(cid, iid); return; }
+  if (a === 'new-instance') { openNewInstanceModal(cid); return; }
+  if (a === 'edit-class') { openEditClassModal(cid); return; }
+  if (a === 'archive-class') { archiveClass(cid); return; }
+  if (a === 'save-instance') { saveInstance(cid, iid); return; }
+  if (a === 'run') { runInstance(cid, iid); return; }
+  if (a === 'duplicate') { duplicateInstance(cid, iid); return; }
+  if (a === 'archive') { archiveInstance(cid, iid); return; }
+  if (a === 'restore') { restoreInstance(cid, iid); return; }
+  if (a === 'record') { if (state.recording) stopRecording(); else startRecording(); return; }
+}
+document.addEventListener('click', (e) => {
+  const actionEl = e.target.closest('[data-action]');
+  if (actionEl) { handleAction(actionEl); return; }
+  const instanceEl = e.target.closest('[data-instance]');
+  if (instanceEl) { selectInstance(instanceEl.dataset.class, instanceEl.dataset.instance); return; }
+  const classRow = e.target.closest('[data-class-row]');
+  if (classRow) {
+    const id = classRow.dataset.classRow;
+    if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id);
+    renderContent();
+    return;
+  }
+  const classEl = e.target.closest('[data-class]');
+  if (classEl) { selectClass(classEl.dataset.class); return; }
+  const familyEl = e.target.closest('[data-family]');
+  if (familyEl) { state.family = familyEl.dataset.family; renderAll(); return; }
+  const filterEl = e.target.closest('[data-filter]');
+  if (filterEl) { state.filter = filterEl.dataset.filter; renderAll(); return; }
+  const viewEl = e.target.closest('[data-view]');
+  if (viewEl) {
+    state.view = viewEl.dataset.view;
+    $$('#viewSwitch button').forEach((b) => b.classList.toggle('active', b.dataset.view === state.view));
+    renderContent();
+    return;
+  }
+});
+
+/* ---------- modal ---------- */
+function openModal(html) {
+  $('#modalRoot').innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal">${html}</div></div>`;
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  $('#modalRoot').innerHTML = '';
+  document.body.style.overflow = '';
+  modalConfirmAction = null;
+}
+function confirmModal(title, message, confirmLabel, onConfirm) {
+  modalConfirmAction = onConfirm;
+  openModal(`<h3>${esc(title)}</h3><p>${esc(message)}</p>
+    <div class="modal-actions">
+      <button class="btn ghost" data-modal-close>取消</button>
+      <button class="btn danger" id="modalConfirm">${esc(confirmLabel)}</button>
+    </div>`);
+}
+function openNewInstanceModal(preselected) {
+  const options = data.filter((c) => c.status !== 'archived').map((c) => `<option value="${esc(c.id)}" ${c.id === preselected ? 'selected' : ''}>${esc(c.name)} · ${esc(c.id)}</option>`).join('');
+  openModal(`<h3>新建实例</h3><p>实例 = 类 + 参数。先选类、起名字，参数可以在 Inspector 里继续编辑。</p>
+    <div class="field"><label>选择类</label><select id="modalClass">${options}</select></div>
+    <div class="field"><label>实例名称</label><input class="input" id="modalName" placeholder="例如：复制 / 聚焦记事本" autofocus></div>
+    <div class="modal-actions"><button class="btn ghost" data-modal-close>取消</button><button class="btn primary" id="modalCreateInstance">创建实例</button></div>`);
+  setTimeout(() => $('#modalName')?.focus(), 30);
+}
+function openNewClassModal() {
+  const options = FAMILIES.map((f) => `<option value="${f.id}">${f.name}</option>`).join('');
+  openModal(`<h3>新建类</h3><p>类是可复用的原子契约；创建后先落为 draft，再补参数、权限和测试。</p>
+    <div class="field-row">
+      <div class="field"><label>类名称</label><input class="input" id="modalClassName" placeholder="例如：发送快捷键"></div>
+      <div class="field"><label>家族</label><select id="modalClassFamily">${options}</select></div>
+    </div>
+    <div class="field"><label>类 ID</label><input class="input" id="modalClassId" placeholder="win.custom.myAtom"></div>
+    <div class="field"><label>描述</label><textarea id="modalClassDesc" placeholder="一句话说明这个类做什么、实例参数是什么"></textarea></div>
+    <div class="modal-actions"><button class="btn ghost" data-modal-close>取消</button><button class="btn primary" id="modalCreateClass">创建类</button></div>`);
+}
+function openEditClassModal(classId) {
+  const c = classById(classId);
+  if (!c) return;
+  openModal(`<h3>编辑类 · 新版本</h3><p>已发布类不原地改：保存会生成新的 minor 版本草稿，实例仍锁定旧版本。</p>
+    <div class="field"><label>类名称</label><input class="input" id="editClassName" value="${esc(c.name)}"></div>
+    <div class="field"><label>描述</label><textarea id="editClassDesc">${esc(c.desc)}</textarea></div>
+    <div class="field"><label>当前版本</label><input class="input" value="${esc(c.version)}" disabled></div>
+    <div class="modal-actions"><button class="btn ghost" data-modal-close>取消</button><button class="btn primary" id="modalSaveClass">保存为新版本</button></div>`);
+}
+$('#modalRoot').addEventListener('click', (e) => {
+  if (e.target.id === 'modalOverlay' || e.target.closest('[data-modal-close]')) { closeModal(); return; }
+  if (e.target.closest('#modalConfirm')) {
+    const fn = modalConfirmAction;
+    closeModal();
+    if (fn) fn();
+    return;
+  }
+  if (e.target.closest('#modalCreateInstance')) {
+    const cid = $('#modalClass').value;
+    const c = classById(cid);
+    const name = $('#modalName').value.trim();
+    if (!c) { showToast('请选择类', 'error'); return; }
+    if (!name) { showToast('请填写实例名称', 'error'); return; }
+    const inst = {
+      id: `i-${Date.now().toString(36)}`, name,
+      params: defaultParams(cid), tags: [], usedBy: 0,
+      lastRun: '尚未运行', status: 'draft', success: 0, revision: 1
+    };
+    c.instances.push(inst);
+    state.selected = { type: 'instance', classId: cid, instanceId: inst.id };
+    saveData(); closeModal(); renderAll();
+    showToast(`已创建实例「${name}」`);
+    return;
+  }
+  if (e.target.closest('#modalCreateClass')) {
+    const name = $('#modalClassName').value.trim();
+    let id = $('#modalClassId').value.trim() || `win.custom.${Date.now().toString(36)}`;
+    id = id.replace(/[^a-zA-Z0-9._-]/g, '');
+    const family = $('#modalClassFamily').value;
+    const desc = $('#modalClassDesc').value.trim() || '自定义原子类。';
+    if (!name) { showToast('请填写类名称', 'error'); return; }
+    if (!id || data.some((c) => c.id === id)) { showToast('类 ID 为空或已存在', 'error'); return; }
+    const cls = {
+      id, name, family, version: '0.1.0', status: 'draft', p0: false, official: false,
+      usedBy: 0, success: 0, updated: new Date().toISOString().slice(0, 10),
+      desc, permissions: [], sideEffects: [], instances: []
+    };
+    data.push(cls);
+    state.selected = { type: 'class', classId: id };
+    saveData(); closeModal(); renderAll();
+    showToast(`已创建类「${name}」`);
+    return;
+  }
+  if (e.target.closest('#modalSaveClass')) {
+    const c = classById(state.selected?.classId);
+    if (!c) return;
+    const name = $('#editClassName').value.trim();
+    const desc = $('#editClassDesc').value.trim();
+    if (!name) { showToast('类名称不能为空', 'error'); return; }
+    c.name = name; c.desc = desc;
+    c.version = bumpMinor(c.version);
+    c.status = 'draft';
+    c.updated = new Date().toISOString().slice(0, 10);
+    saveData(); closeModal(); renderAll();
+    showToast(`已生成 v${c.version} 草稿`);
+    return;
+  }
+});
+function bumpMinor(v) {
+  const parts = String(v).split('.').map((n) => parseInt(n, 10) || 0);
+  return `${parts[0] || 0}.${(parts[1] || 0) + 1}.0`;
+}
+/* ---------- hotkey recorder ---------- */
+function startRecording() {
+  if (state.recording) { stopRecording(); return; }
+  const input = $('#hotkeyInput');
+  if (!input) return;
+  state.recording = true;
+  const btn = document.querySelector('[data-action="record"]');
+  if (btn) btn.textContent = '录制中…';
+  input.focus();
+  input.select();
+  input.placeholder = '请按下组合键…';
+  recordHandler = (e) => onRecordKey(e);
+  window.addEventListener('keydown', recordHandler, true);
+}
+function stopRecording() {
+  state.recording = false;
+  if (recordHandler) window.removeEventListener('keydown', recordHandler, true);
+  recordHandler = null;
+  const btn = document.querySelector('[data-action="record"]');
+  if (btn) btn.textContent = '● 录制';
+  const input = $('#hotkeyInput');
+  if (input) input.placeholder = '点击录制，或手动输入 Ctrl+C';
+}
+function comboFromEvent(e) {
+  const mods = [];
+  if (e.ctrlKey) mods.push('Ctrl');
+  if (e.altKey) mods.push('Alt');
+  if (e.shiftKey) mods.push('Shift');
+  if (e.metaKey) mods.push('Win');
+  let key = e.key;
+  if (key === ' ') key = 'Space';
+  if (key === '+') key = 'Plus';
+  if (key === '-') key = 'Minus';
+  if (key.length === 1) key = key.toUpperCase();
+  return [...mods, key].join('+');
+}
+function onRecordKey(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault(); e.stopPropagation(); stopRecording(); showToast('已取消录制');
+    return;
+  }
+  if (e.key === 'Backspace') {
+    e.preventDefault(); e.stopPropagation();
+    const input = $('#hotkeyInput'); if (input) input.value = '';
+    return;
+  }
+  if (['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) {
+    e.preventDefault(); e.stopPropagation();
+    const mods = [];
+    if (e.ctrlKey) mods.push('Ctrl');
+    if (e.altKey) mods.push('Alt');
+    if (e.shiftKey) mods.push('Shift');
+    if (e.metaKey) mods.push('Win');
+    const input = $('#hotkeyInput'); if (input) input.value = mods.join('+') + (mods.length ? '+' : '');
+    return;
+  }
+  e.preventDefault(); e.stopPropagation();
+  const combo = comboFromEvent(e);
+  const input = $('#hotkeyInput');
+  if (input) {
+    input.value = combo;
+    const field = input.closest('.field');
+    const chips = field?.querySelector('.key-chips');
+    if (chips) chips.innerHTML = combo.split('+').map((k) => `<span class="key-chip">${esc(k)}</span>`).join('');
+  }
+  stopRecording();
+  showToast(`已录制 ${combo}`);
+}
+
+/* ---------- theme / keyboard / init ---------- */
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
+  const btn = $('#themeBtn');
+  if (btn) btn.textContent = theme === 'dark' ? '☾' : '☀';
+}
+function toggleTheme() {
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+}
+function isEditable(el) {
+  return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
+}
+$('#searchInput').addEventListener('input', (e) => {
+  state.query = e.target.value;
+  renderContent();
+  renderChips();
+});
+$('#newInstanceBtn').addEventListener('click', () => openNewInstanceModal());
+$('#themeBtn').addEventListener('click', toggleTheme);
+$('#resetBtn').addEventListener('click', () => {
+  confirmModal('重置演示数据？', '会清空本地修改，恢复初始的类与实例。', '重置', () => {
+    data = deepClone(SEED);
+    state.selected = null;
+    state.expanded = new Set([data[0]?.id].filter(Boolean));
+    saveData();
+    renderAll();
+    showToast('演示数据已重置');
+  });
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !isEditable(e.target)) {
+    e.preventDefault();
+    $('#searchInput').focus();
+    return;
+  }
+  if (e.key === 'Escape') {
+    if ($('#modalRoot').innerHTML) closeModal();
+    else if (state.selected) { state.selected = null; renderContent(); renderInspector(); }
+  }
+});
+/* 额外的新建类按钮 */
+(function injectNewClassButton() {
+  const top = document.querySelector('.top-actions');
+  const primary = $('#newInstanceBtn');
+  if (!top || !primary || $('#newClassBtn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'newClassBtn';
+  btn.className = 'btn ghost';
+  btn.textContent = '+ 新建类';
+  btn.addEventListener('click', openNewClassModal);
+  top.insertBefore(btn, primary);
+})();
+applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+renderAll();
+</script>
+
+<style>
+/* 可选加载 / 资源管理视图 */
+.load-view { display: flex; flex-direction: column; gap: 14px; }
+.load-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.load-card {
+  background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 70%), var(--raised);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 14px;
+}
+.load-card .lbl { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.load-card .val { font-size: 20px; font-weight: 720; margin-top: 6px; letter-spacing: -.02em; }
+.load-card .sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.budget {
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface);
+  padding: 12px 14px;
+}
+.budget-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; color: var(--muted); }
+.budget-head strong { color: var(--text); font-size: 12px; }
+.budget-bar { height: 8px; border-radius: 99px; background: rgba(148,163,184,.16); overflow: hidden; margin-top: 9px; display: flex; }
+.budget-bar span { display: block; height: 100%; }
+.budget-bar .used { background: linear-gradient(90deg, var(--primary), #60a5fa); }
+.budget-bar .gpu { background: linear-gradient(90deg, var(--new), #c084fc); }
+.budget-legend { display: flex; gap: 14px; margin-top: 7px; font-size: 10px; color: var(--muted); }
+.budget-legend i { display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 5px; }
+.load-toolbar { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.load-toolbar .chip { cursor: pointer; }
+.load-toolbar .chip.active { color: #bfdbfe; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.10); }
+.load-note { font-size: 10px; color: var(--muted); line-height: 1.6; }
+.load-table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: auto; background: var(--raised); }
+.load-table { width: 100%; border-collapse: collapse; min-width: 1040px; }
+.load-table th {
+  text-align: left; padding: 9px 11px; font-size: 9px; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--muted); border-bottom: 1px solid var(--border); background: rgba(255,255,255,.015); white-space: nowrap;
+}
+.load-table td { padding: 9px 11px; border-bottom: 1px solid var(--border); font-size: 11px; vertical-align: middle; }
+.load-table tr:last-child td { border-bottom: 0; }
+.load-table tr.row-loading { opacity: .7; }
+.load-table tr.row-available { opacity: .72; }
+.load-table tr:hover { background: rgba(59,130,246,.055); }
+.load-name { display: flex; align-items: center; gap: 8px; min-width: 190px; }
+.load-name .li { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); flex: 0 0 auto; }
+.load-name .ln { font-weight: 650; font-size: 11px; }
+.load-name .lid { font-family: var(--mono); font-size: 8px; color: var(--muted); margin-top: 2px; }
+.load-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 7px; border-radius: 99px; font-size: 9px; white-space: nowrap; border: 1px solid var(--border); color: var(--muted); }
+.load-badge.loaded { color: #86efac; border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.08); }
+.load-badge.installed { color: #93c5fd; border-color: rgba(59,130,246,.28); background: rgba(59,130,246,.07); }
+.load-badge.available { color: #fcd34d; border-color: rgba(245,158,11,.28); background: rgba(245,158,11,.07); }
+.load-badge.loading { color: #c4b5fd; border-color: rgba(139,92,246,.3); background: rgba(139,92,246,.08); }
+.res-num { font-family: var(--mono); font-size: 10px; color: var(--text); white-space: nowrap; }
+.res-num.muted { color: var(--muted); }
+.res-sub { font-size: 9px; color: var(--muted); margin-top: 2px; }
+.res-pill { display: inline-block; font-size: 9px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); background: rgba(255,255,255,.02); color: var(--muted); margin: 1px 3px 1px 0; }
+.res-pill.model { color: #c4b5fd; border-color: rgba(139,92,246,.28); background: rgba(139,92,246,.07); }
+.res-pill.gpu { color: #f0abfc; border-color: rgba(217,70,239,.28); background: rgba(217,70,239,.07); }
+.load-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.load-btn {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  padding: 4px 7px; border-radius: 6px; font-size: 10px; white-space: nowrap;
+}
+.load-btn:hover { border-color: var(--border-strong); background: rgba(255,255,255,.04); }
+.load-btn.primary { color: #bfdbfe; border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+.load-btn.danger { color: #fecaca; border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.07); }
+.load-btn:disabled { opacity: .5; cursor: default; }
+.policy-select {
+  width: auto; min-width: 92px; padding: 4px 6px; font-size: 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+}
+.resource-section .res-grid { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; font-size: 11px; }
+.resource-section .res-grid .k { color: var(--muted); }
+.resource-section .res-grid .v { text-align: right; font-family: var(--mono); font-size: 10px; }
+.resource-section .load-inline { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 9px; }
+.class-res-line { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+.class-res-line .res-pill { font-size: 8px; }
+@media (max-width: 760px) {
+  .load-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+</style>
+<script>
+/* ===== 可选加载 / 资源管理扩展 ===== */
+const AI_CLASS = {
+  id: 'ai.llm.complete', name: 'LLM 补全', family: 'ai', version: '1.0.0',
+  status: 'stable', p0: true, official: true, usedBy: 9, success: 97.4, updated: '2026-11-21',
+  desc: '调用本地或云端模型补全/总结/翻译；模型是包资源，未加载时不占显存。',
+  permissions: ['ai.llm'], sideEffects: ['read', 'network'],
+  instances: [
+    { id: 'i-llm-summarize', name: '总结选中文本', params: { model: 'local.qwen3.5-7b', prompt: '请总结以下内容', temperature: 0.2, maxTokens: 1024 }, tags: ['AI'], usedBy: 5, lastRun: '1 小时前', status: 'stable', success: 97.8 },
+    { id: 'i-llm-translate', name: '翻译成英文', params: { model: 'cloud.gpt-5.5', prompt: 'Translate to English', temperature: 0.1, maxTokens: 800 }, tags: ['AI'], usedBy: 4, lastRun: '昨天', status: 'stable', success: 96.6 }
+  ]
+};
+const PACK_PROFILES = {
+  'win.key.send':            { memoryMB: 4.2,  diskMB: 1.1,  gpuMB: 0,    handles: 12, threads: 2, model: '', deps: ['SendInput'], state: 'loaded',    policy: 'pinned',    lastUsed: '刚刚' },
+  'win.key.trigger':         { memoryMB: 3.8,  diskMB: 0.9,  gpuMB: 0,    handles: 8,  threads: 2, model: '', deps: ['RegisterHotKey'], state: 'loaded',    policy: 'pinned',    lastUsed: '刚刚' },
+  'win.window.control':      { memoryMB: 6.4,  diskMB: 2.2,  gpuMB: 0,    handles: 18, threads: 3, model: '', deps: ['Win32', 'UIA'], state: 'loaded',    policy: 'on-demand', lastUsed: '5 分钟前' },
+  'win.window.query':        { memoryMB: 2.1,  diskMB: 0.7,  gpuMB: 0,    handles: 6,  threads: 1, model: '', deps: ['EnumWindows'], state: 'installed', policy: 'on-demand', lastUsed: '1 小时前' },
+  'win.open':                { memoryMB: 3.4,  diskMB: 1.4,  gpuMB: 0,    handles: 10, threads: 2, model: '', deps: ['ShellExecuteEx'], state: 'loaded',    policy: 'on-demand', lastUsed: '10 分钟前' },
+  'win.audio.volume':        { memoryMB: 5.1,  diskMB: 1.8,  gpuMB: 0,    handles: 14, threads: 2, model: '', deps: ['WASAPI'], state: 'loaded',    policy: 'on-demand', lastUsed: '刚刚' },
+  'win.display.brightness':  { memoryMB: 4.6,  diskMB: 1.2,  gpuMB: 0,    handles: 9,  threads: 2, model: '', deps: ['WMI', 'DDC/CI'], state: 'installed', policy: 'on-demand', lastUsed: '昨天' },
+  'win.theme.mode':          { memoryMB: 2.2,  diskMB: 0.6,  gpuMB: 0,    handles: 4,  threads: 1, model: '', deps: ['Registry'], state: 'installed', policy: 'on-demand', lastUsed: '昨天' },
+  'win.ocr.read':            { memoryMB: 48,   diskMB: 26,   gpuMB: 0,    handles: 12, threads: 2, model: 'Windows AI OCR', deps: ['Windows AI APIs'], state: 'loaded', policy: 'preload', lastUsed: '12 分钟前' },
+  'win.clipboard.get':       { memoryMB: 2.0,  diskMB: 0.5,  gpuMB: 0,    handles: 6,  threads: 1, model: '', deps: ['Win32 Clipboard'], state: 'loaded',    policy: 'on-demand', lastUsed: '刚刚' },
+  'win.http.request':        { memoryMB: 7.8,  diskMB: 2.4,  gpuMB: 0,    handles: 20, threads: 4, model: '', deps: ['WinHTTP'], state: 'installed', policy: 'on-demand', lastUsed: '2 小时前' },
+  'ui.form':                 { memoryMB: 3.0,  diskMB: 0.8,  gpuMB: 0,    handles: 5,  threads: 1, model: '', deps: ['WinUI'], state: 'installed', policy: 'on-demand', lastUsed: '今天' },
+  'ai.llm.complete':         { memoryMB: 2048, diskMB: 5200, gpuMB: 6144, handles: 22, threads: 6, model: 'Qwen3.5-7B Q4', deps: ['ONNX Runtime', 'DirectML'], state: 'available', policy: 'on-demand', lastUsed: '—' }
+};
+function ensureAiClass() {
+  if (!FAMILIES.some((f) => f.id === 'ai')) FAMILIES.push({ id: 'ai', name: 'AI/语言', icon: '✦', color: '#8B5CF6' });
+  if (!data.some((c) => c.id === 'ai.llm.complete')) data.push(JSON.parse(JSON.stringify(AI_CLASS)));
+}
+function ensurePackProfiles() {
+  ensureAiClass();
+  data.forEach((c) => {
+    const profile = PACK_PROFILES[c.id] || {};
+    const base = {
+      packId: `${c.id}.pack`, memoryMB: 2, diskMB: 0.5, gpuMB: 0,
+      handles: 4, threads: 1, model: '', deps: [], state: 'installed',
+      policy: 'on-demand', lastUsed: '—', ...profile
+    };
+    if (!c.pack) c.pack = base;
+    else Object.keys(base).forEach((k) => { if (c.pack[k] === undefined) c.pack[k] = base[k]; });
+  });
+}
+function fmtMB(mb) {
+  if (mb === null || mb === undefined) return '—';
+  if (mb >= 1024) return `${(mb / 1024).toFixed(1)} GB`;
+  return `${Math.round(mb * 10) / 10} MB`;
+}
+function loadBadge(state) {
+  const map = {
+    loaded: ['loaded', '● 已加载'],
+    installed: ['installed', '○ 已安装'],
+    available: ['available', '↓ 可下载'],
+    loading: ['loading', '◌ 加载中']
+  };
+  const [cls, label] = map[state] || map.installed;
+  return `<span class="load-badge ${cls}">${label}</span>`;
+}
+function loadActionButtons(c) {
+  const p = c.pack;
+  if (!p) return '';
+  if (p.state === 'loading') return '<button class="load-btn" disabled>加载中…</button>';
+  if (p.state === 'available') return `<button class="load-btn primary" data-load-action="install" data-pack-class="${c.id}">下载/安装</button>`;
+  if (p.state === 'installed') return `<button class="load-btn primary" data-load-action="load" data-pack-class="${c.id}">加载</button><button class="load-btn" data-load-action="preload" data-pack-class="${c.id}">预加载</button>`;
+  return `<button class="load-btn danger" data-load-action="unload" data-pack-class="${c.id}">卸载</button><button class="load-btn" data-load-action="pin" data-pack-class="${c.id}">${p.policy === 'pinned' ? '取消固定' : '固定'}</button>`;
+}
+function resourceSection(c) {
+  const p = c.pack;
+  if (!p) return '';
+  return `<div class="section resource-section">
+    <div class="section-title">资源与加载</div>
+    <div class="res-grid">
+      <span class="k">状态</span><span class="v">${loadBadge(p.state)}</span>
+      <span class="k">内存（峰值估算）</span><span class="v">${fmtMB(p.memoryMB)}</span>
+      <span class="k">磁盘</span><span class="v">${fmtMB(p.diskMB)}</span>
+      <span class="k">GPU 显存</span><span class="v">${p.gpuMB ? fmtMB(p.gpuMB) : '—'}</span>
+      <span class="k">句柄 / 线程</span><span class="v">${p.handles} / ${p.threads}</span>
+      <span class="k">模型</span><span class="v">${p.model || '—'}</span>
+      <span class="k">依赖</span><span class="v">${(p.deps || []).join(', ') || '—'}</span>
+      <span class="k">加载策略</span><span class="v">${p.policy}</span>
+    </div>
+    <div class="load-inline">${loadActionButtons(c)}</div>
+  </div>`;
+}
+function loadFilterMatch(c) {
+  const f = state.loadFilter || 'all';
+  const p = c.pack;
+  if (f === 'loaded') return p.state === 'loaded';
+  if (f === 'installed') return p.state === 'installed';
+  if (f === 'available') return p.state === 'available';
+  if (f === 'heavy') return (p.memoryMB || 0) >= 100 || (p.gpuMB || 0) > 0 || (p.diskMB || 0) >= 100;
+  return true;
+}
+function renderLoadView(list) {
+  ensurePackProfiles();
+  $('#pageTitle').textContent = '加载管理';
+  $('#pageSub').textContent = '按需加载类/实例；显示内存、磁盘、GPU、句柄、线程、模型与依赖。';
+  const loaded = data.filter((c) => c.pack.state === 'loaded');
+  const installed = data.filter((c) => c.pack.state === 'installed');
+  const available = data.filter((c) => c.pack.state === 'available');
+  const sum = (arr, key) => arr.reduce((n, c) => n + (Number(c.pack[key]) || 0), 0);
+  const mem = sum(loaded, 'memoryMB');
+  const diskInstalled = sum([...loaded, ...installed], 'diskMB');
+  const diskAvailable = sum(available, 'diskMB');
+  const gpuLoaded = sum(loaded, 'gpuMB');
+  const gpuAvailable = sum(available, 'gpuMB');
+  const handles = sum(loaded, 'handles');
+  const threads = sum(loaded, 'threads');
+  const budget = 512;
+  const pct = Math.min(100, Math.round((mem / budget) * 100));
+  const rows = list.filter(loadFilterMatch).map((c) => {
+    const p = c.pack;
+    const fam = familyById(c.family);
+    const rowClass = p.state === 'available' ? 'row-available' : p.state === 'loading' ? 'row-loading' : '';
+    const deps = (p.deps || []).map((d) => `<span class="res-pill">${esc(d)}</span>`).join('');
+    return `<tr class="${rowClass}" data-class="${c.id}">
+      <td><div class="load-name"><div class="li" style="--c:${fam.color}">${fam.icon}</div><div><div class="ln">${esc(c.name)} ${c.p0 ? '<span class="badge p0">P0</span>' : ''}</div><div class="lid">${esc(c.id)}</div></div></div></td>
+      <td>${loadBadge(p.state)}</td>
+      <td><select class="policy-select" data-load-policy="${c.id}" ${p.state === 'available' ? 'disabled' : ''}>${['on-demand', 'preload', 'pinned'].map((x) => `<option value="${x}" ${p.policy === x ? 'selected' : ''}>${x}</option>`).join('')}</select></td>
+      <td><div class="res-num">${fmtMB(p.memoryMB)}</div><div class="res-sub">峰值估算</div></td>
+      <td><div class="res-num">${fmtMB(p.diskMB)}</div><div class="res-sub">安装体积</div></td>
+      <td><div class="res-num ${p.gpuMB ? '' : 'muted'}">${p.gpuMB ? fmtMB(p.gpuMB) : '—'}</div><div class="res-sub">${p.gpuMB ? '显存' : '无 GPU'}</div></td>
+      <td><div class="res-num">${p.handles} / ${p.threads}</div><div class="res-sub">句柄 / 线程</div></td>
+      <td>${p.model ? `<span class="res-pill model">${esc(p.model)}</span>` : ''}${deps || (!p.model ? '<span class="res-num muted">—</span>' : '')}</td>
+      <td><div class="res-num">${c.instances.length}</div><div class="res-sub">实例 · ${c.usedBy || 0} 引用</div></td>
+      <td><div class="res-num muted">${esc(p.lastUsed || '—')}</div></td>
+      <td><div class="load-actions">${loadActionButtons(c)}</div></td>
+    </tr>`;
+  }).join('');
+  const filters = [['all', '全部'], ['loaded', '已加载'], ['installed', '已安装'], ['available', '可下载'], ['heavy', '重资源']]
+    .map(([k, label]) => `<button class="chip ${((state.loadFilter || 'all') === k) ? 'active' : ''}" data-load-filter="${k}">${label}</button>`).join('');
+  $('#content').innerHTML = `<div class="load-view">
+    <div class="load-summary">
+      <div class="load-card"><div class="lbl">已加载包</div><div class="val">${loaded.length}</div><div class="sub">${installed.length} 已安装 · ${available.length} 可下载</div></div>
+      <div class="load-card"><div class="lbl">已加载内存</div><div class="val">${fmtMB(mem)}</div><div class="sub">句柄 ${handles} · 线程 ${threads}</div></div>
+      <div class="load-card"><div class="lbl">已安装磁盘</div><div class="val">${fmtMB(diskInstalled)}</div><div class="sub">可下载 ${fmtMB(diskAvailable)}</div></div>
+      <div class="load-card"><div class="lbl">GPU 显存</div><div class="val">${gpuLoaded ? fmtMB(gpuLoaded) : '0 MB'}</div><div class="sub">${gpuAvailable ? `未加载模型潜在 ${fmtMB(gpuAvailable)}` : '无 GPU 包'}</div></div>
+    </div>
+    <div class="budget">
+      <div class="budget-head"><strong>内存预算 ${budget} MB</strong><span>${fmtMB(mem)} / ${budget} MB · ${pct}%</span></div>
+      <div class="budget-bar"><span class="used" style="width:${pct}%"></span></div>
+      <div class="budget-legend"><span><i style="background:var(--primary)"></i>已加载包</span><span><i style="background:var(--new)"></i>GPU 显存另计</span><span>kernel + 元数据常驻约 12 MB</span></div>
+    </div>
+    <div class="load-toolbar">${filters}<span class="load-note" style="margin-left:auto">点击行打开 Inspector；操作按钮不触发选中。</span></div>
+    <div class="load-table-wrap">${rows ? `<table class="load-table"><thead><tr><th>类 / 包</th><th>状态</th><th>策略</th><th>内存</th><th>磁盘</th><th>GPU</th><th>句柄/线程</th><th>模型 / 依赖</th><th>引用</th><th>最近使用</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty" style="border:0"><strong>没有匹配的包</strong>切换过滤器或搜索。</div>'}</div>
+    <div class="load-note">资源为演示估算：内存/GPU 是峰值占用，磁盘是安装体积；真实值以包 manifest 和运行时计量为准。卸载只释放运行资源，已安装文件仍在磁盘。</div>
+  </div>`;
+}
+function handleLoadAction(el) {
+  const c = classById(el.dataset.packClass);
+  if (!c || !c.pack) return;
+  const p = c.pack;
+  const a = el.dataset.loadAction;
+  if (a === 'install') {
+    p.state = 'installed'; p.lastUsed = '刚刚'; saveData(); renderAll();
+    showToast(`已安装「${c.name}」包，尚未加载`);
+    return;
+  }
+  if (a === 'load' || a === 'preload') {
+    if (p.state === 'loading') return;
+    if (p.state === 'available') p.state = 'installed';
+    p.state = 'loading'; renderAll();
+    setTimeout(() => {
+      p.state = 'loaded'; p.lastUsed = '刚刚';
+      if (a === 'preload') p.policy = 'preload';
+      saveData(); renderAll();
+      showToast(`已加载「${c.name}」${a === 'preload' ? '（预加载）' : ''}`);
+    }, 600);
+    return;
+  }
+  if (a === 'unload') {
+    p.state = 'installed'; p.lastUsed = '刚刚';
+    if (p.policy === 'pinned') p.policy = 'on-demand';
+    saveData(); renderAll();
+    showToast(`已卸载「${c.name}」，下次触发会重新加载`);
+    return;
+  }
+  if (a === 'pin') {
+    p.policy = p.policy === 'pinned' ? 'on-demand' : 'pinned';
+    if (p.policy === 'pinned' && p.state !== 'loaded') p.state = 'loaded';
+    saveData(); renderAll();
+    showToast(p.policy === 'pinned' ? `已固定「${c.name}」` : `已取消固定「${c.name}」`);
+  }
+}
+function setPackPolicy(classId, policy) {
+  const c = classById(classId);
+  if (!c || !c.pack) return;
+  const p = c.pack;
+  p.policy = policy;
+  if (policy !== 'on-demand' && p.state === 'installed') p.state = 'loaded';
+  p.lastUsed = '刚刚';
+  saveData(); renderAll();
+  showToast(`「${c.name}」策略：${policy}`);
+}
+
+/* 包装原有渲染，不破坏原逻辑 */
+const baseRenderContent = renderContent;
+renderContent = function () {
+  ensurePackProfiles();
+  if (state.view === 'load') { renderLoadView(filteredClasses()); return; }
+  baseRenderContent();
+};
+const baseRenderClassCard = renderClassCard;
+renderClassCard = function (c) {
+  let html = baseRenderClassCard(c);
+  const p = c.pack;
+  if (!p) return html;
+  html = html.replace(`<span class="badge">v${esc(c.version)}</span>`, `<span class="badge">v${esc(c.version)}</span>${loadBadge(p.state)}`);
+  const line = `<div class="class-res-line"><span class="res-pill">内存 ${fmtMB(p.memoryMB)}</span><span class="res-pill">磁盘 ${fmtMB(p.diskMB)}</span>${p.gpuMB ? `<span class="res-pill gpu">GPU ${fmtMB(p.gpuMB)}</span>` : ''}${p.model ? `<span class="res-pill model">${esc(p.model)}</span>` : ''}</div>`;
+  return html.replace(/<\/div>\r?\n      <div class="class-meta">/, `${line}</div>\n      <div class="class-meta">`);
+};
+const baseRenderInspector = renderInspector;
+renderInspector = function () {
+  baseRenderInspector();
+  const c = selectedClass();
+  if (!c || !c.pack) return;
+  const box = $('#inspector');
+  if (!box || box.querySelector('.resource-section')) return;
+  const actions = box.querySelector('.inspector-actions');
+  if (actions) actions.insertAdjacentHTML('beforebegin', resourceSection(c));
+  else box.insertAdjacentHTML('beforeend', resourceSection(c));
+};
+const baseDefaultParams = defaultParams;
+defaultParams = function (classId) {
+  if (classId === 'ai.llm.complete') return { model: 'local.qwen3.5-7b', prompt: '请总结以下内容', temperature: 0.2, maxTokens: 1024 };
+  return baseDefaultParams(classId);
+};
+const baseParamSummary = paramSummary;
+paramSummary = function (cls, p = {}) {
+  if (cls.id === 'ai.llm.complete') return `${p.model || 'local'} · ${String(p.prompt || '').slice(0, 22)}`;
+  return baseParamSummary(cls, p);
+};
+const baseRenderInstanceForm = renderInstanceForm;
+renderInstanceForm = function (c, i) {
+  if (c.id === 'ai.llm.complete') {
+    const p = i.params || {};
+    return selectField('模型', 'model', p.model || 'local.qwen3.5-7b', [['local.qwen3.5-7b', '本地 Qwen3.5-7B（2 GB 内存 / 6 GB 显存）'], ['cloud.gpt-5.5', '云端 GPT-5.5（无本地显存）'], ['cloud.claude-fable-5.2', '云端 Claude Fable 5.2']])
+      + textareaField('提示词', 'prompt', p.prompt || '')
+      + `<div class="field-row">${numberField('temperature', 'temperature', p.temperature ?? 0.2, 'step="0.1" min="0" max="2"')}${numberField('maxTokens', 'maxTokens', p.maxTokens ?? 1024, 'min="1"')}</div>`;
+  }
+  return baseRenderInstanceForm(c, i);
+};
+
+/* 视图按钮与事件 */
+(function addLoadViewButton() {
+  const sw = $('#viewSwitch');
+  if (!sw || sw.querySelector('[data-view="load"]')) return;
+  const btn = document.createElement('button');
+  btn.dataset.view = 'load';
+  btn.textContent = '加载';
+  sw.appendChild(btn);
+})();
+document.addEventListener('click', (e) => {
+  const loadBtn = e.target.closest('[data-load-action]');
+  if (loadBtn) { e.preventDefault(); e.stopPropagation(); handleLoadAction(loadBtn); return; }
+  const filterBtn = e.target.closest('[data-load-filter]');
+  if (filterBtn) { e.stopPropagation(); state.loadFilter = filterBtn.dataset.loadFilter; renderContent(); return; }
+  if (e.target.closest('[data-load-policy]')) e.stopPropagation();
+}, true);
+document.addEventListener('change', (e) => {
+  const sel = e.target.closest('[data-load-policy]');
+  if (sel) { e.stopPropagation(); setPackPolicy(sel.dataset.loadPolicy, sel.value); }
+}, true);
+const baseRenderAll = renderAll;
+renderAll = function () { ensurePackProfiles(); baseRenderAll(); };
+ensurePackProfiles();
+state.loadFilter = state.loadFilter || 'all';
+saveData();
+renderAll();
+
+</script>
+
+<style>
+/* ===== 管理 / 矩阵视图 ===== */
+.matrix-view{display:flex;flex-direction:column;gap:10px}
+.matrix-head{display:grid;grid-template-columns:minmax(210px,1.4fr) repeat(4,minmax(76px,1fr));border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--raised)}
+.mx-h{padding:8px 10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.02)}
+.mx-h:last-child{border-right:none}
+.mx-row{display:grid;grid-template-columns:minmax(210px,1.4fr) repeat(4,minmax(76px,1fr));border:1px solid var(--border);border-top:none;background:var(--raised)}
+.mx-row:first-of-type{border-top:1px solid var(--border)}
+.mx-label{display:flex;align-items:center;gap:8px;padding:9px 10px;border-right:1px solid var(--border);min-width:0;cursor:pointer}
+.mx-label:hover{background:rgba(59,130,246,.06)}
+.mx-fam{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:rgba(255,255,255,.03);border:1px solid var(--border);flex:0 0 22px}
+.mx-main{min-width:0;flex:1}
+.mx-name{font-size:11px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx-id{font-family:var(--mono);font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.mx-cell{display:flex;align-items:center;justify-content:center;gap:4px;min-height:44px;border-right:1px solid var(--border);position:relative;cursor:pointer}
+.mx-cell:last-child{border-right:none}
+.mx-cell:hover{background:rgba(59,130,246,.06)}
+.mx-cell.selected{background:rgba(59,130,246,.10);box-shadow:inset 0 0 0 1px rgba(59,130,246,.35)}
+.mx-dot{width:10px;height:10px;border-radius:50%;background:var(--success);box-shadow:0 0 8px color-mix(in srgb,var(--success) 55%,transparent)}
+.mx-dot.draft{background:var(--warning);box-shadow:0 0 8px color-mix(in srgb,var(--warning) 55%,transparent)}
+.mx-dot.deprecated{background:var(--danger);box-shadow:0 0 8px color-mix(in srgb,var(--danger) 55%,transparent)}
+.mx-dot.archived{background:var(--muted);box-shadow:none}
+.mx-rev{position:absolute;right:4px;top:4px;font-family:var(--mono);font-size:6.5px;color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:0 2px;background:var(--surface)}
+.mx-more{font-family:var(--mono);font-size:8px;color:var(--muted)}
+.matrix-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.matrix-legend span{display:flex;align-items:center;gap:4px}
+.matrix-legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.mgmt-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.mgmt-card{border:1px solid var(--border);border-radius:9px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 70%),var(--raised);padding:9px 10px}
+.mgmt-card .l{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mgmt-card .v{font-size:18px;font-weight:720;margin-top:3px;letter-spacing:-.02em}
+.mgmt-card .s{font-size:9px;color:var(--muted);margin-top:2px}
+.mgmt-attention{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.attn{font-size:9px;border:1px solid var(--border);border-radius:5px;background:var(--raised);padding:4px 6px;color:var(--muted);cursor:pointer}
+.attn:hover{border-color:var(--border-strong);color:var(--text)}
+.attn b{color:var(--warning);font-weight:600}
+.mgmt-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--border);border-radius:8px;background:var(--raised);padding:7px 9px;margin-bottom:8px}
+.mgmt-toolbar .sel{font-size:10px;color:var(--muted);margin-left:auto}
+.mgmt-btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:5px;padding:4px 7px;font-size:9px;cursor:pointer}
+.mgmt-btn:hover{border-color:var(--primary);background:rgba(59,130,246,.08)}
+.mgmt-btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.25)}
+.mgmt-table{width:100%;border-collapse:collapse;background:var(--raised);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.mgmt-table th{text-align:left;padding:8px 9px;border-bottom:1px solid var(--border);font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.02);white-space:nowrap}
+.mgmt-table td{padding:8px 9px;border-bottom:1px solid var(--border);font-size:10px;vertical-align:middle}
+.mgmt-table tr:hover td{background:rgba(59,130,246,.04)}
+.mgmt-table .name{font-size:11px;font-weight:650}
+.mgmt-table .id{font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:2px}
+.mgmt-table .num{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.mgmt-check{accent-color:var(--primary);width:13px;height:13px;vertical-align:middle}
+.mgmt-actions{display:flex;gap:3px}
+.mgmt-empty{padding:20px;text-align:center;color:var(--muted);font-size:11px}
+@media(max-width:1200px){.mgmt-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){.matrix-head,.mx-row{grid-template-columns:minmax(150px,1.3fr) repeat(2,minmax(64px,1fr))}.mx-h:nth-child(4),.mx-h:nth-child(5),.mx-row>.mx-cell:nth-child(4),.mx-row>.mx-cell:nth-child(5){display:none}.mgmt-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<script>
+/* ===== 管理 / 矩阵视图扩展（不破坏原点层管理） ===== */
+state.managed = state.managed || new Set();
+state.loadFilter = state.loadFilter || 'all';
+
+function renderMatrixView(list) {
+  const cols = 4;
+  $('#pageTitle').textContent = '类 × 实例矩阵';
+  $('#pageSub').textContent = `${list.length} 个类 · ${list.reduce((n,c)=>n+visibleInstances(c).length,0)} 个可见实例 · 点击单元格看实例`;
+  const heads = ['PointClass', ...Array.from({length: cols}, (_,i)=>`实例 ${i+1}`), '更多'].map((h,i)=>`<div class="mx-h">${h}</div>`).join('');
+  const rows = list.map(c => {
+    const fam = familyById(c.family);
+    const inst = visibleInstances(c);
+    const cells = Array.from({length: cols}, (_,i) => {
+      const it = inst[i];
+      if (!it) return '<div class="mx-cell"></div>';
+      const sel = state.selected?.type === 'instance' && state.selected.instanceId === it.id;
+      return `<div class="mx-cell ${sel?'selected':''}" data-class="${esc(c.id)}" data-instance="${esc(it.id)}" title="${esc(it.name)} · ${esc(paramSummary(c,it.params))}"><span class="mx-dot ${esc(it.status)}"></span><span class="mx-rev">r${it.revision ?? 1}</span></div>`;
+    }).join('');
+    return `<div class="mx-row">
+      <div class="mx-label" data-class="${esc(c.id)}"><span class="mx-fam" style="color:${fam.color}">${fam.icon}</span><div class="mx-main"><div class="mx-name">${esc(c.name)} ${badge(c.status)}</div><div class="mx-id">${esc(c.id)} · ${inst.length} inst</div></div></div>
+      ${cells}
+      <div class="mx-cell"><span class="mx-more">${inst.length > cols ? '+' + (inst.length-cols) : ''}</span></div>
+    </div>`;
+  }).join('');
+  $('#content').innerHTML = `<div class="matrix-view"><div class="matrix-head">${heads}</div>${rows}<div class="matrix-legend"><span><i style="background:var(--success)"></i>stable</span><span><i style="background:var(--warning)"></i>draft</span><span><i style="background:var(--danger)"></i>deprecated</span><span><i style="background:var(--muted)"></i>archived</span><span>颜色=状态 · rN=revision</span></div></div>`;
+}
+
+function renderManageView(list) {
+  const active = list.filter(c => c.status !== 'archived');
+  const inst = list.reduce((n,c)=>n+c.instances.length,0);
+  const stable = list.filter(c=>c.status==='stable').length;
+  const draft = list.filter(c=>c.status==='draft').length;
+  const archived = list.filter(c=>c.status==='archived').length;
+  const p0 = list.filter(c=>c.p0 && c.status!=='archived').length;
+  const refs = list.reduce((n,c)=>n+(c.usedBy||0),0);
+  const avg = avgSuccess();
+  const attention = list.filter(c=>c.status==='draft' || c.status==='archived' || (c.success ?? 100) < 95).slice(0,8);
+  $('#pageTitle').textContent = '管理';
+  $('#pageSub').textContent = `${active.length} 个活跃类 · ${inst} 个实例 · 批量选择后可启用/归档/恢复/导出`;
+  const checked = (id) => state.managed.has(id) ? 'checked' : '';
+  const allChecked = list.length && list.every(c => state.managed.has(c.id));
+  $('#content').innerHTML = `
+    <div class="mgmt-summary">
+      <div class="mgmt-card"><div class="l">Classes</div><div class="v">${list.length}</div><div class="s">${stable} stable · ${draft} draft</div></div>
+      <div class="mgmt-card"><div class="l">Instances</div><div class="v">${inst}</div><div class="s">active + archived</div></div>
+      <div class="mgmt-card"><div class="l">P0</div><div class="v">${p0}</div><div class="s">first delivery</div></div>
+      <div class="mgmt-card"><div class="l">References</div><div class="v">${refs}</div><div class="s">flow / surface / body</div></div>
+      <div class="mgmt-card"><div class="l">Avg success</div><div class="v">${avg}%</div><div class="s">instance runtime</div></div>
+      <div class="mgmt-card"><div class="l">Archived</div><div class="v">${archived}</div><div class="s">restorable</div></div>
+    </div>
+    <div class="mgmt-attention">${attention.length ? attention.map(c=>`<button class="attn" data-class="${esc(c.id)}"><b>${esc(c.status)}</b> ${esc(c.name)}</button>`).join('') : '<span class="muted" style="font-size:10px">没有需要关注的项目。</span>'}</div>
+    <div class="mgmt-toolbar">
+      <label style="display:flex;gap:5px;align-items:center;font-size:10px;color:var(--muted)"><input class="mgmt-check" type="checkbox" data-manage-select-all ${allChecked?'checked':''}> 全选</label>
+      <span class="sel">${state.managed.size} selected</span>
+      <button class="mgmt-btn" data-manage-action="enable">启用</button>
+      <button class="mgmt-btn danger" data-manage-action="archive">归档</button>
+      <button class="mgmt-btn" data-manage-action="restore">恢复</button>
+      <button class="mgmt-btn" data-manage-action="export">导出 JSON</button>
+    </div>
+    <table class="mgmt-table"><thead><tr><th></th><th>类 / ID</th><th>家族</th><th>状态</th><th>实例</th><th>引用</th><th>成功率</th><th>更新时间</th><th>操作</th></tr></thead><tbody>
+      ${list.map(c => {
+        const fam = familyById(c.family);
+        return `<tr data-class="${esc(c.id)}">
+          <td><input class="mgmt-check" type="checkbox" data-manage-check="${esc(c.id)}" ${checked(c.id)}></td>
+          <td><div class="name">${esc(c.name)}</div><div class="id">${esc(c.id)}</div></td>
+          <td><span class="muted">${fam.icon} ${esc(fam.name)}</span></td>
+          <td>${badge(c.status)}</td>
+          <td class="num">${c.instances.length}</td>
+          <td class="num">${c.usedBy ?? 0}</td>
+          <td class="num">${c.success ?? '—'}%</td>
+          <td class="num">${esc(c.updated || '—')}</td>
+          <td><div class="mgmt-actions"><button class="mini-btn" data-action="new-instance" data-class="${esc(c.id)}" title="新建实例">＋</button><button class="mini-btn" data-action="edit-class" data-class="${esc(c.id)}" title="编辑类">✎</button><button class="mini-btn" data-action="archive-class" data-class="${esc(c.id)}" title="归档类">⌫</button></div></td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="9" class="mgmt-empty">没有匹配的类。</td></tr>'}
+    </tbody></table>`;
+}
+
+const baseRenderContentForManagement = renderContent;
+renderContent = function () {
+  if (state.view === 'matrix') { renderMatrixView(filteredClasses()); return; }
+  if (state.view === 'manage') { renderManageView(filteredClasses()); return; }
+  baseRenderContentForManagement();
+};
+
+(function addManagementViewButtons() {
+  const sw = $('#viewSwitch');
+  if (!sw) return;
+  const load = sw.querySelector('[data-view="load"]');
+  const add = (view, label) => {
+    if (sw.querySelector(`[data-view="${view}"]`)) return;
+    const b = document.createElement('button');
+    b.dataset.view = view;
+    b.textContent = label;
+    if (load) sw.insertBefore(b, load); else sw.appendChild(b);
+  };
+  add('matrix', '矩阵');
+  add('manage', '管理');
+})();
+
+function copyJSON(text) {
+  const done = () => showToast('已复制 JSON');
+  if (navigator.clipboard?.writeText) { navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done)); }
+  else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (_) {}
+  document.body.removeChild(ta); done();
+}
+function bulkManage(action) {
+  const selected = [...state.managed].map(classById).filter(Boolean);
+  if (!selected.length) { showToast('先选择类', 'error'); return; }
+  if (action === 'export') {
+    copyJSON(JSON.stringify(selected.map(c => ({ id: c.id, name: c.name, version: c.version, status: c.status, instances: c.instances.map(i => ({ id: i.id, name: i.name, revision: i.revision ?? 1, status: i.status, params: i.params })) })), null, 2));
+    return;
+  }
+  let changed = 0, skipped = 0;
+  for (const c of selected) {
+    if (action === 'archive') {
+      if (c.instances.length) { skipped++; continue; }
+      c.status = 'archived'; changed++;
+    } else {
+      c.status = 'stable'; changed++;
+    }
+  }
+  saveData(); state.managed.clear(); renderAll();
+  showToast(`${action} · ${changed} 个类${skipped ? `，${skipped} 个因有实例跳过` : ''}`, skipped && !changed ? 'error' : 'success');
+}
+
+document.addEventListener('change', (e) => {
+  const all = e.target.closest('[data-manage-select-all]');
+  if (all) {
+    const list = filteredClasses();
+    if (all.checked) list.forEach(c => state.managed.add(c.id)); else state.managed.clear();
+    renderContent(); return;
+  }
+  const chk = e.target.closest('[data-manage-check]');
+  if (chk) {
+    if (chk.checked) state.managed.add(chk.dataset.manageCheck); else state.managed.delete(chk.dataset.manageCheck);
+    renderContent(); return;
+  }
+}, true);
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-manage-action]');
+  if (b) { e.preventDefault(); e.stopPropagation(); bulkManage(b.dataset.manageAction); return; }
+}, true);
+
+renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,2437 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原子工坊 · 面层目录</title>
+<style>
+:root{
+  --bg:#070b14; --bg2:#0b1220; --panel:#0f172a; --panel2:#111c31; --panel3:#16233a;
+  --line:rgba(148,163,184,.14); --line2:rgba(148,163,184,.24);
+  --text:#e5edf8; --dim:#8fa2bb; --faint:#5f7188;
+  --blue:#3b82f6; --cyan:#06b6d4; --violet:#8b5cf6; --amber:#f59e0b;
+  --green:#22c55e; --red:#ef4444; --pink:#ec4899;
+  --shadow:0 18px 50px rgba(0,0,0,.34);
+  --radius:14px; --radius-sm:9px;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+body.light{
+  --bg:#f4f7fb; --bg2:#eaf0f7; --panel:#ffffff; --panel2:#f7fafc; --panel3:#eef4fb;
+  --line:rgba(15,23,42,.10); --line2:rgba(15,23,42,.18);
+  --text:#0f172a; --dim:#52637a; --faint:#7c8ba1;
+  --shadow:0 18px 44px rgba(15,23,42,.12);
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0; font-family:var(--font); color:var(--text);
+  background:
+    radial-gradient(900px 480px at 8% -8%, rgba(59,130,246,.16), transparent 60%),
+    radial-gradient(760px 420px at 96% 0%, rgba(139,92,246,.12), transparent 62%),
+    linear-gradient(180deg,var(--bg),var(--bg2));
+  transition:background .25s ease,color .2s ease;
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+code,.mono{font-family:var(--mono)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:rgba(148,163,184,.22);border-radius:99px}
+::-webkit-scrollbar-track{background:transparent}
+
+.app{max-width:1600px;margin:0 auto;padding:18px 20px 34px}
+.topbar{
+  position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;
+  padding:12px 14px;margin:-4px 0 14px;border:1px solid var(--line);
+  background:rgba(10,16,28,.78);backdrop-filter:blur(18px);
+  border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+body.light .topbar{background:rgba(255,255,255,.82)}
+.brand{display:flex;align-items:center;gap:11px;min-width:250px}
+.logo{
+  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:17px;
+  background:linear-gradient(135deg,var(--blue),var(--violet));
+  box-shadow:0 8px 20px rgba(59,130,246,.28);
+}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:.2px}
+.brand-sub{font-size:11px;color:var(--faint);margin-top:3px;font-family:var(--mono)}
+.search{
+  flex:1;display:flex;align-items:center;gap:9px;min-width:180px;
+  padding:9px 12px;border:1px solid var(--line);border-radius:11px;
+  background:var(--panel2);
+}
+.search span{color:var(--faint);font-size:16px}
+.search input{width:100%;border:0;outline:0;background:transparent;font-size:13px}
+.search input::placeholder{color:var(--faint)}
+.top-actions{display:flex;align-items:center;gap:9px}
+.seg{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.seg button{border:0;background:transparent;color:var(--dim);padding:6px 11px;border-radius:7px;font-size:12px}
+.seg button.active{background:rgba(59,130,246,.18);color:#93c5fd}
+body.light .seg button.active{background:rgba(59,130,246,.12);color:#1d4ed8}
+.icon-btn{
+  width:36px;height:36px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel2);color:var(--dim);font-size:16px;
+}
+.icon-btn:hover{border-color:var(--line2);color:var(--text)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat{
+  border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;
+  background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+}
+.stat:after{content:"";position:absolute;right:-18px;top:-24px;width:80px;height:80px;border-radius:50%;background:var(--accent,var(--blue));opacity:.08}
+.stat-k{font-size:11px;color:var(--faint);letter-spacing:.8px;text-transform:uppercase}
+.stat-v{font-size:27px;font-weight:800;line-height:1.15;margin-top:6px}
+.stat-s{font-size:11px;color:var(--dim);margin-top:4px}
+
+.layout{display:grid;grid-template-columns:245px minmax(0,1fr) 335px;gap:14px;align-items:start}
+.panel{
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:linear-gradient(180deg,var(--panel),var(--panel2));box-shadow:var(--shadow);
+}
+.sidebar{padding:15px;position:sticky;top:82px;max-height:calc(100vh - 100px);overflow:auto}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--faint);margin:4px 0 9px}
+.panel-head .muted{font-size:10px;letter-spacing:0;text-transform:none}
+.family-btn,.filter-btn{
+  width:100%;display:flex;align-items:center;gap:9px;border:1px solid transparent;
+  background:transparent;color:var(--dim);padding:8px 9px;border-radius:9px;
+  font-size:12px;text-align:left;margin-bottom:3px;
+}
+.family-btn:hover,.filter-btn:hover{background:var(--panel3);color:var(--text)}
+.family-btn.active,.filter-btn.active{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.22);color:var(--text)}
+.family-dot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--blue));box-shadow:0 0 0 3px rgba(59,130,246,.08);flex:none}
+.family-btn .n{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--faint)}
+.filter-btn{justify-content:space-between}
+.filter-btn .check{font-family:var(--mono);color:var(--green);font-size:11px}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.legend{display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--dim)}
+.legend-row{display:flex;align-items:center;gap:8px}
+.legend-node{width:10px;height:10px;border-radius:3px;background:var(--blue)}
+.legend-node.inst{background:var(--cyan);border-radius:50%}
+.legend-node.gate{background:var(--amber);border-radius:2px;transform:rotate(45deg)}
+.side-note{margin-top:14px;padding:11px;border:1px solid var(--line);border-radius:10px;background:rgba(59,130,246,.06);font-size:11px;line-height:1.7;color:var(--dim)}
+.side-note b{color:var(--text)}
+.side-note code{color:#93c5fd;font-size:10px}
+
+.main{padding:16px;min-height:620px}
+.main-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:14px}
+.kicker{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--faint);font-family:var(--mono)}
+.main-head h1{font-size:22px;line-height:1.2;margin:5px 0 5px;letter-spacing:-.3px}
+.main-head p{margin:0;color:var(--dim);font-size:12px;line-height:1.6;max-width:720px}
+.count{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+
+.family-section{margin:18px 0 10px}
+.family-head{display:flex;align-items:center;gap:9px;margin:0 0 9px}
+.family-head h2{font-size:12px;margin:0;letter-spacing:.4px;text-transform:uppercase;color:var(--dim)}
+.family-head .line{flex:1;height:1px;background:var(--line)}
+.family-head .cnt{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:11px}
+.class-card{
+  position:relative;border:1px solid var(--line);border-radius:12px;padding:13px 13px 11px;
+  background:linear-gradient(180deg,var(--panel2),rgba(15,23,42,.45));overflow:hidden;
+  transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease;cursor:pointer;
+}
+body.light .class-card{background:linear-gradient(180deg,#fff,#f8fbfe)}
+.class-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c,var(--blue));opacity:.85}
+.class-card:hover{transform:translateY(-2px);border-color:var(--line2);box-shadow:0 14px 30px rgba(0,0,0,.16)}
+.class-card.selected{border-color:var(--c,var(--blue));box-shadow:0 0 0 1px var(--c,var(--blue)),0 16px 32px rgba(0,0,0,.16)}
+.card-head{display:flex;align-items:flex-start;gap:10px}
+.class-icon{
+  width:38px;height:38px;flex:none;border-radius:10px;display:grid;place-items:center;
+  color:var(--c,var(--blue));background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.16);
+  font-size:17px;font-family:var(--mono);
+}
+.class-title{min-width:0;flex:1}
+.class-title h3{font-size:14px;margin:1px 0 3px;line-height:1.25}
+.class-title code{font-size:10px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.p0{font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:5px;background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.22);white-space:nowrap}
+body.light .p0{color:#15803d}
+.card-desc{font-size:11px;line-height:1.65;color:var(--dim);margin:9px 0 10px;min-height:34px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.pill{font-size:9px;padding:3px 6px;border-radius:5px;background:var(--panel3);color:var(--dim);border:1px solid var(--line)}
+.pill.fam{color:var(--c,var(--blue));border-color:rgba(59,130,246,.16);background:rgba(59,130,246,.07)}
+.pill.mono{font-family:var(--mono)}
+.instances{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.inst-chip{
+  display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:6px;
+  background:var(--panel3);color:var(--dim);font-size:10px;padding:4px 7px;max-width:100%;
+}
+.inst-chip:hover{border-color:var(--cyan);color:var(--text)}
+.inst-chip .dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);flex:none}
+.inst-chip code{font-size:9px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inst-chip b{font-weight:600;white-space:nowrap}
+
+.catalog-table{width:100%;border-collapse:collapse;font-size:12px}
+.catalog-table th{position:sticky;top:0;background:var(--panel2);z-index:2;text-align:left;color:var(--faint);font-size:10px;letter-spacing:.7px;text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--line)}
+.catalog-table td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+.catalog-table tr{cursor:pointer}
+.catalog-table tbody tr:hover{background:rgba(59,130,246,.06)}
+.catalog-table tr.selected{background:rgba(59,130,246,.09)}
+.catalog-table .id{font-family:var(--mono);font-size:10px;color:var(--faint);display:block;margin-top:3px}
+.catalog-table .desc{color:var(--dim);font-size:11px;max-width:480px;line-height:1.55}
+.catalog-table .num{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.mini-chips{display:flex;flex-wrap:wrap;gap:4px;max-width:420px}
+
+.graph-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 12px}
+.graph-toolbar label{font-size:11px;color:var(--faint)}
+.graph-toolbar select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:11px;outline:0}
+.graph-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:
+  linear-gradient(rgba(148,163,184,.045) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(148,163,184,.045) 1px,transparent 1px),
+  var(--panel2);
+  background-size:26px 26px;padding:12px;
+}
+.graph{position:relative;min-width:820px}
+.graph svg{position:absolute;inset:0;overflow:visible;pointer-events:none}
+.graph-node{position:absolute;border:1px solid var(--line2);border-radius:11px;background:var(--panel);box-shadow:0 10px 24px rgba(0,0,0,.16);cursor:pointer;transition:border-color .14s,transform .14s}
+.graph-node:hover{transform:translateY(-1px);border-color:var(--c,var(--blue))}
+.graph-class{width:235px;padding:12px;border-left:3px solid var(--c,var(--blue))}
+.graph-class h3{font-size:13px;margin:0 0 3px}
+.graph-class code{font-size:10px;color:var(--faint)}
+.graph-class p{font-size:10px;color:var(--dim);line-height:1.55;margin:7px 0 0}
+.graph-inst{width:225px;padding:9px 10px;display:flex;gap:8px;align-items:center}
+.graph-inst .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);flex:none;box-shadow:0 0 0 3px rgba(6,182,212,.10)}
+.graph-inst b{font-size:11px;display:block}
+.graph-inst code{font-size:9px;color:var(--faint);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.graph-legend{display:flex;gap:14px;font-size:10px;color:var(--faint);margin-top:10px}
+.graph-legend span{display:flex;align-items:center;gap:5px}
+.graph-legend i{width:8px;height:8px;border-radius:2px;background:var(--blue);display:inline-block}
+.graph-legend i.inst{border-radius:50%;background:var(--cyan)}
+
+.inspector{padding:15px;position:sticky;top:82px;max-height:calc(100vh - 100px);overflow:auto}
+.insp-head .kicker{color:var(--c,var(--blue))}
+.insp-head h2{font-size:18px;margin:6px 0 3px;line-height:1.25}
+.insp-head code{font-size:10px;color:var(--faint);word-break:break-all}
+.insp-sub{font-size:11px;color:var(--dim);line-height:1.65;margin:8px 0 0}
+.insp-section{margin-top:15px}
+.insp-section h4{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin:0 0 7px;display:flex;justify-content:space-between;gap:8px}
+.insp-section h4 .n{font-family:var(--mono);font-size:9px;color:var(--faint)}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:6px 9px;font-size:11px;line-height:1.55}
+.kv .k{color:var(--faint)}
+.kv .v{color:var(--dim);word-break:break-word}
+.kv .v code{color:var(--text);font-size:10px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:10px;padding:3px 6px;border-radius:5px;background:var(--panel3);border:1px solid var(--line);color:var(--dim);font-family:var(--mono)}
+.chip.state{color:#93c5fd;border-color:rgba(59,130,246,.18);background:rgba(59,130,246,.07)}
+.chip.action{color:#86efac;border-color:rgba(34,197,94,.16);background:rgba(34,197,94,.06)}
+.inst-list{display:flex;flex-direction:column;gap:5px}
+.inst-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:var(--panel2);cursor:pointer;text-align:left}
+.inst-row:hover{border-color:var(--cyan)}
+.inst-row .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex:none}
+.inst-row b{font-size:11px;font-weight:600}
+.inst-row code{font-size:9px;color:var(--faint);margin-left:auto;max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.back{border:0;background:transparent;color:var(--faint);font-size:11px;padding:0 0 9px}
+.back:hover{color:var(--text)}
+.bind-table{width:100%;border-collapse:collapse;font-size:10px}
+.bind-table th{text-align:left;color:var(--faint);font-weight:500;padding:4px 5px;border-bottom:1px solid var(--line);font-size:9px;text-transform:uppercase;letter-spacing:.5px}
+.bind-table td{padding:5px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--dim)}
+.bind-table td.mono{font-family:var(--mono);font-size:9px;word-break:break-all}
+.type-tag{font-family:var(--mono);font-size:8px;padding:2px 4px;border-radius:4px;background:rgba(6,182,212,.10);color:#67e8f9;border:1px solid rgba(6,182,212,.18);white-space:nowrap}
+.type-tag.action{background:rgba(34,197,94,.08);color:#86efac;border-color:rgba(34,197,94,.16)}
+.json{max-height:230px;overflow:auto;margin:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:#060b13;color:#a9c5e8;font-family:var(--mono);font-size:9px;line-height:1.65;white-space:pre}
+body.light .json{background:#f1f5f9;color:#334155}
+.empty{padding:44px 16px;text-align:center;color:var(--faint);font-size:12px;border:1px dashed var(--line2);border-radius:12px;background:var(--panel2)}
+.empty b{display:block;color:var(--dim);font-size:14px;margin-bottom:5px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#0b1220;border:1px solid var(--line2);color:#dbeafe;padding:10px 14px;border-radius:10px;font-size:12px;box-shadow:0 16px 36px rgba(0,0,0,.35);transition:.2s;z-index:80}
+body.light .toast{background:#fff;color:#0f172a}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.muted{color:var(--faint)}
+.hidden{display:none!important}
+@media(max-width:1240px){
+  .layout{grid-template-columns:215px minmax(0,1fr) 300px}
+  .catalog-grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+}
+@media(max-width:1040px){
+  .layout{grid-template-columns:1fr}
+  .sidebar,.inspector{position:static;max-height:none}
+  .sidebar{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sidebar .divider{display:none}
+  .sidebar .side-note{grid-column:1/-1}
+  .sidebar .panel-head{margin:0}
+  .sidebar #families,.sidebar #filters{grid-column:1/-1}
+  .inspector{position:static}
+}
+@media(max-width:720px){
+  .app{padding:10px}
+  .topbar{flex-wrap:wrap;gap:10px}
+  .brand{min-width:0;flex:1}
+  .search{order:3;flex-basis:100%}
+  .stats{grid-template-columns:1fr 1fr}
+  .main-head{flex-direction:column}
+  .sidebar{grid-template-columns:1fr}
+  .catalog-grid{grid-template-columns:1fr}
+  .catalog-table .desc{max-width:220px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <div class="brand-name">原子工坊 · 面层目录</div>
+        <div class="brand-sub">SurfaceClass × SurfaceInstance</div>
+      </div>
+    </div>
+    <div class="search">
+      <span>⌕</span>
+      <input id="search" autocomplete="off" placeholder="搜索类 / 实例 / 槽位 / 动作…（/ 聚焦）">
+    </div>
+    <div class="top-actions">
+      <div class="seg" id="viewSeg">
+        <button data-view="cards" class="active">卡片</button>
+        <button data-view="table">表格</button>
+        <button data-view="graph">图谱</button>
+      </div>
+      <button class="icon-btn" id="themeBtn" title="切换主题">☾</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <div class="layout">
+    <aside class="panel sidebar">
+      <div class="panel-head"><span>面层家族</span><span class="muted" id="familyCount"></span></div>
+      <div id="families"></div>
+      <div class="divider"></div>
+      <div class="panel-head"><span>筛选</span><span class="muted">mock</span></div>
+      <div id="filters"></div>
+      <div class="divider"></div>
+      <div class="panel-head"><span>图例</span></div>
+      <div class="legend">
+        <div class="legend-row"><i class="legend-node"></i>SurfaceClass · 交互模式</div>
+        <div class="legend-row"><i class="legend-node inst"></i>SurfaceInstance · 绑定</div>
+        <div class="legend-row"><i class="legend-node gate"></i>Gate · 决策语义</div>
+      </div>
+      <div class="side-note">
+        <b>类管模式，实例管绑定。</b><br>
+        页面不是类，页面是多个 <code>SurfaceInstance</code> 的组合。面层只展示、收集意图，不执行业务逻辑。
+      </div>
+    </aside>
+
+    <main class="panel main">
+      <div class="main-head">
+        <div>
+          <div class="kicker" id="mainKicker">SURFACE CATALOG</div>
+          <h1 id="mainTitle">面层功能类与实例</h1>
+          <p id="mainSub">16 个交互模式，46 个实例。点类看契约，点实例看它绑定了哪个 Flow / Point。</p>
+        </div>
+        <div class="count" id="mainCount"></div>
+      </div>
+      <div id="content"></div>
+    </main>
+
+    <aside class="panel inspector" id="inspector"></aside>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = {
+  "families": {
+    "input": {
+      "name": "Input / Edit",
+      "short": "输入 / 编辑",
+      "color": "#3b82f6",
+      "desc": "收集、修改、逐步配置"
+    },
+    "browse": {
+      "name": "Browse / Select",
+      "short": "浏览 / 选择",
+      "color": "#06b6d4",
+      "desc": "浏览、筛选、选择、启动"
+    },
+    "visualize": {
+      "name": "Visualize / Edit",
+      "short": "可视化 / 编辑",
+      "color": "#8b5cf6",
+      "desc": "图、指标、追踪、差异"
+    },
+    "communicate": {
+      "name": "Communicate",
+      "short": "沟通 / 确认",
+      "color": "#f59e0b",
+      "desc": "确认、提示、快捷入口"
+    }
+  },
+  "classes": [
+    {
+      "id": "surface.form",
+      "name": "表单",
+      "family": "input",
+      "icon": "▤",
+      "p0": true,
+      "summary": "schema 驱动的表单；设置、参数、创建/编辑。",
+      "regions": [
+        "header",
+        "body",
+        "footer"
+      ],
+      "slots": [
+        "fields[]",
+        "sections[]",
+        "actions[]"
+      ],
+      "actions": [
+        "submit",
+        "cancel",
+        "reset",
+        "test"
+      ],
+      "states": [
+        "idle",
+        "validating",
+        "error",
+        "success"
+      ],
+      "instances": [
+        {
+          "id": "surface.settings.vpn",
+          "name": "VPN 设置",
+          "desc": "默认 VPN / 自动打开 / 自动连接 / 超时",
+          "placement": "settings",
+          "revision": 3,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "defaultApp",
+              "kind": "store",
+              "target": "settings.vpn.defaultApp"
+            },
+            {
+              "slot": "autoOpenApp",
+              "kind": "store",
+              "target": "settings.vpn.autoOpenApp"
+            },
+            {
+              "slot": "autoConnect",
+              "kind": "store",
+              "target": "settings.vpn.autoConnect"
+            },
+            {
+              "slot": "timeoutSec",
+              "kind": "store",
+              "target": "settings.vpn.timeoutSec"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "save",
+              "kind": "command",
+              "target": "settings.saveVpn"
+            },
+            {
+              "slot": "test",
+              "kind": "runFlow",
+              "target": "inst.ensure-vpn-ask@r2"
+            }
+          ]
+        },
+        {
+          "id": "surface.settings.general",
+          "name": "通用设置",
+          "desc": "主题 / 语言 / 启动行为",
+          "placement": "settings",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "theme",
+              "kind": "store",
+              "target": "settings.general.theme"
+            },
+            {
+              "slot": "locale",
+              "kind": "store",
+              "target": "settings.general.locale"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "save",
+              "kind": "command",
+              "target": "settings.saveGeneral"
+            }
+          ]
+        },
+        {
+          "id": "surface.point-params",
+          "name": "点实例参数",
+          "desc": "编辑 PointInstance 的参数与 revision",
+          "placement": "sidebar",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "params",
+              "kind": "pointOutput",
+              "target": "vpn.default.status@r1"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "save",
+              "kind": "command",
+              "target": "pointInstance.save"
+            }
+          ]
+        },
+        {
+          "id": "surface.settings.system-monitor",
+          "name": "系统监控设置",
+          "desc": "采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗",
+          "placement": "settings",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "sampleIntervalMs",
+              "kind": "store",
+              "target": "settings.system.sampleIntervalMs"
+            },
+            {
+              "slot": "historySec",
+              "kind": "store",
+              "target": "settings.system.historySec"
+            },
+            {
+              "slot": "cpuWarn",
+              "kind": "store",
+              "target": "settings.system.cpu.warn"
+            },
+            {
+              "slot": "gpuTempWarn",
+              "kind": "store",
+              "target": "settings.system.gpu.tempWarn"
+            },
+            {
+              "slot": "alwaysOnTop",
+              "kind": "store",
+              "target": "settings.system.alwaysOnTop"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "save",
+              "kind": "command",
+              "target": "settings.saveSystem"
+            },
+            {
+              "slot": "test",
+              "kind": "command",
+              "target": "metrics.test"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.wizard",
+      "name": "向导",
+      "family": "input",
+      "icon": "⇥",
+      "p0": false,
+      "summary": "多步引导；新建流程、绑定槽位、首次配置。",
+      "regions": [
+        "stepper",
+        "body",
+        "footer"
+      ],
+      "slots": [
+        "steps[]",
+        "summary",
+        "actions[]"
+      ],
+      "actions": [
+        "next",
+        "back",
+        "finish",
+        "cancel"
+      ],
+      "states": [
+        "editing",
+        "validating",
+        "review",
+        "done"
+      ],
+      "instances": [
+        {
+          "id": "surface.wizard.new-flow",
+          "name": "新建流程",
+          "desc": "选模板 → 绑槽位 → 试运行",
+          "placement": "modal",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "templates",
+              "kind": "query",
+              "target": "FlowClass.list"
+            },
+            {
+              "slot": "slots",
+              "kind": "flowOutput",
+              "target": "selectedFlow.slots"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "next",
+              "kind": "navigate",
+              "target": "wizard.step2"
+            },
+            {
+              "slot": "finish",
+              "kind": "command",
+              "target": "flowInstance.create"
+            }
+          ]
+        },
+        {
+          "id": "surface.wizard.vpn-setup",
+          "name": "VPN 首次配置",
+          "desc": "选软件 → 测试 → 保存",
+          "placement": "modal",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "apps",
+              "kind": "query",
+              "target": "AppRegistry.vpnApps"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "test",
+              "kind": "runFlow",
+              "target": "inst.ensure-vpn-ask@r2"
+            },
+            {
+              "slot": "finish",
+              "kind": "command",
+              "target": "settings.saveVpn"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.inspector",
+      "name": "检查器",
+      "family": "input",
+      "icon": "⌕",
+      "p0": true,
+      "summary": "查看/编辑选中对象的属性；点类、点实例、槽位、运行节点。",
+      "regions": [
+        "header",
+        "sections",
+        "property editors",
+        "footer"
+      ],
+      "slots": [
+        "properties[]",
+        "sections[]",
+        "actions[]"
+      ],
+      "actions": [
+        "edit",
+        "bind",
+        "unbind",
+        "revert"
+      ],
+      "states": [
+        "empty",
+        "ready",
+        "dirty",
+        "error"
+      ],
+      "instances": [
+        {
+          "id": "surface.inspector.point",
+          "name": "点检查器",
+          "desc": "PointClass / PointInstance 契约与参数",
+          "placement": "sidebar",
+          "revision": 4,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "class",
+              "kind": "query",
+              "target": "PointRegistry.getClass"
+            },
+            {
+              "slot": "instance",
+              "kind": "query",
+              "target": "PointRegistry.getInstance"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "edit",
+              "kind": "command",
+              "target": "pointInstance.update"
+            },
+            {
+              "slot": "bind",
+              "kind": "navigate",
+              "target": "surface.point-catalog"
+            }
+          ]
+        },
+        {
+          "id": "surface.inspector.slot-vpn",
+          "name": "VPN 槽位检查器",
+          "desc": "slot.vpn 的 accepts / default / bound",
+          "placement": "sidebar",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "slot",
+              "kind": "flowOutput",
+              "target": "flow.open-external-site.slot.vpn"
+            },
+            {
+              "slot": "bound",
+              "kind": "flowOutput",
+              "target": "inst.site-github.bindings.vpn"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "replaceBinding",
+              "kind": "command",
+              "target": "flowInstance.replaceBinding"
+            },
+            {
+              "slot": "openSubflow",
+              "kind": "navigate",
+              "target": "surface.canvas.flow-editor"
+            }
+          ]
+        },
+        {
+          "id": "surface.inspector.run-node",
+          "name": "运行节点检查器",
+          "desc": "PointRun 输入/输出/耗时",
+          "placement": "sidebar",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "run",
+              "kind": "flowOutput",
+              "target": "FlowRun.slotRuns.vpn"
+            },
+            {
+              "slot": "pointRun",
+              "kind": "pointOutput",
+              "target": "vpn.default.status@r1"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "replay",
+              "kind": "runFlow",
+              "target": "inst.site-github@r1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.table",
+      "name": "表格",
+      "family": "browse",
+      "icon": "▦",
+      "p0": true,
+      "summary": "表格浏览、排序、筛选、批量操作。",
+      "regions": [
+        "toolbar",
+        "header",
+        "rows",
+        "pagination",
+        "bulk bar"
+      ],
+      "slots": [
+        "columns[]",
+        "filters[]",
+        "rowActions[]",
+        "bulkActions[]"
+      ],
+      "actions": [
+        "sort",
+        "filter",
+        "select",
+        "bulkRun",
+        "open"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "ready"
+      ],
+      "instances": [
+        {
+          "id": "surface.point-catalog",
+          "name": "点目录",
+          "desc": "38 个点类 / 实例列表",
+          "placement": "main",
+          "revision": 5,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "rows",
+              "kind": "query",
+              "target": "PointRegistry.list"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "inspect",
+              "kind": "navigate",
+              "target": "surface.inspector.point"
+            },
+            {
+              "slot": "createInstance",
+              "kind": "command",
+              "target": "pointInstance.create"
+            }
+          ]
+        },
+        {
+          "id": "surface.flow-instances",
+          "name": "线实例列表",
+          "desc": "FlowInstance 目录",
+          "placement": "main",
+          "revision": 3,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "rows",
+              "kind": "query",
+              "target": "FlowInstance.list"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "runFlow",
+              "target": "selectedFlowInstance"
+            },
+            {
+              "slot": "inspect",
+              "kind": "navigate",
+              "target": "surface.inspector.slot-vpn"
+            }
+          ]
+        },
+        {
+          "id": "surface.run-history.table",
+          "name": "运行列表",
+          "desc": "FlowRun / PointRun 表格",
+          "placement": "main",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "rows",
+              "kind": "query",
+              "target": "FlowRun.list"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.run-history.flow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.card-grid",
+      "name": "卡片墙",
+      "family": "browse",
+      "icon": "▩",
+      "p0": false,
+      "summary": "卡片墙；站点启动、模板市场、Body 市场。",
+      "regions": [
+        "toolbar",
+        "filters",
+        "grid",
+        "empty"
+      ],
+      "slots": [
+        "cards[]",
+        "filters[]",
+        "cardActions[]"
+      ],
+      "actions": [
+        "open",
+        "run",
+        "preview",
+        "install"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "error",
+        "ready"
+      ],
+      "instances": [
+        {
+          "id": "surface.site-launcher",
+          "name": "站点启动器",
+          "desc": "YouTube / GitHub / Google / 内网",
+          "placement": "main",
+          "revision": 3,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "cards",
+              "kind": "query",
+              "target": "FlowInstance.listSites"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "runFlow",
+              "target": "selectedSiteInstance"
+            }
+          ]
+        },
+        {
+          "id": "surface.body-market",
+          "name": "Body 市场",
+          "desc": "安装 body / 模板",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "cards",
+              "kind": "query",
+              "target": "BodyRegistry.market"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "install",
+              "kind": "command",
+              "target": "body.install"
+            }
+          ]
+        },
+        {
+          "id": "surface.flow-gallery",
+          "name": "流程模板",
+          "desc": "FlowClass 模板库",
+          "placement": "main",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "cards",
+              "kind": "query",
+              "target": "FlowClass.listTemplates"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "preview",
+              "kind": "navigate",
+              "target": "surface.canvas.flow-editor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.tree",
+      "name": "树",
+      "family": "browse",
+      "icon": "⑂",
+      "p0": false,
+      "summary": "层级导航；Domain → PointClass、FlowClass → 节点。",
+      "regions": [
+        "search",
+        "tree",
+        "selection"
+      ],
+      "slots": [
+        "nodes[]",
+        "filters[]"
+      ],
+      "actions": [
+        "expand",
+        "collapse",
+        "select",
+        "drag"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "ready"
+      ],
+      "instances": [
+        {
+          "id": "surface.point-domains",
+          "name": "点 Domain 树",
+          "desc": "15 domain → 38 类",
+          "placement": "sidebar",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "nodes",
+              "kind": "query",
+              "target": "PointRegistry.domains"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "select",
+              "kind": "navigate",
+              "target": "surface.point-catalog"
+            }
+          ]
+        },
+        {
+          "id": "surface.flow-outline",
+          "name": "流程大纲",
+          "desc": "FlowClass 节点树",
+          "placement": "sidebar",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "nodes",
+              "kind": "flowOutput",
+              "target": "selectedFlow.nodes"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "select",
+              "kind": "navigate",
+              "target": "surface.inspector.run-node"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.command-palette",
+      "name": "命令面板",
+      "family": "browse",
+      "icon": "⌘",
+      "p0": true,
+      "summary": "全局搜索与动作启动；键盘优先。",
+      "regions": [
+        "query",
+        "results",
+        "groups",
+        "footer"
+      ],
+      "slots": [
+        "groups[]",
+        "results[]",
+        "shortcuts[]"
+      ],
+      "actions": [
+        "run",
+        "navigate",
+        "preview"
+      ],
+      "states": [
+        "idle",
+        "searching",
+        "empty",
+        "error"
+      ],
+      "instances": [
+        {
+          "id": "surface.command-palette.global",
+          "name": "全局命令面板",
+          "desc": "搜索 Flow / Point / 设置",
+          "placement": "overlay",
+          "revision": 4,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "results",
+              "kind": "query",
+              "target": "SearchIndex.global"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "command",
+              "target": "selectedCommand"
+            },
+            {
+              "slot": "navigate",
+              "kind": "navigate",
+              "target": "selectedSurface"
+            }
+          ]
+        },
+        {
+          "id": "surface.command-palette.points",
+          "name": "点实例面板",
+          "desc": "搜索并运行点实例",
+          "placement": "overlay",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "results",
+              "kind": "query",
+              "target": "PointRegistry.search"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "runPoint",
+              "target": "selectedPointInstance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.canvas",
+      "name": "画布",
+      "family": "visualize",
+      "icon": "⌗",
+      "p0": false,
+      "summary": "节点图编辑；线层编辑器、Body 组合器。",
+      "regions": [
+        "toolbar",
+        "palette",
+        "canvas",
+        "minimap",
+        "inspector"
+      ],
+      "slots": [
+        "nodes[]",
+        "edges[]",
+        "groups[]",
+        "notes[]"
+      ],
+      "actions": [
+        "addNode",
+        "connect",
+        "move",
+        "delete",
+        "run",
+        "save"
+      ],
+      "states": [
+        "empty",
+        "editing",
+        "validating",
+        "running",
+        "error"
+      ],
+      "instances": [
+        {
+          "id": "surface.canvas.flow-editor",
+          "name": "线层编辑器",
+          "desc": "FlowClass 图 / 槽位绑定",
+          "placement": "main",
+          "revision": 6,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "graph",
+              "kind": "query",
+              "target": "FlowClass.getGraph"
+            },
+            {
+              "slot": "bindings",
+              "kind": "flowOutput",
+              "target": "selectedFlowInstance.bindings"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "runFlow",
+              "target": "selectedFlowInstance"
+            },
+            {
+              "slot": "save",
+              "kind": "command",
+              "target": "flowClass.saveDraft"
+            }
+          ]
+        },
+        {
+          "id": "surface.canvas.body-composer",
+          "name": "Body 组合器",
+          "desc": "面 + 线 + 权限打包",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "surfaces",
+              "kind": "query",
+              "target": "SurfaceInstance.list"
+            },
+            {
+              "slot": "flows",
+              "kind": "query",
+              "target": "FlowInstance.list"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "save",
+              "kind": "command",
+              "target": "body.saveDraft"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.dashboard",
+      "name": "仪表盘",
+      "family": "visualize",
+      "icon": "◫",
+      "p0": false,
+      "summary": "指标、状态、健康度；系统总览、VPN 状态。",
+      "regions": [
+        "header",
+        "metric cards",
+        "charts",
+        "alerts"
+      ],
+      "slots": [
+        "metrics[]",
+        "charts[]",
+        "alerts[]",
+        "actions[]"
+      ],
+      "actions": [
+        "drilldown",
+        "refresh",
+        "openRun"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "degraded",
+        "error",
+        "ready"
+      ],
+      "instances": [
+        {
+          "id": "surface.dashboard.system",
+          "name": "系统总览",
+          "desc": "运行数 / 成功率 / 成本",
+          "placement": "main",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "metrics",
+              "kind": "query",
+              "target": "Metrics.system"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "drilldown",
+              "kind": "navigate",
+              "target": "surface.run-history.flow"
+            }
+          ]
+        },
+        {
+          "id": "surface.dashboard.vpn",
+          "name": "VPN 健康",
+          "desc": "VPN 状态 / 连接耗时 / 失败",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "metrics",
+              "kind": "query",
+              "target": "Metrics.vpn"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "openRun",
+              "kind": "navigate",
+              "target": "surface.run-history.vpn"
+            }
+          ]
+        },
+        {
+          "id": "surface.system-monitor",
+          "name": "系统状态总览",
+          "desc": "CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线",
+          "placement": "main",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "cards",
+              "kind": "query",
+              "target": "Metrics.system.cards"
+            },
+            {
+              "slot": "streams",
+              "kind": "query",
+              "target": "MetricStream.system"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "pause",
+              "kind": "command",
+              "target": "metrics.pause"
+            },
+            {
+              "slot": "refresh",
+              "kind": "command",
+              "target": "metrics.refresh"
+            },
+            {
+              "slot": "settings",
+              "kind": "navigate",
+              "target": "surface.settings.system-monitor"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.run-history",
+      "name": "运行历史",
+      "family": "visualize",
+      "icon": "◷",
+      "p0": false,
+      "summary": "运行历史、节点 trace、变量快照、回放。",
+      "regions": [
+        "filters",
+        "run list",
+        "trace",
+        "detail",
+        "actions"
+      ],
+      "slots": [
+        "runs[]",
+        "nodes[]",
+        "variables[]",
+        "errors[]"
+      ],
+      "actions": [
+        "filter",
+        "inspect",
+        "replay",
+        "export"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "failed",
+        "ready"
+      ],
+      "instances": [
+        {
+          "id": "surface.run-history.flow",
+          "name": "流程运行历史",
+          "desc": "FlowRun + PointRun trace",
+          "placement": "main",
+          "revision": 3,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "runs",
+              "kind": "query",
+              "target": "FlowRun.list"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "replay",
+              "kind": "runFlow",
+              "target": "selectedFlowInstance"
+            },
+            {
+              "slot": "inspect",
+              "kind": "navigate",
+              "target": "surface.inspector.run-node"
+            }
+          ]
+        },
+        {
+          "id": "surface.run-history.vpn",
+          "name": "VPN 运行历史",
+          "desc": "GuardResult / 子 FlowRun",
+          "placement": "main",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "runs",
+              "kind": "query",
+              "target": "FlowRun.listVpn"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "replay",
+              "kind": "runFlow",
+              "target": "inst.site-github@r1"
+            },
+            {
+              "slot": "openSettings",
+              "kind": "navigate",
+              "target": "surface.settings.vpn"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.diff",
+      "name": "差异",
+      "family": "visualize",
+      "icon": "≠",
+      "p0": false,
+      "summary": "版本/实例差异；FlowClass 版本、SurfaceInstance revision。",
+      "regions": [
+        "summary",
+        "change list",
+        "side-by-side",
+        "actions"
+      ],
+      "slots": [
+        "changes[]",
+        "left[]",
+        "right[]"
+      ],
+      "actions": [
+        "accept",
+        "reject",
+        "revert",
+        "open"
+      ],
+      "states": [
+        "loading",
+        "empty",
+        "conflict",
+        "ready"
+      ],
+      "instances": [
+        {
+          "id": "surface.diff.flow-version",
+          "name": "流程版本 diff",
+          "desc": "FlowClass v1 vs v2",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "left",
+              "kind": "query",
+              "target": "FlowClass.getVersion"
+            },
+            {
+              "slot": "right",
+              "kind": "query",
+              "target": "FlowClass.getVersion"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "accept",
+              "kind": "command",
+              "target": "flowClass.acceptVersion"
+            },
+            {
+              "slot": "reject",
+              "kind": "command",
+              "target": "flowClass.rejectVersion"
+            }
+          ]
+        },
+        {
+          "id": "surface.diff.instance-revision",
+          "name": "实例 revision diff",
+          "desc": "绑定/参数变化",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "left",
+              "kind": "query",
+              "target": "FlowInstance.getRevision"
+            },
+            {
+              "slot": "right",
+              "kind": "query",
+              "target": "FlowInstance.getRevision"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "revert",
+              "kind": "command",
+              "target": "flowInstance.revert"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.dialog",
+      "name": "对话框",
+      "family": "communicate",
+      "icon": "▢",
+      "p0": true,
+      "summary": "确认、审批、危险操作；模态。",
+      "regions": [
+        "header",
+        "body",
+        "actions"
+      ],
+      "slots": [
+        "title",
+        "message",
+        "fields[]",
+        "actions[]"
+      ],
+      "actions": [
+        "approve",
+        "reject",
+        "cancel",
+        "open"
+      ],
+      "states": [
+        "idle",
+        "waiting",
+        "approved",
+        "rejected",
+        "error"
+      ],
+      "instances": [
+        {
+          "id": "surface.dialog.vpn-approval",
+          "name": "VPN 审批",
+          "desc": "打开 VPN / 我已手动打开 / 取消",
+          "placement": "modal",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "context",
+              "kind": "flowOutput",
+              "target": "flow.ensure-vpn.approval"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "approve",
+              "kind": "approval",
+              "target": "open"
+            },
+            {
+              "slot": "reject",
+              "kind": "approval",
+              "target": "cancel"
+            }
+          ]
+        },
+        {
+          "id": "surface.dialog.delete-confirm",
+          "name": "删除确认",
+          "desc": "危险操作确认",
+          "placement": "modal",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "context",
+              "kind": "flowOutput",
+              "target": "delete.action.context"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "approve",
+              "kind": "approval",
+              "target": "confirm"
+            },
+            {
+              "slot": "reject",
+              "kind": "approval",
+              "target": "cancel"
+            }
+          ]
+        },
+        {
+          "id": "surface.dialog.deploy-approval",
+          "name": "部署审批",
+          "desc": "生产发布审批",
+          "placement": "modal",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "context",
+              "kind": "flowOutput",
+              "target": "deploy.action.context"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "approve",
+              "kind": "approval",
+              "target": "confirm"
+            },
+            {
+              "slot": "reject",
+              "kind": "approval",
+              "target": "cancel"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.notification",
+      "name": "通知",
+      "family": "communicate",
+      "icon": "◔",
+      "p0": true,
+      "summary": "Toast / Tray / Banner；显示结果与下一步。",
+      "regions": [
+        "icon",
+        "title",
+        "message",
+        "actions",
+        "close"
+      ],
+      "slots": [
+        "level",
+        "actions[]"
+      ],
+      "actions": [
+        "open",
+        "retry",
+        "dismiss",
+        "openSettings"
+      ],
+      "states": [
+        "queued",
+        "visible",
+        "dismissed",
+        "actioned"
+      ],
+      "instances": [
+        {
+          "id": "surface.notify.vpn",
+          "name": "VPN 通知",
+          "desc": "GuardResult → 下一步",
+          "placement": "toast",
+          "revision": 3,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "message",
+              "kind": "flowOutput",
+              "target": "GuardResult"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "openSettings",
+              "kind": "navigate",
+              "target": "surface.settings.vpn"
+            },
+            {
+              "slot": "retry",
+              "kind": "runFlow",
+              "target": "inst.ensure-vpn-ask@r2"
+            },
+            {
+              "slot": "dismiss",
+              "kind": "command",
+              "target": "toast.dismiss"
+            }
+          ]
+        },
+        {
+          "id": "surface.notify.run",
+          "name": "运行通知",
+          "desc": "成功/失败/耗时",
+          "placement": "toast",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "message",
+              "kind": "flowOutput",
+              "target": "FlowRun.summary"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "openRun",
+              "kind": "navigate",
+              "target": "surface.run-history.flow"
+            },
+            {
+              "slot": "dismiss",
+              "kind": "command",
+              "target": "toast.dismiss"
+            }
+          ]
+        },
+        {
+          "id": "surface.notify.download",
+          "name": "下载通知",
+          "desc": "下载/校验结果",
+          "placement": "tray",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "message",
+              "kind": "flowOutput",
+              "target": "GuardResult"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "command",
+              "target": "file.open"
+            }
+          ]
+        },
+        {
+          "id": "surface.notify.system-threshold",
+          "name": "系统阈值告警",
+          "desc": "CPU/GPU 温度、内存、磁盘超阈值提示",
+          "placement": "toast",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "message",
+              "kind": "flowOutput",
+              "target": "MetricAlert.summary"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "dismiss",
+              "kind": "command",
+              "target": "toast.dismiss"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.tray-menu",
+      "name": "托盘菜单",
+      "family": "communicate",
+      "icon": "☰",
+      "p0": false,
+      "summary": "托盘/右键菜单；快速入口。",
+      "regions": [
+        "menu items",
+        "submenus",
+        "separators"
+      ],
+      "slots": [
+        "items[]",
+        "submenus[]",
+        "shortcuts[]"
+      ],
+      "actions": [
+        "run",
+        "navigate",
+        "toggle"
+      ],
+      "states": [
+        "closed",
+        "open",
+        "disabled"
+      ],
+      "instances": [
+        {
+          "id": "surface.tray.quick-actions",
+          "name": "快捷动作",
+          "desc": "收藏的 FlowInstance",
+          "placement": "tray",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "items",
+              "kind": "query",
+              "target": "FlowInstance.favorites"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "runFlow",
+              "target": "selectedFlowInstance"
+            },
+            {
+              "slot": "navigate",
+              "kind": "navigate",
+              "target": "surface.settings.general"
+            }
+          ]
+        },
+        {
+          "id": "surface.tray.vpn",
+          "name": "VPN 托盘菜单",
+          "desc": "打开 / 连接 / 状态",
+          "placement": "tray",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "items",
+              "kind": "query",
+              "target": "VpnTray.items"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "run",
+              "kind": "runFlow",
+              "target": "inst.ensure-vpn-ask@r2"
+            }
+          ]
+        },
+        {
+          "id": "surface.tray.system-status",
+          "name": "系统状态托盘",
+          "desc": "CPU/GPU/内存/网速文本摘要",
+          "placement": "tray",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "items",
+              "kind": "query",
+              "target": "Metrics.system.tray"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "run",
+              "kind": "runFlow",
+              "target": "inst.ensure-vpn-ask@r2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.hud",
+      "name": "HUD 浮层",
+      "family": "communicate",
+      "icon": "◉",
+      "p0": false,
+      "summary": "屏幕浮层；翻译结果、VPN 状态、录屏提示。",
+      "regions": [
+        "anchor",
+        "content",
+        "actions",
+        "auto-hide"
+      ],
+      "slots": [
+        "content[]",
+        "actions[]",
+        "position"
+      ],
+      "actions": [
+        "pin",
+        "dismiss",
+        "open"
+      ],
+      "states": [
+        "hidden",
+        "visible",
+        "pinned",
+        "error"
+      ],
+      "instances": [
+        {
+          "id": "surface.hud.translate",
+          "name": "翻译浮层",
+          "desc": "截图翻译结果",
+          "placement": "overlay",
+          "revision": 2,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "content",
+              "kind": "flowOutput",
+              "target": "flow.screenshot-translate.output"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "pin",
+              "kind": "command",
+              "target": "hud.pin"
+            },
+            {
+              "slot": "dismiss",
+              "kind": "command",
+              "target": "hud.dismiss"
+            }
+          ]
+        },
+        {
+          "id": "surface.hud.vpn-status",
+          "name": "VPN 状态浮层",
+          "desc": "连接状态/耗时",
+          "placement": "overlay",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "content",
+              "kind": "flowOutput",
+              "target": "GuardResult"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.settings.vpn"
+            }
+          ]
+        },
+        {
+          "id": "surface.hud.system-status",
+          "name": "系统状态浮层",
+          "desc": "CPU/GPU/内存/网速紧凑显示，可置顶",
+          "placement": "overlay",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "content",
+              "kind": "query",
+              "target": "Metrics.system.compact"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "pin",
+              "kind": "command",
+              "target": "hud.pin"
+            },
+            {
+              "slot": "dismiss",
+              "kind": "command",
+              "target": "hud.dismiss"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surface.metric-card",
+      "name": "指标卡",
+      "family": "visualize",
+      "icon": "◉",
+      "p0": false,
+      "summary": "单个系统指标：数值、单位、阈值、状态、历史 sparkline；CPU/GPU/内存/网络/磁盘都是实例。",
+      "regions": [
+        "label",
+        "value",
+        "unit",
+        "status",
+        "history"
+      ],
+      "slots": [
+        "metricSpec",
+        "stream",
+        "actions[]"
+      ],
+      "actions": [
+        "open",
+        "settings",
+        "pause"
+      ],
+      "states": [
+        "ok",
+        "warn",
+        "critical",
+        "unknown"
+      ],
+      "instances": [
+        {
+          "id": "metric.cpu",
+          "name": "CPU",
+          "desc": "使用率 / 温度 / 频率 / 每核负载",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "spec",
+              "kind": "store",
+              "target": "Metrics.cpu.spec"
+            },
+            {
+              "slot": "stream",
+              "kind": "query",
+              "target": "MetricStream.cpu"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "settings",
+              "kind": "navigate",
+              "target": "surface.settings.system-monitor"
+            }
+          ]
+        },
+        {
+          "id": "metric.gpu",
+          "name": "GPU",
+          "desc": "使用率 / 温度 / VRAM / 风扇",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "spec",
+              "kind": "store",
+              "target": "Metrics.gpu.spec"
+            },
+            {
+              "slot": "stream",
+              "kind": "query",
+              "target": "MetricStream.gpu"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "settings",
+              "kind": "navigate",
+              "target": "surface.settings.system-monitor"
+            }
+          ]
+        },
+        {
+          "id": "metric.memory",
+          "name": "内存",
+          "desc": "已用 / 总量 / 百分比 / Swap",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "spec",
+              "kind": "store",
+              "target": "Metrics.memory.spec"
+            },
+            {
+              "slot": "stream",
+              "kind": "query",
+              "target": "MetricStream.memory"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "settings",
+              "kind": "navigate",
+              "target": "surface.settings.system-monitor"
+            }
+          ]
+        },
+        {
+          "id": "metric.network",
+          "name": "网速",
+          "desc": "下行 / 上行 / 总流量 / 延迟",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "spec",
+              "kind": "store",
+              "target": "Metrics.network.spec"
+            },
+            {
+              "slot": "stream",
+              "kind": "query",
+              "target": "MetricStream.network"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "settings",
+              "kind": "navigate",
+              "target": "surface.settings.system-monitor"
+            }
+          ]
+        },
+        {
+          "id": "metric.disk",
+          "name": "磁盘",
+          "desc": "已用 / 剩余 / 读写 / 温度",
+          "placement": "main",
+          "revision": 1,
+          "status": "active",
+          "dataBindings": [
+            {
+              "slot": "spec",
+              "kind": "store",
+              "target": "Metrics.disk.spec"
+            },
+            {
+              "slot": "stream",
+              "kind": "query",
+              "target": "MetricStream.disk"
+            }
+          ],
+          "actionBindings": [
+            {
+              "slot": "open",
+              "kind": "navigate",
+              "target": "surface.system-monitor"
+            },
+            {
+              "slot": "settings",
+              "kind": "navigate",
+              "target": "surface.settings.system-monitor"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "classes": 16,
+    "instances": 46,
+    "families": 4,
+    "p0": 6
+  }
+};
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+const esc = (s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const allInstances = ()=>DATA.classes.flatMap(c=>c.instances.map(i=>({...i,className:c.name,classId:c.id,family:c.family,classIcon:c.icon})));
+const classById = (id)=>DATA.classes.find(c=>c.id===id);
+const familyMeta = (id)=>DATA.families[id]||{name:id,short:id,color:'#3b82f6',desc:''};
+const instanceById = (id)=>allInstances().find(i=>i.id===id);
+
+const state = {
+  family:'all', p0:false, query:'', view:'cards',
+  selected:{type:'class',classId:DATA.classes[0].id},
+  toastTimer:null
+};
+
+function selectedClassId(){return state.selected.classId;}
+function selectedInstance(){return state.selected.type==='instance'?instanceById(state.selected.instanceId):null;}
+
+function renderStats(){
+  const s=DATA.stats;
+  const items=[
+    {k:'SurfaceClass',v:s.classes,s:'可复用交互模式',c:'var(--blue)'},
+    {k:'SurfaceInstance',v:s.instances,s:'具体数据/动作绑定',c:'var(--cyan)'},
+    {k:'Families',v:s.families,s:'Input / Browse / Visualize / Communicate',c:'var(--violet)'},
+    {k:'P0',v:s.p0,s:'先做的最小闭环',c:'var(--amber)'},
+  ];
+  $('#stats').innerHTML=items.map(x=>`<div class="stat" style="--accent:${x.c}"><div class="stat-k">${x.k}</div><div class="stat-v">${x.v}</div><div class="stat-s">${x.s}</div></div>`).join('');
+}
+
+function renderFamilies(){
+  const counts={all:DATA.classes.length};
+  Object.keys(DATA.families).forEach(k=>counts[k]=DATA.classes.filter(c=>c.family===k).length);
+  $('#familyCount').textContent=`${DATA.stats.classes} 类 · ${DATA.stats.instances} 实例`;
+  const row=(k,name,color,n)=>`<button class="family-btn ${state.family===k?'active':''}" data-family="${k}" style="--c:${color}"><span class="family-dot"></span><span>${esc(name)}</span><span class="n">${n}</span></button>`;
+  $('#families').innerHTML=[
+    row('all','全部面层类','#94a3b8',counts.all),
+    ...Object.entries(DATA.families).map(([k,f])=>row(k,f.short,f.color,counts[k]||0))
+  ].join('');
+  $$('#families [data-family]').forEach(b=>b.onclick=()=>{state.family=b.dataset.family;renderFamilies();renderContent();});
+}
+
+function renderFilters(){
+  $('#filters').innerHTML=`
+    <button class="filter-btn ${state.p0?'active':''}" data-p0>只看 P0 <span class="check">${state.p0?'✓':''}</span></button>
+    <button class="filter-btn" data-reset>清空筛选 <span class="check">↺</span></button>`;
+  $$('#filters [data-p0]').forEach(b=>b.onclick=()=>{state.p0=!state.p0;renderFilters();renderContent();});
+  $$('#filters [data-reset]').forEach(b=>b.onclick=()=>{state.family='all';state.p0=false;state.query='';$('#search').value='';renderFamilies();renderFilters();renderContent();});
+}
+
+function matches(c){
+  if(state.family!=='all' && c.family!==state.family) return false;
+  if(state.p0 && !c.p0) return false;
+  const q=state.query.trim().toLowerCase();
+  if(!q) return true;
+  const hay=[
+    c.id,c.name,c.summary,c.family,
+    ...(c.regions||[]),...(c.slots||[]),...(c.actions||[]),...(c.states||[]),
+    ...c.instances.flatMap(i=>[i.id,i.name,i.desc,i.placement,...(i.dataBindings||[]).flatMap(b=>[b.slot,b.kind,b.target]),...(i.actionBindings||[]).flatMap(b=>[b.slot,b.kind,b.target])])
+  ].join(' ').toLowerCase();
+  return hay.includes(q);
+}
+
+function filteredClasses(){return DATA.classes.filter(matches);}
+
+function renderContent(){
+  const classes=filteredClasses();
+  const instCount=classes.reduce((n,c)=>n+c.instances.length,0);
+  $('#mainCount').textContent=`${classes.length} 类 · ${instCount} 实例`;
+  const sel=state.selected.type==='instance'?instanceById(state.selected.instanceId):null;
+  $('#mainSub').textContent=state.query||state.family!=='all'||state.p0
+    ? `筛选：${state.query?`“${state.query}” · `:''}${state.family==='all'?'全部家族':familyMeta(state.family).short}${state.p0?' · 只看 P0':''}`
+    : '15 个交互模式，36 个实例。点类看契约，点实例看它绑定了哪个 Flow / Point。';
+  if(!classes.length){$('#content').innerHTML=`<div class="empty"><b>没有匹配的面层类</b>试试清空搜索或切换家族。</div>`;return;}
+  if(state.view==='table') renderTable(classes);
+  else if(state.view==='graph') renderGraph(classes);
+  else renderCards(classes);
+  bindContentEvents();
+}
+
+function classCard(c){
+  const f=familyMeta(c.family);
+  const active=state.selected.classId===c.id;
+  return `<article class="class-card ${active?'selected':''}" data-class="${esc(c.id)}" style="--c:${f.color}">
+    <div class="card-head">
+      <div class="class-icon">${esc(c.icon)}</div>
+      <div class="class-title"><h3>${esc(c.name)}</h3><code>${esc(c.id)}</code></div>
+      ${c.p0?'<span class="p0">P0</span>':''}
+    </div>
+    <div class="card-desc">${esc(c.summary)}</div>
+    <div class="tags"><span class="pill fam">${esc(f.short)}</span><span class="pill mono">${c.instances.length} 实例</span><span class="pill mono">${c.states.length} 状态</span></div>
+    <div class="instances">${c.instances.map(i=>`<button class="inst-chip" data-instance="${esc(i.id)}" data-class-id="${esc(c.id)}"><span class="dot"></span><b>${esc(i.name)}</b><code>${esc(i.id)}</code></button>`).join('')}</div>
+  </article>`;
+}
+
+function renderCards(classes){
+  const groups={};
+  classes.forEach(c=>{(groups[c.family]??=[]).push(c);});
+  $('#content').innerHTML=Object.entries(groups).map(([fam,list])=>{
+    const f=familyMeta(fam);
+    return `<section class="family-section">
+      <div class="family-head"><h2 style="color:${f.color}">${esc(f.name)}</h2><span class="cnt">${list.length} 类</span><span class="line"></span></div>
+      <div class="catalog-grid">${list.map(classCard).join('')}</div>
+    </section>`;
+  }).join('');
+}
+
+function renderTable(classes){
+  $('#content').innerHTML=`<table class="catalog-table"><thead><tr><th>面层类</th><th>家族</th><th>用途</th><th>实例</th><th>状态</th></tr></thead><tbody>
+    ${classes.map(c=>{const f=familyMeta(c.family);return `<tr data-class="${esc(c.id)}" class="${state.selected.classId===c.id?'selected':''}" style="--c:${f.color}">
+      <td><div style="display:flex;align-items:center;gap:8px"><span class="class-icon" style="width:30px;height:30px;font-size:13px">${esc(c.icon)}</span><div><b>${esc(c.name)}</b><span class="id">${esc(c.id)}</span></div></div></td>
+      <td><span class="pill fam" style="--c:${f.color}">${esc(f.short)}</span></td>
+      <td class="desc">${esc(c.summary)}</td>
+      <td>${c.instances.map(i=>`<button class="inst-chip" data-instance="${esc(i.id)}" data-class-id="${esc(c.id)}"><span class="dot"></span>${esc(i.name)}</button>`).join('')}</td>
+      <td>${c.p0?'<span class="p0">P0</span>':'<span class="pill mono">P1/P2</span>'}</td>
+    </tr>`;}).join('')}
+  </tbody></table>`;
+}
+
+function renderGraph(classes){
+  const focus=classById(state.selected.classId)&&classes.some(c=>c.id===state.selected.classId)
+    ? classById(state.selected.classId) : classes[0];
+  const f=familyMeta(focus.family);
+  const n=focus.instances.length;
+  const gap=62,startY=42,height=Math.max(330,startY+(n-1)*gap+78);
+  const centers=focus.instances.map((_,i)=>startY+i*gap+24);
+  const cy=n?Math.round((centers[0]+centers[n-1])/2):height/2;
+  const lines=focus.instances.map((_,i)=>`<path d="M249,${cy} C360,${cy} 440,${centers[i]} 560,${centers[i]}" fill="none" stroke="${f.color}" stroke-opacity=".35" stroke-width="1.4"/>`).join('');
+  const instNodes=focus.instances.map((i,idx)=>`<button class="graph-node graph-inst" data-instance="${esc(i.id)}" data-class-id="${esc(focus.id)}" style="left:560px;top:${centers[idx]-24}px;--c:${f.color}"><span class="dot"></span><span><b>${esc(i.name)}</b><code>${esc(i.id)}</code></span></button>`).join('');
+  $('#content').innerHTML=`<div class="graph-toolbar"><label>聚焦类</label><select id="graphSelect">${classes.map(c=>`<option value="${esc(c.id)}" ${c.id===focus.id?'selected':''}>${esc(c.name)} · ${esc(c.id)}</option>`).join('')}</select><span class="muted" style="font-size:10px">${n} 个实例 · 点击节点查看 Inspector</span></div>
+    <div class="graph-wrap"><div class="graph" style="height:${height}px">
+      <svg width="820" height="${height}" viewBox="0 0 820 ${height}">${lines}</svg>
+      <button class="graph-node graph-class" data-class="${esc(focus.id)}" style="left:14px;top:${cy-60}px;--c:${f.color}">
+        <div class="kicker" style="color:${f.color}">SURFACECLASS</div>
+        <h3>${esc(focus.icon)} ${esc(focus.name)}</h3><code>${esc(focus.id)}</code>
+        <p>${esc(focus.summary)}</p>
+        <div class="chips" style="margin-top:8px">${focus.actions.slice(0,4).map(a=>`<span class="chip action">${esc(a)}</span>`).join('')}</div>
+      </button>
+      ${instNodes}
+    </div></div>
+    <div class="graph-legend"><span><i></i>SurfaceClass</span><span><i class="inst"></i>SurfaceInstance</span><span>连线 = 实例化关系</span></div>`;
+  $('#graphSelect').onchange=(e)=>selectClass(e.target.value);
+}
+
+function bindContentEvents(){
+  $('#content').onclick=(e)=>{
+    const inst=e.target.closest('[data-instance]');
+    if(inst){selectInstance(inst.dataset.classId,inst.dataset.instance);return;}
+    const cl=e.target.closest('[data-class]');
+    if(cl){selectClass(cl.dataset.class);}
+  };
+}
+
+function selectClass(id){
+  state.selected={type:'class',classId:id};
+  renderContent();renderInspector();
+}
+function selectInstance(classId,instanceId){
+  state.selected={type:'instance',classId,instanceId};
+  renderContent();renderInspector();
+}
+
+function renderInspector(){
+  if(state.selected.type==='instance'){
+    const i=instanceById(state.selected.instanceId);
+    if(i){renderInstanceInspector(i);return;}
+  }
+  const c=classById(state.selected.classId)||DATA.classes[0];
+  state.selected={type:'class',classId:c.id};
+  renderClassInspector(c);
+}
+
+function renderClassInspector(c){
+  const f=familyMeta(c.family);
+  $('#inspector').style.setProperty('--c',f.color);
+  $('#inspector').innerHTML=`
+    <div class="insp-head">
+      <div class="kicker">SURFACECLASS</div>
+      <h2>${esc(c.icon)} ${esc(c.name)}</h2>
+      <code>${esc(c.id)}</code>
+      <p class="insp-sub">${esc(c.summary)}</p>
+    </div>
+    <div class="insp-section"><h4>契约</h4><div class="kv">
+      <div class="k">family</div><div class="v"><span class="chip" style="color:${f.color}">${esc(f.name)}</span></div>
+      <div class="k">priority</div><div class="v">${c.p0?'<span class="p0">P0</span>':'<span class="pill mono">P1 / P2</span>'}</div>
+      <div class="k">instances</div><div class="v"><code>${c.instances.length}</code> 个</div>
+      <div class="k">version</div><div class="v"><code>v1.0.0</code>（mock）</div>
+    </div></div>
+    <div class="insp-section"><h4>区域 <span class="n">${c.regions.length}</span></h4><div class="chips">${c.regions.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div></div>
+    <div class="insp-section"><h4>槽位 <span class="n">${c.slots.length}</span></h4><div class="chips">${c.slots.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div></div>
+    <div class="insp-section"><h4>动作 <span class="n">${c.actions.length}</span></h4><div class="chips">${c.actions.map(x=>`<span class="chip action">${esc(x)}</span>`).join('')}</div></div>
+    <div class="insp-section"><h4>状态 <span class="n">${c.states.length}</span></h4><div class="chips">${c.states.map(x=>`<span class="chip state">${esc(x)}</span>`).join('')}</div></div>
+    <div class="insp-section"><h4>实例 <span class="n">${c.instances.length}</span></h4><div class="inst-list">${c.instances.map(i=>`<button class="inst-row" data-instance="${esc(i.id)}" data-class-id="${esc(c.id)}"><span class="dot"></span><b>${esc(i.name)}</b><code>${esc(i.id)}</code></button>`).join('')}</div></div>
+    <div class="side-note" style="margin-top:14px"><b>面层规则：</b>类管交互模式，实例管数据/动作/位置/主题/权限。页面不是类，页面是多个实例的组合。</div>`;
+  $$('#inspector [data-instance]').forEach(b=>b.onclick=()=>selectInstance(b.dataset.classId,b.dataset.instance));
+}
+
+function renderInstanceInspector(i){
+  const c=classById(i.classId)||classById(state.selected.classId);
+  const f=familyMeta(c.family);
+  $('#inspector').style.setProperty('--c',f.color);
+  const bindRows=(rows,kind)=>rows.length?rows.map(b=>`<tr><td class="mono">${esc(b.slot)}</td><td><span class="type-tag ${kind==='action'?'action':''}">${esc(b.kind)}</span></td><td class="mono">${esc(b.target)}</td></tr>`).join(''):`<tr><td colspan="3" class="muted" style="padding:8px">无绑定</td></tr>`;
+  $('#inspector').innerHTML=`
+    <button class="back" data-open-class="${esc(c.id)}">← 返回 ${esc(c.name)}</button>
+    <div class="insp-head">
+      <div class="kicker">SURFACEINSTANCE</div>
+      <h2>${esc(i.name)}</h2>
+      <code>${esc(i.id)}</code>
+      <p class="insp-sub">${esc(i.desc)}</p>
+    </div>
+    <div class="insp-section"><h4>实例</h4><div class="kv">
+      <div class="k">surface</div><div class="v"><code>${esc(c.id)}</code> @ v1.0.0</div>
+      <div class="k">placement</div><div class="v"><span class="chip">${esc(i.placement)}</span></div>
+      <div class="k">revision</div><div class="v"><code>r${i.revision}</code></div>
+      <div class="k">status</div><div class="v"><span class="chip state">${esc(i.status)}</span></div>
+    </div></div>
+    <div class="insp-section"><h4>数据绑定 <span class="n">${i.dataBindings.length}</span></h4><table class="bind-table"><thead><tr><th>slot</th><th>kind</th><th>target</th></tr></thead><tbody>${bindRows(i.dataBindings,'data')}</tbody></table></div>
+    <div class="insp-section"><h4>动作绑定 <span class="n">${i.actionBindings.length}</span></h4><table class="bind-table"><thead><tr><th>slot</th><th>kind</th><th>target</th></tr></thead><tbody>${bindRows(i.actionBindings,'action')}</tbody></table></div>
+    <div class="insp-section"><h4>实例 JSON</h4><pre class="json">${esc(JSON.stringify(i,null,2))}</pre></div>`;
+  $$('#inspector [data-open-class]').forEach(b=>b.onclick=()=>selectClass(b.dataset.openClass));
+}
+
+function toast(msg){
+  const t=$('#toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function initTheme(){
+  let saved=null;try{saved=localStorage.getItem('surface-theme');}catch(e){}
+  if(saved==='light')document.body.classList.add('light');
+  updateThemeBtn();
+  $('#themeBtn').onclick=()=>{
+    document.body.classList.toggle('light');
+    try{localStorage.setItem('surface-theme',document.body.classList.contains('light')?'light':'dark');}catch(e){}
+    updateThemeBtn();
+    toast(document.body.classList.contains('light')?'已切换浅色主题':'已切换深色主题');
+  };
+}
+function updateThemeBtn(){$('#themeBtn').textContent=document.body.classList.contains('light')?'☀':'☾';}
+
+function init(){
+  renderStats();renderFamilies();renderFilters();renderContent();renderInspector();initTheme();
+  $('#search').oninput=(e)=>{state.query=e.target.value;renderContent();};
+  $$('#viewSeg [data-view]').forEach(b=>b.onclick=()=>{
+    state.view=b.dataset.view;
+    $$('#viewSeg [data-view]').forEach(x=>x.classList.toggle('active',x===b));
+    renderContent();
+  });
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='/' && document.activeElement!==$('#search')){e.preventDefault();$('#search').focus();}
+    if(e.key==='Escape'){if(document.activeElement===$('#search')){state.query='';$('#search').value='';$('#search').blur();renderContent();}}
+  });
+}
+document.addEventListener('DOMContentLoaded',init);
+
+</script>
+</body>
+</html>

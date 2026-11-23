@@ -1,0 +1,65 @@
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">▶</div>
+      <div><b>快速启动</b><span>PointInstance × FlowInstance</span></div>
+    </div>
+    <div class="hint">选择点实例或线实例 → 可视化启动 · <kbd>↑</kbd><kbd>↓</kbd> 移动 · <kbd>Enter</kbd> 启动</div>
+    <button class="icon-btn" id="themeBtn" title="切换主题">☾</button>
+  </header>
+
+  <div class="launcher">
+    <section class="left">
+      <div class="search-wrap">
+        <div class="search"><span>⌕</span><input id="search" autocomplete="off" placeholder="搜索点实例 / 线实例 / 类 / 描述…"></div>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="all">全部</button>
+        <button class="tab" data-tab="point">点实例</button>
+        <button class="tab" data-tab="flow">线实例</button>
+        <button class="tab" data-tab="favorite">收藏</button>
+        <button class="tab" data-tab="recent">最近</button>
+      </div>
+      <div class="list" id="list"></div>
+    </section>
+
+    <aside class="right">
+      <div class="preview" id="preview"></div>
+      <div class="footer">
+        <button class="btn primary" id="runBtn">▶ 启动</button>
+        <button class="btn" id="inspectBtn">检查器</button>
+        <button class="btn" id="favoriteBtn">☆ 收藏</button>
+        <div class="spacer"></div>
+        <span style="font-size:9px;color:var(--faint);font-family:var(--mono)" id="previewHint">ready</span>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="run-console hidden" id="console">
+  <div class="console">
+    <div class="console-head">
+      <div>
+        <div class="preview-kicker" id="consoleKicker">LAUNCH</div>
+        <h3 id="consoleTitle">—</h3>
+        <div class="sub" id="consoleSub">—</div>
+      </div>
+      <button class="icon-btn" id="consoleClose" title="关闭">✕</button>
+    </div>
+    <div class="console-body">
+      <div class="status-row"><span class="pulse" id="pulse"></span><span class="status-text" id="statusText">准备启动…</span></div>
+      <div class="progress"><i id="progressBar"></i></div>
+      <div id="runVisual"></div>
+      <div class="logs" id="logs"></div>
+      <div class="result" id="result"></div>
+    </div>
+    <div class="console-foot">
+      <button class="btn danger" id="cancelBtn">取消</button>
+      <button class="btn" id="againBtn" disabled>再次启动</button>
+      <div class="spacer"></div>
+      <button class="btn" id="historyBtn">打开运行历史</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>

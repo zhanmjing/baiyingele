@@ -1,0 +1,42 @@
+[
+  {
+    "pattern": "LDR",
+    "name": "打开 GitHub",
+    "kind": "flow",
+    "target": "inst.site-github@r1",
+    "effect": "L2",
+    "desc": "确保 VPN → 可达性 → 打开 URL → 通知"
+  },
+  {
+    "pattern": "UD",
+    "name": "检测 VPN 状态",
+    "kind": "point",
+    "target": "vpn.default.status@r1",
+    "effect": "L0",
+    "desc": "读取进程/窗口/隧道状态，不做修改"
+  },
+  {
+    "pattern": "RL",
+    "name": "开发工作区",
+    "kind": "flow",
+    "target": "inst.workspace-dev@r3",
+    "effect": "L1",
+    "desc": "VS Code + 终端 + 双屏布局"
+  },
+  {
+    "pattern": "DR",
+    "name": "打开终端",
+    "kind": "point",
+    "target": "open.terminal@r1",
+    "effect": "L1",
+    "desc": "打开默认终端"
+  },
+  {
+    "pattern": "DLU",
+    "name": "确保 VPN",
+    "kind": "flow",
+    "target": "inst.ensure-vpn-ask@r2",
+    "effect": "L2",
+    "desc": "检测 → 启动/询问 → 等待 → 连接"
+  }
+]

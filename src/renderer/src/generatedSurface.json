@@ -1,0 +1,1624 @@
+{
+  "panelClasses": [
+    {
+      "id": "panel.inspector",
+      "name": "Inspector Panel",
+      "icon": "◧",
+      "group": "inspect",
+      "desc": "属性检查器：选中对象的参数、绑定、revision。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.inspector",
+      "states": [
+        "ready",
+        "empty",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "collapsible",
+        "pinnable"
+      ],
+      "a11y": [
+        "role=complementary",
+        "Esc close",
+        "keyboard resize"
+      ],
+      "instances": [
+        {
+          "label": "point",
+          "content": "surface.inspector.point",
+          "mode": "right",
+          "width": 380,
+          "state": "ready",
+          "data": "selectedPoint + params",
+          "actions": [
+            "saveParams",
+            "reset"
+          ],
+          "rev": 3,
+          "status": "active"
+        },
+        {
+          "label": "flow-slot",
+          "content": "surface.inspector.flow-slot",
+          "mode": "right",
+          "width": 400,
+          "state": "ready",
+          "data": "selectedSlot + boundFlow",
+          "actions": [
+            "replaceBinding",
+            "unbind"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "body-manifest",
+          "content": "surface.inspector.body-manifest",
+          "mode": "right",
+          "width": 440,
+          "state": "ready",
+          "data": "bodyManifest",
+          "actions": [
+            "editManifest",
+            "validate"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.settings",
+      "name": "Settings Panel",
+      "icon": "⚙",
+      "group": "edit",
+      "desc": "设置面板：分区、字段、保存栏、重启徽标。",
+      "modes": [
+        "right",
+        "modal"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.settings-page",
+      "states": [
+        "ready",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "saveBar",
+        "restartBadge"
+      ],
+      "a11y": [
+        "role=dialog when modal",
+        "focus trap",
+        "Esc close"
+      ],
+      "instances": [
+        {
+          "label": "app",
+          "content": "surface.settings.app",
+          "mode": "right",
+          "width": 420,
+          "state": "ready",
+          "data": "settingsStore.app",
+          "actions": [
+            "save",
+            "reset"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "body",
+          "content": "surface.settings.body",
+          "mode": "modal",
+          "width": 620,
+          "state": "ready",
+          "data": "settingsStore.body",
+          "actions": [
+            "save",
+            "cancel"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "vpn",
+          "content": "surface.form.settings.vpn",
+          "mode": "right",
+          "width": 440,
+          "state": "ready",
+          "data": "settingsStore.vpn",
+          "actions": [
+            "saveSettings",
+            "testVpn"
+          ],
+          "rev": 2,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.command",
+      "name": "Command Panel",
+      "icon": "⌘",
+      "group": "ai",
+      "desc": "命令面板：搜索、结果、快捷键、预览。",
+      "modes": [
+        "modal"
+      ],
+      "regions": [
+        "header",
+        "body",
+        "footer"
+      ],
+      "content": "surface.command-palette",
+      "states": [
+        "ready",
+        "empty",
+        "loading"
+      ],
+      "behaviors": [
+        "fuzzy",
+        "keyboard",
+        "escape",
+        "backdropClose"
+      ],
+      "a11y": [
+        "role=dialog",
+        "role=listbox",
+        "aria-activedescendant"
+      ],
+      "instances": [
+        {
+          "label": "global",
+          "content": "surface.palette.global",
+          "mode": "modal",
+          "width": 620,
+          "state": "ready",
+          "data": "commandIndex",
+          "actions": [
+            "command",
+            "navigate"
+          ],
+          "rev": 5,
+          "status": "active"
+        },
+        {
+          "label": "flow-editor",
+          "content": "surface.palette.flow-editor",
+          "mode": "modal",
+          "width": 560,
+          "state": "ready",
+          "data": "flowCommands",
+          "actions": [
+            "insertNode",
+            "navigate"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "body-launcher",
+          "content": "surface.palette.body-launcher",
+          "mode": "modal",
+          "width": 600,
+          "state": "ready",
+          "data": "bodyRegistry",
+          "actions": [
+            "install",
+            "run"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.run-history",
+      "name": "Run History Panel",
+      "icon": "◷",
+      "group": "data",
+      "desc": "运行历史：运行列表、详情、重放、错误过滤。",
+      "modes": [
+        "right",
+        "bottom"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.run-history",
+      "states": [
+        "ready",
+        "empty",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "filter",
+        "replay"
+      ],
+      "a11y": [
+        "role=region",
+        "keyboard rows",
+        "aria-live"
+      ],
+      "instances": [
+        {
+          "label": "flow",
+          "content": "surface.run-history.flow",
+          "mode": "right",
+          "width": 460,
+          "state": "ready",
+          "data": "flowRuns",
+          "actions": [
+            "replay",
+            "filterErrors"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "vpn",
+          "content": "surface.run-history.vpn",
+          "mode": "right",
+          "width": 460,
+          "state": "ready",
+          "data": "flowRuns + pointRuns",
+          "actions": [
+            "replay",
+            "openSettings"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "body",
+          "content": "surface.run-history.body",
+          "mode": "right",
+          "width": 520,
+          "state": "ready",
+          "data": "bodyRuns",
+          "actions": [
+            "replay",
+            "export"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.artifact",
+      "name": "Artifact Panel",
+      "icon": "▤",
+      "group": "edit",
+      "desc": "AI 产物面板：代码/文档/图，预览、源码、版本、导出。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.artifact-panel",
+      "states": [
+        "ready",
+        "loading",
+        "streaming",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "previewSource",
+        "versions",
+        "export"
+      ],
+      "a11y": [
+        "role=complementary",
+        "keyboard resize",
+        "live region"
+      ],
+      "instances": [
+        {
+          "label": "code",
+          "content": "surface.artifact.code",
+          "mode": "right",
+          "width": 520,
+          "state": "ready",
+          "data": "artifact.code",
+          "actions": [
+            "edit",
+            "export",
+            "version"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "document",
+          "content": "surface.artifact.document",
+          "mode": "right",
+          "width": 480,
+          "state": "ready",
+          "data": "artifact.document",
+          "actions": [
+            "edit",
+            "export",
+            "version"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "diagram",
+          "content": "surface.artifact.diagram",
+          "mode": "floating",
+          "width": 540,
+          "state": "ready",
+          "data": "artifact.diagram",
+          "actions": [
+            "zoom",
+            "export"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.chat",
+      "name": "Copilot Chat Panel",
+      "icon": "✦",
+      "group": "ai",
+      "desc": "AI 副驾：消息、上下文、流式回复、停止/重新生成。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.prompt-input + surface.streaming-response",
+      "states": [
+        "ready",
+        "streaming",
+        "needsApproval",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "stop",
+        "regenerate",
+        "contextChips"
+      ],
+      "a11y": [
+        "role=complementary",
+        "live region",
+        "focus management"
+      ],
+      "instances": [
+        {
+          "label": "support",
+          "content": "surface.prompt.chat + surface.stream.chat",
+          "mode": "right",
+          "width": 380,
+          "state": "ready",
+          "data": "session.chat",
+          "actions": [
+            "send",
+            "attach"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "copilot",
+          "content": "surface.prompt.chat + surface.stream.chat",
+          "mode": "right",
+          "width": 420,
+          "state": "streaming",
+          "data": "session.copilot",
+          "actions": [
+            "send",
+            "stop",
+            "regenerate"
+          ],
+          "rev": 3,
+          "status": "active"
+        },
+        {
+          "label": "inline-edit",
+          "content": "surface.prompt.inline-edit",
+          "mode": "floating",
+          "width": 440,
+          "state": "ready",
+          "data": "selection + instruction",
+          "actions": [
+            "apply",
+            "diff",
+            "cancel"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.approval",
+      "name": "Approval Panel",
+      "icon": "⚠",
+      "group": "ai",
+      "desc": "审批面板：风险、diff、approve/deny、理由。",
+      "modes": [
+        "modal",
+        "sheet"
+      ],
+      "regions": [
+        "header",
+        "body",
+        "footer"
+      ],
+      "content": "surface.approval-card",
+      "states": [
+        "needsApproval",
+        "blocked",
+        "error"
+      ],
+      "behaviors": [
+        "modal",
+        "focusTrap",
+        "approve",
+        "deny",
+        "reason"
+      ],
+      "a11y": [
+        "role=alertdialog",
+        "focus trap",
+        "aria-describedby"
+      ],
+      "instances": [
+        {
+          "label": "tool-call",
+          "content": "surface.approval.tool-call",
+          "mode": "modal",
+          "width": 520,
+          "state": "needsApproval",
+          "data": "toolCall + risk",
+          "actions": [
+            "approve",
+            "deny",
+            "reason"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "payment",
+          "content": "surface.approval.payment",
+          "mode": "modal",
+          "width": 480,
+          "state": "needsApproval",
+          "data": "payment + risk",
+          "actions": [
+            "approve",
+            "deny"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "publish",
+          "content": "surface.approval.publish",
+          "mode": "modal",
+          "width": 540,
+          "state": "needsApproval",
+          "data": "content + audience",
+          "actions": [
+            "approve",
+            "deny",
+            "preview"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.notifications",
+      "name": "Notification Panel",
+      "icon": "◍",
+      "group": "system",
+      "desc": "通知中心：通知列表、操作、dismiss、未读。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "body",
+        "footer"
+      ],
+      "content": "surface.notification",
+      "states": [
+        "ready",
+        "empty"
+      ],
+      "behaviors": [
+        "resizable",
+        "dismiss",
+        "action"
+      ],
+      "a11y": [
+        "role=log",
+        "aria-live=polite"
+      ],
+      "instances": [
+        {
+          "label": "center",
+          "content": "surface.notification.center",
+          "mode": "right",
+          "width": 360,
+          "state": "ready",
+          "data": "notifications",
+          "actions": [
+            "dismiss",
+            "markRead"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "vpn",
+          "content": "surface.notify.vpn",
+          "mode": "floating",
+          "width": 340,
+          "state": "ready",
+          "data": "vpnNotifications",
+          "actions": [
+            "openSettings",
+            "retry"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "update",
+          "content": "surface.notify.update",
+          "mode": "right",
+          "width": 360,
+          "state": "ready",
+          "data": "updateNotifications",
+          "actions": [
+            "install",
+            "later"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.launcher",
+      "name": "Launcher Panel",
+      "icon": "⌘",
+      "group": "system",
+      "desc": "启动坞：分页、tabs、tiles、快捷键。",
+      "modes": [
+        "modal"
+      ],
+      "regions": [
+        "header",
+        "body",
+        "footer"
+      ],
+      "content": "surface.launch-dock",
+      "states": [
+        "ready",
+        "empty"
+      ],
+      "behaviors": [
+        "tabs",
+        "pages",
+        "hotkeys",
+        "drag"
+      ],
+      "a11y": [
+        "role=dialog",
+        "role=grid",
+        "keyboard navigation"
+      ],
+      "instances": [
+        {
+          "label": "desktop",
+          "content": "surface.dock.desktop",
+          "mode": "modal",
+          "width": 720,
+          "state": "ready",
+          "data": "launchItems",
+          "actions": [
+            "runFlow",
+            "reorder"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "dev",
+          "content": "surface.dock.dev",
+          "mode": "modal",
+          "width": 720,
+          "state": "ready",
+          "data": "devItems",
+          "actions": [
+            "runFlow",
+            "reorder"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.dashboard",
+      "name": "Dashboard Panel",
+      "icon": "◫",
+      "group": "data",
+      "desc": "仪表盘：KPI、图表、刷新、过滤。",
+      "modes": [
+        "right",
+        "bottom"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.dashboard",
+      "states": [
+        "ready",
+        "loading",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "refresh",
+        "filter"
+      ],
+      "a11y": [
+        "role=region",
+        "data table semantics",
+        "aria-live"
+      ],
+      "instances": [
+        {
+          "label": "system",
+          "content": "surface.dashboard.system",
+          "mode": "right",
+          "width": 520,
+          "state": "ready",
+          "data": "metricStream",
+          "actions": [
+            "refresh",
+            "settings"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "vpn",
+          "content": "surface.dashboard.vpn",
+          "mode": "right",
+          "width": 460,
+          "state": "ready",
+          "data": "vpnHealth",
+          "actions": [
+            "refresh",
+            "test"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "body-health",
+          "content": "surface.dashboard.body-health",
+          "mode": "bottom",
+          "width": 520,
+          "state": "ready",
+          "data": "bodyHealth",
+          "actions": [
+            "filter",
+            "refresh"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.diff",
+      "name": "Diff Panel",
+      "icon": "≠",
+      "group": "edit",
+      "desc": "差异面板：split/unified、accept/revert。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.diff",
+      "states": [
+        "ready",
+        "empty",
+        "error"
+      ],
+      "behaviors": [
+        "split",
+        "unified",
+        "accept",
+        "revert"
+      ],
+      "a11y": [
+        "role=region",
+        "keyboard navigation"
+      ],
+      "instances": [
+        {
+          "label": "flow-version",
+          "content": "surface.diff.flow-version",
+          "mode": "right",
+          "width": 560,
+          "state": "ready",
+          "data": "flowVersionA + flowVersionB",
+          "actions": [
+            "accept",
+            "revert"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "body-manifest",
+          "content": "surface.diff.body-manifest",
+          "mode": "right",
+          "width": 560,
+          "state": "ready",
+          "data": "bodyManifestA + bodyManifestB",
+          "actions": [
+            "accept",
+            "revert"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.preview",
+      "name": "Preview Panel",
+      "icon": "◉",
+      "group": "edit",
+      "desc": "文件/内容预览：文本、图片、PDF、视频。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.preview-window",
+      "states": [
+        "ready",
+        "loading",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "zoom",
+        "openExternal"
+      ],
+      "a11y": [
+        "role=region",
+        "keyboard zoom"
+      ],
+      "instances": [
+        {
+          "label": "file",
+          "content": "surface.preview-window.file",
+          "mode": "right",
+          "width": 520,
+          "state": "ready",
+          "data": "previewResult",
+          "actions": [
+            "zoom",
+            "openExternal"
+          ],
+          "rev": 2,
+          "status": "active"
+        },
+        {
+          "label": "image",
+          "content": "surface.preview-window.image",
+          "mode": "floating",
+          "width": 560,
+          "state": "ready",
+          "data": "previewResult.image",
+          "actions": [
+            "fit",
+            "zoom",
+            "export"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.trace",
+      "name": "Tool Trace Panel",
+      "icon": "⌁",
+      "group": "inspect",
+      "desc": "工具调用轨迹：参数、结果、状态、重试。",
+      "modes": [
+        "right",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.tool-call-trace",
+      "states": [
+        "ready",
+        "streaming",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "filter",
+        "retry"
+      ],
+      "a11y": [
+        "role=region",
+        "aria-live=polite"
+      ],
+      "instances": [
+        {
+          "label": "agent",
+          "content": "surface.trace.agent",
+          "mode": "right",
+          "width": 420,
+          "state": "ready",
+          "data": "run.toolCalls",
+          "actions": [
+            "retry",
+            "openDetail"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "mcp",
+          "content": "surface.trace.mcp",
+          "mode": "right",
+          "width": 420,
+          "state": "streaming",
+          "data": "mcp.calls",
+          "actions": [
+            "retry",
+            "cancel"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "panel.console",
+      "name": "Console Panel",
+      "icon": "▤",
+      "group": "data",
+      "desc": "日志/终端面板：滚动、过滤、follow、清空。",
+      "modes": [
+        "bottom",
+        "floating"
+      ],
+      "regions": [
+        "header",
+        "toolbar",
+        "body",
+        "footer"
+      ],
+      "content": "surface.log-viewer",
+      "states": [
+        "ready",
+        "empty",
+        "error"
+      ],
+      "behaviors": [
+        "resizable",
+        "clear",
+        "filter",
+        "follow"
+      ],
+      "a11y": [
+        "role=log",
+        "aria-live=polite"
+      ],
+      "instances": [
+        {
+          "label": "logs",
+          "content": "surface.log-viewer.logs",
+          "mode": "bottom",
+          "width": 300,
+          "state": "ready",
+          "data": "logStream",
+          "actions": [
+            "filter",
+            "clear",
+            "follow"
+          ],
+          "rev": 1,
+          "status": "active"
+        },
+        {
+          "label": "terminal",
+          "content": "surface.log-viewer.terminal",
+          "mode": "bottom",
+          "width": 320,
+          "state": "ready",
+          "data": "terminalSession",
+          "actions": [
+            "run",
+            "clear"
+          ],
+          "rev": 1,
+          "status": "active"
+        }
+      ],
+      "version": "1.0.0"
+    }
+  ],
+  "gestures": [
+    {
+      "pattern": "LDR",
+      "name": "打开 GitHub",
+      "kind": "flow",
+      "target": "inst.site-github@r1",
+      "effect": "L2",
+      "desc": "确保 VPN → 可达性 → 打开 URL → 通知"
+    },
+    {
+      "pattern": "UD",
+      "name": "检测 VPN 状态",
+      "kind": "point",
+      "target": "vpn.default.status@r1",
+      "effect": "L0",
+      "desc": "读取进程/窗口/隧道状态，不做修改"
+    },
+    {
+      "pattern": "RL",
+      "name": "开发工作区",
+      "kind": "flow",
+      "target": "inst.workspace-dev@r3",
+      "effect": "L1",
+      "desc": "VS Code + 终端 + 双屏布局"
+    },
+    {
+      "pattern": "DR",
+      "name": "打开终端",
+      "kind": "point",
+      "target": "open.terminal@r1",
+      "effect": "L1",
+      "desc": "打开默认终端"
+    },
+    {
+      "pattern": "DLU",
+      "name": "确保 VPN",
+      "kind": "flow",
+      "target": "inst.ensure-vpn-ask@r2",
+      "effect": "L2",
+      "desc": "检测 → 启动/询问 → 等待 → 连接"
+    }
+  ],
+  "dockTabs": [
+    {
+      "id": "common",
+      "name": "常用"
+    },
+    {
+      "id": "dev",
+      "name": "开发"
+    },
+    {
+      "id": "system",
+      "name": "系统"
+    },
+    {
+      "id": "tools",
+      "name": "工具"
+    },
+    {
+      "id": "web",
+      "name": "外网"
+    }
+  ],
+  "dockTiles": [
+    {
+      "id": "github",
+      "tab": "common",
+      "name": "GitHub",
+      "sub": "inst.site-github",
+      "kind": "flow",
+      "icon": "GH",
+      "hotkey": "1",
+      "target": "inst.site-github@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "youtube",
+      "tab": "common",
+      "name": "YouTube",
+      "sub": "inst.site-youtube",
+      "kind": "flow",
+      "icon": "▶",
+      "hotkey": "2",
+      "target": "inst.site-youtube@r3",
+      "effect": "L2"
+    },
+    {
+      "id": "vpn",
+      "tab": "common",
+      "name": "确保 VPN",
+      "sub": "inst.ensure-vpn-ask",
+      "kind": "flow",
+      "icon": "VPN",
+      "hotkey": "3",
+      "target": "inst.ensure-vpn-ask@r2",
+      "effect": "L2"
+    },
+    {
+      "id": "vscode",
+      "tab": "common",
+      "name": "VS Code",
+      "sub": "inst.open-app-vscode",
+      "kind": "flow",
+      "icon": "VS",
+      "hotkey": "4",
+      "target": "inst.open-app-vscode-project@r2",
+      "effect": "L1"
+    },
+    {
+      "id": "terminal",
+      "tab": "common",
+      "name": "终端",
+      "sub": "open.terminal",
+      "kind": "point",
+      "icon": ">_",
+      "hotkey": "5",
+      "target": "open.terminal@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "translate",
+      "tab": "common",
+      "name": "截图翻译",
+      "sub": "inst.screenshot-en-zh",
+      "kind": "flow",
+      "icon": "文",
+      "hotkey": "6",
+      "target": "inst.screenshot-en-zh@r4",
+      "effect": "L1"
+    },
+    {
+      "id": "invoice",
+      "tab": "common",
+      "name": "发票归档",
+      "sub": "inst.invoice-company",
+      "kind": "flow",
+      "icon": "¥",
+      "hotkey": "7",
+      "target": "inst.invoice-company@r6",
+      "effect": "L1"
+    },
+    {
+      "id": "clipboard",
+      "tab": "common",
+      "name": "剪贴板存文件",
+      "sub": "inst.clipboard-inbox",
+      "kind": "flow",
+      "icon": "▤",
+      "hotkey": "8",
+      "target": "inst.clipboard-inbox@r3",
+      "effect": "L1"
+    },
+    {
+      "id": "sysmon",
+      "tab": "common",
+      "name": "系统监控",
+      "sub": "sys.metrics.snapshot",
+      "kind": "point",
+      "icon": "◉",
+      "hotkey": "9",
+      "target": "sys.metrics.snapshot@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "settings",
+      "tab": "common",
+      "name": "设置",
+      "sub": "settings.open",
+      "kind": "point",
+      "icon": "⚙",
+      "hotkey": "0",
+      "target": "settings.open@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "google",
+      "tab": "common",
+      "name": "Google",
+      "sub": "inst.site-google",
+      "kind": "flow",
+      "icon": "G",
+      "hotkey": "",
+      "target": "inst.site-google@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "openai",
+      "tab": "common",
+      "name": "OpenAI",
+      "sub": "inst.site-openai",
+      "kind": "flow",
+      "icon": "AI",
+      "hotkey": "",
+      "target": "inst.site-openai@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "dev-github",
+      "tab": "dev",
+      "name": "GitHub",
+      "sub": "inst.site-github",
+      "kind": "flow",
+      "icon": "GH",
+      "hotkey": "1",
+      "target": "inst.site-github@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "dev-vscode",
+      "tab": "dev",
+      "name": "VS Code",
+      "sub": "inst.open-app-vscode",
+      "kind": "flow",
+      "icon": "VS",
+      "hotkey": "2",
+      "target": "inst.open-app-vscode-project@r2",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-terminal",
+      "tab": "dev",
+      "name": "终端",
+      "sub": "open.terminal",
+      "kind": "point",
+      "icon": ">_",
+      "hotkey": "3",
+      "target": "open.terminal@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-http",
+      "tab": "dev",
+      "name": "GitHub API",
+      "sub": "inst.http-github-status",
+      "kind": "flow",
+      "icon": "{}",
+      "hotkey": "4",
+      "target": "inst.http-github-status@r2",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-json",
+      "tab": "dev",
+      "name": "JSON 格式化",
+      "sub": "json.format",
+      "kind": "point",
+      "icon": "{}",
+      "hotkey": "5",
+      "target": "json.format@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "dev-regex",
+      "tab": "dev",
+      "name": "正则测试",
+      "sub": "text.regex",
+      "kind": "point",
+      "icon": ".*",
+      "hotkey": "6",
+      "target": "text.regex@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "dev-docker",
+      "tab": "dev",
+      "name": "Docker",
+      "sub": "inst.ensure-service-docker",
+      "kind": "flow",
+      "icon": "DK",
+      "hotkey": "7",
+      "target": "inst.ensure-service-docker@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "dev-logs",
+      "tab": "dev",
+      "name": "运行日志",
+      "sub": "flow.run.logs",
+      "kind": "point",
+      "icon": "≡",
+      "hotkey": "8",
+      "target": "flow.run.logs@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-cpu",
+      "tab": "system",
+      "name": "CPU",
+      "sub": "sys.cpu.stats",
+      "kind": "point",
+      "icon": "CPU",
+      "hotkey": "1",
+      "target": "sys.cpu.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-gpu",
+      "tab": "system",
+      "name": "GPU",
+      "sub": "sys.gpu.stats",
+      "kind": "point",
+      "icon": "GPU",
+      "hotkey": "2",
+      "target": "sys.gpu.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-mem",
+      "tab": "system",
+      "name": "内存",
+      "sub": "sys.memory.stats",
+      "kind": "point",
+      "icon": "RAM",
+      "hotkey": "3",
+      "target": "sys.memory.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-net",
+      "tab": "system",
+      "name": "网速",
+      "sub": "sys.network.stats",
+      "kind": "point",
+      "icon": "NET",
+      "hotkey": "4",
+      "target": "sys.network.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-disk",
+      "tab": "system",
+      "name": "磁盘",
+      "sub": "sys.disk.stats",
+      "kind": "point",
+      "icon": "DSK",
+      "hotkey": "5",
+      "target": "sys.disk.stats@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-uptime",
+      "tab": "system",
+      "name": "开机时长",
+      "sub": "sys.uptime",
+      "kind": "point",
+      "icon": "UP",
+      "hotkey": "6",
+      "target": "sys.uptime@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-temp",
+      "tab": "system",
+      "name": "温度",
+      "sub": "sys.sensors.temp",
+      "kind": "point",
+      "icon": "°C",
+      "hotkey": "7",
+      "target": "sys.sensors.temp@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-proc",
+      "tab": "system",
+      "name": "进程 Top",
+      "sub": "sys.process.top",
+      "kind": "point",
+      "icon": "TOP",
+      "hotkey": "8",
+      "target": "sys.process.top@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-service",
+      "tab": "system",
+      "name": "服务状态",
+      "sub": "service.status",
+      "kind": "point",
+      "icon": "SVC",
+      "hotkey": "9",
+      "target": "service.status@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "sys-power",
+      "tab": "system",
+      "name": "电源",
+      "sub": "sys.power.status",
+      "kind": "point",
+      "icon": "PWR",
+      "hotkey": "0",
+      "target": "sys.power.status@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-ocr",
+      "tab": "tools",
+      "name": "OCR",
+      "sub": "ocr.read",
+      "kind": "point",
+      "icon": "OCR",
+      "hotkey": "1",
+      "target": "ocr.read@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-translate",
+      "tab": "tools",
+      "name": "翻译",
+      "sub": "translate.text",
+      "kind": "point",
+      "icon": "文",
+      "hotkey": "2",
+      "target": "translate.text@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "tool-clip",
+      "tab": "tools",
+      "name": "剪贴板",
+      "sub": "input.clipboard",
+      "kind": "point",
+      "icon": "▤",
+      "hotkey": "3",
+      "target": "input.clipboard@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-write",
+      "tab": "tools",
+      "name": "写文件",
+      "sub": "file.write",
+      "kind": "point",
+      "icon": "✎",
+      "hotkey": "4",
+      "target": "file.write@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "tool-hash",
+      "tab": "tools",
+      "name": "哈希",
+      "sub": "hash.sha256",
+      "kind": "point",
+      "icon": "#",
+      "hotkey": "5",
+      "target": "hash.sha256@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-zip",
+      "tab": "tools",
+      "name": "压缩",
+      "sub": "file.zip",
+      "kind": "point",
+      "icon": "ZIP",
+      "hotkey": "6",
+      "target": "file.zip@r1",
+      "effect": "L1"
+    },
+    {
+      "id": "tool-color",
+      "tab": "tools",
+      "name": "取色",
+      "sub": "screen.color",
+      "kind": "point",
+      "icon": "◐",
+      "hotkey": "7",
+      "target": "screen.color@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "tool-timer",
+      "tab": "tools",
+      "name": "计时器",
+      "sub": "timer.start",
+      "kind": "point",
+      "icon": "◷",
+      "hotkey": "8",
+      "target": "timer.start@r1",
+      "effect": "L0"
+    },
+    {
+      "id": "web-github",
+      "tab": "web",
+      "name": "GitHub",
+      "sub": "inst.site-github",
+      "kind": "flow",
+      "icon": "GH",
+      "hotkey": "1",
+      "target": "inst.site-github@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-youtube",
+      "tab": "web",
+      "name": "YouTube",
+      "sub": "inst.site-youtube",
+      "kind": "flow",
+      "icon": "▶",
+      "hotkey": "2",
+      "target": "inst.site-youtube@r3",
+      "effect": "L2"
+    },
+    {
+      "id": "web-google",
+      "tab": "web",
+      "name": "Google",
+      "sub": "inst.site-google",
+      "kind": "flow",
+      "icon": "G",
+      "hotkey": "3",
+      "target": "inst.site-google@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-openai",
+      "tab": "web",
+      "name": "OpenAI",
+      "sub": "inst.site-openai",
+      "kind": "flow",
+      "icon": "AI",
+      "hotkey": "4",
+      "target": "inst.site-openai@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-x",
+      "tab": "web",
+      "name": "X",
+      "sub": "inst.site-x",
+      "kind": "flow",
+      "icon": "X",
+      "hotkey": "5",
+      "target": "inst.site-x@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-so",
+      "tab": "web",
+      "name": "StackOverflow",
+      "sub": "inst.site-so",
+      "kind": "flow",
+      "icon": "SO",
+      "hotkey": "6",
+      "target": "inst.site-so@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-bili",
+      "tab": "web",
+      "name": "Bilibili",
+      "sub": "inst.site-bili",
+      "kind": "flow",
+      "icon": "B",
+      "hotkey": "7",
+      "target": "inst.site-bili@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-reddit",
+      "tab": "web",
+      "name": "Reddit",
+      "sub": "inst.site-reddit",
+      "kind": "flow",
+      "icon": "R",
+      "hotkey": "8",
+      "target": "inst.site-reddit@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-gmail",
+      "tab": "web",
+      "name": "Gmail",
+      "sub": "inst.site-gmail",
+      "kind": "flow",
+      "icon": "M",
+      "hotkey": "9",
+      "target": "inst.site-gmail@r1",
+      "effect": "L2"
+    },
+    {
+      "id": "web-maps",
+      "tab": "web",
+      "name": "Maps",
+      "sub": "inst.site-maps",
+      "kind": "flow",
+      "icon": "⌖",
+      "hotkey": "0",
+      "target": "inst.site-maps@r1",
+      "effect": "L2"
+    }
+  ]
+}

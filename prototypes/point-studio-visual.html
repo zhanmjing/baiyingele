@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>点层界面与编译设置 · Point Studio</title>
+<style>
+:root{
+  --bg:#070b12;--panel:#0d1420;--card:#111a29;--card2:#152235;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.25);
+  --ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;
+  --amber:#f59e0b;--green:#22c55e;--pink:#ec4899;--red:#ef4444;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{display:grid;grid-template-columns:248px minmax(0,1fr) 326px;grid-template-rows:56px minmax(0,1fr) 142px;height:100%}
+header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 14px;background:linear-gradient(180deg,#0e1725,#0a111c);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;min-width:190px}
+.brand .mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#04121a;font:800 13px var(--mono)}
+.brand b{font-size:13px;letter-spacing:.02em}
+.brand span{display:block;font:7.5px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+nav{display:flex;gap:2px;border:1px solid var(--line);border-radius:8px;padding:2px;background:#0a1420}
+nav button{border:none;background:transparent;color:#7e91a7;border-radius:5px;padding:6px 10px;font-size:10px;white-space:nowrap}
+nav button.on{background:rgba(34,211,238,.10);color:#a5f3fc}
+nav button:hover{color:#dbeafe}
+.search{flex:1;max-width:340px;margin-left:auto;border:1px solid var(--line);border-radius:7px;background:#0a1420;padding:7px 9px;color:var(--ink);font-size:10.5px;outline:none}
+.search::placeholder{color:var(--faint)}
+.search:focus{border-color:rgba(34,211,238,.4)}
+.build-btn{border:1px solid rgba(34,211,238,.35);background:linear-gradient(180deg,rgba(34,211,238,.16),rgba(34,211,238,.07));color:#a5f3fc;border-radius:7px;padding:7px 12px;font:600 10px var(--mono);white-space:nowrap}
+.build-btn:hover{background:rgba(34,211,238,.18)}
+.build-btn:disabled{opacity:.45;cursor:not-allowed}
+#sidebar{grid-row:2;background:linear-gradient(180deg,#0e1624,#080d15);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side-head{padding:11px 12px 7px}
+.kicker{font:7.5px var(--mono);letter-spacing:.16em;color:var(--faint);text-transform:uppercase}
+.side-head h2{font-size:12px;margin:4px 0 2px}
+.side-head p{margin:0;font-size:9px;color:var(--dim);line-height:1.5}
+.filters{display:flex;flex-wrap:wrap;gap:3px;padding:5px 12px 7px}
+.chip{border:1px solid var(--line);background:#111b28;color:#8fa2bb;border-radius:99px;padding:2px 6px;font-size:8px;font-family:var(--mono)}
+.chip.on{color:#a5f3fc;border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08)}
+.classList{flex:1;overflow-y:auto;padding:0 7px 14px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.classList::-webkit-scrollbar{width:7px}
+.classList::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.class-item{display:flex;gap:8px;align-items:center;padding:7px 8px;border:1px solid transparent;border-radius:7px;cursor:pointer;margin-bottom:2px}
+.class-item:hover{background:#121d2c;border-color:var(--line)}
+.class-item.on{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.22)}
+.effect{width:7px;height:7px;border-radius:50%;flex:0 0 7px;background:var(--ec,#22c55e);box-shadow:0 0 7px var(--ec,#22c55e)}
+.class-main{min-width:0;flex:1}
+.class-name{font:9.5px var(--mono);color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.class-sub{font-size:8px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.class-count{font:8px var(--mono);color:var(--dim)}
+#main{grid-row:2;min-width:0;min-height:0;overflow:hidden;background:radial-gradient(circle at 25% 0%,rgba(34,211,238,.04),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);display:flex;flex-direction:column}
+.main-head{padding:10px 14px 8px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:9px}
+.main-head .mh-icon{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:#162234;border:1px solid var(--line);color:var(--cyan);font-size:14px;flex:0 0 32px}
+.main-head .mh-text{min-width:0;flex:1}
+.main-head .mh-kicker{font:7.5px var(--mono);color:var(--faint);letter-spacing:.13em;text-transform:uppercase}
+.main-head h1{font-size:15px;margin:2px 0 1px}
+.main-head .mh-sub{font:8.5px var(--mono);color:var(--faint)}
+.main-head .mh-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font:7.5px var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--line);background:#121d2c;color:#93a4ba}
+.badge.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.05)}
+.badge.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.05)}
+.view{flex:1;min-height:0;overflow:auto;padding:11px 14px 14px;scrollbar-width:thin;scrollbar-color:#26344a transparent;display:none}
+.view.on{display:block}
+.view::-webkit-scrollbar{width:7px}
+.view::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px}
+.section-title{font:7.5px var(--mono);letter-spacing:.12em;color:var(--faint);text-transform:uppercase;margin:0 0 6px}
+.matrix-wrap{border:1px solid var(--line);border-radius:9px;overflow:auto;background:#0a1420}
+.matrix{display:grid;min-width:520px;grid-template-columns:minmax(190px,1.2fr) repeat(4,minmax(64px,1fr));font-size:9px}
+.matrix .mh{padding:7px 8px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font:7.5px var(--mono);color:var(--faint);background:#0d1926;position:sticky;top:0;z-index:2}
+.matrix .mh:last-child{border-right:none}
+.matrix .row-label{padding:7px 8px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);display:flex;align-items:center;gap:6px;min-width:0}
+.matrix .row-label .rl-main{min-width:0;flex:1}
+.matrix .row-label .rl-id{font:8.5px var(--mono);color:#b9c7da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.matrix .row-label .rl-sub{font-size:7px;color:var(--faint);margin-top:2px}
+.matrix .cell{border-bottom:1px solid var(--line);border-right:1px solid var(--line);display:flex;align-items:center;justify-content:center;min-height:40px;position:relative;background:#0b1420}
+.matrix .cell:last-child{border-right:none}
+.matrix .cell:hover{background:#111f30}
+.matrix .cell.sel{background:rgba(34,211,238,.08);box-shadow:inset 0 0 0 1px rgba(34,211,238,.3)}
+.dotbtn{width:18px;height:18px;border-radius:50%;border:1px solid var(--ec,#22c55e);background:var(--ec,#22c55e);box-shadow:0 0 9px var(--ec,#22c55e)55;position:relative}
+.dotbtn.warn{border-color:#f59e0b;background:transparent;box-shadow:none}
+.dotbtn.err{border-color:#ef4444;background:rgba(239,68,68,.2);box-shadow:none}
+.dotbtn.disabled{border-color:#475569;background:#1e293b;box-shadow:none}
+.dotbtn .rev{position:absolute;right:-7px;top:-7px;background:#08111c;border:1px solid var(--line);border-radius:3px;color:#93a4ba;font:6px var(--mono);padding:1px 2px}
+.cell-more{font:7.5px var(--mono);color:var(--faint)}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px;font:7.5px var(--mono);color:var(--faint)}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px;vertical-align:-1px}
+.relation{display:grid;grid-template-columns:1.1fr 22px 1.2fr 22px 1.5fr;gap:6px;align-items:stretch;margin-top:10px}
+.rel-col{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px;min-width:0}
+.rel-col h4{margin:0 0 6px;font:7.5px var(--mono);color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
+.rel-arrow{display:grid;place-items:center;color:var(--faint);font-size:14px}
+.port-row{display:flex;align-items:center;gap:5px;margin:4px 0;font:8px var(--mono);color:#9fb1c8;white-space:nowrap;overflow:hidden}
+.port-row .dir{color:var(--cyan);width:10px}
+.port-row .pty{color:var(--faint);margin-left:auto}
+.binding-row{border:1px solid var(--line);border-radius:5px;background:#0c1623;padding:5px;margin:4px 0;font:8px var(--mono);color:#9fb1c8}
+.binding-row b{display:block;color:#a5f3fc;font-weight:500;font-size:7.5px;margin-bottom:2px}
+.binding-row span{color:var(--faint)}
+.table{width:100%;border-collapse:collapse;font-size:8.5px}
+.table th{text-align:left;font:7px var(--mono);color:var(--faint);padding:6px 7px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.06em;background:#0d1926;position:sticky;top:0}
+.table td{padding:6px 7px;border-bottom:1px solid var(--line);color:#9fb1c8;white-space:nowrap}
+.table tr:hover td{background:#101d2c}
+.table .mono{font-family:var(--mono);color:#b9c7da}
+.table .status{font:7px var(--mono);padding:2px 4px;border-radius:3px;border:1px solid var(--line)}
+.table .status.ok{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.05)}
+.table .status.warn{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.05)}
+.table .status.err{color:#fca5a5;border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.05)}
+.table .status.disabled{color:#94a3b8;border-color:var(--line);background:#121d2c}
+.build-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:none;background:#111b28;color:#8fa2bb;font-size:8px;padding:5px 8px}
+.seg button.on{background:rgba(34,211,238,.11);color:#a5f3fc}
+.select{border:1px solid var(--line);background:#111b28;color:#b9c7da;border-radius:5px;font-size:8.5px;padding:4px 5px;outline:none}
+.setting-group{border:1px solid var(--line);border-radius:8px;background:var(--card);margin-bottom:8px;overflow:hidden}
+.setting-group>.gh{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);background:#0f1a29}
+.setting-group>.gh b{font:8.5px var(--mono);color:#a9bbd0;letter-spacing:.04em}
+.setting-group>.gh span{font-size:7.5px;color:var(--faint);margin-left:auto}
+.setting-row{display:grid;grid-template-columns:minmax(160px,1.3fr) minmax(120px,1fr) 74px 28px;gap:8px;align-items:center;padding:7px 10px;border-bottom:1px solid rgba(148,163,184,.07)}
+.setting-row:last-child{border-bottom:none}
+.setting-row:hover{background:#121f30}
+.setting-label b{display:block;font:8.5px var(--mono);color:#b9c7da}
+.setting-label span{display:block;font-size:7px;color:var(--faint);margin-top:2px;line-height:1.4}
+.setting-control select,.setting-control input[type=text]{width:100%;border:1px solid var(--line);background:#0a1420;color:#a9bbd0;border-radius:4px;font:8px var(--mono);padding:4px 5px;outline:none}
+.setting-control input[type=checkbox]{accent-color:var(--cyan);width:13px;height:13px}
+.setting-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.src{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c}
+.src.override{color:#fcd34d;border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.06)}
+.src.policy{color:#fca5a5;border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.06)}
+.reset{border:none;background:transparent;color:#5f7188;font:8px var(--mono);padding:2px}
+.reset:hover{color:#a5f3fc}
+.setting-val{font:7px var(--mono);color:#8fa2bb;text-align:right;overflow:hidden;text-overflow:ellipsis}
+.pipeline{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.step{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;background:var(--card);padding:7px 9px}
+.step .sic{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font:8px var(--mono);border:1px solid var(--line);color:var(--faint);flex:0 0 18px}
+.step.running .sic{border-color:rgba(34,211,238,.45);color:#a5f3fc;background:rgba(34,211,238,.08)}
+.step.ok .sic{border-color:rgba(34,197,94,.35);color:#86efac;background:rgba(34,197,94,.06)}
+.step.failed .sic{border-color:rgba(239,68,68,.35);color:#fca5a5;background:rgba(239,68,68,.06)}
+.step .st-main{flex:1;min-width:0}
+.step .st-name{font:8.5px var(--mono);color:#b9c7da}
+.step .st-sub{font-size:7px;color:var(--faint);margin-top:1px}
+.step .st-time{font:7px var(--mono);color:var(--faint)}
+.diag{display:flex;gap:7px;align-items:flex-start;border:1px solid var(--line);border-left:2px solid var(--amber);border-radius:5px;background:var(--card);padding:7px;margin-bottom:5px}
+.diag.error{border-left-color:var(--red)}
+.diag.info{border-left-color:var(--cyan)}
+.diag .dg-code{font:7px var(--mono);color:#fcd34d;white-space:nowrap}
+.diag.error .dg-code{color:#fca5a5}
+.diag.info .dg-code{color:#a5f3fc}
+.diag .dg-msg{font-size:8px;color:#9fb1c8;line-height:1.5}
+.artifact{border:1px solid rgba(34,197,94,.22);border-radius:8px;background:rgba(34,197,94,.03);padding:9px}
+.artifact h4{margin:0 0 6px;font:8px var(--mono);color:#86efac;letter-spacing:.08em}
+.artifact .kv{display:grid;grid-template-columns:60px 1fr;gap:4px 7px;font:8px var(--mono);color:#9fb1c8}
+.artifact .kv .k{color:var(--faint)}
+#inspector{grid-row:2;border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:12px 12px 30px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#inspector::-webkit-scrollbar{width:7px}
+#inspector::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.insp-kicker{font:7.5px var(--mono);letter-spacing:.15em;color:var(--faint);text-transform:uppercase}
+.insp-title{font-size:13px;margin:4px 0 2px;color:#dbeafe}
+.insp-id{font:8px var(--mono);color:var(--faint);word-break:break-all;margin-bottom:9px}
+.insp-section{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px;margin-bottom:7px}
+.lh{font:7.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.kv{display:grid;grid-template-columns:54px 1fr;gap:3px 6px;font-size:8.5px;line-height:1.45}
+.kv .k{color:var(--faint);font-family:var(--mono)}
+.kv .v{color:#b9c7da;word-break:break-all}
+.pill{display:inline-block;font:7px var(--mono);padding:1px 4px;border-radius:3px;border:1px solid var(--line);background:#162132;color:#93a4ba;margin:1px 2px 1px 0}
+.pill.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.06)}
+.pill.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.06)}
+.pill.green{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.06)}
+.insp-btn{width:100%;border:1px solid var(--line);background:#142134;color:#9fb1c8;border-radius:5px;padding:5px;font-size:8.5px;margin-top:5px}
+.insp-btn:hover{color:#dbeafe;border-color:var(--line2)}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.summary .sbox{border:1px solid var(--line);border-radius:5px;background:#0c1623;padding:6px}
+.summary .sbox b{display:block;font:700 11px var(--mono);color:#a5f3fc}
+.summary .sbox span{font:6.5px var(--mono);color:var(--faint)}
+#dock{grid-column:1/-1;grid-row:3;background:#080e17;border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.dock-head{display:flex;align-items:center;gap:8px;padding:5px 12px;border-bottom:1px solid var(--line);font:7.5px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.1em}
+.dock-tabs{display:flex;gap:4px}
+.dock-tab{border:1px solid transparent;background:transparent;color:#5f7188;border-radius:4px;padding:3px 6px;font:7.5px var(--mono)}
+.dock-tab.on{color:#a5f3fc;background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.16)}
+.dock-clear{margin-left:auto;border:none;background:transparent;color:#5f7188;font:7.5px var(--mono)}
+.dock-body{flex:1;overflow:auto;padding:6px 12px;font:8px/1.6 var(--mono);color:#8fa8c0;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.dock-body::-webkit-scrollbar{width:7px}
+.dock-body::-webkit-scrollbar-thumb{background:#26344a;border-radius:4px}
+.log{white-space:pre-wrap}
+.log .t{color:#4b5d73}
+.log .ok{color:#86efac}
+.log .warn{color:#fcd34d}
+.log .err{color:#fca5a5}
+.log .info{color:#a5f3fc}
+.toast{position:fixed;left:50%;bottom:156px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:7px 11px;border-radius:7px;font-size:9px;z-index:60;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1100px){#app{grid-template-columns:230px minmax(0,1fr)}#inspector{display:none}}
+@media(max-width:760px){#app{grid-template-columns:1fr;grid-template-rows:56px 1fr 120px;height:100%}#sidebar{display:none}header .search{display:none}nav button{padding:5px 6px;font-size:9px}.brand{min-width:auto}.relation{grid-template-columns:1fr}.rel-arrow{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="mark">P</div>
+      <div><b>Point Studio</b><span>点层界面 · 编译设置</span></div>
+    </div>
+    <nav id="tabs">
+      <button data-tab="matrix" class="on">点矩阵</button>
+      <button data-tab="instances">点实例</button>
+      <button data-tab="settings">编译设置</button>
+      <button data-tab="build">构建</button>
+    </nav>
+    <input class="search" id="search" placeholder="搜索 point class / instance / capability…">
+    <button class="build-btn" id="buildBtn">Build ▸</button>
+  </header>
+
+  <aside id="sidebar">
+    <div class="side-head">
+      <div class="kicker">Point Explorer</div>
+      <h2>点类目录</h2>
+      <p>按 domain / effect / capability 浏览。点击查看契约与实例。</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="classList" id="classList"></div>
+  </aside>
+
+  <main id="main">
+    <div class="main-head">
+      <div class="mh-icon" id="mhIcon">◆</div>
+      <div class="mh-text">
+        <div class="mh-kicker" id="mhKicker">POINT MATRIX</div>
+        <h1 id="mhTitle">点层可视化</h1>
+        <div class="mh-sub" id="mhSub">PointClass × PointInstance</div>
+      </div>
+      <div class="mh-badges" id="mhBadges"></div>
+    </div>
+
+    <section class="view on" id="view-matrix">
+      <div class="section-title">Class × Instance 矩阵 · 点击单元格查看实例</div>
+      <div class="matrix-wrap"><div class="matrix" id="matrix"></div></div>
+      <div class="legend">
+        <span><i style="background:#22c55e"></i>L0 / ok</span>
+        <span><i style="background:#22d3ee"></i>L1</span>
+        <span><i style="background:#f59e0b"></i>L2 / warn</span>
+        <span><i style="background:#ef4444"></i>L3 / error</span>
+        <span><i style="background:#475569"></i>disabled</span>
+        <span>空心 = 类 · 实心 = 实例</span>
+      </div>
+      <div class="section-title" style="margin-top:11px">选中实例 · 端口与绑定</div>
+      <div class="relation" id="relation"></div>
+    </section>
+
+    <section class="view" id="view-instances">
+      <div class="section-title">PointInstance 表 · 类、状态、revision、activation、binding</div>
+      <div class="matrix-wrap" style="max-height:calc(100% - 24px)"><table class="table" id="instTable"></table></div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="build-head">
+        <span class="section-title" style="margin:0">Build Profile</span>
+        <div class="seg" id="profileSeg"></div>
+        <span class="section-title" style="margin:0 0 0 8px">Target</span>
+        <select class="select" id="targetSel">
+          <option value="body-package">body-package</option>
+          <option value="point-pack">point-pack</option>
+          <option value="flow-bundle">flow-bundle</option>
+          <option value="plugin">plugin</option>
+          <option value="wasm">wasm</option>
+        </select>
+        <span class="badge amber" id="dirtyBadge">clean</span>
+        <span style="margin-left:auto;font:7px var(--mono);color:var(--faint)">Effective value + source badge</span>
+      </div>
+      <div id="settingsGroups"></div>
+    </section>
+
+    <section class="view" id="view-build">
+      <div class="section-title">Build Pipeline</div>
+      <div class="pipeline" id="pipeline"></div>
+      <div class="section-title">Diagnostics</div>
+      <div id="diags"></div>
+      <div class="section-title" style="margin-top:10px">Artifact</div>
+      <div id="artifact"></div>
+    </section>
+  </main>
+
+  <aside id="inspector"></aside>
+
+  <section id="dock">
+    <div class="dock-head">
+      <span>Run Console / Build Log</span>
+      <div class="dock-tabs" id="dockTabs">
+        <button class="dock-tab on" data-dock="build">build</button>
+        <button class="dock-tab" data-dock="runs">runs</button>
+        <button class="dock-tab" data-dock="problems">problems</button>
+      </div>
+      <button class="dock-clear" id="clearDock">clear</button>
+    </div>
+    <div class="dock-body" id="dockBody"></div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const EFFECT = { L0: '#22c55e', L1: '#22d3ee', L2: '#f59e0b', L3: '#ef4444' };
+const STATUS_LABEL = { ok: 'ok', warn: 'warn', err: 'error', disabled: 'disabled' };
+
+function I(label, rev, status, activation, binding) { return { label, rev, status, activation, binding }; }
+function P(id, domain, group, effect, summary, params, inputs, outputs, permissions, instances) {
+  return { id, domain, group, effect, summary, params, inputs, outputs, permissions, instances, version: '1.0.0' };
+}
+
+const CLASSES = [
+  P('point.vpn.status', 'vpn', 'network', 'L0', '读取当前 VPN 连接状态、profile 与出口 IP。',
+    [{ k: 'profile', t: 'string', d: 'work' }, { k: 'timeoutMs', t: 'number', d: '12000' }],
+    [{ n: 'profile', t: 'string' }], [{ n: 'status', t: 'VpnStatus' }], ['network'], [
+      I('default', 3, 'ok', 'Ctrl+Alt+V', 'flow.ensure-vpn.vpn.status'),
+      I('work', 2, 'ok', 'gesture LDR', 'surface.settings.vpn'),
+      I('personal', 1, 'warn', 'manual', 'flow.open-site.guard')
+    ]),
+  P('point.vpn.connect', 'vpn', 'network', 'L2', '连接指定 VPN profile；可能改变网络状态。',
+    [{ k: 'profile', t: 'string', d: 'work' }, { k: 'killSwitch', t: 'boolean', d: 'true' }],
+    [{ n: 'profile', t: 'string' }], [{ n: 'status', t: 'VpnStatus' }], ['network', 'process'], [
+      I('work', 2, 'ok', 'Ctrl+Alt+E', 'flow.ensure-vpn.connect'),
+      I('personal', 1, 'disabled', 'manual', 'surface.settings.vpn')
+    ]),
+  P('point.browser.open', 'browser', 'network', 'L2', '在默认或指定浏览器打开 URL，可先走 VPN 守卫。',
+    [{ k: 'url', t: 'url', d: 'https://github.com' }, { k: 'newWindow', t: 'boolean', d: 'true' }],
+    [{ n: 'url', t: 'url' }], [{ n: 'opened', t: 'boolean' }], ['network', 'shell'], [
+      I('default', 4, 'ok', 'Ctrl+Alt+G', 'flow.open-site.open'),
+      I('work', 2, 'ok', 'palette', 'flow.ensure-vpn.open')
+    ]),
+  P('point.file.preview', 'file', 'content', 'L0', '生成文件预览：文本、图片、PDF、视频。',
+    [{ k: 'path', t: 'path', d: '' }, { k: 'mode', t: 'enum', d: 'text' }],
+    [{ n: 'path', t: 'path' }], [{ n: 'preview', t: 'PreviewResult' }], ['filesystem'], [
+      I('text', 2, 'ok', 'Space', 'surface.preview.file'),
+      I('image', 1, 'ok', 'Space', 'surface.preview.image'),
+      I('pdf', 1, 'warn', 'Space', 'surface.preview.file')
+    ]),
+  P('point.ocr.text', 'ocr', 'content', 'L1', '从图片/屏幕区域识别文本，可选语言与模式。',
+    [{ k: 'lang', t: 'enum', d: 'zh-CN' }, { k: 'mode', t: 'enum', d: 'screen' }],
+    [{ n: 'image', t: 'ImageRef' }], [{ n: 'text', t: 'string' }], ['filesystem', 'ai'], [
+      I('screen', 2, 'ok', 'Ctrl+Shift+O', 'flow.ocr.recognize'),
+      I('file', 1, 'ok', 'context menu', 'flow.ocr.file')
+    ]),
+  P('point.clipboard.write', 'clipboard', 'system', 'L1', '写入文本/图片/HTML 到剪贴板。',
+    [{ k: 'format', t: 'enum', d: 'text' }], [{ n: 'value', t: 'any' }], [{ n: 'written', t: 'boolean' }], ['clipboard'], [
+      I('text', 3, 'ok', 'Ctrl+Shift+V', 'surface.paste-preview'),
+      I('image', 1, 'ok', 'gesture X1', 'surface.paste-preview')
+    ]),
+  P('point.notify.toast', 'notify', 'system', 'L0', '显示 toast/banner，可带动作。',
+    [{ k: 'level', t: 'enum', d: 'info' }, { k: 'timeoutMs', t: 'number', d: '3000' }],
+    [{ n: 'message', t: 'string' }], [{ n: 'shown', t: 'boolean' }], ['ui'], [
+      I('info', 1, 'ok', 'system', 'flow.notify'),
+      I('error', 1, 'ok', 'system', 'flow.notify')
+    ]),
+  P('point.window.focus', 'window', 'system', 'L1', '按标题/进程聚焦窗口；可能抢焦点。',
+    [{ k: 'match', t: 'string', d: 'chrome' }], [{ n: 'match', t: 'string' }], [{ n: 'focused', t: 'boolean' }], ['process', 'uia'], [
+      I('title', 2, 'ok', 'Ctrl+Alt+W', 'flow.focus-window'),
+      I('process', 1, 'warn', 'manual', 'flow.focus-window')
+    ]),
+  P('point.fs.hash', 'fs', 'content', 'L0', '计算文件/目录摘要，用于校验与构建。',
+    [{ k: 'algo', t: 'enum', d: 'sha256' }], [{ n: 'path', t: 'path' }], [{ n: 'hash', t: 'string' }], ['filesystem'], [
+      I('sha256', 1, 'ok', 'build', 'flow.build.verify'),
+      I('md5', 1, 'disabled', 'legacy', 'flow.build.verify')
+    ]),
+  P('point.ai.translate', 'ai', 'ai', 'L1', '翻译文本/网页/屏幕内容，支持源语言自动检测。',
+    [{ k: 'source', t: 'enum', d: 'auto' }, { k: 'target', t: 'enum', d: 'zh-CN' }],
+    [{ n: 'text', t: 'string' }], [{ n: 'translated', t: 'string' }], ['ai', 'network'], [
+      I('en-zh', 2, 'ok', 'Ctrl+Alt+T', 'surface.hud.translate'),
+      I('auto-zh', 1, 'ok', 'gesture LDR', 'surface.hud.translate')
+    ]),
+  P('point.git.diff', 'git', 'content', 'L0', '读取工作区/暂存区/PR diff。',
+    [{ k: 'repo', t: 'path', d: '' }, { k: 'staged', t: 'boolean', d: 'false' }],
+    [{ n: 'repo', t: 'path' }], [{ n: 'diff', t: 'DiffResult' }], ['filesystem', 'process'], [
+      I('work', 2, 'ok', 'Ctrl+Alt+D', 'surface.diff.flow-version'),
+      I('pr', 1, 'warn', 'palette', 'surface.diff.flow-version')
+    ]),
+  P('point.net.reachable', 'net', 'network', 'L0', '检查 host:port 是否可达，用于预检/守卫。',
+    [{ k: 'host', t: 'string', d: 'github.com' }, { k: 'timeoutMs', t: 'number', d: '2000' }],
+    [{ n: 'host', t: 'string' }], [{ n: 'reachable', t: 'boolean' }], ['network'], [
+      I('default', 2, 'ok', 'flow.ensure-vpn', 'flow.ensure-vpn.precheck'),
+      I('github', 1, 'ok', 'manual', 'flow.open-site.precheck')
+    ])
+];
+
+CLASSES.forEach(c => c.instances.forEach((ins, i) => {
+  ins.id = `${c.id}.${ins.label}@r${ins.rev}`;
+  ins.classId = c.id;
+  ins.index = i;
+}));
+
+const GROUPS = {
+  all: '全部', network: '网络', content: '内容', system: '系统', ai: 'AI'
+};
+
+const PROFILE_NAMES = ['Debug', 'Release', 'Signed', 'Portable'];
+const PROFILE_VALUES = {
+  Debug:    { optimizeLevel: 'none', sourceMaps: true, strip: false, sign: false, timestamp: false, channel: 'dev' },
+  Release:  { optimizeLevel: 'balanced', sourceMaps: false, strip: true, sign: true, timestamp: true, channel: 'stable' },
+  Signed:   { optimizeLevel: 'size', sourceMaps: false, strip: true, sign: true, timestamp: true, channel: 'stable' },
+  Portable: { optimizeLevel: 'speed', sourceMaps: false, strip: true, sign: false, timestamp: false, channel: 'beta' }
+};
+
+const OPTION_GROUPS = [
+  { id: 'target', label: 'Target & Runtime' },
+  { id: 'codegen', label: 'Codegen' },
+  { id: 'optimize', label: 'Optimization' },
+  { id: 'validate', label: 'Validation & Tests' },
+  { id: 'sign', label: 'Signing & Trust' },
+  { id: 'deps', label: 'Dependencies & Lock' },
+  { id: 'permissions', label: 'Permissions & Effects' },
+  { id: 'output', label: 'Output & Publish' },
+  { id: 'advanced', label: 'Advanced' }
+];
+
+const OPTIONS = [
+  { key: 'runtime', group: 'target', label: 'Runtime', desc: '目标运行时；影响兼容性与产物大小。', type: 'enum', enum: ['win-x64', 'win-arm64', 'wasm'], default: 'win-x64', project: 'win-x64', impact: 'compatibility' },
+  { key: 'arch', group: 'target', label: 'Architecture', desc: '目标 CPU 架构。', type: 'enum', enum: ['x64', 'arm64'], default: 'x64', project: 'x64' },
+  { key: 'sdk', group: 'target', label: 'SDK', desc: '用于生成 host/loader 的 SDK。', type: 'enum', enum: ['net9', 'node22', 'python312'], default: 'net9', project: 'net9' },
+
+  { key: 'manifest', group: 'codegen', label: 'Generate manifest', desc: '生成 body.json / blockmap。', type: 'bool', default: true, project: true },
+  { key: 'typedStubs', group: 'codegen', label: 'Typed stubs', desc: '生成 Point/Flow 的类型化 stub。', type: 'bool', default: true, project: true },
+  { key: 'docs', group: 'codegen', label: 'Generate docs', desc: '生成 API/参数文档。', type: 'bool', default: false },
+  { key: 'sourceMaps', group: 'codegen', label: 'Source maps', desc: '调试用；增大产物。', type: 'bool', default: false, profile: true },
+
+  { key: 'optimizeLevel', group: 'optimize', label: 'Optimization', desc: '体积/速度的取舍。', type: 'enum', enum: ['none', 'balanced', 'size', 'speed'], default: 'balanced', profile: true, impact: 'size' },
+  { key: 'treeShake', group: 'optimize', label: 'Tree shake', desc: '移除未引用的点/流程。', type: 'bool', default: true, project: true, impact: 'size' },
+  { key: 'strip', group: 'optimize', label: 'Strip symbols', desc: '移除调试符号。', type: 'bool', default: true, profile: true },
+  { key: 'aot', group: 'optimize', label: 'AOT compile', desc: '提前编译；可能影响启动与兼容性。', type: 'bool', default: false, advanced: true, impact: 'speed' },
+
+  { key: 'contractTests', group: 'validate', label: 'Contract tests', desc: '运行 Point/Flow 契约测试。', type: 'bool', default: true, policy: true },
+  { key: 'effectAudit', group: 'validate', label: 'Effect audit', desc: '审计 L2/L3 效果与权限。', type: 'bool', default: true, policy: true },
+  { key: 'permissionAudit', group: 'validate', label: 'Permission audit', desc: '检查 requested vs declared permissions。', type: 'bool', default: true, policy: true },
+  { key: 'deterministic', group: 'validate', label: 'Deterministic build', desc: '可复现构建；固定时间戳/顺序。', type: 'bool', default: true, project: true },
+
+  { key: 'sign', group: 'sign', label: 'Sign artifact', desc: '对包进行签名。', type: 'bool', default: true, profile: true, impact: 'security' },
+  { key: 'timestamp', group: 'sign', label: 'Timestamp', desc: '签名时间戳。', type: 'bool', default: true, profile: true },
+  { key: 'certRef', group: 'sign', label: 'Certificate ref', desc: '证书引用，不存明文。', type: 'string', default: 'env:CERT_REF', project: 'env:CERT_REF', advanced: true },
+
+  { key: 'lockfile', group: 'deps', label: 'Lockfile', desc: '依赖锁定文件。', type: 'string', default: 'body.lock', project: 'body.lock' },
+  { key: 'allowPrerelease', group: 'deps', label: 'Allow prerelease', desc: '允许预发布依赖；生产环境通常关闭。', type: 'bool', default: false, policy: true },
+
+  { key: 'maxEffect', group: 'permissions', label: 'Max effect', desc: '允许的最高效果等级。', type: 'enum', enum: ['L0', 'L1', 'L2', 'L3'], default: 'L2', policy: 'L2', impact: 'security' },
+  { key: 'requested', group: 'permissions', label: 'Requested permissions', desc: '逗号分隔的权限集合。', type: 'string', default: 'network,process,uia', project: 'network,process,uia' },
+
+  { key: 'output', group: 'output', label: 'Output path', desc: '产物输出目录。', type: 'string', default: 'dist/', project: 'dist/' },
+  { key: 'channel', group: 'output', label: 'Channel', desc: '发布通道。', type: 'enum', enum: ['dev', 'beta', 'stable'], default: 'stable', profile: true },
+  { key: 'format', group: 'output', label: 'Format', desc: '产物格式。', type: 'enum', enum: ['pkg', 'zip', 'msix'], default: 'pkg', project: 'pkg' },
+
+  { key: 'concurrency', group: 'advanced', label: 'Concurrency', desc: '编译并发度。', type: 'number', default: 4, project: 4, advanced: true },
+  { key: 'cache', group: 'advanced', label: 'Build cache', desc: '复用编译缓存。', type: 'bool', default: true, project: true, advanced: true }
+];
+
+const state = {
+  tab: 'matrix',
+  selectedId: 'point.vpn.status',
+  instanceId: null,
+  search: '',
+  group: 'all',
+  profile: 'Release',
+  target: 'body-package',
+  values: {},
+  dirty: false,
+  buildRunning: false,
+  buildSteps: [],
+  artifact: null,
+  diag: [
+    { severity: 'warning', code: 'W_EFFECT_L2', message: 'point.browser.open 声明 L2；需要审批守卫。', target: 'point.browser.open' },
+    { severity: 'warning', code: 'W_POINT_UNUSED', message: 'point.fs.hash.md5 未被引用，tree-shake 将移除。', target: 'point.fs.hash.md5' },
+    { severity: 'info', code: 'I_SIGN_PENDING', message: '签名将在 Package 阶段执行。', target: 'sign' }
+  ],
+  logs: [],
+  dockTab: 'build',
+  toastTimer: null
+};
+
+const selectedClass = () => CLASSES.find(c => c.id === state.selectedId) || CLASSES[0];
+const selectedInstance = () => {
+  const c = selectedClass();
+  return c.instances.find(i => i.id === state.instanceId) || c.instances[0];
+};
+const allInstances = () => CLASSES.flatMap(c => c.instances);
+const totalInstances = () => allInstances().length;
+
+function baseForOption(o, profile) {
+  if (o.policy !== undefined) return { value: o.policy, source: 'policy' };
+  if (o.profile && PROFILE_VALUES[profile] && PROFILE_VALUES[profile][o.key] !== undefined) {
+    return { value: PROFILE_VALUES[profile][o.key], source: 'profile' };
+  }
+  if (o.project !== undefined) return { value: o.project, source: 'project' };
+  return { value: o.default, source: 'default' };
+}
+
+function initValues(profile) {
+  state.values = {};
+  for (const o of OPTIONS) state.values[o.key] = baseForOption(o, profile);
+}
+initValues(state.profile);
+
+/* ============================================================
+   渲染
+   ============================================================ */
+function filteredClasses() {
+  const q = state.search.trim().toLowerCase();
+  return CLASSES.filter(c => {
+    if (state.group !== 'all' && c.group !== state.group) return false;
+    if (!q) return true;
+    const hay = [c.id, c.domain, c.summary, ...c.params.map(p => p.k), ...c.instances.map(i => i.id + ' ' + i.binding + ' ' + i.activation)].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function renderHeader() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  const icon = { matrix: '◆', instances: '▤', settings: '⚙', build: '▶' }[state.tab] || '◆';
+  $('#mhIcon').textContent = icon;
+  if (state.tab === 'settings') {
+    $('#mhKicker').textContent = 'BUILD SETTINGS';
+    $('#mhTitle').textContent = '编译设置';
+    $('#mhSub').textContent = `BuildProfileInstance · ${state.profile} · ${state.target}`;
+    $('#mhBadges').innerHTML = `<span class="badge cyan">${esc(state.profile)}</span><span class="badge amber">${esc(state.target)}</span><span class="badge">${state.dirty ? 'dirty' : 'clean'}</span>`;
+  } else if (state.tab === 'build') {
+    $('#mhKicker').textContent = 'BUILD RUN';
+    $('#mhTitle').textContent = '构建流水线';
+    $('#mhSub').textContent = `flow.build · ${state.profile} · ${state.target}`;
+    $('#mhBadges').innerHTML = `<span class="badge cyan">${state.buildRunning ? 'running' : state.artifact ? 'done' : 'idle'}</span><span class="badge amber">${state.target}</span><span class="badge">${state.profile}</span>`;
+  } else if (state.tab === 'instances') {
+    $('#mhKicker').textContent = 'POINT INSTANCES';
+    $('#mhTitle').textContent = '点实例表';
+    $('#mhSub').textContent = `${totalInstances()} 个实例 · 按类、状态、revision 浏览`;
+    $('#mhBadges').innerHTML = `<span class="badge cyan">${totalInstances()} instances</span><span class="badge green">${CLASSES.length} classes</span><span class="badge">PointInstance</span>`;
+  } else {
+    $('#mhKicker').textContent = 'POINT MATRIX';
+    $('#mhTitle').textContent = '点层可视化';
+    $('#mhSub').textContent = `${c.id} · ${ins.label} · class × instance × ports × bindings`;
+    $('#mhBadges').innerHTML = `<span class="badge cyan">${esc(c.effect)}</span><span class="badge green">${c.instances.length} instances</span><span class="badge">${esc(c.domain)}</span>`;
+  }
+  $('#buildBtn').disabled = state.buildRunning;
+  $('#buildBtn').textContent = state.buildRunning ? 'Building…' : 'Build ▸';
+}
+
+function renderSidebar() {
+  const groups = Object.entries(GROUPS);
+  $('#filters').innerHTML = groups.map(([id, label]) => `<button class="chip ${state.group === id ? 'on' : ''}" data-group="${id}">${label}</button>`).join('');
+  $$('#filters [data-group]').forEach(b => b.onclick = () => { state.group = b.dataset.group; renderSidebar(); renderMatrix(); renderInstances(); });
+  const list = filteredClasses();
+  if (!list.length) {
+    $('#classList').innerHTML = '<div style="padding:18px 8px;text-align:center;color:var(--faint);font-size:9px">没有匹配的 PointClass。</div>';
+    return;
+  }
+  $('#classList').innerHTML = list.map(c => `<div class="class-item ${c.id === state.selectedId ? 'on' : ''}" data-class="${esc(c.id)}" style="--ec:${EFFECT[c.effect]}">
+    <span class="effect"></span>
+    <div class="class-main"><div class="class-name">${esc(c.id)}</div><div class="class-sub">${esc(c.domain)} · ${esc(c.effect)} · ${c.instances.length} inst</div></div>
+    <div class="class-count">${c.instances.length}</div>
+  </div>`).join('');
+  $$('#classList [data-class]').forEach(el => el.onclick = () => selectClass(el.dataset.class));
+}
+
+function colorFor(c, ins) {
+  if (ins.status === 'disabled') return '#475569';
+  if (ins.status === 'err') return '#ef4444';
+  if (ins.status === 'warn') return '#f59e0b';
+  return EFFECT[c.effect];
+}
+
+function renderMatrix() {
+  const list = filteredClasses();
+  const cells = [];
+  cells.push('<div class="mh">PointClass</div>');
+  for (let i = 1; i <= 3; i++) cells.push(`<div class="mh">inst-${i}</div>`);
+  cells.push('<div class="mh">more</div>');
+  if (!list.length) {
+    cells.push('<div class="row-label">—</div><div class="cell" style="grid-column:span 4;color:var(--faint);font-family:var(--mono)">no matching points</div>');
+  }
+  list.forEach(c => {
+    cells.push(`<div class="row-label"><span class="effect" style="--ec:${EFFECT[c.effect]}"></span><div class="rl-main"><div class="rl-id">${esc(c.id)}</div><div class="rl-sub">${esc(c.domain)} · ${esc(c.effect)} · ${c.instances.length} inst</div></div></div>`);
+    const visible = c.instances.slice(0, 3);
+    for (let i = 0; i < 3; i++) {
+      const ins = visible[i];
+      if (!ins) { cells.push('<div class="cell"></div>'); continue; }
+      const ec = colorFor(c, ins);
+      const cls = ins.status === 'warn' ? 'warn' : ins.status === 'err' ? 'err' : ins.status === 'disabled' ? 'disabled' : '';
+      const sel = ins.id === state.instanceId ? ' sel' : '';
+      cells.push(`<div class="cell${sel}"><button class="dotbtn ${cls}" data-class="${esc(c.id)}" data-inst="${esc(ins.id)}" style="--ec:${ec}" title="${esc(ins.id)}"><span class="rev">r${ins.rev}</span></button></div>`);
+    }
+    const more = c.instances.length - 3;
+    cells.push(`<div class="cell">${more > 0 ? `<span class="cell-more">+${more}</span>` : ''}</div>`);
+  });
+  const grid = $('#matrix');
+  grid.innerHTML = cells.join('');
+  $$('#matrix .dotbtn').forEach(b => b.onclick = () => selectInstance(CLASSES.find(c => c.id === b.dataset.class).instances.find(i => i.id === b.dataset.inst)));
+  renderRelation();
+}
+
+function renderRelation() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  const inPorts = c.inputs.map(p => `<div class="port-row"><span class="dir">→</span><span>${esc(p.n)}</span><span class="pty">${esc(p.t)}</span></div>`).join('');
+  const outPorts = c.outputs.map(p => `<div class="port-row"><span class="dir">←</span><span>${esc(p.n)}</span><span class="pty">${esc(p.t)}</span></div>`).join('');
+  $('#relation').innerHTML = `
+    <div class="rel-col"><h4>Ports · Input / Output</h4>${inPorts || '<div class="port-row">—</div>'}${outPorts || ''}</div>
+    <div class="rel-arrow">→</div>
+    <div class="rel-col"><h4>PointInstance</h4><div class="port-row"><span class="dir">◆</span><span>${esc(ins.id)}</span></div><div class="port-row"><span class="dir">·</span><span>${esc(ins.status)} · r${ins.rev}</span></div><div class="port-row"><span class="dir">·</span><span>${esc(ins.activation)}</span></div></div>
+    <div class="rel-arrow">→</div>
+    <div class="rel-col"><h4>Bindings</h4><div class="binding-row"><b>flow / surface</b>${esc(ins.binding)}<br><span>scope=${esc(c.domain)} · effect=${esc(c.effect)}</span></div><div class="binding-row"><b>permissions</b><span>${c.permissions.map(esc).join(' · ')}</span></div></div>`;
+}
+
+function renderInstances() {
+  const rows = filteredClasses().flatMap(c => c.instances.map(ins => `<tr data-class="${esc(c.id)}" data-inst="${esc(ins.id)}" style="${ins.id === state.instanceId ? 'background:rgba(34,211,238,.05)' : ''}">
+    <td class="mono">${esc(c.id)}</td>
+    <td class="mono">${esc(ins.label)}</td>
+    <td><span class="status ${esc(ins.status)}">${esc(ins.status)}</span></td>
+    <td>r${ins.rev}</td>
+    <td>${esc(ins.activation)}</td>
+    <td class="mono" style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${esc(ins.binding)}</td>
+    <td><span class="badge" style="color:${EFFECT[c.effect]};border-color:${EFFECT[c.effect]}44">${esc(c.effect)}</span></td>
+  </tr>`)).join('');
+  $('#instTable').innerHTML = `<thead><tr><th>Class</th><th>Instance</th><th>Status</th><th>Rev</th><th>Activation</th><th>Binding</th><th>Effect</th></tr></thead><tbody>${rows || '<tr><td colspan="7" style="color:var(--faint)">no matching instances</td></tr>'}</tbody>`;
+  $$('#instTable tbody tr[data-inst]').forEach(tr => tr.onclick = () => selectInstance(CLASSES.find(c => c.id === tr.dataset.class).instances.find(i => i.id === tr.dataset.inst)));
+}
+
+function renderInspectorPoint() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  $('#inspector').innerHTML = `
+    <div class="insp-kicker">PointClass</div>
+    <div class="insp-title">◆ ${esc(c.id)}</div>
+    <div class="insp-id">${esc(c.id)}@${esc(c.version)}</div>
+    <div class="insp-section"><div class="lh">Contract</div><div class="kv">
+      <div class="k">domain</div><div class="v">${esc(c.domain)}</div>
+      <div class="k">effect</div><div class="v"><span class="pill amber">${esc(c.effect)}</span></div>
+      <div class="k">summary</div><div class="v">${esc(c.summary)}</div>
+      <div class="k">permissions</div><div class="v">${c.permissions.map(p => `<span class="pill">${esc(p)}</span>`).join('')}</div>
+    </div></div>
+    <div class="insp-section"><div class="lh">Selected Instance</div><div class="kv">
+      <div class="k">instance</div><div class="v mono">${esc(ins.id)}</div>
+      <div class="k">status</div><div class="v"><span class="pill ${ins.status === 'ok' ? 'green' : ins.status === 'warn' ? 'amber' : ''}">${esc(ins.status)}</span></div>
+      <div class="k">revision</div><div class="v">r${ins.rev}</div>
+      <div class="k">activation</div><div class="v">${esc(ins.activation)}</div>
+      <div class="k">binding</div><div class="v mono">${esc(ins.binding)}</div>
+    </div></div>
+    <div class="insp-section"><div class="lh">Params</div><div class="kv">
+      ${c.params.map(p => `<div class="k">${esc(p.k)}</div><div class="v"><span class="pill">${esc(p.t)}</span> default=${esc(p.d || '—')}</div>`).join('')}
+    </div></div>
+    <div class="insp-section"><div class="lh">Ports</div><div class="kv">
+      ${c.inputs.map(p => `<div class="k">in</div><div class="v"><span class="pill cyan">${esc(p.n)}</span> ${esc(p.t)}</div>`).join('')}
+      ${c.outputs.map(p => `<div class="k">out</div><div class="v"><span class="pill green">${esc(p.n)}</span> ${esc(p.t)}</div>`).join('')}
+    </div></div>
+    <button class="insp-btn" data-run-point>▶ 运行 Point 实例</button>
+    <button class="insp-btn" data-copy-instance>复制 PointInstance JSON</button>`;
+  $$('#inspector [data-run-point]').forEach(b => b.onclick = () => runPoint());
+  $$('#inspector [data-copy-instance]').forEach(b => b.onclick = () => copyText(JSON.stringify(pointInstanceJSON(), null, 2), 'PointInstance JSON 已复制'));
+}
+
+function buildSummary() {
+  const maxEffect = state.values.maxEffect?.value || 'L2';
+  const sign = state.values.sign?.value ? 'pending' : 'unsigned';
+  const runtime = state.values.runtime?.value || 'win-x64';
+  const errs = 0;
+  return {
+    target: state.target,
+    profile: state.profile,
+    runtime,
+    estSize: state.profile === 'Debug' ? '42.8 MB' : state.profile === 'Signed' ? '17.9 MB' : '18.4 MB',
+    warnings: state.diag.filter(d => d.severity === 'warning').length,
+    errors: errs,
+    permissions: 6,
+    maxEffect,
+    signature: state.artifact ? state.artifact.signature : sign,
+    digest: state.artifact ? state.artifact.digest : 'sha256:—',
+    reproducible: state.values.deterministic?.value ? 'yes' : 'no'
+  };
+}
+
+function renderInspectorBuild() {
+  const s = buildSummary();
+  $('#inspector').innerHTML = `
+    <div class="insp-kicker">Build Summary</div>
+    <div class="insp-title">⚙ ${esc(state.profile)} Profile</div>
+    <div class="insp-id">${esc(state.target)} · ${esc(s.runtime)}</div>
+    <div class="insp-section"><div class="lh">Effective Summary</div><div class="summary">
+      <div class="sbox"><b>${esc(s.estSize)}</b><span>est. size</span></div>
+      <div class="sbox"><b>${s.warnings}</b><span>warnings</span></div>
+      <div class="sbox"><b>${s.errors}</b><span>errors</span></div>
+      <div class="sbox"><b>${s.permissions}</b><span>permissions</span></div>
+      <div class="sbox"><b>${esc(s.maxEffect)}</b><span>max effect</span></div>
+      <div class="sbox"><b>${esc(s.reproducible)}</b><span>reproducible</span></div>
+    </div></div>
+    <div class="insp-section"><div class="lh">Trust</div><div class="kv">
+      <div class="k">signature</div><div class="v">${esc(s.signature)}</div>
+      <div class="k">digest</div><div class="v mono" style="word-break:break-all">${esc(s.digest)}</div>
+      <div class="k">target</div><div class="v">${esc(s.target)}</div>
+      <div class="k">profile</div><div class="v">${esc(s.profile)}</div>
+    </div></div>
+    <button class="insp-btn" data-build ${state.buildRunning ? 'disabled' : ''}>${state.buildRunning ? 'Building…' : 'Build ▸'}</button>
+    <button class="insp-btn" data-dry>Dry run</button>`;
+  $$('#inspector [data-build]').forEach(b => b.onclick = () => runBuild());
+  $$('#inspector [data-dry]').forEach(b => b.onclick = () => dryRun());
+}
+
+function renderInspector() {
+  if (state.tab === 'settings' || state.tab === 'build') renderInspectorBuild();
+  else renderInspectorPoint();
+}
+
+function optionControl(o, v, disabled) {
+  if (o.type === 'bool') return `<input type="checkbox" data-opt="${esc(o.key)}" ${v ? 'checked' : ''} ${disabled ? 'disabled' : ''}>`;
+  if (o.type === 'enum') return `<select data-opt="${esc(o.key)}" ${disabled ? 'disabled' : ''}>${o.enum.map(x => `<option ${x === v ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>`;
+  return `<input type="text" data-opt="${esc(o.key)}" value="${esc(v)}" ${disabled ? 'disabled' : ''}>`;
+}
+
+function sourceLabel(src) {
+  return { default: 'default', project: 'project', profile: 'profile', override: 'override', policy: 'policy' }[src] || src;
+}
+
+function renderSettings() {
+  $$('#profileSeg [data-profile]').forEach(b => b.classList.toggle('on', b.dataset.profile === state.profile));
+  $('#targetSel').value = state.target;
+  $('#dirtyBadge').textContent = state.dirty ? 'dirty' : 'clean';
+  $('#dirtyBadge').style.color = state.dirty ? '#fcd34d' : '#86efac';
+  $('#settingsGroups').innerHTML = OPTION_GROUPS.map(g => {
+    const opts = OPTIONS.filter(o => o.group === g.id);
+    if (!opts.length) return '';
+    const rows = opts.map(o => {
+      const cur = state.values[o.key];
+      const locked = cur.source === 'policy';
+      const val = o.type === 'bool' ? (cur.value ? 'on' : 'off') : cur.value;
+      return `<div class="setting-row">
+        <div class="setting-label"><b>${esc(o.label)}</b><span>${esc(o.desc)}${o.impact ? ' · affects ' + esc(o.impact) : ''}</span></div>
+        <div class="setting-control">${optionControl(o, cur.value, locked)}</div>
+        <div class="setting-meta"><span class="src ${cur.source}">${sourceLabel(cur.source)}</span><span class="setting-val">${esc(val)}</span></div>
+        <div style="text-align:right">${cur.source === 'override' ? `<button class="reset" data-reset="${esc(o.key)}">reset</button>` : locked ? '<span style="font:7px var(--mono);color:#fca5a5">locked</span>' : ''}</div>
+      </div>`;
+    }).join('');
+    return `<div class="setting-group"><div class="gh"><b>${esc(g.label)}</b><span>${opts.length} options</span></div>${rows}</div>`;
+  }).join('');
+  $$('#settingsGroups [data-opt]').forEach(el => {
+    el.addEventListener('change', () => {
+      const key = el.dataset.opt;
+      const o = OPTIONS.find(x => x.key === key);
+      let val = el.type === 'checkbox' ? el.checked : el.value;
+      if (o.type === 'number') val = Number(val);
+      state.values[key] = { value: val, source: 'override' };
+      state.dirty = Object.values(state.values).some(v => v.source === 'override');
+      renderSettings(); renderHeader(); renderInspector();
+      log(`override ${key} = ${val}`, 'warn', 'build');
+    });
+  });
+  $$('#settingsGroups [data-reset]').forEach(b => b.onclick = () => {
+    const o = OPTIONS.find(x => x.key === b.dataset.reset);
+    state.values[o.key] = baseForOption(o, state.profile);
+    state.dirty = Object.values(state.values).some(v => v.source === 'override');
+    renderSettings(); renderHeader(); renderInspector();
+    log(`reset ${o.key} to ${state.values[o.key].source}`, 'info', 'build');
+  });
+}
+
+/* ============================================================
+   构建 / 日志 / 交互
+   ============================================================ */
+function makeSteps() {
+  return [
+    { name: 'Resolve', sub: 'point refs · lockfile · profile', status: 'pending', time: '' },
+    { name: 'Validate', sub: 'schema · contract · effect audit', status: 'pending', time: '' },
+    { name: 'Plan', sub: 'graph plan · permissions · output', status: 'pending', time: '' },
+    { name: 'Compile', sub: 'codegen · optimize · tree-shake', status: 'pending', time: '' },
+    { name: 'Sign', sub: 'certificate · timestamp · digest', status: 'pending', time: '' },
+    { name: 'Package', sub: 'manifest · payload · blockmap', status: 'pending', time: '' },
+    { name: 'Verify', sub: 'hash · signature · install dry-run', status: 'pending', time: '' },
+    { name: 'Publish', sub: 'channel · artifact · receipt', status: 'pending', time: '' }
+  ];
+}
+
+function stepHTML(s, i) {
+  const icon = s.status === 'ok' ? '✓' : s.status === 'failed' ? '!' : s.status === 'running' ? '·' : s.status === 'skipped' ? '–' : String(i + 1);
+  return `<div class="step ${esc(s.status)}"><div class="sic">${icon}</div><div class="st-main"><div class="st-name">${esc(s.name)}</div><div class="st-sub">${esc(s.sub)}</div></div><div class="st-time">${esc(s.time || '')}</div></div>`;
+}
+
+function renderBuild() {
+  $('#pipeline').innerHTML = state.buildSteps.map(stepHTML).join('');
+  $('#diags').innerHTML = state.diag.map(d => `<div class="diag ${esc(d.severity)}"><div class="dg-code">${esc(d.code)}</div><div class="dg-msg">${esc(d.message)}<br><span style="color:var(--faint)">${esc(d.target || '')}</span></div></div>`).join('');
+  $('#artifact').innerHTML = state.artifact ? `<div class="artifact"><h4>✓ BUILD ARTIFACT</h4><div class="kv">
+    <div class="k">name</div><div>${esc(state.artifact.name)}</div>
+    <div class="k">version</div><div>${esc(state.artifact.version)}</div>
+    <div class="k">size</div><div>${esc(state.artifact.size)}</div>
+    <div class="k">digest</div><div style="word-break:break-all">${esc(state.artifact.digest)}</div>
+    <div class="k">signature</div><div>${esc(state.artifact.signature)}</div>
+    <div class="k">channel</div><div>${esc(state.artifact.channel)}</div>
+    <div class="k">files</div><div>${state.artifact.files.map(esc).join(' · ')}</div>
+  </div></div>` : `<div style="border:1px dashed var(--line);border-radius:7px;padding:12px;color:var(--faint);font:8px var(--mono);text-align:center">No artifact yet. Run Build or Dry run.</div>`;
+}
+
+function nowTime() {
+  const d = new Date();
+  return d.toTimeString().slice(0, 8);
+}
+
+function log(msg, cls = 'info', tab = 'build') {
+  state.logs.push({ time: nowTime(), msg, cls, tab });
+  if (state.logs.length > 200) state.logs.shift();
+  renderDock();
+}
+
+function renderDock() {
+  $$('#dockTabs [data-dock]').forEach(b => b.classList.toggle('on', b.dataset.dock === state.dockTab));
+  let rows = state.logs;
+  if (state.dockTab === 'problems') rows = rows.filter(l => l.cls === 'warn' || l.cls === 'err');
+  else if (state.dockTab !== 'build') rows = rows.filter(l => l.tab === state.dockTab);
+  else rows = rows.filter(l => l.tab === 'build');
+  $('#dockBody').innerHTML = rows.length ? rows.map(l => `<div class="log"><span class="t">${esc(l.time)}</span>  <span class="${esc(l.cls)}">${esc(l.msg)}</span></div>`).join('') : '<div class="log" style="color:var(--faint)">No entries.</div>';
+  const body = $('#dockBody');
+  body.scrollTop = body.scrollHeight;
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function runBuild() {
+  if (state.buildRunning) return;
+  state.buildRunning = true;
+  state.artifact = null;
+  state.buildSteps = makeSteps();
+  state.tab = 'build';
+  switchTab('build');
+  renderHeader(); renderInspector();
+  log(`build start · ${state.profile} · ${state.target}`, 'info', 'build');
+  for (let i = 0; i < state.buildSteps.length; i++) {
+    const s = state.buildSteps[i];
+    s.status = 'running';
+    renderBuild();
+    log(`${s.name.toLowerCase()} · running`, 'info', 'build');
+    await sleep(260);
+    s.status = 'ok';
+    s.time = `${120 + i * 37}ms`;
+    renderBuild();
+    log(`${s.name.toLowerCase()} · ok`, 'ok', 'build');
+  }
+  state.artifact = {
+    name: 'external-access.body.pkg',
+    version: '1.4.2',
+    size: state.profile === 'Debug' ? '42.8 MB' : state.profile === 'Signed' ? '17.9 MB' : '18.4 MB',
+    digest: 'sha256:9f2c4e71a8d3b6f0c1e5…',
+    signature: state.values.sign?.value ? 'valid' : 'unsigned',
+    channel: state.values.channel?.value || 'stable',
+    files: ['manifest.json', 'payload', 'blockmap', 'signature']
+  };
+  state.buildRunning = false;
+  renderBuild(); renderHeader(); renderInspector();
+  log('build complete · artifact ready', 'ok', 'build');
+  toast('Build complete · artifact ready');
+}
+
+function dryRun() {
+  switchTab('build');
+  state.buildSteps = makeSteps().map((s, i) => ({ ...s, status: i < 3 ? 'ok' : 'skipped', time: i < 3 ? `${90 + i * 21}ms` : '' }));
+  state.artifact = null;
+  renderBuild(); renderHeader(); renderInspector();
+  log('dry run · resolve / validate / plan ok', 'ok', 'build');
+  log('dry run · no artifact written', 'warn', 'build');
+  toast('Dry run · 0 errors · 2 warnings');
+}
+
+function pointInstanceJSON() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  return {
+    pointClass: `${c.id}@${c.version}`,
+    pointInstance: ins.id,
+    params: Object.fromEntries(c.params.map(p => [p.k, p.d])),
+    inputs: c.inputs,
+    outputs: c.outputs,
+    effects: c.effect,
+    permissions: c.permissions,
+    bindings: [ins.binding],
+    revision: ins.rev
+  };
+}
+
+function runPoint() {
+  const ins = selectedInstance();
+  log(`run ${ins.id} · input sample`, 'info', 'runs');
+  toast(`Running ${ins.id}`);
+  setTimeout(() => {
+    log(`run ${ins.id} · ok · 42ms`, 'ok', 'runs');
+    toast('Point run ok · 42ms');
+  }, 420);
+}
+
+function switchTab(tab) {
+  state.tab = tab;
+  $$('#tabs [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === `view-${tab}`));
+  if (tab === 'settings') renderSettings();
+  if (tab === 'build') renderBuild();
+  if (tab === 'matrix') renderMatrix();
+  if (tab === 'instances') renderInstances();
+  renderHeader();
+  renderInspector();
+}
+
+function selectClass(id) {
+  state.selectedId = id;
+  state.instanceId = selectedClass().instances[0].id;
+  state.tab = 'matrix';
+  switchTab('matrix');
+  renderSidebar();
+}
+
+function selectInstance(ins) {
+  state.selectedId = ins.classId;
+  state.instanceId = ins.id;
+  renderSidebar();
+  if (state.tab === 'matrix') renderMatrix();
+  if (state.tab === 'instances') renderInstances();
+  renderHeader();
+  renderInspector();
+  renderMatrix();
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+function copyText(text, label) {
+  const done = () => toast(label || '已复制');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  done();
+}
+
+function init() {
+  state.instanceId = selectedClass().instances[0].id;
+  state.buildSteps = makeSteps();
+  $('#profileSeg').innerHTML = PROFILE_NAMES.map(p => `<button data-profile="${p}" class="${p === state.profile ? 'on' : ''}">${p}</button>`).join('');
+  $$('#profileSeg [data-profile]').forEach(b => b.onclick = () => {
+    state.profile = b.dataset.profile;
+    initValues(state.profile);
+    state.dirty = false;
+    renderSettings(); renderHeader(); renderInspector();
+    log(`profile ${state.profile} loaded`, 'info', 'build');
+  });
+  $('#targetSel').addEventListener('change', e => {
+    state.target = e.target.value;
+    state.dirty = true;
+    renderSettings(); renderHeader(); renderInspector();
+    log(`target ${state.target}`, 'info', 'build');
+  });
+  $('#tabs').addEventListener('click', e => {
+    const b = e.target.closest('[data-tab]');
+    if (b) switchTab(b.dataset.tab);
+  });
+  $('#search').addEventListener('input', e => {
+    state.search = e.target.value;
+    renderSidebar(); renderMatrix(); renderInstances();
+  });
+  $('#buildBtn').addEventListener('click', runBuild);
+  $('#dockTabs').addEventListener('click', e => {
+    const b = e.target.closest('[data-dock]');
+    if (b) { state.dockTab = b.dataset.dock; renderDock(); }
+  });
+  $('#clearDock').addEventListener('click', () => { state.logs = []; renderDock(); });
+
+  renderSidebar();
+  renderHeader();
+  renderMatrix();
+  renderInstances();
+  renderSettings();
+  renderBuild();
+  renderInspector();
+  log('Point registry loaded · 12 classes / 26 instances', 'ok', 'build');
+  log('Selected point.vpn.status.default@r3', 'info', 'runs');
+  log('Build profile Release loaded', 'info', 'build');
+  log('2 warnings · 0 errors · signature pending', 'warn', 'build');
+}
+
+init();
+})();
+
+</script>
+</body>
+</html>

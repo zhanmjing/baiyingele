@@ -1,0 +1,91 @@
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="eyebrow">Panel Layer</div>
+      <h1>面板可视化</h1>
+      <p>PanelClass 是面板外壳契约；PanelInstance 是内容绑定 + 位置 + 尺寸 + 状态。点击面板区域可查看 anatomy。</p>
+      <div class="stats">
+        <div class="stat"><b id="statClasses">14</b><span>classes</span></div>
+        <div class="stat"><b id="statInstances">37</b><span>instances</span></div>
+        <div class="stat"><b id="statModes">6</b><span>modes</span></div>
+      </div>
+    </div>
+    <div class="search-wrap"><input class="search" id="search" placeholder="搜索 panel / 内容 / 实例…"></div>
+    <div class="filters" id="filters"></div>
+    <div class="classList" id="classList"></div>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="hero-icon" id="heroIcon">▦</div>
+        <div class="hero-text">
+          <div class="hero-kicker">PanelClass</div>
+          <h1 id="heroName">Inspector Panel</h1>
+          <div class="hero-id" id="heroId">panel.inspector@1.0.0</div>
+          <p class="hero-desc" id="heroDesc"></p>
+        </div>
+        <div class="hero-badges" id="heroBadges"></div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <span class="tool-label">Placement</span>
+      <div class="seg" id="modeSeg">
+        <button data-mode="right">right</button>
+        <button data-mode="left">left</button>
+        <button data-mode="bottom">bottom</button>
+        <button data-mode="floating">floating</button>
+        <button data-mode="modal">modal</button>
+        <button data-mode="sheet">sheet</button>
+      </div>
+      <span class="tool-label">Width</span>
+      <input type="range" id="width" min="300" max="620" value="380">
+      <b id="widthV" class="mono" style="font-size:9px;color:var(--cyan);min-width:38px">380</b>
+      <span class="tool-label">Instance</span>
+      <select id="instanceSel"></select>
+      <span class="tool-label">State</span>
+      <select id="stateSel">
+        <option value="ready">ready</option>
+        <option value="loading">loading</option>
+        <option value="empty">empty</option>
+        <option value="error">error</option>
+        <option value="streaming">streaming</option>
+        <option value="needsApproval">needsApproval</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="anatomy"> anatomy</label>
+      <label class="chk"><input type="checkbox" id="open" checked> open</label>
+    </div>
+
+    <div class="workbench-wrap">
+      <div class="workbench mode-right" id="workbench" style="--pw:380px">
+        <div class="panel-backdrop" id="backdrop"></div>
+        <aside class="fake-sidebar">
+          <div class="fs-logo">ATOM / workspace</div>
+          <div class="fs-item on">概览</div>
+          <div class="fs-item">点实例</div>
+          <div class="fs-item">线实例</div>
+          <div class="fs-item">面实例</div>
+          <div class="fs-item">体实例</div>
+          <div class="fs-item">运行历史</div>
+          <div class="fs-item">设置</div>
+        </aside>
+        <main class="fake-main">
+          <div class="fm-kicker">MAIN CONTENT · fake app shell</div>
+          <h2>编辑工作区</h2>
+          <p>这是面板旁边的主内容。面板打开时，主内容让出宽度；面板关闭时，空间回收。切换右侧/左侧/底部/浮动/modal/sheet 看布局变化。</p>
+          <div class="fm-cards">
+            <div class="fm-card"><b>Point · 22</b><span></span><span class="short"></span><span></span></div>
+            <div class="fm-card"><b>Flow · 6</b><span></span><span class="short"></span><span></span></div>
+            <div class="fm-card"><b>Body · 2</b><span></span><span class="short"></span><span></span></div>
+          </div>
+        </main>
+        <section class="panel-shell" id="panelShell"></section>
+      </div>
+    </div>
+  </main>
+
+  <aside id="inspector"></aside>
+</div>
+<div class="toast" id="toast"></div>

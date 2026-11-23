@@ -1,0 +1,58 @@
+<body>
+<div id="app">
+  <aside id="panel">
+    <div class="brand">
+      <h1>Atom 3D Axes</h1>
+      <p>X 轴：类 · Y 轴：实例 · Z 轴：点 / 线 / 面 / 体。每个 Z 平面是一层；X 方向是类，Y 方向是该类的实例。</p>
+    </div>
+
+    <section class="card">
+      <h2>坐标轴</h2>
+      <div class="row"><span>X · 类</span><b>class</b></div>
+      <div class="row"><span>Y · 实例</span><b>instance</b></div>
+      <div class="row"><span>Z · 层</span><b>point → body</b></div>
+      <p style="margin:8px 0 0;color:var(--faint);font-size:10.5px;line-height:1.55">空心方块 = 类定义；实心发光点 = 实例；虚线 = 类→实例或体→面→线→点的组合关系。</p>
+    </section>
+
+    <section class="card">
+      <h2>视图</h2>
+      <div class="row"><span>Z 层间距</span><b id="zScaleV">100%</b></div>
+      <input type="range" id="zScale" min="60" max="160" value="100">
+      <div class="check"><input type="checkbox" id="showCompose" checked> 显示组合关系</div>
+      <div class="check"><input type="checkbox" id="showLabels" checked> 显示类标签</div>
+      <div class="check"><input type="checkbox" id="showGrid" checked> 显示层网格</div>
+      <div class="check"><input type="checkbox" id="autoRotate" checked> 自动旋转</div>
+      <div style="margin-top:8px"><button class="btn ghost" id="resetBtn">重置视角</button></div>
+    </section>
+
+    <section class="card">
+      <h2>当前选择</h2>
+      <div class="inspector" id="inspector">
+        <div class="empty">点击空心类方块或实心实例点。拖拽旋转，滚轮缩放。</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>图例</h2>
+      <div class="legend">
+        <span><i class="sq"></i>类定义</span>
+        <span><i class="dot" style="background:#22c55e"></i>点</span>
+        <span><i class="dot" style="background:#8b5cf6"></i>线</span>
+        <span><i class="dot" style="background:#3b82f6"></i>面</span>
+        <span><i class="dot" style="background:#f59e0b"></i>体</span>
+      </div>
+    </section>
+  </aside>
+
+  <main id="stage">
+    <canvas id="gl"></canvas>
+    <div class="hud-top">
+      <div class="name">class ↔ instance ↔ layer</div>
+      <div class="meta">16 classes · 24 instances · 4 Z layers</div>
+      <div class="axes"><span><b>X</b> 类</span><span><b>Y</b> 实例</span><span><b>Z</b> 点/线/面/体</span></div>
+      <div class="chips"><span class="pill point">point</span><span class="pill line">line</span><span class="pill surface">surface</span><span class="pill body">body</span></div>
+    </div>
+    <div class="hint">拖拽旋转 · 滚轮缩放 · 点击类/实例 · <kbd>R</kbd> 重置</div>
+    <div class="status" id="status">idle · <b>0</b> selected</div>
+  </main>
+</div>

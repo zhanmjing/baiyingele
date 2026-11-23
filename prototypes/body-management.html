@@ -1,0 +1,2161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Body Management · 体层管理</title>
+<style>
+:root{--bg:#070b12;--panel:#0d1420;--card:#111a29;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.26);--ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;--amber:#f59e0b;--green:#22c55e;--red:#ef4444;--mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;--font:"Segoe UI","Microsoft YaHei",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}button,input,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}
+#app{display:grid;grid-template-rows:54px minmax(0,1fr);height:100%}
+header{display:flex;align-items:center;gap:10px;padding:0 13px;background:linear-gradient(180deg,#0e1725,#0a111c);border-bottom:1px solid var(--line);position:relative;z-index:10}
+.brand{display:flex;align-items:center;gap:8px;min-width:190px}.brand .mark{width:27px;height:27px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#08111c;font:800 12px var(--mono)}.brand b{font-size:13px}.brand span{display:block;font:7px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.top-stats{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-left:auto}.mini{font:6.8px var(--mono);padding:2px 4px;border-radius:3px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c;white-space:nowrap}.mini.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.06)}.mini.green{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.06)}.mini.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.06)}.mini.violet{color:#c4b5fd;border-color:rgba(139,92,246,.24);background:rgba(139,92,246,.06)}
+.btn{border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:6px;padding:5px 8px;font-size:8.5px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:3px;cursor:pointer}.btn:hover{color:#dbeafe;border-color:var(--line2)}.btn.primary{border-color:rgba(139,92,246,.36);background:rgba(139,92,246,.12);color:#ddd6fe}.btn.small{padding:3px 5px;font-size:7px}.btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.25)}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr) 330px;min-height:0}
+.left{border-right:1px solid var(--line);background:#0a111c;overflow-y:auto;padding:10px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.left::-webkit-scrollbar,main::-webkit-scrollbar,#inspector::-webkit-scrollbar{width:7px}.left::-webkit-scrollbar-thumb,main::-webkit-scrollbar-thumb,#inspector::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.pane-head{display:flex;align-items:center;gap:5px;margin:6px 2px 5px}.pane-head b{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.pane-head .count{font:6.5px var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:3px;padding:1px 3px}.pane-head button{margin-left:auto;border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:4px;width:18px;height:18px;line-height:1;font-size:10px}
+.flow-item{border:1px solid var(--line);border-radius:6px;background:#0e1826;padding:6px 7px;margin-bottom:4px;cursor:pointer}.flow-item:hover{border-color:var(--line2);background:#121f30}.flow-item.on{border-color:rgba(139,92,246,.45);background:rgba(139,92,246,.08)}.fi-top{display:flex;align-items:center;gap:4px}.fi-name{font-size:9px;font-weight:650;color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fi-ver{font:6px var(--mono);color:var(--faint);margin-left:auto;white-space:nowrap}.fi-id{font:6px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}.fi-meta{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}.fi-badge{font:6px var(--mono);color:#8fa2bb;border:1px solid var(--line);border-radius:2px;padding:1px 2px}
+.inst-item{border:1px solid var(--line);border-radius:5px;background:#0b1420;padding:5px 6px;margin-bottom:3px;cursor:pointer}.inst-item:hover{background:#121f30}.inst-item.on{border-color:rgba(34,211,238,.38);background:rgba(34,211,238,.06)}.ii-top{display:flex;align-items:center;gap:4px}.ii-name{font-size:8px;color:#b9c7da;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ii-rev{font:6px var(--mono);color:#a5f3fc;margin-left:auto}.ii-id{font:6px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}.ii-status{font:6px var(--mono);padding:1px 2px;border-radius:2px;border:1px solid var(--line);color:#86efac;margin-top:3px;display:inline-block}.ii-status.draft{color:#fcd34d;border-color:rgba(245,158,11,.22)}.ii-status.archived{color:#94a3b8}
+main{min-width:0;overflow-y:auto;padding:14px 16px 28px;background:radial-gradient(circle at 30% 0%,rgba(139,92,246,.045),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.hero{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px}.hero-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#171f33;border:1px solid rgba(139,92,246,.25);color:#c4b5fd;font:800 13px var(--mono);flex:0 0 38px}.hero-main{min-width:0;flex:1}.kicker{font:7px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}.hero h1{font-size:18px;margin:2px 0 2px}.hero p{margin:0;color:#94a8c0;font-size:10px;line-height:1.5}.hero-actions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.mode-tabs{display:flex;gap:2px;border:1px solid var(--line);border-radius:5px;padding:2px;background:#0a1420;align-self:flex-start}.mode-tabs button{border:none;background:transparent;color:#7e91a7;border-radius:3px;padding:4px 6px;font-size:7.5px}.mode-tabs button.on{background:rgba(139,92,246,.14);color:#ddd6fe}
+.stats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.graph-panel{border:1px solid var(--line);border-radius:8px;background:#0a1420;margin-bottom:9px;overflow:hidden}.panel-head{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}.panel-head b{font-size:8.5px;color:#dbeafe}.panel-head .sub{font:6.8px var(--mono);color:var(--faint)}.panel-head .right{margin-left:auto;display:flex;gap:4px;align-items:center}.graph-scroll{overflow:auto;max-height:440px;min-height:250px;background:#08101b}.canvas{position:relative;margin:12px}.canvas svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.node{position:absolute;border:1px solid var(--line2);border-radius:7px;background:#101b2a;padding:7px 7px 6px;cursor:pointer;transition:border-color .12s,background .12s,box-shadow .12s;overflow:hidden}.node:hover{background:#152238}.node.selected{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(34,211,238,.22),0 6px 18px rgba(0,0,0,.24)}.node.point.impl{border-color:rgba(34,197,94,.42)}.node.point.placeholder{border-style:dashed;border-color:rgba(245,158,11,.42);background:rgba(35,27,16,.7)}.node.gate{border-color:rgba(139,92,246,.38);background:rgba(24,20,38,.8)}.node.subflow{border-color:rgba(59,130,246,.4);background:rgba(15,26,45,.8)}.n-kind{font:6px var(--mono);letter-spacing:.08em;color:var(--faint);text-transform:uppercase}.n-label{font-size:9px;font-weight:650;color:#dbeafe;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-meta{font:6.5px var(--mono);color:#8fa2bb;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-pin{font:6px var(--mono);color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.n-badge{position:absolute;right:4px;bottom:4px;font:5.5px var(--mono);padding:1px 2px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#0a1420}.n-badge.ok{color:#86efac;border-color:rgba(34,197,94,.28)}.n-badge.sub{color:#93c5fd;border-color:rgba(59,130,246,.28)}.n-badge.ph{color:#fcd34d;border-color:rgba(245,158,11,.28)}.n-jump{position:absolute;right:4px;top:4px;width:16px;height:16px;border-radius:4px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.09);color:#86efac;font-size:8px;line-height:1;padding:0}
+.legend{display:flex;gap:9px;flex-wrap:wrap;padding:5px 8px;border-top:1px solid var(--line);font:6.8px var(--mono);color:var(--faint)}.legend span{display:flex;align-items:center;gap:3px}.legend i{width:6px;height:6px;border-radius:2px;display:inline-block}.legend i.impl{background:var(--green)}.legend i.ph{background:var(--amber)}.legend i.gate{background:var(--violet)}.legend i.sub{background:var(--blue)}
+.bind-panel{border:1px solid var(--line);border-radius:8px;background:#0a1420;overflow:hidden}.table-wrap{overflow:auto;max-height:290px}table{width:100%;border-collapse:collapse;font-size:8px}th{position:sticky;top:0;z-index:2;text-align:left;font:7px var(--mono);color:var(--faint);padding:6px 7px;border-bottom:1px solid var(--line);background:#0d1926;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}td{padding:6px 7px;border-bottom:1px solid rgba(148,163,184,.07);color:#9fb1c8;vertical-align:middle}.tr-node{cursor:pointer}.tr-node:hover td{background:#101d2c}.tr-node.on td{background:rgba(34,211,238,.05)}.mono{font-family:var(--mono);font-size:7px;color:#8fa2bb}.t-label{font-size:8.5px;color:#dbeafe}.t-sub{display:block;font:6.3px var(--mono);color:var(--faint);margin-top:1px;word-break:break-all}.pill{font:6px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);white-space:nowrap}.pill.ok{color:#86efac;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.05)}.pill.ph{color:#fcd34d;border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.05)}.pill.gate{color:#c4b5fd;border-color:rgba(139,92,246,.28);background:rgba(139,92,246,.06)}.pill.sub{color:#93c5fd;border-color:rgba(59,130,246,.28);background:rgba(59,130,246,.06)}.plink{font:6.8px var(--mono);color:#86efac;border:1px solid rgba(34,197,94,.28);border-radius:3px;padding:2px 4px;background:rgba(34,197,94,.06);white-space:nowrap}.plink:hover{background:rgba(34,197,94,.12)}
+#inspector{border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:12px 12px 32px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.insp-kicker{font:7px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}.insp-title{font-size:13px;margin:4px 0 2px;color:#dbeafe}.insp-id{font:8px var(--mono);color:#c4b5fd;word-break:break-all;margin-bottom:7px}.insp-section{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:8px;margin-bottom:7px}.lh{font:7px var(--mono);color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}.kv{display:grid;grid-template-columns:60px 1fr;gap:3px 6px;font-size:8px;line-height:1.45}.kv .k{color:var(--faint);font-family:var(--mono)}.kv .v{color:#b9c7da;word-break:break-all}.note{font-size:7.5px;line-height:1.55;color:var(--faint);border-left:2px solid rgba(245,158,11,.4);padding-left:6px;margin-top:6px}.actions{display:flex;gap:4px;flex-wrap:wrap}.actions .btn{flex:1;min-width:70px}.insp-list{border:1px solid var(--line);border-radius:5px;overflow:auto;max-height:190px;background:#0a1420}.insp-row{display:flex;justify-content:space-between;gap:5px;padding:4px 6px;border-bottom:1px solid rgba(148,163,184,.07);font:6.8px var(--mono);color:#8fa2bb;cursor:pointer}.insp-row:hover,.insp-row.on{background:#121f30;color:#dbeafe}.empty{padding:24px 8px;text-align:center;color:var(--faint);font-size:9px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:7px 11px;border-radius:7px;font-size:9px;z-index:60;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1250px){.layout{grid-template-columns:225px minmax(0,1fr)}#inspector{display:none}}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.left{display:none}main{padding:10px}.hero{flex-wrap:wrap}.top-stats{display:none}}
+
+/* ===== body management ===== */
+.panel-search{width:100%;border:1px solid var(--line);border-radius:5px;background:#08111b;color:#dbeafe;font:7px var(--mono);padding:5px 6px;outline:none;margin-bottom:6px}.panel-search::placeholder{color:#5f7188}
+.body-tabbar{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:0 0 8px;overflow:auto}.body-tab{border:none;border-bottom:2px solid transparent;background:transparent;color:#7e91a7;padding:5px 8px;font:7px var(--mono);white-space:nowrap}.body-tab:hover{color:#dbeafe}.body-tab.on{color:#a5f3fc;border-bottom-color:#22d3ee}
+.body-summary{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,#111c2c,#0b1420);padding:9px;margin-bottom:8px}.body-summary .bi{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:#162234;border:1px solid var(--line2);font-size:16px;color:#a5f3fc;flex:0 0 36px}.body-summary .bm{min-width:0;flex:1}.body-summary .bn{font-size:10px;color:#dbeafe;font-weight:650}.body-summary .bid{font:6.5px var(--mono);color:#5f7188;margin-top:2px}.body-summary .bd{font-size:7px;color:#8fa2bb;margin-top:4px;line-height:1.45}
+.comp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:8px}.comp-col{border:1px solid var(--line);border-radius:6px;background:#0d1826;padding:6px;min-width:0}.comp-head{display:flex;align-items:center;gap:4px;font:6.5px var(--mono);color:#5f7188;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}.comp-head b{color:#8fa2bb}.comp-chip{display:block;border:1px solid var(--line);border-radius:4px;background:#0a1420;color:#9fb1c8;font:6px var(--mono);padding:3px 4px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none}.comp-chip:hover{border-color:rgba(34,211,238,.3);color:#dbeafe}.comp-chip.mapped{border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.04);color:#86efac}.comp-chip.ph{border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.04);color:#fcd34d}.comp-chip .arrow{float:right;color:#5f7188}
+.body-stack{position:relative;border:1px solid var(--line);border-radius:8px;background:#08111b;padding:12px;margin-bottom:8px;display:grid;grid-template-columns:1fr 110px 1fr;align-items:center;gap:8px;min-height:220px}.stack-col{display:flex;flex-direction:column;gap:4px}.stack-core{border:1px solid rgba(34,211,238,.28);border-radius:9px;background:rgba(34,211,238,.06);padding:9px;text-align:center;box-shadow:0 12px 28px rgba(0,0,0,.2)}.stack-core .sc-i{font-size:22px;color:#a5f3fc}.stack-core .sc-n{font-size:8px;color:#dbeafe;margin-top:3px}.stack-core .sc-id{font:5.8px var(--mono);color:#5f7188;margin-top:2px;word-break:break-all}.stack-line{height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,.28),transparent);margin:3px 0}.stack-chip{border:1px solid var(--line);border-radius:4px;background:#0a1420;padding:3px 5px;font:6px var(--mono);color:#8fa2bb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stack-chip.mapped{color:#86efac;border-color:rgba(34,197,94,.24)}.stack-chip.ph{color:#fcd34d;border-color:rgba(245,158,11,.22)}
+.instance-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}.instance-card{border:1px solid var(--line);border-radius:6px;background:#0d1826;padding:6px;cursor:pointer}.instance-card:hover{border-color:var(--line2);background:#122033}.instance-card.on{border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.06)}.ic-top{display:flex;align-items:center;gap:4px}.ic-name{font-size:8px;color:#dbeafe;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ic-rev{font:6px var(--mono);color:#a5f3fc;margin-left:auto}.ic-desc{font-size:6.5px;color:#8fa2bb;line-height:1.45;margin-top:3px;max-height:28px;overflow:hidden}.ic-meta{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px}.ic-badge{font:5.5px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 2px;color:#8fa2bb}.ic-badge.on{color:#86efac;border-color:rgba(34,197,94,.24)}.ic-badge.draft{color:#fcd34d;border-color:rgba(245,158,11,.24)}
+.manifest-pre{margin:0;border:1px solid var(--line);border-radius:7px;background:#08111c;padding:8px;font:6.5px/1.6 var(--mono);color:#a9c4df;white-space:pre-wrap;word-break:break-word;max-height:420px;overflow:auto}
+.life-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:8px}.life-item{border:1px solid var(--line);border-radius:6px;background:#0d1826;padding:7px}.life-item label{display:block;font:5.8px var(--mono);color:#5f7188;text-transform:uppercase;margin-bottom:3px}.life-item select,.life-item input{width:100%;border:1px solid var(--line);border-radius:3px;background:#08111b;color:#9fb1c8;font:6.5px var(--mono);padding:3px 4px;outline:none}.life-item .val{font:8px var(--mono);color:#dbeafe;margin-top:2px}
+.settings-list{border:1px solid var(--line);border-radius:6px;background:#0d1826;overflow:hidden;margin-bottom:8px}.setting-row{display:flex;align-items:center;gap:5px;padding:5px 7px;border-bottom:1px solid rgba(148,163,184,.07);font:6.5px var(--mono);color:#8fa2bb}.setting-row:last-child{border-bottom:none}.setting-row .sk{color:#a5f3fc;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}.setting-row .sv{color:#5f7188}.setting-row button{border:1px solid var(--line);border-radius:2px;background:#111c2b;color:#8fa2bb;padding:1px 3px;font:5.5px var(--mono)}
+.prio-badge{font:6px var(--mono);border:1px solid var(--line);border-radius:2px;padding:1px 3px}.prio-badge.P0{color:#fca5a5;border-color:rgba(239,68,68,.28);background:rgba(239,68,68,.05)}.prio-badge.P1{color:#fcd34d;border-color:rgba(245,158,11,.26);background:rgba(245,158,11,.04)}.prio-badge.P2{color:#93c5fd;border-color:rgba(59,130,246,.24);background:rgba(59,130,246,.04)}
+.modal-overlay{position:fixed;inset:0;background:rgba(2,6,12,.68);backdrop-filter:blur(3px);z-index:50;display:grid;place-items:center;padding:14px}.modal{width:min(560px,100%);max-height:90vh;overflow:auto;border:1px solid var(--line2);border-radius:9px;background:#0d1724;padding:13px;box-shadow:0 24px 70px rgba(0,0,0,.55)}.modal h3{margin:0 0 4px;font-size:13px;color:#dbeafe}.modal p{margin:0 0 8px;font-size:7.5px;color:#8fa2bb;line-height:1.5}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.form-grid .full{grid-column:1/-1}.field label{display:block;font:6px var(--mono);color:#5f7188;text-transform:uppercase;margin-bottom:2px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:4px;background:#08111b;color:#dbeafe;font:7px var(--mono);padding:5px 6px;outline:none}.field textarea{min-height:40px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:5px;margin-top:9px}
+.sec-head{display:flex;align-items:center;gap:5px;margin:0 0 6px}.sec-head b{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}.sec-head .right{margin-left:auto;display:flex;gap:4px;align-items:center}
+.tab-mini{border:1px solid var(--line);border-radius:3px;background:#0d1826;color:#7e91a7;font:6px var(--mono);padding:2px 4px;margin:0 2px 2px 0;cursor:pointer}.tab-mini.on{border-color:rgba(34,211,238,.28);background:rgba(34,211,238,.07);color:#a5f3fc}.tab-mini:hover{color:#dbeafe}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><div class="mark">◈</div><div><b>Body Management</b><span>BodyClass / BodyInstance / Composition / Lifecycle</span></div></div>
+    <div class="top-stats" id="topStats"></div>
+    <a class="btn" href="settings-workspace-settings-only.html#body">⚙ 设置</a>
+  </header>
+  <div class="layout">
+    <aside class="left"><div id="leftPane"></div></aside>
+    <main id="main"></main>
+    <aside id="inspector"></aside>
+  </div>
+</div>
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const BODY_DATA = {
+  "classes": [
+    {
+      "id": "body.file-preview",
+      "name": "文件预览",
+      "icon": "◈",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "任意文件预览：文本、图片、PDF、视频、音频统一窗口。",
+      "flows": [
+        "flow.preview-file"
+      ],
+      "surfaces": [
+        "surface.preview-window"
+      ],
+      "points": [
+        "file.read",
+        "render.text",
+        "render.image"
+      ],
+      "settings": [
+        "preview.maxBytes",
+        "preview.encoding",
+        "preview.zoom"
+      ],
+      "perms": [
+        "fs.read",
+        "window.open"
+      ],
+      "instances": [
+        {
+          "label": "text",
+          "desc": "文本预览，支持编码/换行识别",
+          "rev": 1,
+          "acts": [
+            ".txt",
+            ".log",
+            ".json"
+          ],
+          "settings": "renderer=text · UTF-8",
+          "status": "active"
+        },
+        {
+          "label": "markdown",
+          "desc": "Markdown 渲染与代码块",
+          "rev": 1,
+          "acts": [
+            ".md",
+            ".markdown"
+          ],
+          "settings": "renderer=markdown · sanitize=true",
+          "status": "active"
+        },
+        {
+          "label": "image",
+          "desc": "图片预览，fit/zoom",
+          "rev": 1,
+          "acts": [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp",
+            ".gif"
+          ],
+          "settings": "renderer=image · fit=contain",
+          "status": "active"
+        },
+        {
+          "label": "pdf",
+          "desc": "PDF 分页/缩放",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "renderer=pdf · page=1 · zoom=fit",
+          "status": "active"
+        },
+        {
+          "label": "video",
+          "desc": "视频播放器，流式读取",
+          "rev": 1,
+          "acts": [
+            ".mp4",
+            ".webm",
+            ".mkv"
+          ],
+          "settings": "renderer=video · stream=true",
+          "status": "active"
+        },
+        {
+          "label": "audio",
+          "desc": "音频波形与播放",
+          "rev": 1,
+          "acts": [
+            ".mp3",
+            ".wav",
+            ".flac"
+          ],
+          "settings": "renderer=audio · waveform=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.text",
+        "smoke.image",
+        "smoke.pdf",
+        "contract.renderer"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.ocr",
+      "name": "OCR 识别",
+      "icon": "⌘",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "识别文字、数学公式、二维码、表格与手写内容。",
+      "flows": [
+        "flow.ocr.recognize"
+      ],
+      "surfaces": [
+        "surface.ocr-result"
+      ],
+      "points": [
+        "image.preprocess",
+        "ocr.text",
+        "ocr.table"
+      ],
+      "settings": [
+        "ocr.language",
+        "ocr.confidenceThreshold",
+        "ocr.outputFormat"
+      ],
+      "perms": [
+        "screen.capture",
+        "fs.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "text",
+          "desc": "普通文字识别",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+O",
+            "screenshot"
+          ],
+          "settings": "mode=text · language=auto",
+          "status": "active"
+        },
+        {
+          "label": "math",
+          "desc": "数学公式 → LaTeX",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+M",
+            "screenshot"
+          ],
+          "settings": "mode=math · output=latex",
+          "status": "active"
+        },
+        {
+          "label": "qr",
+          "desc": "二维码/条码解码",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Q",
+            "screenshot"
+          ],
+          "settings": "mode=qr · formats=qr,code128",
+          "status": "active"
+        },
+        {
+          "label": "table",
+          "desc": "表格结构 → CSV",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+T",
+            "screenshot"
+          ],
+          "settings": "mode=table · output=markdown",
+          "status": "active"
+        },
+        {
+          "label": "handwriting",
+          "desc": "手写内容识别",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+H"
+          ],
+          "settings": "mode=handwriting · threshold=0.4",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.text",
+        "smoke.qr",
+        "smoke.table",
+        "contract.recognizer"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.image-resizer",
+      "name": "图片尺寸",
+      "icon": "▦",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "批量图片尺寸调整，预设化输出。",
+      "flows": [
+        "flow.resize-image"
+      ],
+      "surfaces": [
+        "surface.resize-dialog"
+      ],
+      "points": [
+        "file.read.image",
+        "image.resize",
+        "file.write.image"
+      ],
+      "settings": [
+        "resize.width",
+        "resize.height",
+        "resize.format",
+        "resize.quality"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "web",
+          "desc": "1920px 长边 / JPEG 85%",
+          "rev": 2,
+          "acts": [
+            ".jpg",
+            ".png",
+            ".webp"
+          ],
+          "settings": "suffix=-web · quality=85",
+          "status": "active"
+        },
+        {
+          "label": "thumbnail",
+          "desc": "256×256 cover / WebP 80%",
+          "rev": 1,
+          "acts": [
+            ".jpg",
+            ".png"
+          ],
+          "settings": "fit=cover · quality=80",
+          "status": "active"
+        },
+        {
+          "label": "avatar",
+          "desc": "512×512 cover / PNG",
+          "rev": 1,
+          "acts": [
+            ".jpg",
+            ".png"
+          ],
+          "settings": "fit=cover · format=png",
+          "status": "active"
+        },
+        {
+          "label": "email",
+          "desc": "1280px 长边 / ≤500KB",
+          "rev": 1,
+          "acts": [
+            ".jpg",
+            ".png"
+          ],
+          "settings": "maxBytes=512000 · quality=75",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.web",
+        "smoke.avatar",
+        "contract.resize"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.batch-rename",
+      "name": "批量重命名",
+      "icon": "⌁",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "批量重命名：预览、冲突检测、撤销。",
+      "flows": [
+        "flow.rename-files"
+      ],
+      "surfaces": [
+        "surface.rename-dialog",
+        "surface.diff"
+      ],
+      "points": [
+        "file.list",
+        "rename.plan",
+        "file.move"
+      ],
+      "settings": [
+        "rename.pattern",
+        "rename.sequenceStart",
+        "rename.dryRun"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "regex",
+          "desc": "正则替换",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=regex · dryRun=true",
+          "status": "active"
+        },
+        {
+          "label": "sequence",
+          "desc": "IMG_0001 序列",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=sequence · start=1",
+          "status": "active"
+        },
+        {
+          "label": "date-prefix",
+          "desc": "日期前缀",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=date · format=YYYY-MM-DD",
+          "status": "active"
+        },
+        {
+          "label": "extension-normalize",
+          "desc": "扩展名统一",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=extension · .jpeg→.jpg",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.regex",
+        "smoke.sequence",
+        "contract.preview"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.pdf-toolkit",
+      "name": "PDF 工具",
+      "icon": "▤",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "PDF 合并、拆分、压缩、旋转。",
+      "flows": [
+        "flow.pdf-op"
+      ],
+      "surfaces": [
+        "surface.pdf-workspace"
+      ],
+      "points": [
+        "pdf.read",
+        "pdf.merge",
+        "pdf.write"
+      ],
+      "settings": [
+        "pdf.output",
+        "pdf.quality",
+        "pdf.pageRange"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "merge",
+          "desc": "合并多个 PDF",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=merge · sort=name",
+          "status": "active"
+        },
+        {
+          "label": "split",
+          "desc": "按页拆分",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=split · range=1-3",
+          "status": "active"
+        },
+        {
+          "label": "compress",
+          "desc": "压缩 PDF",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=compress · quality=ebook",
+          "status": "active"
+        },
+        {
+          "label": "rotate",
+          "desc": "旋转/整理页面",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=rotate · angle=90",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.merge",
+        "smoke.split",
+        "contract.pdf"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.media-converter",
+      "name": "媒体转换",
+      "icon": "▷",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "图片、视频、音频格式转换。",
+      "flows": [
+        "flow.convert-media"
+      ],
+      "surfaces": [
+        "surface.convert-dialog"
+      ],
+      "points": [
+        "media.probe",
+        "media.transcode",
+        "file.write"
+      ],
+      "settings": [
+        "media.format",
+        "media.bitrate",
+        "media.preset"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "image",
+          "desc": "PNG / JPG / WebP",
+          "rev": 1,
+          "acts": [
+            ".png",
+            ".jpg",
+            ".webp"
+          ],
+          "settings": "preset=image · quality=85",
+          "status": "active"
+        },
+        {
+          "label": "video",
+          "desc": "MP4 / WebM",
+          "rev": 1,
+          "acts": [
+            ".mp4",
+            ".webm",
+            ".mkv"
+          ],
+          "settings": "preset=video · h264",
+          "status": "active"
+        },
+        {
+          "label": "audio",
+          "desc": "MP3 / WAV",
+          "rev": 1,
+          "acts": [
+            ".mp3",
+            ".wav",
+            ".flac"
+          ],
+          "settings": "preset=audio · 192k",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.image",
+        "smoke.video",
+        "contract.transcode"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.file-organizer",
+      "name": "文件整理",
+      "icon": "⌸",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "按类型/日期整理下载、截图与重复文件。",
+      "flows": [
+        "flow.organize-files"
+      ],
+      "surfaces": [
+        "surface.organize-preview"
+      ],
+      "points": [
+        "file.scan",
+        "file.classify",
+        "file.move"
+      ],
+      "settings": [
+        "organize.rule",
+        "organize.dryRun",
+        "organize.conflict"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "downloads",
+          "desc": "按类型/日期整理下载",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "rule=type-date · dryRun=true",
+          "status": "active"
+        },
+        {
+          "label": "screenshots",
+          "desc": "截图归档",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "rule=screenshot · month=true",
+          "status": "active"
+        },
+        {
+          "label": "duplicates",
+          "desc": "重复文件检测",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "rule=hash · action=report",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.downloads",
+        "smoke.duplicates",
+        "contract.preview"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.advanced-paste",
+      "name": "高级粘贴",
+      "icon": "⌫",
+      "cat": "clipboard",
+      "prio": "P0",
+      "desc": "剪贴板内容 → 目标格式。",
+      "flows": [
+        "flow.paste-transform"
+      ],
+      "surfaces": [
+        "surface.paste-preview"
+      ],
+      "points": [
+        "clipboard.read",
+        "text.transform",
+        "clipboard.write"
+      ],
+      "settings": [
+        "paste.format",
+        "paste.aiModel",
+        "paste.preview"
+      ],
+      "perms": [
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "plain",
+          "desc": "去格式纯文本",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+V"
+          ],
+          "settings": "format=plain · preview=false",
+          "status": "active"
+        },
+        {
+          "label": "markdown",
+          "desc": "HTML → Markdown",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+M"
+          ],
+          "settings": "format=markdown · preview=true",
+          "status": "active"
+        },
+        {
+          "label": "json",
+          "desc": "JSON 格式化/压缩",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+J"
+          ],
+          "settings": "format=json · indent=2",
+          "status": "active"
+        },
+        {
+          "label": "ai",
+          "desc": "AI 改写/摘要",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+A"
+          ],
+          "settings": "format=ai · model=local",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.plain",
+        "smoke.markdown",
+        "contract.transform"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.clipboard-history",
+      "name": "剪贴板历史",
+      "icon": "▣",
+      "cat": "clipboard",
+      "prio": "P1",
+      "desc": "最近复制内容、固定片段与搜索。",
+      "flows": [
+        "flow.clipboard-history"
+      ],
+      "surfaces": [
+        "surface.clipboard-list"
+      ],
+      "points": [
+        "clipboard.watch",
+        "store.query",
+        "clipboard.write"
+      ],
+      "settings": [
+        "clipboard.maxItems",
+        "clipboard.retention",
+        "clipboard.excludeSecrets"
+      ],
+      "perms": [
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "recent",
+          "desc": "最近 100 条",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+V"
+          ],
+          "settings": "maxItems=100 · retention=7d",
+          "status": "active"
+        },
+        {
+          "label": "pinned",
+          "desc": "固定片段",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+P"
+          ],
+          "settings": "maxItems=20 · pinned=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.recent",
+        "contract.secrets"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.color-picker",
+      "name": "取色器",
+      "icon": "◉",
+      "cat": "clipboard",
+      "prio": "P0",
+      "desc": "屏幕取色，HEX/RGB/HSL 与调色板。",
+      "flows": [
+        "flow.pick-color"
+      ],
+      "surfaces": [
+        "surface.color-inspector"
+      ],
+      "points": [
+        "screen.pick",
+        "color.convert",
+        "clipboard.write"
+      ],
+      "settings": [
+        "color.format",
+        "color.copyOnPick",
+        "color.history"
+      ],
+      "perms": [
+        "screen.capture",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "hex",
+          "desc": "HEX/RGB/HSL 取色",
+          "rev": 1,
+          "acts": [
+            "Win+Shift+C"
+          ],
+          "settings": "format=hex · copy=true",
+          "status": "active"
+        },
+        {
+          "label": "palette",
+          "desc": "屏幕取色板",
+          "rev": 1,
+          "acts": [
+            "Win+Shift+P"
+          ],
+          "settings": "palette=12 · history=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.hex",
+        "smoke.palette"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.screen-ruler",
+      "name": "屏幕标尺",
+      "icon": "⌗",
+      "cat": "clipboard",
+      "prio": "P1",
+      "desc": "像素、英寸、角度测量。",
+      "flows": [
+        "flow.measure-screen"
+      ],
+      "surfaces": [
+        "surface.hud.ruler"
+      ],
+      "points": [
+        "screen.region",
+        "measure.length",
+        "measure.angle"
+      ],
+      "settings": [
+        "ruler.unit",
+        "ruler.snap",
+        "ruler.theme"
+      ],
+      "perms": [
+        "screen.capture"
+      ],
+      "instances": [
+        {
+          "label": "px",
+          "desc": "像素测量",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+R"
+          ],
+          "settings": "unit=px · snap=4",
+          "status": "active"
+        },
+        {
+          "label": "inches",
+          "desc": "英寸/厘米",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+I"
+          ],
+          "settings": "unit=inch · dpi=96",
+          "status": "active"
+        },
+        {
+          "label": "angle",
+          "desc": "角度测量",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+G"
+          ],
+          "settings": "unit=deg · snap=1",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.px",
+        "smoke.angle"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.window-layout",
+      "name": "窗口布局",
+      "icon": "▥",
+      "cat": "window",
+      "prio": "P0",
+      "desc": "把窗口摆成开发/会议/超宽布局。",
+      "flows": [
+        "flow.layout-windows"
+      ],
+      "surfaces": [
+        "surface.layout-editor"
+      ],
+      "points": [
+        "window.list",
+        "window.move",
+        "window.resize"
+      ],
+      "settings": [
+        "layout.preset",
+        "layout.monitor",
+        "layout.gap"
+      ],
+      "perms": [
+        "process",
+        "window"
+      ],
+      "instances": [
+        {
+          "label": "dev",
+          "desc": "VS Code + 终端 + 浏览器",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+1"
+          ],
+          "settings": "preset=dev · monitor=main",
+          "status": "active"
+        },
+        {
+          "label": "meeting",
+          "desc": "会议 + 笔记",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+2"
+          ],
+          "settings": "preset=meeting · monitor=main",
+          "status": "active"
+        },
+        {
+          "label": "ultrawide",
+          "desc": "超宽三栏",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+3"
+          ],
+          "settings": "preset=ultrawide · gap=8",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.dev",
+        "smoke.ultrawide"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.always-on-top",
+      "name": "窗口置顶",
+      "icon": "⌃",
+      "cat": "window",
+      "prio": "P1",
+      "desc": "钉住窗口或屏幕区域。",
+      "flows": [
+        "flow.pin-window"
+      ],
+      "surfaces": [
+        "surface.pin-indicator"
+      ],
+      "points": [
+        "window.find",
+        "window.pin",
+        "window.restore"
+      ],
+      "settings": [
+        "pin.mode",
+        "pin.opacity",
+        "pin.hotkey"
+      ],
+      "perms": [
+        "window",
+        "process"
+      ],
+      "instances": [
+        {
+          "label": "window",
+          "desc": "钉住当前窗口",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+T"
+          ],
+          "settings": "mode=window · opacity=0.92",
+          "status": "active"
+        },
+        {
+          "label": "region",
+          "desc": "钉住屏幕区域",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Shift+T"
+          ],
+          "settings": "mode=region · crop=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.window",
+        "smoke.region"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.awake",
+      "name": "保持唤醒",
+      "icon": "◷",
+      "cat": "system",
+      "prio": "P1",
+      "desc": "一段时间/到指定时间/应用运行期间保持唤醒。",
+      "flows": [
+        "flow.keep-awake"
+      ],
+      "surfaces": [
+        "surface.awake-status"
+      ],
+      "points": [
+        "power.state",
+        "power.keepAwake",
+        "timer.wait"
+      ],
+      "settings": [
+        "awake.duration",
+        "awake.until",
+        "awake.whileApp"
+      ],
+      "perms": [
+        "power"
+      ],
+      "instances": [
+        {
+          "label": "30m",
+          "desc": "保持 30 分钟",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "duration=30m · display=on",
+          "status": "active"
+        },
+        {
+          "label": "until",
+          "desc": "保持到指定时间",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "until=18:00 · display=on",
+          "status": "active"
+        },
+        {
+          "label": "while-app",
+          "desc": "应用运行期间",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "whileApp=build.exe",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.duration",
+        "smoke.while-app"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.workspace",
+      "name": "工作区",
+      "icon": "◫",
+      "cat": "window",
+      "prio": "P1",
+      "desc": "一键打开开发/会议/写作工作区。",
+      "flows": [
+        "flow.open-workspace"
+      ],
+      "surfaces": [
+        "surface.workspace-launcher"
+      ],
+      "points": [
+        "process.launch",
+        "window.layout",
+        "workspace.restore"
+      ],
+      "settings": [
+        "workspace.preset",
+        "workspace.monitor",
+        "workspace.startup"
+      ],
+      "perms": [
+        "process",
+        "window"
+      ],
+      "instances": [
+        {
+          "label": "dev",
+          "desc": "开发工作区",
+          "rev": 3,
+          "acts": [
+            "Ctrl+Alt+W"
+          ],
+          "settings": "preset=dev · monitor=dual",
+          "status": "active"
+        },
+        {
+          "label": "meeting",
+          "desc": "会议工作区",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+M"
+          ],
+          "settings": "preset=meeting · monitor=main",
+          "status": "active"
+        },
+        {
+          "label": "writing",
+          "desc": "写作工作区",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+K"
+          ],
+          "settings": "preset=writing · monitor=main",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.dev",
+        "smoke.meeting"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.quick-launch",
+      "name": "快速启动",
+      "icon": "⌘",
+      "cat": "window",
+      "prio": "P0",
+      "desc": "CLaunch 式启动坞 / 命令面板。",
+      "flows": [
+        "flow.launch-target"
+      ],
+      "surfaces": [
+        "surface.launch-dock",
+        "surface.quick-launch"
+      ],
+      "points": [
+        "launch.search",
+        "launch.run",
+        "usage.rank"
+      ],
+      "settings": [
+        "launch.hotkey",
+        "launch.autoHide",
+        "launch.pageSize"
+      ],
+      "perms": [
+        "process",
+        "fs.read"
+      ],
+      "instances": [
+        {
+          "label": "dock",
+          "desc": "5×2 分页启动坞",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Space"
+          ],
+          "settings": "tabs=5 · pageSize=10",
+          "status": "active"
+        },
+        {
+          "label": "palette",
+          "desc": "键盘优先命令面板",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+Space"
+          ],
+          "settings": "mode=palette · fuzzy=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.dock",
+        "smoke.palette"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.system-monitor",
+      "name": "系统监控",
+      "icon": "◴",
+      "cat": "system",
+      "prio": "P1",
+      "desc": "CPU/GPU/内存/网络/磁盘状态。",
+      "flows": [
+        "flow.metric-stream"
+      ],
+      "surfaces": [
+        "surface.system-monitor",
+        "surface.hud.system-status"
+      ],
+      "points": [
+        "sys.cpu.stats",
+        "sys.gpu.stats",
+        "sys.memory.stats"
+      ],
+      "settings": [
+        "monitor.refreshMs",
+        "monitor.history",
+        "monitor.hud"
+      ],
+      "perms": [
+        "process",
+        "sensor"
+      ],
+      "instances": [
+        {
+          "label": "desktop",
+          "desc": "Dashboard + HUD",
+          "rev": 2,
+          "acts": [
+            "tray"
+          ],
+          "settings": "refreshMs=1000 · history=60s",
+          "status": "active"
+        },
+        {
+          "label": "minimal",
+          "desc": "托盘 + 2×2 HUD",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "refreshMs=2000 · hud=2x2",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.desktop",
+        "contract.metrics"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.service-health",
+      "name": "服务健康",
+      "icon": "◍",
+      "cat": "system",
+      "prio": "P1",
+      "desc": "检查 Docker / 本地 API / VPN 健康状态。",
+      "flows": [
+        "flow.ensure-service"
+      ],
+      "surfaces": [
+        "surface.service-dashboard"
+      ],
+      "points": [
+        "service.status",
+        "service.start",
+        "net.reachable"
+      ],
+      "settings": [
+        "service.target",
+        "service.timeout",
+        "service.retry"
+      ],
+      "perms": [
+        "process",
+        "network"
+      ],
+      "instances": [
+        {
+          "label": "docker",
+          "desc": "Docker Desktop 健康",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "target=docker · timeout=5s",
+          "status": "active"
+        },
+        {
+          "label": "local-api",
+          "desc": "localhost:3000",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "target=http://localhost:3000",
+          "status": "active"
+        },
+        {
+          "label": "vpn",
+          "desc": "VPN 隧道健康",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "target=vpn · retry=3",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.docker",
+        "smoke.local-api"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.file-locksmith",
+      "name": "文件占用",
+      "icon": "⌕",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "查找占用文件的进程/句柄。",
+      "flows": [
+        "flow.find-file-lock"
+      ],
+      "surfaces": [
+        "surface.lock-list"
+      ],
+      "points": [
+        "file.handle",
+        "process.open",
+        "process.kill"
+      ],
+      "settings": [
+        "lock.scope",
+        "lock.showSystem",
+        "lock.confirmKill"
+      ],
+      "perms": [
+        "process",
+        "fs.read"
+      ],
+      "instances": [
+        {
+          "label": "process",
+          "desc": "按文件找进程",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "scope=user · confirmKill=true",
+          "status": "active"
+        },
+        {
+          "label": "handle",
+          "desc": "句柄搜索",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "scope=system · showSystem=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.process",
+        "smoke.handle"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.hosts-editor",
+      "name": "Hosts 编辑",
+      "icon": "⌸",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "本地 hosts 编辑、备份、diff。",
+      "flows": [
+        "flow.edit-hosts"
+      ],
+      "surfaces": [
+        "surface.text-editor",
+        "surface.diff"
+      ],
+      "points": [
+        "hosts.read",
+        "hosts.validate",
+        "hosts.write"
+      ],
+      "settings": [
+        "hosts.backup",
+        "hosts.encoding",
+        "hosts.requireAdmin"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write",
+        "admin"
+      ],
+      "instances": [
+        {
+          "label": "local",
+          "desc": "本地 hosts 管理",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "backup=true · encoding=utf-8",
+          "status": "active"
+        },
+        {
+          "label": "blocklist",
+          "desc": "广告/域名 blocklist",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "blocklist=true · backup=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.local",
+        "contract.admin"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.env-vars",
+      "name": "环境变量",
+      "icon": "⌁",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "用户/系统环境变量与 PATH 编辑。",
+      "flows": [
+        "flow.edit-env"
+      ],
+      "surfaces": [
+        "surface.key-value-editor"
+      ],
+      "points": [
+        "env.read",
+        "env.validate",
+        "env.write"
+      ],
+      "settings": [
+        "env.scope",
+        "env.backup",
+        "env.pathMode"
+      ],
+      "perms": [
+        "env.read",
+        "env.write"
+      ],
+      "instances": [
+        {
+          "label": "user",
+          "desc": "用户变量",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "scope=user · backup=true",
+          "status": "active"
+        },
+        {
+          "label": "path",
+          "desc": "PATH 编辑器",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "scope=user · pathMode=list",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.user",
+        "smoke.path"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.external-access",
+      "name": "外网访问",
+      "icon": "+",
+      "cat": "web",
+      "prio": "P0",
+      "desc": "外网站点 + VPN 保障 + 站点启动器。",
+      "flows": [
+        "flow.open-external-site",
+        "flow.ensure-vpn"
+      ],
+      "surfaces": [
+        "surface.site-launcher",
+        "surface.settings.vpn"
+      ],
+      "points": [
+        "vpn.status",
+        "net.reachable",
+        "browser.open"
+      ],
+      "settings": [
+        "vpn.profile",
+        "site.policy",
+        "browser.target"
+      ],
+      "perms": [
+        "network",
+        "process",
+        "uia"
+      ],
+      "instances": [
+        {
+          "label": "work",
+          "desc": "工作外网：GitHub/YouTube/内网",
+          "rev": 3,
+          "acts": [
+            "Ctrl+Alt+E",
+            "gesture LDR"
+          ],
+          "settings": "vpn=work · policy=required",
+          "status": "active"
+        },
+        {
+          "label": "personal",
+          "desc": "个人外网：YouTube/Google",
+          "rev": 2,
+          "acts": [
+            "gesture LDR"
+          ],
+          "settings": "vpn=personal · policy=preferred",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.work",
+        "smoke.personal",
+        "contract.vpn"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.screenshot-translate",
+      "name": "截图翻译",
+      "icon": "文",
+      "cat": "ai",
+      "prio": "P1",
+      "desc": "截屏 → OCR → 翻译 → 浮层显示。",
+      "flows": [
+        "flow.screenshot-translate"
+      ],
+      "surfaces": [
+        "surface.hud.translate",
+        "surface.settings.translate"
+      ],
+      "points": [
+        "screen.capture",
+        "ocr.text",
+        "translate.text"
+      ],
+      "settings": [
+        "translate.from",
+        "translate.to",
+        "translate.overlay"
+      ],
+      "perms": [
+        "screen.capture",
+        "clipboard.write",
+        "network"
+      ],
+      "instances": [
+        {
+          "label": "en-zh",
+          "desc": "英文截图 → 中文",
+          "rev": 4,
+          "acts": [
+            "Ctrl+Alt+S"
+          ],
+          "settings": "from=en · to=zh · overlay=true",
+          "status": "active"
+        },
+        {
+          "label": "ja-zh",
+          "desc": "日文截图 → 中文",
+          "rev": 2,
+          "acts": [
+            "Ctrl+Alt+J"
+          ],
+          "settings": "from=ja · to=zh · overlay=false",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.en-zh",
+        "smoke.ja-zh",
+        "contract.overlay"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.ai-rewrite",
+      "name": "AI 改写",
+      "icon": "✦",
+      "cat": "ai",
+      "prio": "P1",
+      "desc": "选中文本/剪贴板 → 改写、缩短、翻译。",
+      "flows": [
+        "flow.ai-rewrite"
+      ],
+      "surfaces": [
+        "surface.diff",
+        "surface.prompt-preview"
+      ],
+      "points": [
+        "text.read",
+        "ai.rewrite",
+        "text.diff"
+      ],
+      "settings": [
+        "ai.model",
+        "ai.tone",
+        "ai.maxTokens"
+      ],
+      "perms": [
+        "network",
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "formal",
+          "desc": "正式化改写",
+          "rev": 2,
+          "acts": [
+            "Ctrl+Alt+F"
+          ],
+          "settings": "tone=formal · preview=true",
+          "status": "active"
+        },
+        {
+          "label": "shorten",
+          "desc": "压缩到 50%",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+S"
+          ],
+          "settings": "ratio=0.5 · preview=true",
+          "status": "active"
+        },
+        {
+          "label": "translate",
+          "desc": "翻译为英文",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+E"
+          ],
+          "settings": "to=en · preview=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.formal",
+        "contract.diff"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.meeting-notes",
+      "name": "会议纪要",
+      "icon": "◫",
+      "cat": "ai",
+      "prio": "P2",
+      "desc": "录音 → 转录 → 摘要 → 待办。",
+      "flows": [
+        "flow.transcribe",
+        "flow.summarize"
+      ],
+      "surfaces": [
+        "surface.notes"
+      ],
+      "points": [
+        "audio.capture",
+        "speech.transcribe",
+        "ai.summarize"
+      ],
+      "settings": [
+        "meeting.language",
+        "meeting.speakerDiarization",
+        "meeting.retention"
+      ],
+      "perms": [
+        "microphone",
+        "network",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "local",
+          "desc": "本地转录",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+N"
+          ],
+          "settings": "engine=local · retention=30d",
+          "status": "active"
+        },
+        {
+          "label": "cloud",
+          "desc": "云端转录",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Shift+N"
+          ],
+          "settings": "engine=cloud · consent=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.local",
+        "smoke.cloud",
+        "contract.privacy"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.invoice-archive",
+      "name": "发票归档",
+      "icon": "▤",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "OCR → 解析 → 规则 → 归档。",
+      "flows": [
+        "flow.batch-archive"
+      ],
+      "surfaces": [
+        "surface.table",
+        "surface.settings.invoice"
+      ],
+      "points": [
+        "ocr.table",
+        "invoice.parse",
+        "file.move"
+      ],
+      "settings": [
+        "invoice.archiveRoot",
+        "invoice.rules",
+        "invoice.ocrLanguage"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write",
+        "ocr"
+      ],
+      "instances": [
+        {
+          "label": "company",
+          "desc": "公司发票归档",
+          "rev": 6,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "ocr=zh · rules=company",
+          "status": "active"
+        },
+        {
+          "label": "personal",
+          "desc": "个人发票归档",
+          "rev": 2,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "ocr=en · rules=personal",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.company",
+        "smoke.personal",
+        "contract.rules"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.suite",
+      "name": "套件",
+      "icon": "❖",
+      "cat": "suite",
+      "prio": "P2",
+      "desc": "把多个体打包成一个套件。",
+      "flows": [
+        "flow.suite.launch"
+      ],
+      "surfaces": [
+        "surface.card-grid",
+        "surface.settings.suite"
+      ],
+      "points": [
+        "body.activate",
+        "permission.check",
+        "surface.show"
+      ],
+      "settings": [
+        "suite.members",
+        "suite.startup",
+        "suite.theme"
+      ],
+      "perms": [
+        "process",
+        "network",
+        "fs.read"
+      ],
+      "instances": [
+        {
+          "label": "office",
+          "desc": "办公套件",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "members=external-access,invoice-archive,screenshot-translate",
+          "status": "active"
+        },
+        {
+          "label": "dev",
+          "desc": "开发套件",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "members=external-access,workspace,ocr,quick-launch",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.office",
+        "smoke.dev",
+        "contract.permissions"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.web-clipper",
+      "name": "网页剪藏",
+      "icon": "✂",
+      "cat": "web",
+      "prio": "P2",
+      "desc": "选中内容/整页 → Markdown。",
+      "flows": [
+        "flow.clip-page"
+      ],
+      "surfaces": [
+        "surface.clipper-preview"
+      ],
+      "points": [
+        "browser.read",
+        "html.toMarkdown",
+        "file.write"
+      ],
+      "settings": [
+        "clip.mode",
+        "clip.assets",
+        "clip.frontmatter"
+      ],
+      "perms": [
+        "browser",
+        "fs.write",
+        "network"
+      ],
+      "instances": [
+        {
+          "label": "selection",
+          "desc": "选中内容 → Markdown",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+C"
+          ],
+          "settings": "mode=selection · frontmatter=true",
+          "status": "active"
+        },
+        {
+          "label": "page",
+          "desc": "整页 → Markdown",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Shift+C"
+          ],
+          "settings": "mode=page · assets=true",
+          "status": "active"
+        },
+        {
+          "label": "readability",
+          "desc": "正文提取",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+R"
+          ],
+          "settings": "mode=readability · images=local",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.selection",
+        "smoke.page",
+        "contract.markdown"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.backup-sync",
+      "name": "备份同步",
+      "icon": "⇄",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "文件夹快照、每日增量、校验。",
+      "flows": [
+        "flow.backup-folder"
+      ],
+      "surfaces": [
+        "surface.backup-status"
+      ],
+      "points": [
+        "file.scan",
+        "file.copy",
+        "hash.verify"
+      ],
+      "settings": [
+        "backup.source",
+        "backup.target",
+        "backup.retention"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "folder",
+          "desc": "文件夹快照",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "mode=snapshot · verify=true",
+          "status": "active"
+        },
+        {
+          "label": "daily",
+          "desc": "每日增量",
+          "rev": 1,
+          "acts": [
+            "schedule"
+          ],
+          "settings": "mode=incremental · retention=30d",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.folder",
+        "smoke.daily",
+        "contract.verify"
+      ],
+      "version": "1.0.0"
+    }
+  ]
+};
+const SURFACE_IDS = ["surface.form", "surface.wizard", "surface.inspector", "surface.table", "surface.card-grid", "surface.tree", "surface.command-palette", "surface.canvas", "surface.dashboard", "surface.run-history", "surface.diff", "surface.dialog", "surface.notification", "surface.tray-menu", "surface.hud", "surface.metric-card"];
+const POINT_IDS = ["win.key.send", "win.key.trigger", "win.window.control", "win.window.query", "win.open", "win.audio.volume", "win.display.brightness", "win.theme.mode", "win.ocr.read", "win.clipboard.get", "win.http.request", "ui.form", "ai.llm.complete"];
+const LINE_IDS = ["flow.screenshot-translate", "flow.invoice-archive", "flow.clipboard-to-file", "flow.open-external-site"];
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const deep = o => JSON.parse(JSON.stringify(o));
+const SURFACE_SET = new Set(SURFACE_IDS);
+const POINT_SET = new Set(POINT_IDS);
+const LINE_SET = new Set(LINE_IDS);
+function withLifecycle(c) { return { ...c, status: c.status || 'active', lifecycle: c.lifecycle || { status: 'active', trust: 'signed', update: 'manual', isolation: 'process', autoStart: false } }; }
+let CLASSES = deep(BODY_DATA.classes).map(withLifecycle);
+const STORAGE = 'baiying.bodyManager.v1';
+try { const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null'); if (saved && Array.isArray(saved.classes) && saved.classes.length) CLASSES = saved.classes.map(withLifecycle); } catch (_) {}
+const state = { classId: CLASSES[0]?.id || '', instLabel: CLASSES[0]?.instances[0]?.label || '', tab: 'composition', query: '', cat: 'all', prio: 'all', toastTimer: null };
+const cls = () => CLASSES.find(c => c.id === state.classId) || CLASSES[0];
+const ins = () => cls()?.instances.find(i => i.label === state.instLabel) || cls()?.instances[0] || null;
+const totalInstances = () => CLASSES.reduce((n, c) => n + c.instances.length, 0);
+const catMeta = { content: 'Content', input: 'Input', system: 'System', utility: 'Utility', dev: 'Dev', ai: 'AI', business: 'Business', media: 'Media' };
+function showToast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => t.classList.remove('show'), 1800); }
+function saveData() { try { localStorage.setItem(STORAGE, JSON.stringify({ classes: CLASSES, savedAt: new Date().toISOString() })); } catch (_) {} }
+function ensureSelection() { if (!CLASSES.some(c => c.id === state.classId)) state.classId = CLASSES[0]?.id || ''; const c = cls(); if (!c?.instances.some(i => i.label === state.instLabel)) state.instLabel = c?.instances[0]?.label || ''; }
+function updateHash() { const h = `#${encodeURIComponent(state.classId)}${state.instLabel ? '/' + encodeURIComponent(state.instLabel) : ''}`; if (location.hash !== h) history.replaceState(null, '', h); }
+function parseHash() { const parts = (location.hash || '').replace(/^#/, '').split('/').map(decodeURIComponent).filter(Boolean); if (parts[0] && CLASSES.some(c => c.id === parts[0])) state.classId = parts[0]; const c = cls(); if (parts[1] && c.instances.some(i => i.label === parts[1])) state.instLabel = parts[1]; ensureSelection(); }
+function renderTopStats() { const p0 = CLASSES.filter(c => c.prio === 'P0').length; const cats = [...new Set(CLASSES.map(c => c.cat))].length; $('#topStats').innerHTML = `<span class="mini violet">${CLASSES.length} BodyClass</span><span class="mini cyan">${totalInstances()} BodyInstance</span><span class="mini amber">${p0} P0</span><span class="mini">${cats} categories</span><span class="mini green">${CLASSES.filter(c => c.lifecycle.status === 'active').length} active</span>`; }
+function filteredClasses() {
+  const q = state.query.trim().toLowerCase();
+  return CLASSES.filter(c => {
+    if (state.cat !== 'all' && c.cat !== state.cat) return false;
+    if (state.prio !== 'all' && c.prio !== state.prio) return false;
+    if (!q) return true;
+    return [c.id, c.name, c.desc, c.cat, c.prio, ...c.instances.map(i => i.label + ' ' + i.desc)].join(' ').toLowerCase().includes(q);
+  });
+}
+function renderLeft() {
+  const c = cls(), list = filteredClasses();
+  const cats = [...new Set(CLASSES.map(x => x.cat))];
+  $('#leftPane').innerHTML = `<div class="pane-head"><b>BodyClass · 体层类</b><span class="count">${CLASSES.length}</span><button data-action="new-class" title="新建 BodyClass">＋</button></div>
+    <input class="panel-search" id="bodySearch" placeholder="搜索 body / 实例 / 描述…" value="${esc(state.query)}">
+    <div class="fi-meta" style="margin-bottom:5px"><button class="tab-mini ${state.cat === 'all' ? 'on' : ''}" data-cat="all">全部</button>${cats.map(x => `<button class="tab-mini ${state.cat === x ? 'on' : ''}" data-cat="${esc(x)}">${esc(catMeta[x] || x)}</button>`).join('')}</div>
+    <div class="fi-meta" style="margin-bottom:5px">${['all', 'P0', 'P1', 'P2'].map(x => `<button class="tab-mini ${state.prio === x ? 'on' : ''}" data-prio="${x}">${x === 'all' ? '全部优先级' : x}</button>`).join('')}</div>
+    ${list.map(x => `<div class="flow-item ${x.id === c?.id ? 'on' : ''}" data-body-class="${esc(x.id)}"><div class="fi-top"><span class="fi-name">${esc(x.icon)} ${esc(x.name)}</span><span class="fi-ver">${x.instances.length}</span></div><div class="fi-id">${esc(x.id)}</div><div class="fi-meta"><span class="fi-badge">${esc(x.cat)}</span><span class="prio-badge ${esc(x.prio)}">${esc(x.prio)}</span></div></div>`).join('') || '<div class="empty">没有匹配的 BodyClass。</div>'}
+    <div class="pane-head" style="margin-top:10px"><b>BodyInstance · 体实例</b><span class="count">${c?.instances.length || 0}</span><button data-action="new-instance" title="新建 BodyInstance">＋</button></div>
+    ${(c?.instances || []).map(i => `<div class="inst-item ${i.label === state.instLabel ? 'on' : ''}" data-body-inst="${esc(i.label)}"><div class="ii-top"><span class="ii-name">${esc(i.label)}</span><span class="ii-rev">r${i.rev}</span></div><div class="ii-id">${esc(i.desc)}</div><span class="ii-status ${i.status === 'draft' ? 'draft' : ''}">${esc(i.status || 'active')}</span></div>`).join('') || '<div class="empty">暂无实例</div>'}
+    <div style="margin-top:10px"><button class="btn" style="width:100%;justify-content:center" data-action="reset-data">↺ 重置示例数据</button></div>`;
+  const search = $('#bodySearch'); if (search) search.addEventListener('input', e => { state.query = e.target.value; renderLeft(); });
+  $$('#leftPane [data-body-class]').forEach(el => el.onclick = () => { state.classId = el.dataset.bodyClass; state.instLabel = cls().instances[0]?.label || ''; updateHash(); renderAll(); });
+  $$('#leftPane [data-body-inst]').forEach(el => el.onclick = () => { state.instLabel = el.dataset.bodyInst; updateHash(); renderAll(); });
+  $$('#leftPane [data-cat]').forEach(b => b.onclick = () => { state.cat = b.dataset.cat; renderLeft(); });
+  $$('#leftPane [data-prio]').forEach(b => b.onclick = () => { state.prio = b.dataset.prio; renderLeft(); });
+  $$('#leftPane [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function componentHref(kind, id) {
+  if (kind === 'surface' && SURFACE_SET.has(id)) return `surface-management.html#surfaces/${encodeURIComponent(id)}`;
+  if (kind === 'point' && POINT_SET.has(id)) return `atom-catalog-management.html#${encodeURIComponent(id)}`;
+  if (kind === 'flow' && LINE_SET.has(id)) return `line-management.html#${encodeURIComponent(id)}`;
+  return '';
+}
+function compChip(kind, id) {
+  const href = componentHref(kind, id);
+  return `<a class="comp-chip ${href ? 'mapped' : 'ph'}" ${href ? `href="${esc(href)}"` : ''} title="${href ? '打开对应管理页' : '未接入管理页'}">${esc(id)}${href ? '<span class="arrow">↗</span>' : '<span class="arrow">·ph</span>'}</a>`;
+}
+function stackChip(kind, id) {
+  const href = componentHref(kind, id);
+  return `<div class="stack-chip ${href ? 'mapped' : 'ph'}" ${href ? `data-open-href="${esc(href)}"` : ''}>${esc(id)}${href ? ' ↗' : ' ·ph'}</div>`;
+}
+function renderComposition(c) {
+  return `<div class="body-summary"><div class="bi">${esc(c.icon)}</div><div class="bm"><div class="bn">${esc(c.name)} <span class="prio-badge ${esc(c.prio)}">${esc(c.prio)}</span></div><div class="bid">${esc(c.id)} · v${esc(c.version)} · ${esc(c.cat)}</div><div class="bd">${esc(c.desc)}</div></div><div class="fi-meta"><span class="fi-badge">${c.flows.length} flows</span><span class="fi-badge">${c.surfaces.length} surfaces</span><span class="fi-badge">${c.points.length} points</span><span class="fi-badge">${c.instances.length} inst</span></div></div>
+    <div class="body-stack"><div class="stack-col">${c.flows.map(x => stackChip('flow', x)).join('') || '<div class="stack-chip ph">no flow</div>'}</div><div class="stack-core"><div class="sc-i">${esc(c.icon)}</div><div class="sc-n">${esc(c.name)}</div><div class="sc-id">${esc(c.id)}</div><div class="stack-line"></div><div class="mini">BodyClass</div></div><div class="stack-col">${c.surfaces.map(x => stackChip('surface', x)).join('')}${c.points.map(x => stackChip('point', x)).join('')}</div></div>
+    <div class="comp-grid"><div class="comp-col"><div class="comp-head"><b>Line</b> · flows</div>${c.flows.map(x => compChip('flow', x)).join('') || '<div class="comp-chip ph">no flow</div>'}</div><div class="comp-col"><div class="comp-head"><b>Surface</b> · UI</div>${c.surfaces.map(x => compChip('surface', x)).join('') || '<div class="comp-chip ph">no surface</div>'}</div><div class="comp-col"><div class="comp-head"><b>Point</b> · atoms</div>${c.points.map(x => compChip('point', x)).join('') || '<div class="comp-chip ph">no point</div>'}</div></div>`;
+}
+function renderInstances(c) {
+  return `<div class="sec-head"><b>BodyInstance · ${c.instances.length}</b><span class="right"><button class="btn small" data-action="new-instance">＋ 新建实例</button></span></div><div class="instance-grid">${c.instances.map(i => `<div class="instance-card ${i.label === state.instLabel ? 'on' : ''}" data-body-inst-main="${esc(i.label)}"><div class="ic-top"><span class="ic-name">${esc(i.label)}</span><span class="ic-rev">r${i.rev}</span></div><div class="ic-desc">${esc(i.desc)}</div><div class="ic-meta"><span class="ic-badge ${i.status === 'active' ? 'on' : i.status === 'draft' ? 'draft' : ''}">${esc(i.status || 'active')}</span>${(i.acts || []).slice(0, 3).map(a => `<span class="ic-badge">${esc(a)}</span>`).join('')}<span class="ic-badge">${i.settings ? 'settings' : 'no settings'}</span></div></div>`).join('') || '<div class="empty">暂无实例。</div>'}</div>`;
+}
+function manifestOf(c) { return { id: c.id, name: c.name, icon: c.icon, category: c.cat, priority: c.prio, version: c.version, desc: c.desc, composition: { flows: c.flows, surfaces: c.surfaces, points: c.points }, settings: c.settings, permissions: c.perms, tests: c.tests, lifecycle: c.lifecycle, instances: c.instances }; }
+function renderManifest(c) {
+  return `<div class="sec-head"><b>Manifest · 体层清单</b><span class="right"><button class="btn small" data-action="edit-manifest">✎ 编辑 Manifest</button></span></div><pre class="manifest-pre">${esc(JSON.stringify(manifestOf(c), null, 2))}</pre>`;
+}
+function renderLifecycle(c) {
+  const l = c.lifecycle;
+  return `<div class="sec-head"><b>Lifecycle · 生命周期设置</b><span class="right"><button class="btn primary small" data-action="save-lifecycle">保存</button></span></div><div class="life-grid"><div class="life-item"><label>status</label><select id="lifeStatus">${['active', 'draft', 'archived'].map(x => `<option value="${x}" ${l.status === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="life-item"><label>trust</label><select id="lifeTrust">${['signed', 'unsigned', 'local'].map(x => `<option value="${x}" ${l.trust === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="life-item"><label>update</label><select id="lifeUpdate">${['manual', 'auto', 'pinned'].map(x => `<option value="${x}" ${l.update === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="life-item"><label>isolation</label><select id="lifeIsolation">${['process', 'container', 'vm'].map(x => `<option value="${x}" ${l.isolation === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="life-item"><label>autoStart</label><select id="lifeAuto">${['false', 'true'].map(x => `<option value="${x}" ${String(l.autoStart) === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="life-item"><label>installed</label><div class="val">${c.instances.length} instances</div></div></div><div class="settings-list"><div class="setting-row"><span class="sk">status</span><span class="sv">${esc(l.status)}</span></div><div class="setting-row"><span class="sk">trust</span><span class="sv">${esc(l.trust)}</span></div><div class="setting-row"><span class="sk">update</span><span class="sv">${esc(l.update)}</span></div><div class="setting-row"><span class="sk">isolation</span><span class="sv">${esc(l.isolation)}</span></div></div>`;
+}
+function renderSettings(c) {
+  return `<div class="sec-head"><b>Function Settings · ${c.settings.length}</b><span class="right"><button class="btn small" data-action="edit-class">✎ 编辑设置</button></span></div><div class="settings-list">${c.settings.map(x => `<div class="setting-row"><span class="sk">${esc(x)}</span><span class="sv">body setting</span></div>`).join('') || '<div class="empty">无 settings</div>'}</div><div class="sec-head"><b>Permissions · ${c.perms.length}</b></div><div class="settings-list">${c.perms.map(x => `<div class="setting-row"><span class="sk">${esc(x)}</span><span class="sv">permission</span></div>`).join('') || '<div class="empty">无 permissions</div>'}</div><div class="sec-head"><b>Tests · ${c.tests.length}</b></div><div class="settings-list">${c.tests.map(x => `<div class="setting-row"><span class="sk">${esc(x)}</span><span class="sv">test</span></div>`).join('') || '<div class="empty">无 tests</div>'}</div>`;
+}
+function renderMain() {
+  const c = cls(), i = ins();
+  if (!c) { $('#main').innerHTML = '<div class="empty">没有 BodyClass。</div>'; return; }
+  const tabs = [['composition', '组合'], ['instances', '实例'], ['manifest', 'Manifest'], ['lifecycle', '生命周期'], ['settings', '设置']];
+  let content = '';
+  if (state.tab === 'composition') content = renderComposition(c);
+  else if (state.tab === 'instances') content = renderInstances(c);
+  else if (state.tab === 'manifest') content = renderManifest(c);
+  else if (state.tab === 'lifecycle') content = renderLifecycle(c);
+  else content = renderSettings(c);
+  $('#main').innerHTML = `<div class="hero"><div class="hero-icon">${esc(c.icon)}</div><div class="hero-main"><div class="kicker">BodyClass · ${esc(c.cat)}</div><h1>${esc(c.name)}</h1><p>${esc(c.desc)}</p></div><div class="hero-actions"><button class="btn" data-action="edit-class">✎ 编辑类</button><button class="btn primary" data-action="new-instance">＋ 实例</button><button class="btn danger" data-action="delete-class">⌫ 删除类</button></div></div>
+    <div class="stats"><span class="prio-badge ${esc(c.prio)}">${esc(c.prio)}</span><span class="mini">${c.flows.length} flows</span><span class="mini">${c.surfaces.length} surfaces</span><span class="mini">${c.points.length} points</span><span class="mini cyan">${c.instances.length} instances</span><span class="mini">v${esc(c.version)}</span><span class="mini green">${esc(c.lifecycle.status)}</span>${i ? `<span class="mini amber">${esc(i.label)} · r${i.rev}</span>` : ''}</div>
+    <div class="body-tabbar">${tabs.map(([id, label]) => `<button class="body-tab ${state.tab === id ? 'on' : ''}" data-body-tab="${id}">${label}</button>`).join('')}</div>${content}`;
+  $$('#main [data-body-tab]').forEach(b => b.onclick = () => { state.tab = b.dataset.bodyTab; renderMain(); });
+  $$('#main [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+  $$('#main [data-body-inst-main]').forEach(el => el.onclick = () => { state.instLabel = el.dataset.bodyInstMain; updateHash(); renderAll(); });
+  $$('#main [data-open-href]').forEach(el => el.onclick = () => { window.location.href = el.dataset.openHref; });
+}
+function renderInspector() {
+  const c = cls(), i = ins();
+  if (!c) { $('#inspector').innerHTML = '<div class="empty">选择 BodyClass。</div>'; return; }
+  $('#inspector').innerHTML = `<div class="insp-kicker">BodyClass · 体层类</div><div class="insp-title">${esc(c.icon)} ${esc(c.name)}</div><div class="insp-id">${esc(c.id)} · v${esc(c.version)}</div>
+    <div class="insp-section"><div class="lh">Contract</div><div class="kv"><div class="k">category</div><div class="v">${esc(c.cat)}</div><div class="k">priority</div><div class="v">${esc(c.prio)}</div><div class="k">status</div><div class="v">${esc(c.lifecycle.status)}</div><div class="k">trust</div><div class="v">${esc(c.lifecycle.trust)}</div><div class="k">update</div><div class="v">${esc(c.lifecycle.update)}</div><div class="k">isolation</div><div class="v">${esc(c.lifecycle.isolation)}</div></div></div>
+    <div class="insp-section"><div class="lh">Composition</div><div class="kv"><div class="k">flows</div><div class="v">${esc(c.flows.join(' / ') || '—')}</div><div class="k">surfaces</div><div class="v">${esc(c.surfaces.join(' / ') || '—')}</div><div class="k">points</div><div class="v">${esc(c.points.join(' / ') || '—')}</div></div></div>
+    <div class="insp-section"><div class="lh">Settings / Permissions</div><div class="kv"><div class="k">settings</div><div class="v">${esc(c.settings.join(' / ') || '—')}</div><div class="k">perms</div><div class="v">${esc(c.perms.join(' / ') || '—')}</div><div class="k">tests</div><div class="v">${esc(c.tests.join(' / ') || '—')}</div></div></div>
+    ${i ? `<div class="insp-section"><div class="lh">Instance · ${esc(i.label)}</div><div class="kv"><div class="k">rev</div><div class="v">r${i.rev}</div><div class="k">status</div><div class="v">${esc(i.status || 'active')}</div><div class="k">desc</div><div class="v">${esc(i.desc)}</div><div class="k">acts</div><div class="v">${esc((i.acts || []).join(' / ') || '—')}</div><div class="k">settings</div><div class="v">${esc(i.settings || '—')}</div></div><div class="actions" style="margin-top:5px"><button class="btn" data-action="run-instance">▶ 运行</button><button class="btn" data-action="edit-instance">✎ 编辑</button><button class="btn" data-action="duplicate-instance">⧉ 复制</button><button class="btn danger" data-action="delete-instance">⌫ 删除</button></div></div>` : ''}
+    <div class="insp-section"><div class="lh">Class Actions</div><div class="actions"><button class="btn" data-action="edit-class">✎ 编辑</button><button class="btn" data-action="new-instance">＋ 实例</button><button class="btn danger" data-action="delete-class">⌫ 删除</button></div></div>`;
+  $$('#inspector [data-action]').forEach(b => b.onclick = () => handleAction(b.dataset.action));
+}
+function renderAll() { renderTopStats(); renderLeft(); renderMain(); renderInspector(); }
+function openModal(html) { $('#modalRoot').innerHTML = `<div class="modal-overlay" id="modalOverlay"><div class="modal">${html}</div></div>`; }
+function closeModal() { $('#modalRoot').innerHTML = ''; }
+function confirmModal(title, message, label, onConfirm) {
+  openModal(`<h3>${esc(title)}</h3><p>${esc(message)}</p><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn danger" id="modalConfirm">${esc(label)}</button></div>`);
+  $('#modalConfirm').onclick = () => { closeModal(); onConfirm(); };
+}
+function openClassModal(edit = false) {
+  const c = edit ? cls() : null;
+  openModal(`<h3>${edit ? '编辑 BodyClass' : '新建 BodyClass'}</h3><p>BodyClass = 体层蓝图：组合 flows / surfaces / points，并声明 settings / perms / tests。</p>
+    <div class="form-grid"><div class="field"><label>ID</label><input id="mClassId" value="${esc(c?.id || 'body.custom')}" ${edit ? 'disabled' : ''}></div><div class="field"><label>名称</label><input id="mClassName" value="${esc(c?.name || 'Custom Body')}"></div><div class="field"><label>icon</label><input id="mClassIcon" value="${esc(c?.icon || '◈')}"></div><div class="field"><label>category</label><input id="mClassCat" value="${esc(c?.cat || 'utility')}"></div><div class="field"><label>priority</label><select id="mClassPrio">${['P0', 'P1', 'P2'].map(x => `<option value="${x}" ${(c?.prio || 'P1') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>version</label><input id="mClassVersion" value="${esc(c?.version || '0.1.0')}"></div><div class="field full"><label>desc</label><textarea id="mClassDesc">${esc(c?.desc || '')}</textarea></div><div class="field"><label>flows</label><input id="mClassFlows" value="${esc((c?.flows || []).join(', '))}"></div><div class="field"><label>surfaces</label><input id="mClassSurfaces" value="${esc((c?.surfaces || []).join(', '))}"></div><div class="field"><label>points</label><input id="mClassPoints" value="${esc((c?.points || []).join(', '))}"></div><div class="field"><label>settings</label><input id="mClassSettings" value="${esc((c?.settings || []).join(', '))}"></div><div class="field"><label>permissions</label><input id="mClassPerms" value="${esc((c?.perms || []).join(', '))}"></div><div class="field"><label>tests</label><input id="mClassTests" value="${esc((c?.tests || []).join(', '))}"></div></div>
+    <div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="classSave">${edit ? '保存' : '创建'}</button></div>`);
+  $('#classSave').onclick = () => {
+    const id = $('#mClassId').value.trim(), name = $('#mClassName').value.trim(); if (!id || !name) { showToast('ID 和名称必填'); return; }
+    if (!edit && CLASSES.some(x => x.id === id)) { showToast('ID 已存在'); return; }
+    const data = { id, name, icon: $('#mClassIcon').value.trim() || '◈', cat: $('#mClassCat').value.trim() || 'utility', prio: $('#mClassPrio').value, version: $('#mClassVersion').value.trim() || '1.0.0', desc: $('#mClassDesc').value.trim(), flows: $('#mClassFlows').value.split(',').map(s => s.trim()).filter(Boolean), surfaces: $('#mClassSurfaces').value.split(',').map(s => s.trim()).filter(Boolean), points: $('#mClassPoints').value.split(',').map(s => s.trim()).filter(Boolean), settings: $('#mClassSettings').value.split(',').map(s => s.trim()).filter(Boolean), perms: $('#mClassPerms').value.split(',').map(s => s.trim()).filter(Boolean), tests: $('#mClassTests').value.split(',').map(s => s.trim()).filter(Boolean) };
+    if (edit) { Object.assign(c, data); showToast('BodyClass 已更新'); }
+    else { CLASSES.push({ ...data, instances: [], lifecycle: { status: 'active', trust: 'signed', update: 'manual', isolation: 'process', autoStart: false } }); state.classId = id; state.instLabel = ''; showToast('BodyClass 已创建'); }
+    saveData(); closeModal(); ensureSelection(); updateHash(); renderAll();
+  };
+}
+function openInstanceModal(edit = false) {
+  const c = cls(), i = edit ? ins() : null; if (!c) return;
+  openModal(`<h3>${edit ? '编辑 BodyInstance' : '新建 BodyInstance'}</h3><p>BodyInstance = BodyClass + 安装配置 + revision。</p><div class="form-grid"><div class="field"><label>label</label><input id="mInstLabel" value="${esc(i?.label || 'New Instance')}"></div><div class="field"><label>status</label><select id="mInstStatus">${['active', 'draft', 'archived'].map(x => `<option value="${x}" ${(i?.status || 'active') === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div><div class="field"><label>rev</label><input id="mInstRev" type="number" value="${i?.rev || 1}"></div><div class="field full"><label>desc</label><textarea id="mInstDesc">${esc(i?.desc || '')}</textarea></div><div class="field full"><label>acts</label><input id="mInstActs" value="${esc((i?.acts || []).join(', '))}"></div><div class="field full"><label>settings</label><input id="mInstSettings" value="${esc(i?.settings || '')}"></div></div><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="instSave">${edit ? '保存新 revision' : '创建'}</button></div>`);
+  $('#instSave').onclick = () => {
+    const label = $('#mInstLabel').value.trim(); if (!label) { showToast('label 必填'); return; }
+    const data = { label, desc: $('#mInstDesc').value.trim(), rev: edit ? (i.rev || 1) + 1 : Number($('#mInstRev').value) || 1, acts: $('#mInstActs').value.split(',').map(s => s.trim()).filter(Boolean), settings: $('#mInstSettings').value.trim(), status: $('#mInstStatus').value };
+    if (edit) Object.assign(i, data); else c.instances.push(data);
+    state.instLabel = label; saveData(); closeModal(); updateHash(); renderAll(); showToast(edit ? 'BodyInstance 已更新 · rev +1' : 'BodyInstance 已创建');
+  };
+}
+function openManifestModal() {
+  const c = cls(); if (!c) return;
+  openModal(`<h3>编辑 Manifest</h3><p>直接编辑 JSON；保存后回写 BodyClass。</p><textarea id="manifestText" style="width:100%;min-height:360px;border:1px solid var(--line);border-radius:5px;background:#08111b;color:#b9c7da;font:6.5px/1.55 var(--mono);padding:7px;resize:vertical">${esc(JSON.stringify(manifestOf(c), null, 2))}</textarea><div class="modal-actions"><button class="btn" data-modal-close>取消</button><button class="btn primary" id="manifestSave">验证并保存</button></div>`);
+  $('#manifestSave').onclick = () => {
+    try {
+      const m = JSON.parse($('#manifestText').value);
+      if (!m.id || !m.name) throw new Error('id/name required');
+      c.name = m.name; c.icon = m.icon || c.icon; c.cat = m.category || c.cat; c.prio = m.priority || c.prio; c.version = m.version || c.version; c.desc = m.desc || c.desc;
+      c.flows = m.composition?.flows || c.flows; c.surfaces = m.composition?.surfaces || c.surfaces; c.points = m.composition?.points || c.points;
+      c.settings = m.settings || c.settings; c.perms = m.permissions || c.perms; c.tests = m.tests || c.tests;
+      if (m.lifecycle) c.lifecycle = { ...c.lifecycle, ...m.lifecycle };
+      if (Array.isArray(m.instances)) c.instances = m.instances;
+      saveData(); closeModal(); renderAll(); showToast('Manifest 已保存');
+    } catch (e) { showToast('Manifest JSON 错误：' + e.message); }
+  };
+}
+function saveLifecycle() {
+  const c = cls(); if (!c) return;
+  c.lifecycle = { status: $('#lifeStatus').value, trust: $('#lifeTrust').value, update: $('#lifeUpdate').value, isolation: $('#lifeIsolation').value, autoStart: $('#lifeAuto').value === 'true' };
+  saveData(); renderAll(); showToast('生命周期设置已保存');
+}
+function handleAction(action) {
+  const c = cls(), i = ins();
+  if (action === 'new-class') { openClassModal(false); return; }
+  if (action === 'edit-class') { openClassModal(true); return; }
+  if (action === 'delete-class') { if (!c) return; confirmModal('删除 BodyClass？', `会删除 ${c.id} 及其 ${c.instances.length} 个实例。`, '删除', () => { CLASSES = CLASSES.filter(x => x.id !== c.id); state.classId = CLASSES[0]?.id || ''; state.instLabel = ''; ensureSelection(); saveData(); updateHash(); renderAll(); showToast('BodyClass 已删除'); }); return; }
+  if (action === 'new-instance') { openInstanceModal(false); return; }
+  if (action === 'edit-instance') { openInstanceModal(true); return; }
+  if (action === 'duplicate-instance') { if (!i) return; const copy = deep(i); copy.label = `${i.label} 副本`; copy.rev = 1; copy.status = 'draft'; c.instances.push(copy); state.instLabel = copy.label; saveData(); updateHash(); renderAll(); showToast('BodyInstance 已复制'); return; }
+  if (action === 'delete-instance') { if (!i) return; confirmModal('删除 BodyInstance？', `会删除 ${i.label}。`, '删除', () => { c.instances = c.instances.filter(x => x.label !== i.label); state.instLabel = c.instances[0]?.label || ''; ensureSelection(); saveData(); updateHash(); renderAll(); showToast('BodyInstance 已删除'); }); return; }
+  if (action === 'run-instance') { showToast(`运行 ${i?.label || c?.name || 'body'} · 模拟正常`); return; }
+  if (action === 'edit-manifest') { openManifestModal(); return; }
+  if (action === 'save-lifecycle') { saveLifecycle(); return; }
+  if (action === 'reset-data') { confirmModal('重置示例数据？', '会覆盖本地新增/修改，恢复 29 BodyClass / 82 BodyInstance。', '重置', () => { CLASSES = deep(BODY_DATA.classes).map(withLifecycle); state.classId = CLASSES[0].id; state.instLabel = CLASSES[0].instances[0]?.label || ''; saveData(); ensureSelection(); updateHash(); renderAll(); showToast('示例数据已重置'); }); return; }
+}
+function init() {
+  parseHash(); ensureSelection(); renderAll();
+  $('#modalRoot').addEventListener('click', e => { if (e.target.id === 'modalOverlay' || e.target.closest('[data-modal-close]')) closeModal(); });
+  window.addEventListener('hashchange', () => { parseHash(); ensureSelection(); renderAll(); });
+}
+init();
+})();
+
+</script>
+</body>
+</html>

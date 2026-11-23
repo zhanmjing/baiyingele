@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>手势识别 → 点/线实例</title>
+<style>
+:root{
+  --bg:#070b14;--bg2:#0b1220;--panel:#0f172a;--panel2:#111c31;--panel3:#16233a;
+  --line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.24);
+  --text:#e5edf8;--dim:#8fa2bb;--faint:#5f7188;
+  --blue:#3b82f6;--cyan:#06b6d4;--violet:#8b5cf6;--amber:#f59e0b;--green:#22c55e;--red:#ef4444;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+}
+body.light{--bg:#f4f7fb;--bg2:#eaf0f7;--panel:#fff;--panel2:#f7fafc;--panel3:#eef4fb;--line:rgba(15,23,42,.10);--line2:rgba(15,23,42,.18);--text:#0f172a;--dim:#52637a;--faint:#7c8ba1}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(900px 500px at 8% -8%,rgba(6,182,212,.16),transparent 60%),radial-gradient(800px 460px at 96% 0%,rgba(139,92,246,.12),transparent 62%),linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);font-family:var(--font);padding:16px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+code,.mono{font-family:var(--mono)}
+.app{max-width:1260px;margin:0 auto}
+.topbar{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:14px;background:rgba(10,16,28,.72);backdrop-filter:blur(18px);padding:10px 13px;margin-bottom:12px}
+body.light .topbar{background:rgba(255,255,255,.8)}
+.brand{display:flex;align-items:center;gap:9px;min-width:230px}
+.logo{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#fff;font-size:15px;font-weight:800}
+.brand b{font-size:12px;display:block}
+.brand span{font-size:9px;color:var(--faint);font-family:var(--mono);display:block;margin-top:2px}
+.top-hint{flex:1;text-align:center;font-size:9px;color:var(--faint);font-family:var(--mono)}
+.top-hint kbd{border:1px solid var(--line2);border-radius:3px;padding:1px 4px;background:var(--panel3);font-size:8px}
+.icon-btn{width:31px;height:31px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--dim)}
+.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr);gap:12px}
+.panel{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--panel2));overflow:hidden}
+.pad-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.pad-head b{font-size:11px}
+.pad-head span{font-size:9px;color:var(--faint);font-family:var(--mono)}
+.phase{padding:2px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel3);font-size:8px;color:var(--faint);font-family:var(--mono)}
+.phase.drawing{color:#67e8f9;border-color:rgba(6,182,212,.22);background:rgba(6,182,212,.08)}
+.pad{position:relative;height:360px;margin:10px 12px;border:1px solid var(--line2);border-radius:12px;background:
+  radial-gradient(circle at 50% 50%,rgba(59,130,246,.06),transparent 60%),
+  linear-gradient(rgba(148,163,184,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(148,163,184,.05) 1px,transparent 1px),
+  var(--panel2);
+  background-size:auto,24px 24px,24px 24px,auto;overflow:hidden;cursor:crosshair;touch-action:none}
+.pad-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:var(--faint);font-size:10px;pointer-events:none;line-height:1.7}
+.pad-hint b{display:block;color:var(--dim);font-size:12px;margin-bottom:3px}
+.pad svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.readout{display:grid;grid-template-columns:140px 1fr;gap:10px;padding:0 12px 10px;align-items:center}
+.pattern-box{border:1px solid var(--line);border-radius:8px;background:var(--panel3);padding:8px 10px}
+.pattern-box .k{font-size:7px;letter-spacing:1px;color:var(--faint);font-family:var(--mono);text-transform:uppercase}
+.pattern-box .v{font-size:16px;font-weight:700;font-family:var(--mono);margin-top:3px;letter-spacing:1px;color:#a5f3fc}
+.dirs{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.dir{font-size:8px;padding:3px 6px;border-radius:4px;border:1px solid rgba(6,182,212,.18);background:rgba(6,182,212,.07);color:#67e8f9;font-family:var(--mono)}
+.dir.fuzzy{border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.08);color:#fcd34d}
+.pad-foot{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:9px 12px;border-top:1px solid var(--line);background:rgba(15,23,42,.35)}
+body.light .pad-foot{background:#f8fafc}
+.preset{border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--dim);font-size:9px;padding:4px 6px;font-family:var(--mono)}
+.preset:hover{color:var(--text);border-color:var(--line2)}
+.spacer{flex:1}
+.fuzzy-label{font-size:9px;color:var(--faint);display:flex;align-items:center;gap:4px}
+.fuzzy-label input{accent-color:var(--amber)}
+.side{display:flex;flex-direction:column;min-height:0}
+.side-head{padding:11px 13px;border-bottom:1px solid var(--line);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);font-family:var(--mono)}
+.binding-list{padding:8px;overflow:auto;max-height:310px}
+.binding{border:1px solid var(--line);border-radius:8px;background:var(--panel2);padding:8px 9px;margin-bottom:5px;cursor:pointer}
+.binding:hover{border-color:var(--line2)}
+.binding.hit{border-color:rgba(34,197,94,.38);background:rgba(34,197,94,.06);box-shadow:0 0 0 1px rgba(34,197,94,.12)}
+.binding-top{display:flex;align-items:center;gap:6px}
+.pattern-pill{font-family:var(--mono);font-size:10px;font-weight:700;color:#a5f3fc;min-width:48px}
+.type-badge{font-size:7px;padding:2px 4px;border-radius:3px;font-family:var(--mono)}
+.type-badge.point{color:#67e8f9;background:rgba(6,182,212,.10);border:1px solid rgba(6,182,212,.18)}
+.type-badge.flow{color:#c4b5fd;background:rgba(139,92,246,.10);border:1px solid rgba(139,92,246,.18)}
+.binding-name{font-size:10px;color:var(--text);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.binding-sub{font-size:8px;color:var(--faint);font-family:var(--mono);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match{margin:0 8px 8px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);padding:10px;min-height:100px}
+.match.empty{display:grid;place-items:center;color:var(--faint);font-size:10px;text-align:center}
+.match .k{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);font-family:var(--mono)}
+.match h3{font-size:13px;margin:5px 0 3px}
+.match .target{font-size:8px;color:var(--faint);font-family:var(--mono);word-break:break-all}
+.match .meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.match .run{margin-top:9px;width:100%;border:1px solid rgba(59,130,246,.35);border-radius:6px;background:rgba(59,130,246,.16);color:#93c5fd;font-size:10px;padding:7px}
+body.light .match .run{color:#1d4ed8}
+.match .run:disabled{opacity:.4;cursor:not-allowed}
+.bubble{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;width:min(430px,calc(100vw - 30px));border:1px solid var(--line2);border-radius:11px;background:rgba(10,17,30,.94);backdrop-filter:blur(18px);padding:10px 12px;box-shadow:0 20px 50px rgba(0,0,0,.42);transition:.2s;z-index:30}
+body.light .bubble{background:rgba(255,255,255,.94)}
+.bubble.show{opacity:1;transform:translate(-50%,0)}
+.bubble .top{display:flex;gap:6px;align-items:center}
+.bubble .name{font-size:10px;font-weight:600;flex:1}
+.bubble .status{font-size:8px;color:var(--faint);font-family:var(--mono)}
+.bubble .bar{height:4px;border-radius:99px;background:var(--panel3);overflow:hidden;margin:8px 0 4px}
+.bubble .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width .08s linear}
+.bubble .sub{font-size:8px;color:var(--faint);font-family:var(--mono);display:flex;justify-content:space-between}
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,16px);opacity:0;pointer-events:none;background:#0b1220;border:1px solid var(--line2);color:#dbeafe;padding:8px 12px;border-radius:8px;font-size:10px;z-index:40;transition:.2s}
+body.light .toast{background:#fff;color:#0f172a}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.pad{height:300px}.binding-list{max-height:240px}}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">G</div><div><b>手势识别 → 点/线实例</b><span>GestureRecognizer × GestureBinding × AtomRef</span></div></div>
+    <div class="top-hint">在画布上按住左键画手势 · 抬手匹配 · <kbd>LDR</kbd> → GitHub</div>
+    <button class="icon-btn" id="themeBtn">☾</button>
+  </header>
+
+  <div class="layout">
+    <main class="panel">
+      <div class="pad-head"><b>Gesture Pad</b><span id="phase" class="phase">idle</span></div>
+      <div class="pad" id="pad">
+        <div class="pad-hint" id="padHint"><b>按住左键画手势</b>例：LDR / UD / RL / DR / DLU</div>
+        <svg id="trail" viewBox="0 0 600 360" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="readout">
+        <div class="pattern-box"><div class="k">Recognized</div><div class="v" id="pattern">—</div></div>
+        <div class="dirs" id="dirs"></div>
+      </div>
+      <div class="pad-foot">
+        <button class="preset" data-preset="LDR">LDR</button>
+        <button class="preset" data-preset="UD">UD</button>
+        <button class="preset" data-preset="RL">RL</button>
+        <button class="preset" data-preset="DR">DR</button>
+        <button class="preset" data-preset="DLU">DLU</button>
+        <div class="spacer"></div>
+        <label class="fuzzy-label"><input type="checkbox" id="fuzzy"> 模糊匹配（≤1 段）</label>
+        <button class="preset" id="clear">清空</button>
+      </div>
+    </main>
+
+    <aside class="panel side">
+      <div class="side-head">GestureBinding · 手势 → 目标实例</div>
+      <div class="binding-list" id="bindings"></div>
+      <div class="match empty" id="match">画一个手势，或点上方预设</div>
+    </aside>
+  </div>
+</div>
+
+<div class="bubble" id="bubble">
+  <div class="top"><span id="bubbleKind" class="type-badge flow">FLOW</span><span class="name" id="bubbleName">—</span><span class="status" id="bubbleStatus">running</span></div>
+  <div class="bar"><i id="bubbleBar"></i></div>
+  <div class="sub"><span id="bubbleSub">—</span><span id="bubblePct">0%</span></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const BINDINGS=[
+  {pattern:'LDR',name:'打开 GitHub',kind:'flow',target:'inst.site-github@r1',effect:'L2',desc:'确保 VPN → 可达性 → 打开 URL → 通知'},
+  {pattern:'UD',name:'检测 VPN 状态',kind:'point',target:'vpn.default.status@r1',effect:'L0',desc:'读取进程/窗口/隧道状态，不做修改'},
+  {pattern:'RL',name:'开发工作区',kind:'flow',target:'inst.workspace-dev@r3',effect:'L1',desc:'VS Code + 终端 + 双屏布局'},
+  {pattern:'DR',name:'打开终端',kind:'point',target:'open.terminal@r1',effect:'L1',desc:'打开默认终端'},
+  {pattern:'DLU',name:'确保 VPN',kind:'flow',target:'inst.ensure-vpn-ask@r2',effect:'L2',desc:'检测 → 启动/询问 → 等待 → 连接'},
+];
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const esc=(s)=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const OPP={R:'L',L:'R',U:'D',D:'U',NE:'SW',NW:'SE',SE:'NW',SW:'NE'};
+const VEC={R:[1,0],L:[-1,0],U:[0,-1],D:[0,1],NE:[.7,-.7],NW:[-.7,-.7],SE:[.7,.7],SW:[-.7,.7]};
+const state={drawing:false,points:[],dirs:[],lastDir:null,pattern:'',match:null,fuzzy:false,toastTimer:null,bubbleTimer:null,progressTimer:null};
+
+function dirOf(dx,dy){
+  const a=Math.atan2(dy,dx)*180/Math.PI;
+  if(a>=-22.5&&a<22.5)return 'R';
+  if(a>=22.5&&a<67.5)return 'SE';
+  if(a>=67.5&&a<112.5)return 'D';
+  if(a>=112.5&&a<157.5)return 'SW';
+  if(a>=157.5||a<-157.5)return 'L';
+  if(a>=-157.5&&a<-112.5)return 'NW';
+  if(a>=-112.5&&a<-67.5)return 'U';
+  return 'NE';
+}
+function normalize(p){return (p||'').replace(/\s+/g,'').toUpperCase();}
+function editDistance(a,b){
+  const n=a.length,m=b.length;let prev=Array.from({length:m+1},(_,i)=>i),cur=new Array(m+1);
+  for(let i=1;i<=n;i++){cur[0]=i;for(let j=1;j<=m;j++){const cost=a[i-1]===b[j-1]?0:1;cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+cost);}[prev,cur]=[cur,prev];}
+  return prev[m];
+}
+function findMatch(pattern){
+  const p=normalize(pattern);if(!p)return null;
+  const exact=BINDINGS.find(b=>b.pattern===p);if(exact)return {binding:exact,quality:'exact',distance:0};
+  if(state.fuzzy){
+    let best=null;
+    for(const b of BINDINGS){const d=editDistance(p,b.pattern);if(d<=1&&(!best||d<best.distance))best={binding:b,quality:'fuzzy',distance:d};}
+    if(best)return best;
+  }
+  return null;
+}
+function setPhase(t){const el=$('#phase');el.textContent=t;el.className='phase '+(t==='drawing'?'drawing':'');}
+function setPadHint(show){$('#padHint').style.display=show?'block':'none';}
+function renderTrail(){
+  const svg=$('#trail');
+  if(!state.points.length){svg.innerHTML='';return;}
+  const pts=state.points.map(p=>`${p.x},${p.y}`).join(' ');
+  const first=state.points[0],last=state.points[state.points.length-1];
+  svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="#06b6d4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${first.x}" cy="${first.y}" r="4" fill="#22c55e"/><circle cx="${last.x}" cy="${last.y}" r="4" fill="#f59e0b"/>`;
+}
+function renderDirs(){
+  $('#dirs').innerHTML=state.dirs.length?state.dirs.map((d,i)=>`<span class="dir">${esc(d)}</span>`).join('<span style="color:var(--faint);font-size:9px">→</span>'):`<span style="font-size:9px;color:var(--faint)">方向序列会出现在这里</span>`;
+  $('#pattern').textContent=state.pattern||'—';
+}
+function renderBindings(){
+  $('#bindings').innerHTML=BINDINGS.map(b=>`<div class="binding ${state.match&&state.match.binding.pattern===b.pattern?'hit':''}" data-pattern="${b.pattern}"><div class="binding-top"><span class="pattern-pill">${b.pattern}</span><span class="type-badge ${b.kind}">${b.kind==='flow'?'FLOW':'POINT'}</span><span class="binding-name">${esc(b.name)}</span></div><div class="binding-sub">${esc(b.target)} · ${b.effect}</div></div>`).join('');
+  $$('#bindings [data-pattern]').forEach(el=>el.onclick=()=>preset(el.dataset.pattern));
+}
+function renderMatch(){
+  const m=state.match;
+  if(!state.pattern){$('#match').className='match empty';$('#match').textContent='画一个手势，或点上方预设';return;}
+  if(!m){$('#match').className='match';$('#match').innerHTML=`<div class="k">NO MATCH</div><h3>未匹配手势</h3><div class="target">${esc(state.pattern)} 没有绑定；可以打开模糊匹配，或在绑定表里新增。</div>`;return;}
+  const b=m.binding;
+  $('#match').className='match';
+  $('#match').innerHTML=`<div class="k">MATCH · ${m.quality.toUpperCase()}${m.quality==='fuzzy'?' · distance '+m.distance:''}</div><h3>${esc(b.name)}</h3><div class="target">${esc(b.target)}</div><div class="meta"><span class="type-badge ${b.kind}">${b.kind==='flow'?'FLOW':'POINT'}</span><span class="type-badge" style="color:#fcd34d;border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.07)">${b.effect}</span><span class="type-badge" style="color:var(--dim)">${esc(b.pattern)}</span></div><button class="run" id="runBtn">▶ 启动 ${b.kind==='flow'?'FlowInstance':'PointInstance'}</button>`;
+  $('#runBtn').onclick=runMatch;
+}
+function updateMatch(){
+  state.match=findMatch(state.pattern);
+  renderBindings();renderMatch();renderDirs();
+}
+function finishGesture(){
+  state.drawing=false;setPhase('done');
+  state.pattern=state.dirs.join('');
+  updateMatch();
+  setPadHint(!state.points.length);
+}
+function localPoint(e){
+  const r=$('#pad').getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};
+}
+function setViewBox(){
+  const r=$('#pad').getBoundingClientRect();$('#trail').setAttribute('viewBox',`0 0 ${r.width} ${r.height}`);
+}
+function down(e){
+  if(e.button!==0)return;e.preventDefault();$('#pad').setPointerCapture(e.pointerId);
+  setViewBox();state.drawing=true;state.points=[];state.dirs=[];state.pattern='';state.match=null;state.lastDir=null;
+  const p=localPoint(e);state.points.push(p);state.lastDir=p;setPhase('drawing');setPadHint(false);renderTrail();renderDirs();renderBindings();renderMatch();
+}
+function move(e){
+  if(!state.drawing)return;e.preventDefault();
+  const p=localPoint(e);state.points.push(p);renderTrail();
+  const dx=p.x-state.lastDir.x,dy=p.y-state.lastDir.y;const dist=Math.hypot(dx,dy);
+  if(dist<24)return;
+  const d=dirOf(dx,dy);const last=state.dirs[state.dirs.length-1];
+  if(d===last){state.lastDir=p;return;}
+  if(last&&OPP[last]===d){state.dirs.pop();state.lastDir=p;renderDirs();return;}
+  state.dirs.push(d);state.lastDir=p;renderDirs();
+}
+function up(e){
+  if(!state.drawing)return;e.preventDefault();
+  const p=localPoint(e);state.points.push(p);renderTrail();
+  finishGesture();
+}
+function preset(pattern){
+  const dirs=pattern.split(/\s+/).filter(Boolean);
+  setViewBox();const r=$('#pad').getBoundingClientRect();
+  let x=r.width/2,y=r.height/2;state.points=[{x,y}];state.dirs=[];state.lastDir={x,y};
+  for(const d of dirs){const v=VEC[d]||[1,0];x+=v[0]*64;y+=v[1]*64;state.points.push({x,y});state.dirs.push(d);}
+  state.pattern=dirs.join('');setPhase('done');setPadHint(false);renderTrail();updateMatch();
+}
+function clearPad(){
+  state.drawing=false;state.points=[];state.dirs=[];state.pattern='';state.match=null;state.lastDir=null;
+  setPhase('idle');setPadHint(true);renderTrail();renderDirs();renderBindings();renderMatch();
+}
+function runMatch(){
+  if(!state.match)return;const b=state.match.binding;
+  const bubble=$('#bubble');bubble.classList.add('show');
+  $('#bubbleKind').textContent=b.kind==='flow'?'FLOW':'POINT';
+  $('#bubbleKind').className='type-badge '+b.kind;
+  $('#bubbleName').textContent=b.name;
+  $('#bubbleStatus').textContent='running';
+  $('#bubbleSub').textContent=`${b.kind==='flow'?'FlowRun':'PointRun'} · ${b.target} · ${b.effect}`;
+  $('#bubbleBar').style.width='0%';$('#bubblePct').textContent='0%';
+  if(state.progressTimer)clearInterval(state.progressTimer);
+  let pct=0;
+  state.progressTimer=setInterval(()=>{
+    pct=Math.min(100,pct+Math.floor(Math.random()*8)+4);
+    $('#bubbleBar').style.width=pct+'%';$('#bubblePct').textContent=pct+'%';
+    if(pct>=100){clearInterval(state.progressTimer);state.progressTimer=null;$('#bubbleStatus').textContent='ok';$('#bubbleSub').textContent=`${b.kind==='flow'?'FlowRun':'PointRun'} 完成 · 已写入运行记录`;state.bubbleTimer=setTimeout(()=>bubble.classList.remove('show'),1600);}
+  },60);
+  if(state.bubbleTimer){clearTimeout(state.bubbleTimer);state.bubbleTimer=null;}
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>t.classList.remove('show'),1500);}
+function initTheme(){
+  let saved=null;try{saved=localStorage.getItem('gesture-binding-theme');}catch(e){}
+  if(saved==='light')document.body.classList.add('light');updateTheme();
+  $('#themeBtn').onclick=()=>{document.body.classList.toggle('light');try{localStorage.setItem('gesture-binding-theme',document.body.classList.contains('light')?'light':'dark');}catch(e){}updateTheme();};
+}
+function updateTheme(){$('#themeBtn').textContent=document.body.classList.contains('light')?'☀':'☾';}
+function init(){
+  initTheme();renderBindings();renderMatch();renderDirs();
+  const pad=$('#pad');pad.addEventListener('pointerdown',down);pad.addEventListener('pointermove',move);pad.addEventListener('pointerup',up);pad.addEventListener('pointercancel',up);
+  $$('.preset[data-preset]').forEach(b=>b.onclick=()=>preset(b.dataset.preset));
+  $('#clear').onclick=clearPad;
+  $('#fuzzy').onchange=(e)=>{state.fuzzy=e.target.checked;if(state.pattern)updateMatch();toast(state.fuzzy?'模糊匹配已开启（≤1 段）':'模糊匹配已关闭');};
+  document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){clearPad();$('#bubble').classList.remove('show');}});
+}
+document.addEventListener('DOMContentLoaded',init);
+
+</script>
+</body>
+</html>

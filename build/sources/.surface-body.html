@@ -1,0 +1,62 @@
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div>
+        <div class="brand-name">原子工坊 · 面层目录</div>
+        <div class="brand-sub">SurfaceClass × SurfaceInstance</div>
+      </div>
+    </div>
+    <div class="search">
+      <span>⌕</span>
+      <input id="search" autocomplete="off" placeholder="搜索类 / 实例 / 槽位 / 动作…（/ 聚焦）">
+    </div>
+    <div class="top-actions">
+      <div class="seg" id="viewSeg">
+        <button data-view="cards" class="active">卡片</button>
+        <button data-view="table">表格</button>
+        <button data-view="graph">图谱</button>
+      </div>
+      <button class="icon-btn" id="themeBtn" title="切换主题">☾</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <div class="layout">
+    <aside class="panel sidebar">
+      <div class="panel-head"><span>面层家族</span><span class="muted" id="familyCount"></span></div>
+      <div id="families"></div>
+      <div class="divider"></div>
+      <div class="panel-head"><span>筛选</span><span class="muted">mock</span></div>
+      <div id="filters"></div>
+      <div class="divider"></div>
+      <div class="panel-head"><span>图例</span></div>
+      <div class="legend">
+        <div class="legend-row"><i class="legend-node"></i>SurfaceClass · 交互模式</div>
+        <div class="legend-row"><i class="legend-node inst"></i>SurfaceInstance · 绑定</div>
+        <div class="legend-row"><i class="legend-node gate"></i>Gate · 决策语义</div>
+      </div>
+      <div class="side-note">
+        <b>类管模式，实例管绑定。</b><br>
+        页面不是类，页面是多个 <code>SurfaceInstance</code> 的组合。面层只展示、收集意图，不执行业务逻辑。
+      </div>
+    </aside>
+
+    <main class="panel main">
+      <div class="main-head">
+        <div>
+          <div class="kicker" id="mainKicker">SURFACE CATALOG</div>
+          <h1 id="mainTitle">面层功能类与实例</h1>
+          <p id="mainSub">16 个交互模式，46 个实例。点类看契约，点实例看它绑定了哪个 Flow / Point。</p>
+        </div>
+        <div class="count" id="mainCount"></div>
+      </div>
+      <div id="content"></div>
+    </main>
+
+    <aside class="panel inspector" id="inspector"></aside>
+  </div>
+</div>
+<div class="toast" id="toast"></div>

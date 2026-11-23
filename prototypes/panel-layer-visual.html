@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>面板层可视化 · PanelClass / PanelInstance</title>
+<style>
+:root{
+  --bg:#070b12;--panel:#0d1420;--card:#111a29;--card2:#152235;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.25);
+  --ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;
+  --amber:#f59e0b;--green:#22c55e;--pink:#ec4899;--red:#ef4444;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{display:grid;grid-template-columns:260px minmax(0,1fr) 330px;height:100%}
+#sidebar{background:linear-gradient(180deg,#0e1624,#080d15);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.brand{padding:16px 15px 10px}
+.eyebrow{font:9px var(--mono);letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
+.brand h1{font-size:17px;margin:5px 0 3px}
+.brand p{margin:0;color:var(--dim);font-size:11px;line-height:1.6}
+.stats{display:flex;gap:7px;margin-top:10px}
+.stat{flex:1;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 8px}
+.stat b{display:block;font:700 15px var(--mono);color:var(--cyan)}
+.stat span{font-size:8.5px;color:var(--faint);font-family:var(--mono)}
+.search-wrap{padding:8px 15px 6px}
+.search{width:100%;border:1px solid var(--line);border-radius:8px;background:#0b1420;color:var(--ink);padding:8px 10px;outline:none;font-size:11px}
+.search::placeholder{color:var(--faint)}
+.search:focus{border-color:rgba(34,211,238,.45);box-shadow:0 0 0 2px rgba(34,211,238,.08)}
+.filters{padding:4px 15px 8px;display:flex;flex-wrap:wrap;gap:4px}
+.chip-btn{border:1px solid var(--line);background:#111b28;color:#93a4ba;border-radius:99px;padding:3px 7px;font-size:9px;font-family:var(--mono)}
+.chip-btn.on{color:#a5f3fc;border-color:rgba(34,211,238,.35);background:rgba(34,211,238,.10)}
+.classList{flex:1;overflow-y:auto;padding:0 8px 18px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.classList::-webkit-scrollbar{width:7px}
+.classList::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.class-item{display:flex;gap:9px;align-items:center;padding:8px 9px;border:1px solid transparent;border-radius:8px;cursor:pointer;margin-bottom:2px}
+.class-item:hover{background:#121d2c;border-color:var(--line)}
+.class-item.on{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25)}
+.class-icon{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:13px;flex:0 0 28px;background:#162234;border:1px solid var(--line);color:var(--cat,#22d3ee)}
+.class-main{min-width:0;flex:1}
+.class-name{font-size:11.5px;color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.class-id{font:8.5px var(--mono);color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.class-side{text-align:right}
+.class-count{font:600 10px var(--mono);color:var(--dim)}
+.class-family{font:7.5px var(--mono);color:var(--faint);margin-top:2px}
+#main{min-width:0;display:flex;flex-direction:column;background:radial-gradient(circle at 25% 0%,rgba(34,211,238,.05),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);overflow:hidden}
+.hero{padding:14px 18px 10px;border-bottom:1px solid var(--line)}
+.hero-top{display:flex;gap:12px;align-items:flex-start}
+.hero-icon{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:19px;flex:0 0 44px;background:linear-gradient(135deg,var(--cat,#22d3ee),rgba(15,23,42,.2));border:1px solid var(--line2);color:#fff;box-shadow:0 0 28px var(--cat,#22d3ee)22}
+.hero-text{min-width:0;flex:1}
+.hero-kicker{font:8.5px var(--mono);letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+.hero h1{font-size:19px;margin:3px 0 2px}
+.hero-id{font:10px var(--mono);color:var(--dim)}
+.hero-desc{margin:6px 0 0;color:#94a8c0;font-size:11.5px;line-height:1.55;max-width:760px}
+.hero-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font:8.5px var(--mono);padding:3px 6px;border-radius:4px;border:1px solid var(--line);background:#121d2c;color:#93a4ba}
+.badge.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.07)}
+.badge.amber{color:#fcd34d;border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.07)}
+.badge.green{color:#86efac;border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.07)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 18px;border-bottom:1px solid var(--line);background:rgba(13,20,32,.72)}
+.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:none;background:#111b28;color:#8fa2bb;font-size:9px;padding:5px 8px}
+.seg button:hover{color:#dbeafe}
+.seg button.on{background:rgba(34,211,238,.12);color:#a5f3fc}
+.tool-label{font:8.5px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.1em}
+.toolbar input[type=range]{width:110px;accent-color:var(--cyan)}
+.toolbar select{border:1px solid var(--line);background:#111b28;color:#b9c7da;border-radius:5px;font-size:9px;padding:4px 5px;outline:none}
+.chk{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#9fb1c8;user-select:none;cursor:pointer}
+.chk input{accent-color:var(--cyan);width:12px;height:12px;margin:0}
+.workbench-wrap{flex:1;min-height:0;padding:12px 18px 18px}
+.workbench{position:relative;height:100%;min-height:420px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:
+  radial-gradient(circle at 60% 20%,rgba(34,211,238,.04),transparent 55%),
+  linear-gradient(180deg,#0b1522,#080d15)}
+.workbench::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(148,163,184,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.035) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+.fake-sidebar{position:absolute;left:0;top:0;bottom:0;width:176px;border-right:1px solid var(--line);background:rgba(10,18,29,.88);padding:12px 10px;transition:margin .2s}
+.fake-sidebar .fs-logo{font:700 11px var(--mono);color:#a5f3fc;margin-bottom:12px}
+.fake-sidebar .fs-item{font-size:9.5px;color:#7e91a7;padding:6px 7px;border-radius:5px;margin-bottom:2px}
+.fake-sidebar .fs-item.on{background:rgba(34,211,238,.07);color:#dbeafe}
+.fake-main{position:absolute;left:176px;right:0;top:0;bottom:0;padding:18px;transition:margin .2s}
+.fake-main .fm-kicker{font:8px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase}
+.fake-main h2{font-size:16px;margin:5px 0 6px;color:#dbeafe}
+.fake-main p{font-size:10px;color:#72859b;line-height:1.6;max-width:560px;margin:0}
+.fm-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px;max-width:640px}
+.fm-card{border:1px solid var(--line);border-radius:8px;background:rgba(17,26,41,.72);padding:9px;min-height:70px}
+.fm-card b{display:block;font:600 10px var(--mono);color:#9fb1c8;margin-bottom:5px}
+.fm-card span{display:block;height:5px;border-radius:3px;background:#1a283a;margin:4px 0}
+.fm-card span.short{width:55%}
+.panel-shell{position:absolute;display:flex;flex-direction:column;background:linear-gradient(180deg,#101a29,#0c1522);border:1px solid rgba(148,163,184,.22);box-shadow:0 18px 50px rgba(0,0,0,.42);z-index:6;min-width:0;overflow:hidden;transition:top .2s,left .2s,right .2s,bottom .2s,width .12s,height .2s,transform .2s,opacity .2s}
+.panel-shell.closed{opacity:0;pointer-events:none;transform:translateY(8px) scale(.985)}
+.workbench.mode-right .panel-shell{top:0;right:0;bottom:0;width:var(--pw);border-radius:0;border-right:none;border-top:none;border-bottom:none}
+.workbench.mode-right .fake-main{margin-right:var(--pw)}
+.workbench.mode-left .panel-shell{top:0;left:0;bottom:0;width:var(--pw);border-radius:0;border-left:none;border-top:none;border-bottom:none}
+.workbench.mode-left .fake-sidebar{display:none}
+.workbench.mode-left .fake-main{left:0;margin-left:var(--pw)}
+.workbench.mode-bottom .panel-shell{left:176px;right:0;bottom:0;height:260px;border-radius:0;border-bottom:none;border-left:none;border-right:none}
+.workbench.mode-bottom .fake-main{margin-bottom:260px}
+.workbench.mode-floating .panel-shell{right:18px;bottom:18px;top:auto;width:var(--pw);height:min(540px,calc(100% - 36px));border-radius:11px;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.workbench.mode-modal .panel-shell{left:50%;top:50%;right:auto;bottom:auto;width:min(var(--pw),calc(100% - 48px));height:min(560px,calc(100% - 48px));transform:translate(-50%,-50%);border-radius:12px;z-index:12}
+.workbench.mode-modal .panel-backdrop{opacity:1;pointer-events:auto}
+.workbench.mode-sheet .panel-shell{left:0;right:0;bottom:0;top:auto;height:320px;border-radius:14px 14px 0 0;z-index:12}
+.workbench.mode-sheet .panel-backdrop{opacity:1;pointer-events:auto}
+.panel-backdrop{position:absolute;inset:0;background:rgba(2,6,12,.55);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.2s;z-index:10}
+.panel-head{flex:0 0 44px;display:flex;align-items:center;gap:8px;padding:0 10px;border-bottom:1px solid var(--line);position:relative}
+.panel-head .ph-icon{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;background:#162234;border:1px solid var(--line);font-size:11px;color:var(--cat,#22d3ee)}
+.panel-head .ph-main{min-width:0;flex:1}
+.panel-head .ph-name{font:600 10.5px var(--mono);color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panel-head .ph-sub{font:8px var(--mono);color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.panel-head .ph-actions{display:flex;gap:3px}
+.icon-btn{width:22px;height:22px;border:1px solid transparent;border-radius:5px;background:transparent;color:#72859b;font-size:11px;display:grid;place-items:center}
+.icon-btn:hover{background:#162234;color:#dbeafe;border-color:var(--line)}
+.panel-toolbar{flex:0 0 34px;display:flex;align-items:center;gap:5px;padding:0 9px;border-bottom:1px solid var(--line);background:rgba(13,22,35,.55);position:relative;overflow:hidden}
+.ptab{font-size:8.5px;padding:4px 7px;border-radius:4px;color:#7e91a7;white-space:nowrap}
+.ptab.on{background:rgba(34,211,238,.08);color:#a5f3fc}
+.ptab-sep{width:1px;height:13px;background:var(--line);margin:0 2px}
+.panel-body{flex:1;min-height:0;overflow:auto;padding:11px;position:relative;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+.panel-body::-webkit-scrollbar{width:7px}
+.panel-body::-webkit-scrollbar-thumb{background:#26344a;border-radius:4px}
+.panel-foot{flex:0 0 32px;display:flex;align-items:center;gap:7px;padding:0 10px;border-top:1px solid var(--line);background:rgba(13,22,35,.55);font:8px var(--mono);color:var(--faint);position:relative}
+.panel-foot .dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.panel-foot .grow{flex:1}
+.anatomy [data-region]{outline:1px dashed rgba(34,211,238,.55);outline-offset:-1px;position:relative}
+.anatomy [data-region]::after{content:attr(data-region);position:absolute;right:3px;top:2px;font:7px var(--mono);color:#a5f3fc;background:rgba(8,17,30,.85);border:1px solid rgba(34,211,238,.25);border-radius:3px;padding:1px 3px;z-index:20;pointer-events:none}
+.region-hl{background:rgba(34,211,238,.06)}
+.wire-stack{display:flex;flex-direction:column;gap:7px}
+.wire-row{display:flex;align-items:center;gap:6px}
+.wire-label{width:54px;font:8px var(--mono);color:var(--faint);flex:0 0 54px}
+.wire-value{flex:1;height:14px;border:1px solid var(--line);border-radius:4px;background:#0c1623;display:flex;align-items:center;padding:0 5px;font:8px var(--mono);color:#8fa2bb;overflow:hidden;white-space:nowrap}
+.wire-value.hi{color:#a5f3fc;border-color:rgba(34,211,238,.25);background:rgba(34,211,238,.05)}
+.wire-line{height:6px;border-radius:3px;background:#1a283a}
+.wire-line.w40{width:40%}.wire-line.w60{width:60%}.wire-line.w80{width:80%}
+.wire-box{border:1px solid var(--line);border-radius:7px;background:#0c1623;padding:8px;margin-bottom:7px}
+.wire-box b{display:block;font:600 9px var(--mono);color:#a9bbd0;margin-bottom:5px}
+.wire-chips{display:flex;flex-wrap:wrap;gap:4px}
+.wire-chip{font:8px var(--mono);color:#93a4ba;border:1px solid var(--line);border-radius:4px;background:#121d2c;padding:2px 5px}
+.wire-chip.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.06)}
+.wire-chip.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.06)}
+.wire-chip.green{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.06)}
+.wire-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(34,211,238,.25);background:rgba(34,211,238,.08);color:#a5f3fc;border-radius:4px;font:8px var(--mono);padding:4px 7px}
+.wire-btn.gray{border-color:var(--line);background:#121d2c;color:#8fa2bb}
+.wire-btn.red{border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.07);color:#fca5a5}
+.wire-search{height:24px;border:1px solid var(--line);border-radius:5px;background:#0a1420;display:flex;align-items:center;padding:0 7px;font:9px var(--mono);color:#5f7188;margin-bottom:8px}
+.wire-list-row{display:flex;align-items:center;gap:6px;padding:6px;border-radius:5px;border:1px solid transparent}
+.wire-list-row:hover{background:#111d2c;border-color:var(--line)}
+.wire-list-row .wr-main{flex:1;min-width:0}
+.wire-list-row .wr-title{font:9px var(--mono);color:#b9c7da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wire-list-row .wr-sub{font:7.5px var(--mono);color:var(--faint);margin-top:2px}
+.wire-list-row .wr-status{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.wire-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.wire-kpi{border:1px solid var(--line);border-radius:6px;background:#0c1623;padding:7px}
+.wire-kpi b{display:block;font:700 13px var(--mono);color:#a5f3fc}
+.wire-kpi span{font:7px var(--mono);color:var(--faint)}
+.wire-chart{height:80px;border:1px solid var(--line);border-radius:7px;background:linear-gradient(180deg,rgba(34,211,238,.05),transparent);position:relative;overflow:hidden;margin-top:7px}
+.wire-chart::before{content:"";position:absolute;left:0;right:0;top:35%;height:1px;background:rgba(148,163,184,.12)}
+.wire-chart svg{position:absolute;inset:0;width:100%;height:100%}
+.wire-diff{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.wire-code{font:8px/1.7 var(--mono);color:#8fa8c0;border:1px solid var(--line);border-radius:6px;background:#08111c;padding:7px;white-space:pre-wrap;overflow:hidden}
+.wire-code .add{color:#86efac}.wire-code .del{color:#fca5a5}
+.wire-msg{max-width:88%;border:1px solid var(--line);border-radius:7px;background:#0c1623;padding:7px;font:8.5px/1.5 var(--mono);color:#a9bbd0;margin-bottom:6px}
+.wire-msg.me{margin-left:auto;background:rgba(34,211,238,.06);border-color:rgba(34,211,238,.18);color:#c8ecf5}
+.wire-prompt{border:1px solid var(--line);border-radius:7px;background:#0a1420;padding:7px;font:8px var(--mono);color:#5f7188;display:flex;align-items:center;justify-content:space-between;margin-top:7px}
+.wire-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:150px;text-align:center;color:var(--faint)}
+.wire-empty b{font-size:11px;color:#9fb1c8;margin-bottom:4px}
+.wire-empty p{font-size:8.5px;max-width:220px;line-height:1.6;margin:0 0 8px}
+.skeleton{height:8px;border-radius:3px;background:linear-gradient(90deg,#172538,#223550,#172538);background-size:200% 100%;animation:sk 1.2s linear infinite;margin:5px 0}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#inspector{border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:15px 14px 42px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#inspector::-webkit-scrollbar{width:8px}
+#inspector::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.insp-kicker{font:8px var(--mono);letter-spacing:.15em;color:var(--faint);text-transform:uppercase}
+.insp-title{font-size:14px;margin:5px 0 2px;color:#dbeafe}
+.insp-id{font:8.5px var(--mono);color:var(--faint);word-break:break-all;margin-bottom:10px}
+.insp-section{border:1px solid var(--line);border-radius:9px;background:var(--card);padding:9px;margin-bottom:8px}
+.insp-section .lh{font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.kv{display:grid;grid-template-columns:58px 1fr;gap:4px 7px;font-size:9.5px;line-height:1.45}
+.kv .k{color:var(--faint);font-family:var(--mono)}
+.kv .v{color:#b9c7da;word-break:break-all}
+.pill{display:inline-block;font:8px var(--mono);padding:2px 4px;border-radius:3px;border:1px solid var(--line);background:#162132;color:#93a4ba;margin:2px 2px 0 0}
+.pill.cyan{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.06)}
+.pill.amber{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.06)}
+.insp-btn{width:100%;border:1px solid var(--line);background:#142134;color:#9fb1c8;border-radius:6px;padding:6px;font-size:9.5px;margin-top:6px}
+.insp-btn:hover{color:#dbeafe;border-color:var(--line2)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:8px 12px;border-radius:8px;font-size:10px;z-index:60;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1180px){#app{grid-template-columns:240px minmax(0,1fr)}#inspector{display:none}}
+@media(max-width:820px){#app{grid-template-columns:1fr;grid-template-rows:38vh 1fr}#sidebar{border-right:none;border-bottom:1px solid var(--line)}.hero-badges{display:none}.fm-cards{grid-template-columns:1fr 1fr}}
+
+/* v0.1 patches */
+.mono{font-family:var(--mono)}
+.workbench.mode-right .fake-main{right:var(--pw);margin-right:0}
+.workbench.mode-left .fake-main{left:var(--pw);margin-left:0}
+.workbench.mode-bottom .fake-main{bottom:260px;margin-bottom:0}
+.workbench.panel-closed .panel-backdrop{opacity:0!important;pointer-events:none!important}
+.wire-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.wire-tile{border:1px solid var(--line);border-radius:6px;background:#0c1623;padding:8px 6px;text-align:center;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.wire-tile b{font:700 10px var(--mono);color:#a5f3fc}
+.wire-tile span{font:7.5px var(--mono);color:#7e91a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.wire-tile:hover{border-color:rgba(34,211,238,.28);background:rgba(34,211,238,.05)}
+
+@media(max-width:820px){
+  #main{overflow-y:auto}
+  .workbench .fake-sidebar{display:none}
+  .workbench.mode-right .panel-shell,.workbench.mode-left .panel-shell{width:min(var(--pw),78%)}
+  .workbench.mode-right .fake-main{left:0;right:min(var(--pw),78%)}
+  .workbench.mode-left .fake-main{left:min(var(--pw),78%);right:0}
+  .workbench.mode-bottom .panel-shell{left:0}
+  .workbench.mode-bottom .fake-main{left:0;bottom:260px}
+  .hero{padding:10px 12px 8px}
+  .hero h1{font-size:17px}
+  .toolbar{padding:8px 12px}
+  .workbench-wrap{padding:10px 12px 12px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="eyebrow">Panel Layer</div>
+      <h1>面板可视化</h1>
+      <p>PanelClass 是面板外壳契约；PanelInstance 是内容绑定 + 位置 + 尺寸 + 状态。点击面板区域可查看 anatomy。</p>
+      <div class="stats">
+        <div class="stat"><b id="statClasses">14</b><span>classes</span></div>
+        <div class="stat"><b id="statInstances">37</b><span>instances</span></div>
+        <div class="stat"><b id="statModes">6</b><span>modes</span></div>
+      </div>
+    </div>
+    <div class="search-wrap"><input class="search" id="search" placeholder="搜索 panel / 内容 / 实例…"></div>
+    <div class="filters" id="filters"></div>
+    <div class="classList" id="classList"></div>
+  </aside>
+
+  <main id="main">
+    <header class="hero">
+      <div class="hero-top">
+        <div class="hero-icon" id="heroIcon">▦</div>
+        <div class="hero-text">
+          <div class="hero-kicker">PanelClass</div>
+          <h1 id="heroName">Inspector Panel</h1>
+          <div class="hero-id" id="heroId">panel.inspector@1.0.0</div>
+          <p class="hero-desc" id="heroDesc"></p>
+        </div>
+        <div class="hero-badges" id="heroBadges"></div>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <span class="tool-label">Placement</span>
+      <div class="seg" id="modeSeg">
+        <button data-mode="right">right</button>
+        <button data-mode="left">left</button>
+        <button data-mode="bottom">bottom</button>
+        <button data-mode="floating">floating</button>
+        <button data-mode="modal">modal</button>
+        <button data-mode="sheet">sheet</button>
+      </div>
+      <span class="tool-label">Width</span>
+      <input type="range" id="width" min="300" max="620" value="380">
+      <b id="widthV" class="mono" style="font-size:9px;color:var(--cyan);min-width:38px">380</b>
+      <span class="tool-label">Instance</span>
+      <select id="instanceSel"></select>
+      <span class="tool-label">State</span>
+      <select id="stateSel">
+        <option value="ready">ready</option>
+        <option value="loading">loading</option>
+        <option value="empty">empty</option>
+        <option value="error">error</option>
+        <option value="streaming">streaming</option>
+        <option value="needsApproval">needsApproval</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="anatomy"> anatomy</label>
+      <label class="chk"><input type="checkbox" id="open" checked> open</label>
+    </div>
+
+    <div class="workbench-wrap">
+      <div class="workbench mode-right" id="workbench" style="--pw:380px">
+        <div class="panel-backdrop" id="backdrop"></div>
+        <aside class="fake-sidebar">
+          <div class="fs-logo">ATOM / workspace</div>
+          <div class="fs-item on">概览</div>
+          <div class="fs-item">点实例</div>
+          <div class="fs-item">线实例</div>
+          <div class="fs-item">面实例</div>
+          <div class="fs-item">体实例</div>
+          <div class="fs-item">运行历史</div>
+          <div class="fs-item">设置</div>
+        </aside>
+        <main class="fake-main">
+          <div class="fm-kicker">MAIN CONTENT · fake app shell</div>
+          <h2>编辑工作区</h2>
+          <p>这是面板旁边的主内容。面板打开时，主内容让出宽度；面板关闭时，空间回收。切换右侧/左侧/底部/浮动/modal/sheet 看布局变化。</p>
+          <div class="fm-cards">
+            <div class="fm-card"><b>Point · 22</b><span></span><span class="short"></span><span></span></div>
+            <div class="fm-card"><b>Flow · 6</b><span></span><span class="short"></span><span></span></div>
+            <div class="fm-card"><b>Body · 2</b><span></span><span class="short"></span><span></span></div>
+          </div>
+        </main>
+        <section class="panel-shell" id="panelShell"></section>
+      </div>
+    </div>
+  </main>
+
+  <aside id="inspector"></aside>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const GROUPS = {
+  all:     { label: '全部', color: '#22d3ee' },
+  inspect: { label: '检查', color: '#22d3ee' },
+  edit:    { label: '编辑', color: '#3b82f6' },
+  ai:      { label: 'AI', color: '#8b5cf6' },
+  data:    { label: '数据', color: '#22c55e' },
+  system:  { label: '系统', color: '#f59e0b' }
+};
+
+function I(label, content, mode, width, state, data, actions, rev = 1) {
+  return { label, content, mode, width, state, data, actions, rev, status: 'active' };
+}
+
+function P(id, name, icon, group, desc, modes, regions, content, states, behaviors, a11y, instances) {
+  return { id, name, icon, group, desc, modes, regions, content, states, behaviors, a11y, instances, version: '1.0.0' };
+}
+
+const CLASSES = [
+  P('panel.inspector', 'Inspector Panel', '◧', 'inspect', '属性检查器：选中对象的参数、绑定、revision。',
+    ['right', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.inspector',
+    ['ready', 'empty', 'error'], ['resizable', 'collapsible', 'pinnable'], ['role=complementary', 'Esc close', 'keyboard resize'], [
+      I('point', 'surface.inspector.point', 'right', 380, 'ready', 'selectedPoint + params', ['saveParams', 'reset'], 3),
+      I('flow-slot', 'surface.inspector.flow-slot', 'right', 400, 'ready', 'selectedSlot + boundFlow', ['replaceBinding', 'unbind'], 2),
+      I('body-manifest', 'surface.inspector.body-manifest', 'right', 440, 'ready', 'bodyManifest', ['editManifest', 'validate'], 1)
+    ]),
+  P('panel.settings', 'Settings Panel', '⚙', 'edit', '设置面板：分区、字段、保存栏、重启徽标。',
+    ['right', 'modal'], ['header', 'toolbar', 'body', 'footer'], 'surface.settings-page',
+    ['ready', 'error'], ['resizable', 'saveBar', 'restartBadge'], ['role=dialog when modal', 'focus trap', 'Esc close'], [
+      I('app', 'surface.settings.app', 'right', 420, 'ready', 'settingsStore.app', ['save', 'reset'], 2),
+      I('body', 'surface.settings.body', 'modal', 620, 'ready', 'settingsStore.body', ['save', 'cancel'], 1),
+      I('vpn', 'surface.form.settings.vpn', 'right', 440, 'ready', 'settingsStore.vpn', ['saveSettings', 'testVpn'], 2)
+    ]),
+  P('panel.command', 'Command Panel', '⌘', 'ai', '命令面板：搜索、结果、快捷键、预览。',
+    ['modal'], ['header', 'body', 'footer'], 'surface.command-palette',
+    ['ready', 'empty', 'loading'], ['fuzzy', 'keyboard', 'escape', 'backdropClose'], ['role=dialog', 'role=listbox', 'aria-activedescendant'], [
+      I('global', 'surface.palette.global', 'modal', 620, 'ready', 'commandIndex', ['command', 'navigate'], 5),
+      I('flow-editor', 'surface.palette.flow-editor', 'modal', 560, 'ready', 'flowCommands', ['insertNode', 'navigate'], 2),
+      I('body-launcher', 'surface.palette.body-launcher', 'modal', 600, 'ready', 'bodyRegistry', ['install', 'run'], 1)
+    ]),
+  P('panel.run-history', 'Run History Panel', '◷', 'data', '运行历史：运行列表、详情、重放、错误过滤。',
+    ['right', 'bottom'], ['header', 'toolbar', 'body', 'footer'], 'surface.run-history',
+    ['ready', 'empty', 'error'], ['resizable', 'filter', 'replay'], ['role=region', 'keyboard rows', 'aria-live'], [
+      I('flow', 'surface.run-history.flow', 'right', 460, 'ready', 'flowRuns', ['replay', 'filterErrors'], 2),
+      I('vpn', 'surface.run-history.vpn', 'right', 460, 'ready', 'flowRuns + pointRuns', ['replay', 'openSettings'], 2),
+      I('body', 'surface.run-history.body', 'right', 520, 'ready', 'bodyRuns', ['replay', 'export'], 1)
+    ]),
+  P('panel.artifact', 'Artifact Panel', '▤', 'edit', 'AI 产物面板：代码/文档/图，预览、源码、版本、导出。',
+    ['right', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.artifact-panel',
+    ['ready', 'loading', 'streaming', 'error'], ['resizable', 'previewSource', 'versions', 'export'], ['role=complementary', 'keyboard resize', 'live region'], [
+      I('code', 'surface.artifact.code', 'right', 520, 'ready', 'artifact.code', ['edit', 'export', 'version'], 2),
+      I('document', 'surface.artifact.document', 'right', 480, 'ready', 'artifact.document', ['edit', 'export', 'version'], 1),
+      I('diagram', 'surface.artifact.diagram', 'floating', 540, 'ready', 'artifact.diagram', ['zoom', 'export'], 1)
+    ]),
+  P('panel.chat', 'Copilot Chat Panel', '✦', 'ai', 'AI 副驾：消息、上下文、流式回复、停止/重新生成。',
+    ['right', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.prompt-input + surface.streaming-response',
+    ['ready', 'streaming', 'needsApproval', 'error'], ['resizable', 'stop', 'regenerate', 'contextChips'], ['role=complementary', 'live region', 'focus management'], [
+      I('support', 'surface.prompt.chat + surface.stream.chat', 'right', 380, 'ready', 'session.chat', ['send', 'attach'], 1),
+      I('copilot', 'surface.prompt.chat + surface.stream.chat', 'right', 420, 'streaming', 'session.copilot', ['send', 'stop', 'regenerate'], 3),
+      I('inline-edit', 'surface.prompt.inline-edit', 'floating', 440, 'ready', 'selection + instruction', ['apply', 'diff', 'cancel'], 1)
+    ]),
+  P('panel.approval', 'Approval Panel', '⚠', 'ai', '审批面板：风险、diff、approve/deny、理由。',
+    ['modal', 'sheet'], ['header', 'body', 'footer'], 'surface.approval-card',
+    ['needsApproval', 'blocked', 'error'], ['modal', 'focusTrap', 'approve', 'deny', 'reason'], ['role=alertdialog', 'focus trap', 'aria-describedby'], [
+      I('tool-call', 'surface.approval.tool-call', 'modal', 520, 'needsApproval', 'toolCall + risk', ['approve', 'deny', 'reason'], 1),
+      I('payment', 'surface.approval.payment', 'modal', 480, 'needsApproval', 'payment + risk', ['approve', 'deny'], 1),
+      I('publish', 'surface.approval.publish', 'modal', 540, 'needsApproval', 'content + audience', ['approve', 'deny', 'preview'], 1)
+    ]),
+  P('panel.notifications', 'Notification Panel', '◍', 'system', '通知中心：通知列表、操作、dismiss、未读。',
+    ['right', 'floating'], ['header', 'body', 'footer'], 'surface.notification',
+    ['ready', 'empty'], ['resizable', 'dismiss', 'action'], ['role=log', 'aria-live=polite'], [
+      I('center', 'surface.notification.center', 'right', 360, 'ready', 'notifications', ['dismiss', 'markRead'], 1),
+      I('vpn', 'surface.notify.vpn', 'floating', 340, 'ready', 'vpnNotifications', ['openSettings', 'retry'], 1),
+      I('update', 'surface.notify.update', 'right', 360, 'ready', 'updateNotifications', ['install', 'later'], 1)
+    ]),
+  P('panel.launcher', 'Launcher Panel', '⌘', 'system', '启动坞：分页、tabs、tiles、快捷键。',
+    ['modal'], ['header', 'body', 'footer'], 'surface.launch-dock',
+    ['ready', 'empty'], ['tabs', 'pages', 'hotkeys', 'drag'], ['role=dialog', 'role=grid', 'keyboard navigation'], [
+      I('desktop', 'surface.dock.desktop', 'modal', 720, 'ready', 'launchItems', ['runFlow', 'reorder'], 1),
+      I('dev', 'surface.dock.dev', 'modal', 720, 'ready', 'devItems', ['runFlow', 'reorder'], 1)
+    ]),
+  P('panel.dashboard', 'Dashboard Panel', '◫', 'data', '仪表盘：KPI、图表、刷新、过滤。',
+    ['right', 'bottom'], ['header', 'toolbar', 'body', 'footer'], 'surface.dashboard',
+    ['ready', 'loading', 'error'], ['resizable', 'refresh', 'filter'], ['role=region', 'data table semantics', 'aria-live'], [
+      I('system', 'surface.dashboard.system', 'right', 520, 'ready', 'metricStream', ['refresh', 'settings'], 2),
+      I('vpn', 'surface.dashboard.vpn', 'right', 460, 'ready', 'vpnHealth', ['refresh', 'test'], 1),
+      I('body-health', 'surface.dashboard.body-health', 'bottom', 520, 'ready', 'bodyHealth', ['filter', 'refresh'], 1)
+    ]),
+  P('panel.diff', 'Diff Panel', '≠', 'edit', '差异面板：split/unified、accept/revert。',
+    ['right', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.diff',
+    ['ready', 'empty', 'error'], ['split', 'unified', 'accept', 'revert'], ['role=region', 'keyboard navigation'], [
+      I('flow-version', 'surface.diff.flow-version', 'right', 560, 'ready', 'flowVersionA + flowVersionB', ['accept', 'revert'], 1),
+      I('body-manifest', 'surface.diff.body-manifest', 'right', 560, 'ready', 'bodyManifestA + bodyManifestB', ['accept', 'revert'], 1)
+    ]),
+  P('panel.preview', 'Preview Panel', '◉', 'edit', '文件/内容预览：文本、图片、PDF、视频。',
+    ['right', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.preview-window',
+    ['ready', 'loading', 'error'], ['resizable', 'zoom', 'openExternal'], ['role=region', 'keyboard zoom'], [
+      I('file', 'surface.preview-window.file', 'right', 520, 'ready', 'previewResult', ['zoom', 'openExternal'], 2),
+      I('image', 'surface.preview-window.image', 'floating', 560, 'ready', 'previewResult.image', ['fit', 'zoom', 'export'], 1)
+    ]),
+  P('panel.trace', 'Tool Trace Panel', '⌁', 'inspect', '工具调用轨迹：参数、结果、状态、重试。',
+    ['right', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.tool-call-trace',
+    ['ready', 'streaming', 'error'], ['resizable', 'filter', 'retry'], ['role=region', 'aria-live=polite'], [
+      I('agent', 'surface.trace.agent', 'right', 420, 'ready', 'run.toolCalls', ['retry', 'openDetail'], 1),
+      I('mcp', 'surface.trace.mcp', 'right', 420, 'streaming', 'mcp.calls', ['retry', 'cancel'], 1)
+    ]),
+  P('panel.console', 'Console Panel', '▤', 'data', '日志/终端面板：滚动、过滤、follow、清空。',
+    ['bottom', 'floating'], ['header', 'toolbar', 'body', 'footer'], 'surface.log-viewer',
+    ['ready', 'empty', 'error'], ['resizable', 'clear', 'filter', 'follow'], ['role=log', 'aria-live=polite'], [
+      I('logs', 'surface.log-viewer.logs', 'bottom', 300, 'ready', 'logStream', ['filter', 'clear', 'follow'], 1),
+      I('terminal', 'surface.log-viewer.terminal', 'bottom', 320, 'ready', 'terminalSession', ['run', 'clear'], 1)
+    ])
+];
+
+CLASSES.forEach(c => {
+  c.instances.forEach((ins, i) => {
+    ins.id = `${c.id}.${ins.label}@r${ins.rev}`;
+    ins.classId = c.id;
+    ins.index = i;
+  });
+});
+
+const state = {
+  selectedId: 'panel.inspector',
+  instanceId: null,
+  mode: 'right',
+  width: 380,
+  panelState: 'ready',
+  region: null,
+  anatomy: false,
+  open: true,
+  search: '',
+  group: 'all',
+  toastTimer: null
+};
+
+const selectedClass = () => CLASSES.find(c => c.id === state.selectedId) || CLASSES[0];
+const selectedInstance = () => {
+  const c = selectedClass();
+  return c.instances.find(i => i.id === state.instanceId) || c.instances[0];
+};
+const totalInstances = () => CLASSES.reduce((n, c) => n + c.instances.length, 0);
+
+/* ============================================================
+   1. 渲染基础
+   ============================================================ */
+function wl(w = '') { return `<div class="wire-line ${w}"></div>`; }
+function wr(label, value, hi = false) {
+  return `<div class="wire-row"><div class="wire-label">${esc(label)}</div><div class="wire-value ${hi ? 'hi' : ''}">${esc(value)}</div></div>`;
+}
+function wbox(title, body) { return `<div class="wire-box"><b>${esc(title)}</b>${body}</div>`; }
+function wchips(arr, cls = '') { return `<div class="wire-chips">${arr.map(x => `<span class="wire-chip ${cls}">${esc(x)}</span>`).join('')}</div>`; }
+function wbtn(text, cls = '') { return `<span class="wire-btn ${cls}">${esc(text)}</span>`; }
+
+function renderStats() {
+  $('#statClasses').textContent = CLASSES.length;
+  $('#statInstances').textContent = totalInstances();
+  $('#statModes').textContent = 6;
+}
+
+function renderFilters() {
+  const groups = [{ id: 'all', label: '全部' }, ...Object.entries(GROUPS).filter(([id]) => id !== 'all').map(([id, v]) => ({ id, label: v.label }))];
+  $('#filters').innerHTML = groups.map(g => {
+    const n = g.id === 'all' ? CLASSES.length : CLASSES.filter(c => c.group === g.id).length;
+    return `<button class="chip-btn ${state.group === g.id ? 'on' : ''}" data-group="${g.id}">${g.label} ${n}</button>`;
+  }).join('');
+  $$('#filters [data-group]').forEach(b => b.onclick = () => { state.group = b.dataset.group; renderFilters(); renderCatalog(); });
+}
+
+function filteredClasses() {
+  const q = state.search.trim().toLowerCase();
+  return CLASSES.filter(c => {
+    if (state.group !== 'all' && c.group !== state.group) return false;
+    if (!q) return true;
+    const hay = [c.id, c.name, c.desc, c.content, ...c.instances.map(i => i.id + ' ' + i.content + ' ' + i.data)].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function renderCatalog() {
+  const list = filteredClasses();
+  if (!list.length) {
+    $('#classList').innerHTML = '<div style="padding:20px 10px;color:var(--faint);font-size:10.5px;text-align:center">没有匹配的 PanelClass。</div>';
+    return;
+  }
+  $('#classList').innerHTML = list.map(c => {
+    const color = GROUPS[c.group].color;
+    return `<div class="class-item ${c.id === state.selectedId ? 'on' : ''}" data-class="${esc(c.id)}" style="--cat:${color}">
+      <div class="class-icon">${esc(c.icon)}</div>
+      <div class="class-main"><div class="class-name">${esc(c.name)}</div><div class="class-id">${esc(c.id)}</div></div>
+      <div class="class-side"><div class="class-count">${c.instances.length}</div><div class="class-family">${esc(GROUPS[c.group].label)}</div></div>
+    </div>`;
+  }).join('');
+  $$('#classList [data-class]').forEach(el => el.onclick = () => selectClass(el.dataset.class));
+}
+
+function renderHero() {
+  const c = selectedClass();
+  const color = GROUPS[c.group].color;
+  $('#heroIcon').textContent = c.icon;
+  $('#heroIcon').style.setProperty('--cat', color);
+  $('#heroName').textContent = c.name;
+  $('#heroId').textContent = `${c.id}@${c.version}`;
+  $('#heroDesc').textContent = c.desc;
+  $('#heroBadges').innerHTML = `
+    <span class="badge cyan">${c.modes.join(' / ')}</span>
+    <span class="badge green">${c.instances.length} instances</span>
+    <span class="badge amber">panel shell</span>
+    <span class="badge">${esc(c.content)}</span>`;
+}
+
+function renderInstanceSelect() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  $('#instanceSel').innerHTML = c.instances.map(i => `<option value="${esc(i.id)}" ${i.id === ins.id ? 'selected' : ''}>${esc(i.label)} · r${i.rev}</option>`).join('');
+}
+
+/* ============================================================
+   2. 面板内容线框
+   ============================================================ */
+function skeletonHTML() {
+  return `<div style="padding:4px 0">
+    <div class="skeleton" style="width:45%"></div>
+    <div class="skeleton" style="width:88%"></div>
+    <div class="skeleton" style="width:72%"></div>
+    <div class="skeleton" style="width:80%;margin-top:14px"></div>
+    <div class="skeleton" style="width:60%"></div>
+    <div class="skeleton" style="width:90%;margin-top:14px"></div>
+    <div class="skeleton" style="width:66%"></div>
+  </div>`;
+}
+
+function emptyHTML(c, ins) {
+  return `<div class="wire-empty"><div style="font-size:24px;margin-bottom:6px;color:var(--faint)">◌</div><b>No content</b><p>${esc(ins.content)} 还没有数据。可以运行上游流程、切换实例或清除筛选。</p><span class="wire-btn">Run upstream</span></div>`;
+}
+
+function errorHTML(c, ins) {
+  return `<div class="wire-empty" style="color:#fca5a5"><div style="font-size:24px;margin-bottom:6px;color:#fca5a5">!</div><b style="color:#fca5a5">Panel failed to load</b><p style="color:#9f7f86">${esc(ins.content)} 返回错误。检查权限/网络/上游流程，或重试。</p><span class="wire-btn red">Retry</span></div>`;
+}
+
+function streamHTML() {
+  return `<div class="wire-msg me">帮我总结这个 PR 的风险。</div>
+    <div class="wire-msg">正在阅读 diff…<br><span style="color:#5f7188">tool: github.diff · 42 files</span></div>
+    <div class="wire-msg">发现 3 个风险点：<br>1. 权限检查缺失<br>2. 错误分支未覆盖<br>3. 缺少回归测试<span style="color:#a5f3fc">▍</span></div>
+    <div class="wire-prompt"><span>继续追问…</span><span class="wire-btn">Stop ■</span></div>`;
+}
+
+function approvalHTML() {
+  return `${wbox('Risk · L2', `<div class="wire-chips"><span class="wire-chip amber">irreversible</span><span class="wire-chip amber">external tool</span><span class="wire-chip">approval required</span></div>`)}
+    <div class="wire-diff" style="margin-bottom:8px">
+      <div class="wire-code"><span class="del">- openExternal(url)</span><br><span class="add">+ ensureVpn()</span><br><span class="add">+ openExternal(url)</span></div>
+      <div class="wire-code">target: browser<br>permission: network<br>effect: L2<br>undo: no</div>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap"><span class="wire-btn">Approve</span><span class="wire-btn red">Deny</span><span class="wire-btn gray">Reason…</span></div>`;
+}
+
+function contentHTML(c, ins) {
+  if (state.panelState === 'loading') return skeletonHTML();
+  if (state.panelState === 'empty') return emptyHTML(c, ins);
+  if (state.panelState === 'error') return errorHTML(c, ins);
+  if (state.panelState === 'blocked') return errorHTML(c, ins);
+  if (state.panelState === 'needsApproval') return approvalHTML();
+  if (state.panelState === 'streaming') return streamHTML();
+
+  const f = c.id.split('.')[1];
+  if (f === 'inspector') {
+    return `<div class="wire-stack">
+      ${wr('class', 'point.vpn.status')}
+      ${wr('instance', 'vpn.default.status@r1', true)}
+      ${wr('revision', 'r1')}
+      ${wr('effect', 'L0')}
+    </div>
+    ${wbox('Params', wchips(['profile=work', 'timeoutMs=12000']))}
+    ${wbox('Bindings', wchips(['scope=body.external-access', 'slot=vpn.status']))}
+    <div style="display:flex;gap:5px"><span class="wire-btn">Save</span><span class="wire-btn gray">Reset</span></div>`;
+  }
+  if (f === 'settings') {
+    return `${wbox('General', `${wr('Profile', 'work')}${wr('Auto connect', 'on', true)}${wr('Protocol', 'WireGuard')}`)}
+      ${wbox('Advanced', `${wr('MTU', '1420')}${wr('DNS', '1.1.1.1')}${wr('Kill switch', 'on', true)}`)}
+      <div style="display:flex;gap:5px"><span class="wire-btn">Save changes</span><span class="wire-btn gray">Cancel</span></div>`;
+  }
+  if (f === 'command') {
+    return `<div class="wire-search">⌘ Type a command…</div>
+      ${['Open GitHub', 'Ensure VPN', 'Preview file', 'Archive invoice'].map((x, i) => `<div class="wire-list-row"><span class="wr-status" style="background:${i === 0 ? '#22d3ee' : '#22c55e'}"></span><div class="wr-main"><div class="wr-title">${x}</div><div class="wr-sub">${i === 0 ? 'flow · L2' : 'point · L0'}</div></div><span class="wire-chip">↵</span></div>`).join('')}
+      <div style="margin-top:6px" class="wire-chips"><span class="wire-chip">↑↓ navigate</span><span class="wire-chip">↵ run</span><span class="wire-chip">esc close</span></div>`;
+  }
+  if (f === 'run-history') {
+    return `<div class="wire-chips" style="margin-bottom:7px"><span class="wire-chip cyan">All</span><span class="wire-chip">Errors</span><span class="wire-chip">Slow</span></div>
+      ${['flow.ensure-vpn · ok · 842ms', 'flow.open-site · failed · E_TARGET', 'flow.preview · ok · 120ms', 'flow.archive · ok · 2.4s'].map((x, i) => `<div class="wire-list-row"><span class="wr-status" style="background:${i === 1 ? '#ef4444' : '#22c55e'}"></span><div class="wr-main"><div class="wr-title">${x.split(' · ')[0]}</div><div class="wr-sub">${x.split(' · ').slice(1).join(' · ')}</div></div><span class="wire-chip">↻</span></div>`).join('')}`;
+  }
+  if (f === 'artifact') {
+    return `<div class="wire-chips" style="margin-bottom:7px"><span class="wire-chip cyan">Preview</span><span class="wire-chip">Source</span><span class="wire-chip">Versions</span></div>
+      <div class="wire-code">export function PriceTag({ value }) {<br>  return &lt;span className="tag"&gt;{value}&lt;/span&gt;;<br>}</div>
+      <div style="display:flex;gap:5px;margin-top:8px"><span class="wire-btn">Edit</span><span class="wire-btn gray">Export</span><span class="wire-btn gray">v2</span></div>`;
+  }
+  if (f === 'chat') {
+    return `<div class="wire-msg me">这个面板应该用什么 placement？</div>
+      <div class="wire-msg">持续工作的 side panel 用 docked right；短任务用 floating；不可逆动作才用 modal。</div>
+      <div class="wire-msg">推荐：<span style="color:#a5f3fc">panel.inspector · right · resizable</span></div>
+      <div class="wire-prompt"><span>Ask anything…</span><span class="wire-btn">Send ↵</span></div>`;
+  }
+  if (f === 'approval') return approvalHTML();
+  if (f === 'notifications') {
+    return `<div class="wire-list-row"><span class="wr-status"></span><div class="wr-main"><div class="wr-title">VPN connected</div><div class="wr-sub">just now · network</div></div><span class="wire-chip">dismiss</span></div>
+      <div class="wire-list-row"><span class="wr-status" style="background:#f59e0b"></span><div class="wr-main"><div class="wr-title">Update available</div><div class="wr-sub">2 min ago · system</div></div><span class="wire-chip">install</span></div>
+      <div class="wire-list-row"><span class="wr-status" style="background:#ef4444"></span><div class="wr-main"><div class="wr-title">Run failed</div><div class="wr-sub">5 min ago · flow</div></div><span class="wire-chip">retry</span></div>`;
+  }
+  if (f === 'launcher') {
+    return `<div class="wire-chips" style="margin-bottom:7px"><span class="wire-chip cyan">常用</span><span class="wire-chip">开发</span><span class="wire-chip">系统</span><span class="wire-chip">工具</span></div>
+      <div class="wire-tiles">${Array.from({ length: 12 }, (_, i) => `<div class="wire-tile"><b>${i + 1}</b><span>${['GitHub', 'VPN', 'OCR', '终端', '预览', '发票', '监控', '备份', '外网', '取色', '窗口', '设置'][i]}</span></div>`).join('')}</div>
+      <div class="wire-chips" style="margin-top:7px"><span class="wire-chip">1–9 hotkey</span><span class="wire-chip">drag reorder</span></div>`;
+  }
+  if (f === 'dashboard') {
+    return `<div class="wire-kpis"><div class="wire-kpi"><b>42%</b><span>CPU</span></div><div class="wire-kpi"><b>18.4 GB</b><span>MEM</span></div><div class="wire-kpi"><b>64°C</b><span>GPU</span></div></div>
+      <div class="wire-chart"><svg viewBox="0 0 300 80" preserveAspectRatio="none"><path d="M0 62 L30 55 L60 58 L90 40 L120 44 L150 28 L180 34 L210 20 L240 26 L270 15 L300 22" fill="none" stroke="#22d3ee" stroke-width="1.5"/><path d="M0 70 L330 70" stroke="rgba(148,163,184,.15)"/></svg></div>
+      <div style="display:flex;gap:5px;margin-top:7px"><span class="wire-btn">Refresh</span><span class="wire-btn gray">1s</span><span class="wire-btn gray">60s</span></div>`;
+  }
+  if (f === 'diff') {
+    return `<div class="wire-chips" style="margin-bottom:7px"><span class="wire-chip cyan">Split</span><span class="wire-chip">Unified</span></div>
+      <div class="wire-diff"><div class="wire-code"><span class="del">- vpn.status(profile)</span><br><span class="del">- if (!ok) return</span><br><span class="add">+ status = await ensureVpn()</span><br><span class="add">+ if (!status.ok) ask()</span></div><div class="wire-code"><span class="add">+ requireApproval: true</span><br><span class="add">+ timeout: 12000</span><br>  effect: L2<br>  revision: 2</div></div>
+      <div style="display:flex;gap:5px;margin-top:7px"><span class="wire-btn">Accept</span><span class="wire-btn red">Revert</span></div>`;
+  }
+  if (f === 'preview') {
+    return `<div class="wire-box" style="height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#15263a,#0b1420)"><span style="font:10px var(--mono);color:#93a4ba">preview content</span></div>
+      <div class="wire-chips" style="margin-top:7px"><span class="wire-chip">zoom 100%</span><span class="wire-chip">fit</span><span class="wire-chip">open external</span></div>`;
+  }
+  if (f === 'trace') {
+    return `${['tool: web-search · ok · 420ms', 'tool: github.diff · ok · 310ms', 'tool: sql.query · failed · timeout', 'retry: sql.query · ok · 280ms'].map((x, i) => `<div class="wire-list-row"><span class="wr-status" style="background:${i === 2 ? '#ef4444' : '#22c55e'}"></span><div class="wr-main"><div class="wr-title">${x.split(' · ')[0]}</div><div class="wr-sub">${x.split(' · ').slice(1).join(' · ')}</div></div><span class="wire-chip">${i === 2 ? 'retry' : 'detail'}</span></div>`).join('')}`;
+  }
+  if (f === 'console') {
+    return `<div class="wire-code" style="height:100%;min-height:160px;color:#8fa8c0">12:04:01  INFO  worker started<br>12:04:02  INFO  flow.ensure-vpn · slot vpn.status<br>12:04:02  WARN  vpn.wait · 1200ms<br>12:04:03  OK    vpn.ready · connected<br>12:04:03  INFO  flow.ready · 842ms<span style="color:#a5f3fc">▍</span></div>`;
+  }
+  return `<div class="wire-stack">${wl('w40')}${wl('w80')}${wl('w60')}</div>`;
+}
+
+/* ============================================================
+   3. 面板壳 / Inspector
+   ============================================================ */
+function tabsFor(c) {
+  const f = c.id.split('.')[1];
+  const map = {
+    inspector: ['Properties', 'Bindings', 'History'],
+    settings: ['General', 'Advanced'],
+    command: ['All', 'Commands', 'Files'],
+    'run-history': ['All', 'Errors', 'Slow'],
+    artifact: ['Preview', 'Source', 'Versions'],
+    chat: ['Chat', 'Context', 'Tools'],
+    approval: ['Decision', 'Evidence'],
+    notifications: ['All', 'Unread'],
+    launcher: ['常用', '开发', '系统', '工具'],
+    dashboard: ['Overview', 'History'],
+    diff: ['Split', 'Unified'],
+    preview: ['Preview', 'Info'],
+    trace: ['Calls', 'Errors'],
+    console: ['Logs', 'Terminal']
+  };
+  return map[f] || ['Overview', 'Details'];
+}
+
+function panelInner(c, ins) {
+  const tabs = tabsFor(c);
+  const region = r => `data-region="${r}"${state.region === r ? ' class="region-hl"' : ''}`;
+  return `
+    <div class="panel-head" ${region('header')}>
+      <div class="ph-icon" style="--cat:${GROUPS[c.group].color}">${esc(c.icon)}</div>
+      <div class="ph-main"><div class="ph-name">${esc(c.name)}</div><div class="ph-sub">${esc(ins.id)}</div></div>
+      <div class="ph-actions"><button class="icon-btn" data-pin title="pin">⌖</button><button class="icon-btn" data-close title="close">×</button></div>
+    </div>
+    <div class="panel-toolbar" ${region('toolbar')}>
+      ${tabs.map((t, i) => `<span class="ptab ${i === 0 ? 'on' : ''}">${esc(t)}</span>`).join('')}
+      <span class="ptab-sep"></span>
+      <span style="font:8px var(--mono);color:var(--faint);white-space:nowrap">${esc(ins.content)}</span>
+    </div>
+    <div class="panel-body" ${region('body')}>${contentHTML(c, ins)}</div>
+    <div class="panel-foot" ${region('footer')}>
+      <span class="dot" style="background:${state.panelState === 'error' || state.panelState === 'blocked' ? 'var(--red)' : state.panelState === 'needsApproval' ? 'var(--amber)' : 'var(--green)'}"></span>
+      <span>${esc(state.panelState)}</span><span>· r${ins.rev}</span><span class="grow"></span><span>${esc(state.mode)}</span><span>· Esc close</span>
+    </div>`;
+}
+
+function renderModeButtons() {
+  $$('#modeSeg [data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === state.mode));
+}
+
+function renderPanel() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  const wb = $('#workbench');
+  wb.className = `workbench mode-${state.mode}${state.open ? '' : ' panel-closed'}`;
+  wb.style.setProperty('--pw', state.width + 'px');
+  const shell = $('#panelShell');
+  shell.classList.toggle('closed', !state.open);
+  shell.classList.toggle('anatomy', state.anatomy);
+  shell.innerHTML = panelInner(c, ins);
+  $('#width').value = state.width;
+  $('#widthV').textContent = state.width;
+  $('#stateSel').value = state.panelState;
+  $('#anatomy').checked = state.anatomy;
+  $('#open').checked = state.open;
+  renderModeButtons();
+}
+
+function panelJSON() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  return {
+    panelClass: `${c.id}@${c.version}`,
+    panelInstance: ins.id,
+    contentSurface: ins.content,
+    placement: { mode: state.mode, width: state.width },
+    state: state.panelState,
+    bindings: { data: ins.data, actions: ins.actions },
+    revision: ins.rev
+  };
+}
+
+function renderInspector() {
+  const c = selectedClass();
+  const ins = selectedInstance();
+  const region = state.region;
+  $('#inspector').innerHTML = `
+    <div class="insp-kicker">PanelClass</div>
+    <div class="insp-title">${esc(c.icon)} ${esc(c.name)}</div>
+    <div class="insp-id">${esc(c.id)}@${esc(c.version)}</div>
+
+    <div class="insp-section"><div class="lh">Class contract</div><div class="kv">
+      <div class="k">modes</div><div class="v">${c.modes.map(m => `<span class="pill cyan">${esc(m)}</span>`).join('')}</div>
+      <div class="k">regions</div><div class="v">${c.regions.map(r => `<span class="pill">${esc(r)}</span>`).join('')}</div>
+      <div class="k">states</div><div class="v">${c.states.map(s => `<span class="pill">${esc(s)}</span>`).join('')}</div>
+      <div class="k">behaviors</div><div class="v">${c.behaviors.map(s => `<span class="pill">${esc(s)}</span>`).join('')}</div>
+      <div class="k">a11y</div><div class="v">${c.a11y.map(s => `<span class="pill amber">${esc(s)}</span>`).join('')}</div>
+    </div></div>
+
+    <div class="insp-section"><div class="lh">PanelInstance</div><div class="kv">
+      <div class="k">instance</div><div class="v mono">${esc(ins.id)}</div>
+      <div class="k">content</div><div class="v mono">${esc(ins.content)}</div>
+      <div class="k">placement</div><div class="v">${esc(state.mode)} · ${state.width}px</div>
+      <div class="k">state</div><div class="v">${esc(state.panelState)}</div>
+      <div class="k">revision</div><div class="v">r${ins.rev}</div>
+      <div class="k">data</div><div class="v mono">${esc(ins.data)}</div>
+      <div class="k">actions</div><div class="v">${ins.actions.map(a => `<span class="pill cyan">${esc(a)}</span>`).join('')}</div>
+    </div></div>
+
+    ${region ? `<div class="insp-section"><div class="lh">Region · ${esc(region)}</div><div class="kv">
+      <div class="k">role</div><div class="v">${region === 'header' ? 'banner/toolbar' : region === 'body' ? 'main content' : region === 'footer' ? 'status/action bar' : 'toolbar'}</div>
+      <div class="k">slots</div><div class="v">${region === 'header' ? 'title · subtitle · actions' : region === 'toolbar' ? 'tabs · filters · search' : region === 'body' ? 'content surface' : 'status · actions'}</div>
+      <div class="k">constraint</div><div class="v">${region === 'body' ? 'scroll · min-height 0' : 'fixed height'}</div>
+    </div></div>` : ''}
+
+    <div class="insp-section"><div class="lh">Content surface</div><div class="kv">
+      <div class="k">surface</div><div class="v mono">${esc(ins.content)}</div>
+      <div class="k">data</div><div class="v mono">${esc(ins.data)}</div>
+      <div class="k">actions</div><div class="v mono">${esc(ins.actions.join(' · '))}</div>
+    </div></div>
+
+    <button class="insp-btn" data-copy-panel>复制 PanelInstance JSON</button>
+    <button class="insp-btn" data-toggle-open>${state.open ? '关闭面板' : '打开面板'}</button>`;
+  bindInspectorEvents();
+}
+
+function bindInspectorEvents() {
+  $$('#inspector [data-copy-panel]').forEach(b => b.onclick = () => copyText(JSON.stringify(panelJSON(), null, 2), 'PanelInstance JSON 已复制'));
+  $$('#inspector [data-toggle-open]').forEach(b => b.onclick = () => { state.open = !state.open; $('#open').checked = state.open; renderPanel(); renderInspector(); });
+}
+
+/* ============================================================
+   4. 选择 / 事件
+   ============================================================ */
+function renderAll() {
+  renderStats(); renderFilters(); renderCatalog(); renderHero(); renderInstanceSelect(); renderPanel(); renderInspector();
+}
+
+function selectClass(id) {
+  state.selectedId = id;
+  const c = selectedClass();
+  const ins = c.instances[0];
+  state.instanceId = ins.id;
+  state.mode = ins.mode;
+  state.width = ins.width;
+  state.panelState = ins.state;
+  state.region = null;
+  state.open = true;
+  renderAll();
+}
+
+function selectInstance(ins) {
+  state.instanceId = ins.id;
+  state.mode = ins.mode;
+  state.width = ins.width;
+  state.panelState = ins.state;
+  state.region = null;
+  state.open = true;
+  renderHero();
+  renderInstanceSelect();
+  renderPanel();
+  renderInspector();
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+function copyText(text, label) {
+  const done = () => toast(label || '已复制');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  done();
+}
+
+function init() {
+  renderAll();
+
+  $('#search').addEventListener('input', e => { state.search = e.target.value; renderCatalog(); });
+  $$('#modeSeg [data-mode]').forEach(b => b.onclick = () => {
+    state.mode = b.dataset.mode;
+    if (state.mode === 'modal' || state.mode === 'sheet') state.open = true;
+    renderPanel(); renderInspector();
+  });
+  $('#width').addEventListener('input', e => {
+    state.width = +e.target.value;
+    $('#widthV').textContent = state.width;
+    renderPanel();
+  });
+  $('#stateSel').addEventListener('change', e => { state.panelState = e.target.value; renderPanel(); renderInspector(); });
+  $('#anatomy').addEventListener('change', e => { state.anatomy = e.target.checked; renderPanel(); });
+  $('#open').addEventListener('change', e => { state.open = e.target.checked; renderPanel(); renderInspector(); });
+  $('#instanceSel').addEventListener('change', e => {
+    const ins = selectedClass().instances.find(i => i.id === e.target.value);
+    if (ins) selectInstance(ins);
+  });
+  $('#backdrop').addEventListener('click', () => { state.open = false; $('#open').checked = false; renderPanel(); renderInspector(); });
+
+  $('#panelShell').addEventListener('click', e => {
+    if (e.target.closest('[data-close]')) {
+      state.open = false; $('#open').checked = false; renderPanel(); renderInspector(); return;
+    }
+    if (e.target.closest('[data-pin]')) { toast('面板已固定（模拟）'); return; }
+    const wireBtn = e.target.closest('.wire-btn');
+    if (wireBtn) { toast('模拟动作：' + wireBtn.textContent.trim()); return; }
+    const region = e.target.closest('[data-region]');
+    if (region) { state.region = region.dataset.region; renderPanel(); renderInspector(); }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== $('#search')) { e.preventDefault(); $('#search').focus(); }
+    if (e.key === 'Escape') { state.open = false; $('#open').checked = false; renderPanel(); renderInspector(); }
+    if (e.key === 'r' || e.key === 'R') { selectClass(state.selectedId); }
+  });
+}
+
+init();
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,4975 @@
+{
+  "point": [
+    {
+      "id": "win.key.send",
+      "name": "发送快捷键",
+      "family": "hotkey",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "向目标窗口发送组合键；复制、粘贴、剪切只是不同 keys 的实例。",
+      "params": [
+        {
+          "key": "keys",
+          "label": "keys",
+          "type": "text",
+          "required": false,
+          "description": "keys",
+          "defaultValue": "Ctrl+C"
+        },
+        {
+          "key": "mode",
+          "label": "mode",
+          "type": "text",
+          "required": false,
+          "description": "mode",
+          "defaultValue": "press"
+        },
+        {
+          "key": "repeat",
+          "label": "repeat",
+          "type": "number",
+          "required": false,
+          "description": "repeat",
+          "defaultValue": "1"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.key.send.i-copy@r1",
+          "name": "复制",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+C\",\"mode\":\"press\",\"repeat\":1}",
+          "params": {
+            "keys": "Ctrl+C",
+            "mode": "press",
+            "repeat": "1"
+          }
+        },
+        {
+          "id": "win.key.send.i-paste@r1",
+          "name": "粘贴",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+V\",\"mode\":\"press\",\"repeat\":1}",
+          "params": {
+            "keys": "Ctrl+V",
+            "mode": "press",
+            "repeat": "1"
+          }
+        },
+        {
+          "id": "win.key.send.i-cut@r1",
+          "name": "剪切",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+X\",\"mode\":\"press\",\"repeat\":1}",
+          "params": {
+            "keys": "Ctrl+X",
+            "mode": "press",
+            "repeat": "1"
+          }
+        },
+        {
+          "id": "win.key.send.i-undo@r1",
+          "name": "撤销",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+Z\",\"mode\":\"press\",\"repeat\":1}",
+          "params": {
+            "keys": "Ctrl+Z",
+            "mode": "press",
+            "repeat": "1"
+          }
+        },
+        {
+          "id": "win.key.send.i-select-all@r1",
+          "name": "全选",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+A\",\"mode\":\"press\",\"repeat\":1}",
+          "params": {
+            "keys": "Ctrl+A",
+            "mode": "press",
+            "repeat": "1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.key.trigger",
+      "name": "监听快捷键",
+      "family": "hotkey",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "全局或按应用监听组合键，发出 trigger 事件；和发送快捷键共用 Hotkey 契约。",
+      "params": [
+        {
+          "key": "keys",
+          "label": "keys",
+          "type": "text",
+          "required": false,
+          "description": "keys",
+          "defaultValue": "Ctrl+Alt+Space"
+        },
+        {
+          "key": "scope",
+          "label": "scope",
+          "type": "text",
+          "required": false,
+          "description": "scope",
+          "defaultValue": "global"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.key.trigger.i-trigger-panel@r1",
+          "name": "打开面板",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+Alt+Space\",\"scope\":\"global\"}",
+          "params": {
+            "keys": "Ctrl+Alt+Space",
+            "scope": "global"
+          }
+        },
+        {
+          "id": "win.key.trigger.i-trigger-shot@r1",
+          "name": "截图翻译",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"keys\":\"Ctrl+Alt+T\",\"scope\":\"global\"}",
+          "params": {
+            "keys": "Ctrl+Alt+T",
+            "scope": "global"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.window.control",
+      "name": "控制窗口",
+      "family": "window",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "按 WindowSelector 找到顶层窗口，执行聚焦、移动、缩放、置顶、关闭等操作。",
+      "params": [
+        {
+          "key": "op",
+          "label": "op",
+          "type": "text",
+          "required": false,
+          "description": "op",
+          "defaultValue": "focus"
+        },
+        {
+          "key": "selector",
+          "label": "selector",
+          "type": "text",
+          "required": false,
+          "description": "selector",
+          "defaultValue": "{\"strategy\":\"process\",\"process\":\"notepad.exe\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}"
+        },
+        {
+          "key": "monitor",
+          "label": "monitor",
+          "type": "number",
+          "required": false,
+          "description": "monitor",
+          "defaultValue": "1"
+        },
+        {
+          "key": "rect",
+          "label": "rect",
+          "type": "text",
+          "required": false,
+          "description": "rect",
+          "defaultValue": "0,0,0.5,1"
+        },
+        {
+          "key": "mode",
+          "label": "mode",
+          "type": "text",
+          "required": false,
+          "description": "mode",
+          "defaultValue": "toggle"
+        },
+        {
+          "key": "match",
+          "label": "match",
+          "type": "text",
+          "required": false,
+          "description": "match",
+          "defaultValue": "all"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.window.control.i-focus-notepad@r1",
+          "name": "聚焦记事本",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"op\":\"focus\",\"selector\":{\"strategy\":\"process\",\"process\":\"notepad.exe\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}",
+          "params": {
+            "op": "focus",
+            "selector": "{\"strategy\":\"process\",\"process\":\"notepad.exe\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}"
+          }
+        },
+        {
+          "id": "win.window.control.i-move-chrome@r1",
+          "name": "Chrome 移到副屏左半",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"op\":\"move\",\"monitor\":1,\"rect\":\"0,0,0.5,1\",\"selector\":{\"strategy\":\"process\",\"process\":\"chrome.exe\",\"title\":\"GitHub\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}",
+          "params": {
+            "op": "move",
+            "monitor": "1",
+            "rect": "0,0,0.5,1",
+            "selector": "{\"strategy\":\"process\",\"process\":\"chrome.exe\",\"title\":\"GitHub\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}"
+          }
+        },
+        {
+          "id": "win.window.control.i-topmost@r1",
+          "name": "当前窗口置顶切换",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"op\":\"topmost\",\"mode\":\"toggle\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}",
+          "params": {
+            "op": "topmost",
+            "mode": "toggle",
+            "selector": "{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}"
+          }
+        },
+        {
+          "id": "win.window.control.i-close-explorer@r1",
+          "name": "关闭所有资源管理器",
+          "rev": 1,
+          "status": "draft",
+          "description": "{\"op\":\"close\",\"match\":\"all\",\"selector\":{\"strategy\":\"class\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"CabinetWClass\",\"match\":\"all\"}}",
+          "params": {
+            "op": "close",
+            "match": "all",
+            "selector": "{\"strategy\":\"class\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"CabinetWClass\",\"match\":\"all\"}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.window.query",
+      "name": "查询窗口",
+      "family": "window",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "只读查询顶层窗口，返回 WindowInfo[]；用于选择器测试、批量操作前预览。",
+      "params": [
+        {
+          "key": "limit",
+          "label": "limit",
+          "type": "number",
+          "required": false,
+          "description": "limit",
+          "defaultValue": "50"
+        },
+        {
+          "key": "sort",
+          "label": "sort",
+          "type": "text",
+          "required": false,
+          "description": "sort",
+          "defaultValue": "z_order"
+        },
+        {
+          "key": "selector",
+          "label": "selector",
+          "type": "text",
+          "required": false,
+          "description": "selector",
+          "defaultValue": "{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"all\"}"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.window.query.i-list-windows@r1",
+          "name": "列出可见窗口",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"limit\":50,\"sort\":\"z_order\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"all\"}}",
+          "params": {
+            "limit": "50",
+            "sort": "z_order",
+            "selector": "{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"all\"}"
+          }
+        },
+        {
+          "id": "win.window.query.i-foreground@r1",
+          "name": "当前前台窗口",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"limit\":1,\"sort\":\"z_order\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"first\"}}",
+          "params": {
+            "limit": "1",
+            "sort": "z_order",
+            "selector": "{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"first\"}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.open",
+      "name": "打开目标",
+      "family": "open",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "一个类覆盖文件、文件夹、应用、URL；kind 参数决定解析路径与默认处理器。",
+      "params": [
+        {
+          "key": "kind",
+          "label": "kind",
+          "type": "text",
+          "required": false,
+          "description": "kind",
+          "defaultValue": "folder"
+        },
+        {
+          "key": "target",
+          "label": "target",
+          "type": "text",
+          "required": false,
+          "description": "target",
+          "defaultValue": "%USERPROFILE%\\Downloads"
+        },
+        {
+          "key": "app",
+          "label": "app",
+          "type": "text",
+          "required": false,
+          "description": "app",
+          "defaultValue": ""
+        },
+        {
+          "key": "args",
+          "label": "args",
+          "type": "text",
+          "required": false,
+          "description": "args",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.open.i-open-downloads@r1",
+          "name": "打开下载文件夹",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"kind\":\"folder\",\"target\":\"%USERPROFILE%\\\\Downloads\",\"app\":\"\",\"args\":\"\"}",
+          "params": {
+            "kind": "folder",
+            "target": "%USERPROFILE%\\Downloads",
+            "app": "",
+            "args": ""
+          }
+        },
+        {
+          "id": "win.open.i-open-github@r1",
+          "name": "打开 GitHub",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"kind\":\"url\",\"target\":\"https://github.com\",\"app\":\"\",\"args\":\"\"}",
+          "params": {
+            "kind": "url",
+            "target": "https://github.com",
+            "app": "",
+            "args": ""
+          }
+        },
+        {
+          "id": "win.open.i-open-project@r1",
+          "name": "用 VS Code 打开项目",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"kind\":\"folder\",\"target\":\"C:\\\\project\",\"app\":\"code.exe\",\"args\":\".\"}",
+          "params": {
+            "kind": "folder",
+            "target": "C:\\project",
+            "app": "code.exe",
+            "args": "."
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.audio.volume",
+      "name": "控制系统音量",
+      "family": "settings",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "主音量与静音控制；action 参数覆盖 up/down/set/mute/toggle。应用音量放 P1。",
+      "params": [
+        {
+          "key": "action",
+          "label": "action",
+          "type": "text",
+          "required": false,
+          "description": "action",
+          "defaultValue": "up"
+        },
+        {
+          "key": "step",
+          "label": "step",
+          "type": "number",
+          "required": false,
+          "description": "step",
+          "defaultValue": "5"
+        },
+        {
+          "key": "level",
+          "label": "level",
+          "type": "number",
+          "required": false,
+          "description": "level",
+          "defaultValue": "50"
+        },
+        {
+          "key": "app",
+          "label": "app",
+          "type": "text",
+          "required": false,
+          "description": "app",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.audio.volume.i-vol-up@r1",
+          "name": "音量 +5",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"action\":\"up\",\"step\":5,\"level\":50,\"app\":\"\"}",
+          "params": {
+            "action": "up",
+            "step": "5",
+            "level": "50",
+            "app": ""
+          }
+        },
+        {
+          "id": "win.audio.volume.i-vol-toggle@r1",
+          "name": "静音切换",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"action\":\"toggle\",\"step\":5,\"level\":50,\"app\":\"\"}",
+          "params": {
+            "action": "toggle",
+            "step": "5",
+            "level": "50",
+            "app": ""
+          }
+        },
+        {
+          "id": "win.audio.volume.i-vol-30@r1",
+          "name": "设 30%",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"action\":\"set\",\"step\":5,\"level\":30,\"app\":\"\"}",
+          "params": {
+            "action": "set",
+            "step": "5",
+            "level": "30",
+            "app": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.display.brightness",
+      "name": "控制亮度",
+      "family": "settings",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "draft",
+      "description": "内屏走 WMI、外屏走 DDC/CI；不支持时明确失败，不用假值。",
+      "params": [
+        {
+          "key": "action",
+          "label": "action",
+          "type": "text",
+          "required": false,
+          "description": "action",
+          "defaultValue": "set"
+        },
+        {
+          "key": "value",
+          "label": "value",
+          "type": "number",
+          "required": false,
+          "description": "value",
+          "defaultValue": "60"
+        },
+        {
+          "key": "step",
+          "label": "step",
+          "type": "number",
+          "required": false,
+          "description": "step",
+          "defaultValue": "10"
+        },
+        {
+          "key": "monitor",
+          "label": "monitor",
+          "type": "text",
+          "required": false,
+          "description": "monitor",
+          "defaultValue": "internal"
+        },
+        {
+          "key": "method",
+          "label": "method",
+          "type": "text",
+          "required": false,
+          "description": "method",
+          "defaultValue": "auto"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.display.brightness.i-bright-60@r1",
+          "name": "内屏亮度 60%",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"action\":\"set\",\"value\":60,\"step\":10,\"monitor\":\"internal\",\"method\":\"auto\"}",
+          "params": {
+            "action": "set",
+            "value": "60",
+            "step": "10",
+            "monitor": "internal",
+            "method": "auto"
+          }
+        },
+        {
+          "id": "win.display.brightness.i-bright-up@r1",
+          "name": "亮度 +10",
+          "rev": 1,
+          "status": "draft",
+          "description": "{\"action\":\"up\",\"value\":60,\"step\":10,\"monitor\":\"internal\",\"method\":\"auto\"}",
+          "params": {
+            "action": "up",
+            "value": "60",
+            "step": "10",
+            "monitor": "internal",
+            "method": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.theme.mode",
+      "name": "深浅主题",
+      "family": "settings",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "写 AppsUseLightTheme / SystemUsesLightTheme 并广播 ImmersiveColorSet；部分应用需重启。",
+      "params": [
+        {
+          "key": "action",
+          "label": "action",
+          "type": "text",
+          "required": false,
+          "description": "action",
+          "defaultValue": "set"
+        },
+        {
+          "key": "mode",
+          "label": "mode",
+          "type": "text",
+          "required": false,
+          "description": "mode",
+          "defaultValue": "dark"
+        },
+        {
+          "key": "scope",
+          "label": "scope",
+          "type": "text",
+          "required": false,
+          "description": "scope",
+          "defaultValue": "both"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.theme.mode.i-dark@r1",
+          "name": "深色模式",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"action\":\"set\",\"mode\":\"dark\",\"scope\":\"both\"}",
+          "params": {
+            "action": "set",
+            "mode": "dark",
+            "scope": "both"
+          }
+        },
+        {
+          "id": "win.theme.mode.i-light-apps@r1",
+          "name": "应用浅色",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"action\":\"set\",\"mode\":\"light\",\"scope\":\"apps\"}",
+          "params": {
+            "action": "set",
+            "mode": "light",
+            "scope": "apps"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.ocr.read",
+      "name": "OCR 识别",
+      "family": "capture",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "从图片/截图提取文字；优先 Windows AI OCR，语言不支持时回退 PaddleOCR。",
+      "params": [
+        {
+          "key": "image",
+          "label": "image",
+          "type": "text",
+          "required": false,
+          "description": "image",
+          "defaultValue": "$screenshot"
+        },
+        {
+          "key": "lang",
+          "label": "lang",
+          "type": "text",
+          "required": false,
+          "description": "lang",
+          "defaultValue": "auto"
+        },
+        {
+          "key": "layout",
+          "label": "layout",
+          "type": "bool",
+          "required": false,
+          "description": "layout",
+          "defaultValue": "true"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.ocr.read.i-ocr-auto@r1",
+          "name": "截图转文字",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"image\":\"$screenshot\",\"lang\":\"auto\",\"layout\":true}",
+          "params": {
+            "image": "$screenshot",
+            "lang": "auto",
+            "layout": "true"
+          }
+        },
+        {
+          "id": "win.ocr.read.i-ocr-en@r1",
+          "name": "英文截图",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"image\":\"$screenshot\",\"lang\":\"en\",\"layout\":false}",
+          "params": {
+            "image": "$screenshot",
+            "lang": "en",
+            "layout": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.clipboard.get",
+      "name": "读取剪贴板",
+      "family": "file",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "读取文本/图片/文件列表；format 参数决定输出类型。",
+      "params": [
+        {
+          "key": "format",
+          "label": "format",
+          "type": "text",
+          "required": false,
+          "description": "format",
+          "defaultValue": "text"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.clipboard.get.i-clip-text@r1",
+          "name": "取文本",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"format\":\"text\"}",
+          "params": {
+            "format": "text"
+          }
+        },
+        {
+          "id": "win.clipboard.get.i-clip-image@r1",
+          "name": "取图片",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"format\":\"image\"}",
+          "params": {
+            "format": "image"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.http.request",
+      "name": "HTTP 请求",
+      "family": "network",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "统一 GET/POST/PUT/DELETE，带超时、重试、SSRF 防护和响应大小限制。",
+      "params": [
+        {
+          "key": "method",
+          "label": "method",
+          "type": "text",
+          "required": false,
+          "description": "method",
+          "defaultValue": "GET"
+        },
+        {
+          "key": "url",
+          "label": "url",
+          "type": "text",
+          "required": false,
+          "description": "url",
+          "defaultValue": "https://api.github.com/repos/owner/repo"
+        },
+        {
+          "key": "body",
+          "label": "body",
+          "type": "text",
+          "required": false,
+          "description": "body",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.http.request.i-http-github@r1",
+          "name": "GET GitHub API",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"method\":\"GET\",\"url\":\"https://api.github.com/repos/owner/repo\",\"body\":\"\"}",
+          "params": {
+            "method": "GET",
+            "url": "https://api.github.com/repos/owner/repo",
+            "body": ""
+          }
+        },
+        {
+          "id": "win.http.request.i-http-webhook@r1",
+          "name": "POST Webhook",
+          "rev": 1,
+          "status": "draft",
+          "description": "{\"method\":\"POST\",\"url\":\"https://example.com/hook\",\"body\":\"{\\\"event\\\":\\\"done\\\"}\"}",
+          "params": {
+            "method": "POST",
+            "url": "https://example.com/hook",
+            "body": "{\"event\":\"done\"}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ui.form",
+      "name": "用户表单",
+      "family": "human",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "draft",
+      "description": "JSON Schema 驱动的表单；取消/超时返回明确状态，审批是 gate 不是这个类。",
+      "params": [
+        {
+          "key": "title",
+          "label": "title",
+          "type": "text",
+          "required": false,
+          "description": "title",
+          "defaultValue": "确认发布"
+        },
+        {
+          "key": "fields",
+          "label": "fields",
+          "type": "text",
+          "required": false,
+          "description": "fields",
+          "defaultValue": "备注, 版本号"
+        }
+      ],
+      "instances": [
+        {
+          "id": "ui.form.i-form-confirm@r1",
+          "name": "发布确认",
+          "rev": 1,
+          "status": "draft",
+          "description": "{\"title\":\"确认发布\",\"fields\":\"备注, 版本号\"}",
+          "params": {
+            "title": "确认发布",
+            "fields": "备注, 版本号"
+          }
+        }
+      ]
+    },
+    {
+      "id": "win.screen.capture",
+      "name": "抓屏",
+      "family": "capture",
+      "priority": "P0",
+      "effect": "L2",
+      "status": "active",
+      "description": "抓屏保存 PNG；全屏或区域截图。",
+      "params": [
+        {
+          "key": "region",
+          "label": "region",
+          "type": "text",
+          "required": false,
+          "description": "region",
+          "defaultValue": "full"
+        },
+        {
+          "key": "format",
+          "label": "format",
+          "type": "text",
+          "required": false,
+          "description": "format",
+          "defaultValue": "png"
+        }
+      ],
+      "instances": [
+        {
+          "id": "win.screen.capture.i-full@r1",
+          "name": "全屏截图",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"region\":\"full\",\"format\":\"png\"}",
+          "params": {
+            "region": "full",
+            "format": "png"
+          }
+        },
+        {
+          "id": "win.screen.capture.i-region@r1",
+          "name": "区域截图",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"region\":\"120x80\",\"format\":\"png\"}",
+          "params": {
+            "region": "120x80",
+            "format": "png"
+          }
+        }
+      ]
+    }
+  ],
+  "line": [
+    {
+      "id": "flow.ensure-vpn",
+      "name": "flow.ensure-vpn",
+      "family": "Guard",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "确保 VPN 已连接",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.ensure-vpn-ask@r2",
+          "name": "ensure-vpn-ask",
+          "rev": 2,
+          "status": "active",
+          "description": "默认询问",
+          "params": {
+            "detail": "默认询问"
+          }
+        },
+        {
+          "id": "inst.ensure-vpn-auto@r1",
+          "name": "ensure-vpn-auto",
+          "rev": 1,
+          "status": "active",
+          "description": "自动打开软件",
+          "params": {
+            "detail": "自动打开软件"
+          }
+        },
+        {
+          "id": "inst.ensure-vpn-auto-connect@r1",
+          "name": "ensure-vpn-auto-connect",
+          "rev": 1,
+          "status": "active",
+          "description": "自动打开并连接",
+          "params": {
+            "detail": "自动打开并连接"
+          }
+        },
+        {
+          "id": "inst.ensure-vpn-manual@r1",
+          "name": "ensure-vpn-manual",
+          "rev": 1,
+          "status": "active",
+          "description": "只提示",
+          "params": {
+            "detail": "只提示"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.ensure-app",
+      "name": "flow.ensure-app",
+      "family": "Guard",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "确保应用已安装/已运行",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.ensure-app-vscode@r2",
+          "name": "ensure-app-vscode",
+          "rev": 2,
+          "status": "active",
+          "description": "确保 VS Code",
+          "params": {
+            "detail": "确保 VS Code"
+          }
+        },
+        {
+          "id": "inst.ensure-app-notepad@r1",
+          "name": "ensure-app-notepad",
+          "rev": 1,
+          "status": "active",
+          "description": "确保记事本",
+          "params": {
+            "detail": "确保记事本"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.ensure-service",
+      "name": "flow.ensure-service",
+      "family": "Guard",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "确保本地服务/端口可用",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.ensure-service-docker@r1",
+          "name": "ensure-service-docker",
+          "rev": 1,
+          "status": "active",
+          "description": "确保 Docker",
+          "params": {
+            "detail": "确保 Docker"
+          }
+        },
+        {
+          "id": "inst.ensure-service-local-api@r1",
+          "name": "ensure-service-local-api",
+          "rev": 1,
+          "status": "active",
+          "description": "确保本地 API",
+          "params": {
+            "detail": "确保本地 API"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.ensure-download",
+      "name": "flow.ensure-download",
+      "family": "Guard",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "下载并校验文件",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.ensure-download-vscode@r2",
+          "name": "ensure-download-vscode",
+          "rev": 2,
+          "status": "active",
+          "description": "下载 VS Code",
+          "params": {
+            "detail": "下载 VS Code"
+          }
+        },
+        {
+          "id": "inst.ensure-download-driver@r1",
+          "name": "ensure-download-driver",
+          "rev": 1,
+          "status": "active",
+          "description": "下载驱动",
+          "params": {
+            "detail": "下载驱动"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.open-external-site",
+      "name": "flow.open-external-site",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "按策略确保 VPN 后打开外网",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.site-youtube@r3",
+          "name": "site-youtube",
+          "rev": 3,
+          "status": "active",
+          "description": "url=YouTube；vpn=inst.ensure-vpn-ask@r2",
+          "params": {
+            "detail": "url=YouTube；vpn=inst.ensure-vpn-ask@r2"
+          }
+        },
+        {
+          "id": "inst.site-github@r1",
+          "name": "site-github",
+          "rev": 1,
+          "status": "active",
+          "description": "url=GitHub；vpn=inst.ensure-vpn-ask@r2",
+          "params": {
+            "detail": "url=GitHub；vpn=inst.ensure-vpn-ask@r2"
+          }
+        },
+        {
+          "id": "inst.site-google@r1",
+          "name": "site-google",
+          "rev": 1,
+          "status": "active",
+          "description": "url=Google；vpn=inst.ensure-vpn-ask@r2",
+          "params": {
+            "detail": "url=Google；vpn=inst.ensure-vpn-ask@r2"
+          }
+        },
+        {
+          "id": "inst.site-intranet@r1",
+          "name": "site-intranet",
+          "rev": 1,
+          "status": "active",
+          "description": "vpnRequirement=none",
+          "params": {
+            "detail": "vpnRequirement=none"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.open-app",
+      "name": "flow.open-app",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "确保应用可用后打开文件/项目/URL",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.open-app-vscode-project@r2",
+          "name": "open-app-vscode-project",
+          "rev": 2,
+          "status": "active",
+          "description": "ensure=inst.ensure-app-vscode@r2",
+          "params": {
+            "detail": "ensure=inst.ensure-app-vscode@r2"
+          }
+        },
+        {
+          "id": "inst.open-app-notepad-file@r1",
+          "name": "open-app-notepad-file",
+          "rev": 1,
+          "status": "active",
+          "description": "ensure=inst.ensure-app-notepad@r1",
+          "params": {
+            "detail": "ensure=inst.ensure-app-notepad@r1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.open-workspace",
+      "name": "flow.open-workspace",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "打开多个应用并布局/聚焦",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.workspace-dev@r3",
+          "name": "workspace-dev",
+          "rev": 3,
+          "status": "active",
+          "description": "editor=VS Code；terminal；dual",
+          "params": {
+            "detail": "editor=VS Code；terminal；dual"
+          }
+        },
+        {
+          "id": "inst.workspace-meeting@r1",
+          "name": "workspace-meeting",
+          "rev": 1,
+          "status": "active",
+          "description": "meeting；single",
+          "params": {
+            "detail": "meeting；single"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.clipboard-to-file",
+      "name": "flow.clipboard-to-file",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "剪贴板 → 模板 → 写文件",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.clipboard-inbox@r3",
+          "name": "clipboard-inbox",
+          "rev": 3,
+          "status": "active",
+          "description": "path=inbox.md；append=true",
+          "params": {
+            "detail": "path=inbox.md；append=true"
+          }
+        },
+        {
+          "id": "inst.clipboard-daily@r2",
+          "name": "clipboard-daily",
+          "rev": 2,
+          "status": "active",
+          "description": "path=daily/...；append=false",
+          "params": {
+            "detail": "path=daily/...；append=false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.screenshot-translate",
+      "name": "flow.screenshot-translate",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "截图 → OCR → 翻译 → 浮层",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.screenshot-en-zh@r4",
+          "name": "screenshot-en-zh",
+          "rev": 4,
+          "status": "active",
+          "description": "en→zh；overlay=true",
+          "params": {
+            "detail": "en→zh；overlay=true"
+          }
+        },
+        {
+          "id": "inst.screenshot-ja-zh@r2",
+          "name": "screenshot-ja-zh",
+          "rev": 2,
+          "status": "active",
+          "description": "ja→zh；overlay=false",
+          "params": {
+            "detail": "ja→zh；overlay=false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.http-extract",
+      "name": "flow.http-extract",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "HTTP → 解析 → 模板 → 保存/通知",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.http-github-status@r2",
+          "name": "http-github-status",
+          "rev": 2,
+          "status": "active",
+          "description": "GitHub API",
+          "params": {
+            "detail": "GitHub API"
+          }
+        },
+        {
+          "id": "inst.http-weather@r1",
+          "name": "http-weather",
+          "rev": 1,
+          "status": "active",
+          "description": "Open-Meteo",
+          "params": {
+            "detail": "Open-Meteo"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.ai-rewrite",
+      "name": "flow.ai-rewrite",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "选中文字 → LLM → 预览/审批 → 替换",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.ai-rewrite-formal@r2",
+          "name": "ai-rewrite-formal",
+          "rev": 2,
+          "status": "active",
+          "description": "formal；approval=true",
+          "params": {
+            "detail": "formal；approval=true"
+          }
+        },
+        {
+          "id": "inst.ai-rewrite-shorten@r1",
+          "name": "ai-rewrite-shorten",
+          "rev": 1,
+          "status": "active",
+          "description": "shorten；approval=true",
+          "params": {
+            "detail": "shorten；approval=true"
+          }
+        },
+        {
+          "id": "inst.ai-rewrite-translate@r1",
+          "name": "ai-rewrite-translate",
+          "rev": 1,
+          "status": "active",
+          "description": "translate；approval=false",
+          "params": {
+            "detail": "translate；approval=false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.batch-archive",
+      "name": "flow.batch-archive",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "批量扫描 → OCR/提取 → 校验 → 归档",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.invoice-company@r6",
+          "name": "invoice-company",
+          "rev": 6,
+          "status": "active",
+          "description": "company；zh OCR",
+          "params": {
+            "detail": "company；zh OCR"
+          }
+        },
+        {
+          "id": "inst.invoice-personal@r2",
+          "name": "invoice-personal",
+          "rev": 2,
+          "status": "active",
+          "description": "personal；en OCR",
+          "params": {
+            "detail": "personal；en OCR"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow.approval-action",
+      "name": "flow.approval-action",
+      "family": "Action",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "审批通过后执行一个子流程",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "inst.approval-publish@r1",
+          "name": "approval-publish",
+          "rev": 1,
+          "status": "active",
+          "description": "action=publish",
+          "params": {
+            "detail": "action=publish"
+          }
+        },
+        {
+          "id": "inst.approval-delete@r1",
+          "name": "approval-delete",
+          "rev": 1,
+          "status": "active",
+          "description": "action=cleanup",
+          "params": {
+            "detail": "action=cleanup"
+          }
+        },
+        {
+          "id": "inst.approval-deploy@r1",
+          "name": "approval-deploy",
+          "rev": 1,
+          "status": "active",
+          "description": "action=deploy",
+          "params": {
+            "detail": "action=deploy"
+          }
+        }
+      ]
+    }
+  ],
+  "surface": [
+    {
+      "id": "surface.form",
+      "name": "表单",
+      "family": "input",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "schema 驱动的表单；设置、参数、创建/编辑。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.settings.vpn",
+          "name": "VPN 设置",
+          "rev": 3,
+          "status": "active",
+          "description": "默认 VPN / 自动打开 / 自动连接 / 超时 · settings",
+          "params": {
+            "detail": "默认 VPN / 自动打开 / 自动连接 / 超时 · settings"
+          }
+        },
+        {
+          "id": "surface.settings.general",
+          "name": "通用设置",
+          "rev": 2,
+          "status": "active",
+          "description": "主题 / 语言 / 启动行为 · settings",
+          "params": {
+            "detail": "主题 / 语言 / 启动行为 · settings"
+          }
+        },
+        {
+          "id": "surface.point-params",
+          "name": "点实例参数",
+          "rev": 1,
+          "status": "active",
+          "description": "编辑 PointInstance 的参数与 revision · sidebar",
+          "params": {
+            "detail": "编辑 PointInstance 的参数与 revision · sidebar"
+          }
+        },
+        {
+          "id": "surface.settings.system-monitor",
+          "name": "系统监控设置",
+          "rev": 2,
+          "status": "active",
+          "description": "采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings",
+          "params": {
+            "detail": "采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.wizard",
+      "name": "向导",
+      "family": "input",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "多步引导；新建流程、绑定槽位、首次配置。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.wizard.new-flow",
+          "name": "新建流程",
+          "rev": 1,
+          "status": "active",
+          "description": "选模板 → 绑槽位 → 试运行 · modal",
+          "params": {
+            "detail": "选模板 → 绑槽位 → 试运行 · modal"
+          }
+        },
+        {
+          "id": "surface.wizard.vpn-setup",
+          "name": "VPN 首次配置",
+          "rev": 1,
+          "status": "active",
+          "description": "选软件 → 测试 → 保存 · modal",
+          "params": {
+            "detail": "选软件 → 测试 → 保存 · modal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.inspector",
+      "name": "检查器",
+      "family": "input",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "查看/编辑选中对象的属性；点类、点实例、槽位、运行节点。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.inspector.point",
+          "name": "点检查器",
+          "rev": 4,
+          "status": "active",
+          "description": "PointClass / PointInstance 契约与参数 · sidebar",
+          "params": {
+            "detail": "PointClass / PointInstance 契约与参数 · sidebar"
+          }
+        },
+        {
+          "id": "surface.inspector.slot-vpn",
+          "name": "VPN 槽位检查器",
+          "rev": 2,
+          "status": "active",
+          "description": "slot.vpn 的 accepts / default / bound · sidebar",
+          "params": {
+            "detail": "slot.vpn 的 accepts / default / bound · sidebar"
+          }
+        },
+        {
+          "id": "surface.inspector.run-node",
+          "name": "运行节点检查器",
+          "rev": 1,
+          "status": "active",
+          "description": "PointRun 输入/输出/耗时 · sidebar",
+          "params": {
+            "detail": "PointRun 输入/输出/耗时 · sidebar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.table",
+      "name": "表格",
+      "family": "browse",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "表格浏览、排序、筛选、批量操作。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.point-catalog",
+          "name": "点目录",
+          "rev": 5,
+          "status": "active",
+          "description": "38 个点类 / 实例列表 · main",
+          "params": {
+            "detail": "38 个点类 / 实例列表 · main"
+          }
+        },
+        {
+          "id": "surface.flow-instances",
+          "name": "线实例列表",
+          "rev": 3,
+          "status": "active",
+          "description": "FlowInstance 目录 · main",
+          "params": {
+            "detail": "FlowInstance 目录 · main"
+          }
+        },
+        {
+          "id": "surface.run-history.table",
+          "name": "运行列表",
+          "rev": 2,
+          "status": "active",
+          "description": "FlowRun / PointRun 表格 · main",
+          "params": {
+            "detail": "FlowRun / PointRun 表格 · main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.card-grid",
+      "name": "卡片墙",
+      "family": "browse",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "卡片墙；站点启动、模板市场、Body 市场。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.site-launcher",
+          "name": "站点启动器",
+          "rev": 3,
+          "status": "active",
+          "description": "YouTube / GitHub / Google / 内网 · main",
+          "params": {
+            "detail": "YouTube / GitHub / Google / 内网 · main"
+          }
+        },
+        {
+          "id": "surface.body-market",
+          "name": "Body 市场",
+          "rev": 1,
+          "status": "active",
+          "description": "安装 body / 模板 · main",
+          "params": {
+            "detail": "安装 body / 模板 · main"
+          }
+        },
+        {
+          "id": "surface.flow-gallery",
+          "name": "流程模板",
+          "rev": 2,
+          "status": "active",
+          "description": "FlowClass 模板库 · main",
+          "params": {
+            "detail": "FlowClass 模板库 · main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.tree",
+      "name": "树",
+      "family": "browse",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "层级导航；Domain → PointClass、FlowClass → 节点。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.point-domains",
+          "name": "点 Domain 树",
+          "rev": 2,
+          "status": "active",
+          "description": "15 domain → 38 类 · sidebar",
+          "params": {
+            "detail": "15 domain → 38 类 · sidebar"
+          }
+        },
+        {
+          "id": "surface.flow-outline",
+          "name": "流程大纲",
+          "rev": 1,
+          "status": "active",
+          "description": "FlowClass 节点树 · sidebar",
+          "params": {
+            "detail": "FlowClass 节点树 · sidebar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.command-palette",
+      "name": "命令面板",
+      "family": "browse",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "全局搜索与动作启动；键盘优先。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.command-palette.global",
+          "name": "全局命令面板",
+          "rev": 4,
+          "status": "active",
+          "description": "搜索 Flow / Point / 设置 · overlay",
+          "params": {
+            "detail": "搜索 Flow / Point / 设置 · overlay"
+          }
+        },
+        {
+          "id": "surface.command-palette.points",
+          "name": "点实例面板",
+          "rev": 2,
+          "status": "active",
+          "description": "搜索并运行点实例 · overlay",
+          "params": {
+            "detail": "搜索并运行点实例 · overlay"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.canvas",
+      "name": "画布",
+      "family": "visualize",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "节点图编辑；线层编辑器、Body 组合器。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.canvas.flow-editor",
+          "name": "线层编辑器",
+          "rev": 6,
+          "status": "active",
+          "description": "FlowClass 图 / 槽位绑定 · main",
+          "params": {
+            "detail": "FlowClass 图 / 槽位绑定 · main"
+          }
+        },
+        {
+          "id": "surface.canvas.body-composer",
+          "name": "Body 组合器",
+          "rev": 1,
+          "status": "active",
+          "description": "面 + 线 + 权限打包 · main",
+          "params": {
+            "detail": "面 + 线 + 权限打包 · main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.dashboard",
+      "name": "仪表盘",
+      "family": "visualize",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "指标、状态、健康度；系统总览、VPN 状态。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.dashboard.system",
+          "name": "系统总览",
+          "rev": 2,
+          "status": "active",
+          "description": "运行数 / 成功率 / 成本 · main",
+          "params": {
+            "detail": "运行数 / 成功率 / 成本 · main"
+          }
+        },
+        {
+          "id": "surface.dashboard.vpn",
+          "name": "VPN 健康",
+          "rev": 1,
+          "status": "active",
+          "description": "VPN 状态 / 连接耗时 / 失败 · main",
+          "params": {
+            "detail": "VPN 状态 / 连接耗时 / 失败 · main"
+          }
+        },
+        {
+          "id": "surface.system-monitor",
+          "name": "系统状态总览",
+          "rev": 2,
+          "status": "active",
+          "description": "CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main",
+          "params": {
+            "detail": "CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.run-history",
+      "name": "运行历史",
+      "family": "visualize",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "运行历史、节点 trace、变量快照、回放。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.run-history.flow",
+          "name": "流程运行历史",
+          "rev": 3,
+          "status": "active",
+          "description": "FlowRun + PointRun trace · main",
+          "params": {
+            "detail": "FlowRun + PointRun trace · main"
+          }
+        },
+        {
+          "id": "surface.run-history.vpn",
+          "name": "VPN 运行历史",
+          "rev": 2,
+          "status": "active",
+          "description": "GuardResult / 子 FlowRun · main",
+          "params": {
+            "detail": "GuardResult / 子 FlowRun · main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.diff",
+      "name": "差异",
+      "family": "visualize",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "版本/实例差异；FlowClass 版本、SurfaceInstance revision。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.diff.flow-version",
+          "name": "流程版本 diff",
+          "rev": 1,
+          "status": "active",
+          "description": "FlowClass v1 vs v2 · main",
+          "params": {
+            "detail": "FlowClass v1 vs v2 · main"
+          }
+        },
+        {
+          "id": "surface.diff.instance-revision",
+          "name": "实例 revision diff",
+          "rev": 1,
+          "status": "active",
+          "description": "绑定/参数变化 · main",
+          "params": {
+            "detail": "绑定/参数变化 · main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.dialog",
+      "name": "对话框",
+      "family": "communicate",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "确认、审批、危险操作；模态。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.dialog.vpn-approval",
+          "name": "VPN 审批",
+          "rev": 2,
+          "status": "active",
+          "description": "打开 VPN / 我已手动打开 / 取消 · modal",
+          "params": {
+            "detail": "打开 VPN / 我已手动打开 / 取消 · modal"
+          }
+        },
+        {
+          "id": "surface.dialog.delete-confirm",
+          "name": "删除确认",
+          "rev": 1,
+          "status": "active",
+          "description": "危险操作确认 · modal",
+          "params": {
+            "detail": "危险操作确认 · modal"
+          }
+        },
+        {
+          "id": "surface.dialog.deploy-approval",
+          "name": "部署审批",
+          "rev": 1,
+          "status": "active",
+          "description": "生产发布审批 · modal",
+          "params": {
+            "detail": "生产发布审批 · modal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.notification",
+      "name": "通知",
+      "family": "communicate",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "Toast / Tray / Banner；显示结果与下一步。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.notify.vpn",
+          "name": "VPN 通知",
+          "rev": 3,
+          "status": "active",
+          "description": "GuardResult → 下一步 · toast",
+          "params": {
+            "detail": "GuardResult → 下一步 · toast"
+          }
+        },
+        {
+          "id": "surface.notify.run",
+          "name": "运行通知",
+          "rev": 2,
+          "status": "active",
+          "description": "成功/失败/耗时 · toast",
+          "params": {
+            "detail": "成功/失败/耗时 · toast"
+          }
+        },
+        {
+          "id": "surface.notify.download",
+          "name": "下载通知",
+          "rev": 1,
+          "status": "active",
+          "description": "下载/校验结果 · tray",
+          "params": {
+            "detail": "下载/校验结果 · tray"
+          }
+        },
+        {
+          "id": "surface.notify.system-threshold",
+          "name": "系统阈值告警",
+          "rev": 1,
+          "status": "active",
+          "description": "CPU/GPU 温度、内存、磁盘超阈值提示 · toast",
+          "params": {
+            "detail": "CPU/GPU 温度、内存、磁盘超阈值提示 · toast"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.tray-menu",
+      "name": "托盘菜单",
+      "family": "communicate",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "托盘/右键菜单；快速入口。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.tray.quick-actions",
+          "name": "快捷动作",
+          "rev": 2,
+          "status": "active",
+          "description": "收藏的 FlowInstance · tray",
+          "params": {
+            "detail": "收藏的 FlowInstance · tray"
+          }
+        },
+        {
+          "id": "surface.tray.vpn",
+          "name": "VPN 托盘菜单",
+          "rev": 1,
+          "status": "active",
+          "description": "打开 / 连接 / 状态 · tray",
+          "params": {
+            "detail": "打开 / 连接 / 状态 · tray"
+          }
+        },
+        {
+          "id": "surface.tray.system-status",
+          "name": "系统状态托盘",
+          "rev": 1,
+          "status": "active",
+          "description": "CPU/GPU/内存/网速文本摘要 · tray",
+          "params": {
+            "detail": "CPU/GPU/内存/网速文本摘要 · tray"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.hud",
+      "name": "HUD 浮层",
+      "family": "communicate",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "屏幕浮层；翻译结果、VPN 状态、录屏提示。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.hud.translate",
+          "name": "翻译浮层",
+          "rev": 2,
+          "status": "active",
+          "description": "截图翻译结果 · overlay",
+          "params": {
+            "detail": "截图翻译结果 · overlay"
+          }
+        },
+        {
+          "id": "surface.hud.vpn-status",
+          "name": "VPN 状态浮层",
+          "rev": 1,
+          "status": "active",
+          "description": "连接状态/耗时 · overlay",
+          "params": {
+            "detail": "连接状态/耗时 · overlay"
+          }
+        },
+        {
+          "id": "surface.hud.system-status",
+          "name": "系统状态浮层",
+          "rev": 1,
+          "status": "active",
+          "description": "CPU/GPU/内存/网速紧凑显示，可置顶 · overlay",
+          "params": {
+            "detail": "CPU/GPU/内存/网速紧凑显示，可置顶 · overlay"
+          }
+        }
+      ]
+    },
+    {
+      "id": "surface.metric-card",
+      "name": "指标卡",
+      "family": "visualize",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "单个系统指标：数值、单位、阈值、状态、历史 sparkline；CPU/GPU/内存/网络/磁盘都是实例。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "metric.cpu",
+          "name": "CPU",
+          "rev": 1,
+          "status": "active",
+          "description": "使用率 / 温度 / 频率 / 每核负载 · main",
+          "params": {
+            "detail": "使用率 / 温度 / 频率 / 每核负载 · main"
+          }
+        },
+        {
+          "id": "metric.gpu",
+          "name": "GPU",
+          "rev": 1,
+          "status": "active",
+          "description": "使用率 / 温度 / VRAM / 风扇 · main",
+          "params": {
+            "detail": "使用率 / 温度 / VRAM / 风扇 · main"
+          }
+        },
+        {
+          "id": "metric.memory",
+          "name": "内存",
+          "rev": 1,
+          "status": "active",
+          "description": "已用 / 总量 / 百分比 / Swap · main",
+          "params": {
+            "detail": "已用 / 总量 / 百分比 / Swap · main"
+          }
+        },
+        {
+          "id": "metric.network",
+          "name": "网速",
+          "rev": 1,
+          "status": "active",
+          "description": "下行 / 上行 / 总流量 / 延迟 · main",
+          "params": {
+            "detail": "下行 / 上行 / 总流量 / 延迟 · main"
+          }
+        },
+        {
+          "id": "metric.disk",
+          "name": "磁盘",
+          "rev": 1,
+          "status": "active",
+          "description": "已用 / 剩余 / 读写 / 温度 · main",
+          "params": {
+            "detail": "已用 / 剩余 / 读写 / 温度 · main"
+          }
+        }
+      ]
+    }
+  ],
+  "body": [
+    {
+      "id": "body.file-preview",
+      "name": "文件预览",
+      "family": "content",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "任意文件预览：文本、图片、PDF、视频、音频统一窗口。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.file-preview.text@r1",
+          "name": "text",
+          "rev": 1,
+          "status": "active",
+          "description": "renderer=text · UTF-8",
+          "params": {
+            "detail": "renderer=text · UTF-8"
+          }
+        },
+        {
+          "id": "body.file-preview.markdown@r1",
+          "name": "markdown",
+          "rev": 1,
+          "status": "active",
+          "description": "renderer=markdown · sanitize=true",
+          "params": {
+            "detail": "renderer=markdown · sanitize=true"
+          }
+        },
+        {
+          "id": "body.file-preview.image@r1",
+          "name": "image",
+          "rev": 1,
+          "status": "active",
+          "description": "renderer=image · fit=contain",
+          "params": {
+            "detail": "renderer=image · fit=contain"
+          }
+        },
+        {
+          "id": "body.file-preview.pdf@r1",
+          "name": "pdf",
+          "rev": 1,
+          "status": "active",
+          "description": "renderer=pdf · page=1 · zoom=fit",
+          "params": {
+            "detail": "renderer=pdf · page=1 · zoom=fit"
+          }
+        },
+        {
+          "id": "body.file-preview.video@r1",
+          "name": "video",
+          "rev": 1,
+          "status": "active",
+          "description": "renderer=video · stream=true",
+          "params": {
+            "detail": "renderer=video · stream=true"
+          }
+        },
+        {
+          "id": "body.file-preview.audio@r1",
+          "name": "audio",
+          "rev": 1,
+          "status": "active",
+          "description": "renderer=audio · waveform=true",
+          "params": {
+            "detail": "renderer=audio · waveform=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.ocr",
+      "name": "OCR 识别",
+      "family": "content",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "识别文字、数学公式、二维码、表格与手写内容。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.ocr.text@r1",
+          "name": "text",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=text · language=auto",
+          "params": {
+            "detail": "mode=text · language=auto"
+          }
+        },
+        {
+          "id": "body.ocr.math@r1",
+          "name": "math",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=math · output=latex",
+          "params": {
+            "detail": "mode=math · output=latex"
+          }
+        },
+        {
+          "id": "body.ocr.qr@r1",
+          "name": "qr",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=qr · formats=qr,code128",
+          "params": {
+            "detail": "mode=qr · formats=qr,code128"
+          }
+        },
+        {
+          "id": "body.ocr.table@r1",
+          "name": "table",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=table · output=markdown",
+          "params": {
+            "detail": "mode=table · output=markdown"
+          }
+        },
+        {
+          "id": "body.ocr.handwriting@r1",
+          "name": "handwriting",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=handwriting · threshold=0.4",
+          "params": {
+            "detail": "mode=handwriting · threshold=0.4"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.image-resizer",
+      "name": "图片尺寸",
+      "family": "content",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "批量图片尺寸调整，预设化输出。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.image-resizer.web@r2",
+          "name": "web",
+          "rev": 2,
+          "status": "active",
+          "description": "suffix=-web · quality=85",
+          "params": {
+            "detail": "suffix=-web · quality=85"
+          }
+        },
+        {
+          "id": "body.image-resizer.thumbnail@r1",
+          "name": "thumbnail",
+          "rev": 1,
+          "status": "active",
+          "description": "fit=cover · quality=80",
+          "params": {
+            "detail": "fit=cover · quality=80"
+          }
+        },
+        {
+          "id": "body.image-resizer.avatar@r1",
+          "name": "avatar",
+          "rev": 1,
+          "status": "active",
+          "description": "fit=cover · format=png",
+          "params": {
+            "detail": "fit=cover · format=png"
+          }
+        },
+        {
+          "id": "body.image-resizer.email@r1",
+          "name": "email",
+          "rev": 1,
+          "status": "active",
+          "description": "maxBytes=512000 · quality=75",
+          "params": {
+            "detail": "maxBytes=512000 · quality=75"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.batch-rename",
+      "name": "批量重命名",
+      "family": "content",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "批量重命名：预览、冲突检测、撤销。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.batch-rename.regex@r1",
+          "name": "regex",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=regex · dryRun=true",
+          "params": {
+            "detail": "mode=regex · dryRun=true"
+          }
+        },
+        {
+          "id": "body.batch-rename.sequence@r1",
+          "name": "sequence",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=sequence · start=1",
+          "params": {
+            "detail": "mode=sequence · start=1"
+          }
+        },
+        {
+          "id": "body.batch-rename.date-prefix@r1",
+          "name": "date-prefix",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=date · format=YYYY-MM-DD",
+          "params": {
+            "detail": "mode=date · format=YYYY-MM-DD"
+          }
+        },
+        {
+          "id": "body.batch-rename.extension-normalize@r1",
+          "name": "extension-normalize",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=extension · .jpeg→.jpg",
+          "params": {
+            "detail": "mode=extension · .jpeg→.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.pdf-toolkit",
+      "name": "PDF 工具",
+      "family": "content",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "PDF 合并、拆分、压缩、旋转。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.pdf-toolkit.merge@r1",
+          "name": "merge",
+          "rev": 1,
+          "status": "active",
+          "description": "op=merge · sort=name",
+          "params": {
+            "detail": "op=merge · sort=name"
+          }
+        },
+        {
+          "id": "body.pdf-toolkit.split@r1",
+          "name": "split",
+          "rev": 1,
+          "status": "active",
+          "description": "op=split · range=1-3",
+          "params": {
+            "detail": "op=split · range=1-3"
+          }
+        },
+        {
+          "id": "body.pdf-toolkit.compress@r1",
+          "name": "compress",
+          "rev": 1,
+          "status": "active",
+          "description": "op=compress · quality=ebook",
+          "params": {
+            "detail": "op=compress · quality=ebook"
+          }
+        },
+        {
+          "id": "body.pdf-toolkit.rotate@r1",
+          "name": "rotate",
+          "rev": 1,
+          "status": "active",
+          "description": "op=rotate · angle=90",
+          "params": {
+            "detail": "op=rotate · angle=90"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.media-converter",
+      "name": "媒体转换",
+      "family": "content",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "图片、视频、音频格式转换。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.media-converter.image@r1",
+          "name": "image",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=image · quality=85",
+          "params": {
+            "detail": "preset=image · quality=85"
+          }
+        },
+        {
+          "id": "body.media-converter.video@r1",
+          "name": "video",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=video · h264",
+          "params": {
+            "detail": "preset=video · h264"
+          }
+        },
+        {
+          "id": "body.media-converter.audio@r1",
+          "name": "audio",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=audio · 192k",
+          "params": {
+            "detail": "preset=audio · 192k"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.file-organizer",
+      "name": "文件整理",
+      "family": "content",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "按类型/日期整理下载、截图与重复文件。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.file-organizer.downloads@r1",
+          "name": "downloads",
+          "rev": 1,
+          "status": "active",
+          "description": "rule=type-date · dryRun=true",
+          "params": {
+            "detail": "rule=type-date · dryRun=true"
+          }
+        },
+        {
+          "id": "body.file-organizer.screenshots@r1",
+          "name": "screenshots",
+          "rev": 1,
+          "status": "active",
+          "description": "rule=screenshot · month=true",
+          "params": {
+            "detail": "rule=screenshot · month=true"
+          }
+        },
+        {
+          "id": "body.file-organizer.duplicates@r1",
+          "name": "duplicates",
+          "rev": 1,
+          "status": "active",
+          "description": "rule=hash · action=report",
+          "params": {
+            "detail": "rule=hash · action=report"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.advanced-paste",
+      "name": "高级粘贴",
+      "family": "clipboard",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "剪贴板内容 → 目标格式。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.advanced-paste.plain@r1",
+          "name": "plain",
+          "rev": 1,
+          "status": "active",
+          "description": "format=plain · preview=false",
+          "params": {
+            "detail": "format=plain · preview=false"
+          }
+        },
+        {
+          "id": "body.advanced-paste.markdown@r1",
+          "name": "markdown",
+          "rev": 1,
+          "status": "active",
+          "description": "format=markdown · preview=true",
+          "params": {
+            "detail": "format=markdown · preview=true"
+          }
+        },
+        {
+          "id": "body.advanced-paste.json@r1",
+          "name": "json",
+          "rev": 1,
+          "status": "active",
+          "description": "format=json · indent=2",
+          "params": {
+            "detail": "format=json · indent=2"
+          }
+        },
+        {
+          "id": "body.advanced-paste.ai@r1",
+          "name": "ai",
+          "rev": 1,
+          "status": "active",
+          "description": "format=ai · model=local",
+          "params": {
+            "detail": "format=ai · model=local"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.clipboard-history",
+      "name": "剪贴板历史",
+      "family": "clipboard",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "最近复制内容、固定片段与搜索。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.clipboard-history.recent@r1",
+          "name": "recent",
+          "rev": 1,
+          "status": "active",
+          "description": "maxItems=100 · retention=7d",
+          "params": {
+            "detail": "maxItems=100 · retention=7d"
+          }
+        },
+        {
+          "id": "body.clipboard-history.pinned@r1",
+          "name": "pinned",
+          "rev": 1,
+          "status": "active",
+          "description": "maxItems=20 · pinned=true",
+          "params": {
+            "detail": "maxItems=20 · pinned=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.color-picker",
+      "name": "取色器",
+      "family": "clipboard",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "屏幕取色，HEX/RGB/HSL 与调色板。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.color-picker.hex@r1",
+          "name": "hex",
+          "rev": 1,
+          "status": "active",
+          "description": "format=hex · copy=true",
+          "params": {
+            "detail": "format=hex · copy=true"
+          }
+        },
+        {
+          "id": "body.color-picker.palette@r1",
+          "name": "palette",
+          "rev": 1,
+          "status": "active",
+          "description": "palette=12 · history=true",
+          "params": {
+            "detail": "palette=12 · history=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.screen-ruler",
+      "name": "屏幕标尺",
+      "family": "clipboard",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "像素、英寸、角度测量。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.screen-ruler.px@r1",
+          "name": "px",
+          "rev": 1,
+          "status": "active",
+          "description": "unit=px · snap=4",
+          "params": {
+            "detail": "unit=px · snap=4"
+          }
+        },
+        {
+          "id": "body.screen-ruler.inches@r1",
+          "name": "inches",
+          "rev": 1,
+          "status": "active",
+          "description": "unit=inch · dpi=96",
+          "params": {
+            "detail": "unit=inch · dpi=96"
+          }
+        },
+        {
+          "id": "body.screen-ruler.angle@r1",
+          "name": "angle",
+          "rev": 1,
+          "status": "active",
+          "description": "unit=deg · snap=1",
+          "params": {
+            "detail": "unit=deg · snap=1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.window-layout",
+      "name": "窗口布局",
+      "family": "window",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "把窗口摆成开发/会议/超宽布局。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.window-layout.dev@r1",
+          "name": "dev",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=dev · monitor=main",
+          "params": {
+            "detail": "preset=dev · monitor=main"
+          }
+        },
+        {
+          "id": "body.window-layout.meeting@r1",
+          "name": "meeting",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=meeting · monitor=main",
+          "params": {
+            "detail": "preset=meeting · monitor=main"
+          }
+        },
+        {
+          "id": "body.window-layout.ultrawide@r1",
+          "name": "ultrawide",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=ultrawide · gap=8",
+          "params": {
+            "detail": "preset=ultrawide · gap=8"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.always-on-top",
+      "name": "窗口置顶",
+      "family": "window",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "钉住窗口或屏幕区域。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.always-on-top.window@r1",
+          "name": "window",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=window · opacity=0.92",
+          "params": {
+            "detail": "mode=window · opacity=0.92"
+          }
+        },
+        {
+          "id": "body.always-on-top.region@r1",
+          "name": "region",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=region · crop=true",
+          "params": {
+            "detail": "mode=region · crop=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.awake",
+      "name": "保持唤醒",
+      "family": "system",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "一段时间/到指定时间/应用运行期间保持唤醒。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.awake.30m@r1",
+          "name": "30m",
+          "rev": 1,
+          "status": "active",
+          "description": "duration=30m · display=on",
+          "params": {
+            "detail": "duration=30m · display=on"
+          }
+        },
+        {
+          "id": "body.awake.until@r1",
+          "name": "until",
+          "rev": 1,
+          "status": "active",
+          "description": "until=18:00 · display=on",
+          "params": {
+            "detail": "until=18:00 · display=on"
+          }
+        },
+        {
+          "id": "body.awake.while-app@r1",
+          "name": "while-app",
+          "rev": 1,
+          "status": "active",
+          "description": "whileApp=build.exe",
+          "params": {
+            "detail": "whileApp=build.exe"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.workspace",
+      "name": "工作区",
+      "family": "window",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "一键打开开发/会议/写作工作区。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.workspace.dev@r3",
+          "name": "dev",
+          "rev": 3,
+          "status": "active",
+          "description": "preset=dev · monitor=dual",
+          "params": {
+            "detail": "preset=dev · monitor=dual"
+          }
+        },
+        {
+          "id": "body.workspace.meeting@r1",
+          "name": "meeting",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=meeting · monitor=main",
+          "params": {
+            "detail": "preset=meeting · monitor=main"
+          }
+        },
+        {
+          "id": "body.workspace.writing@r1",
+          "name": "writing",
+          "rev": 1,
+          "status": "active",
+          "description": "preset=writing · monitor=main",
+          "params": {
+            "detail": "preset=writing · monitor=main"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.quick-launch",
+      "name": "快速启动",
+      "family": "window",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "CLaunch 式启动坞 / 命令面板。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.quick-launch.dock@r1",
+          "name": "dock",
+          "rev": 1,
+          "status": "active",
+          "description": "tabs=5 · pageSize=10",
+          "params": {
+            "detail": "tabs=5 · pageSize=10"
+          }
+        },
+        {
+          "id": "body.quick-launch.palette@r1",
+          "name": "palette",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=palette · fuzzy=true",
+          "params": {
+            "detail": "mode=palette · fuzzy=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.system-monitor",
+      "name": "系统监控",
+      "family": "system",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "CPU/GPU/内存/网络/磁盘状态。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.system-monitor.desktop@r2",
+          "name": "desktop",
+          "rev": 2,
+          "status": "active",
+          "description": "refreshMs=1000 · history=60s",
+          "params": {
+            "detail": "refreshMs=1000 · history=60s"
+          }
+        },
+        {
+          "id": "body.system-monitor.minimal@r1",
+          "name": "minimal",
+          "rev": 1,
+          "status": "active",
+          "description": "refreshMs=2000 · hud=2x2",
+          "params": {
+            "detail": "refreshMs=2000 · hud=2x2"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.service-health",
+      "name": "服务健康",
+      "family": "system",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "检查 Docker / 本地 API / VPN 健康状态。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.service-health.docker@r1",
+          "name": "docker",
+          "rev": 1,
+          "status": "active",
+          "description": "target=docker · timeout=5s",
+          "params": {
+            "detail": "target=docker · timeout=5s"
+          }
+        },
+        {
+          "id": "body.service-health.local-api@r1",
+          "name": "local-api",
+          "rev": 1,
+          "status": "active",
+          "description": "target=http://localhost:3000",
+          "params": {
+            "detail": "target=http://localhost:3000"
+          }
+        },
+        {
+          "id": "body.service-health.vpn@r1",
+          "name": "vpn",
+          "rev": 1,
+          "status": "active",
+          "description": "target=vpn · retry=3",
+          "params": {
+            "detail": "target=vpn · retry=3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.file-locksmith",
+      "name": "文件占用",
+      "family": "system",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "查找占用文件的进程/句柄。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.file-locksmith.process@r1",
+          "name": "process",
+          "rev": 1,
+          "status": "active",
+          "description": "scope=user · confirmKill=true",
+          "params": {
+            "detail": "scope=user · confirmKill=true"
+          }
+        },
+        {
+          "id": "body.file-locksmith.handle@r1",
+          "name": "handle",
+          "rev": 1,
+          "status": "active",
+          "description": "scope=system · showSystem=true",
+          "params": {
+            "detail": "scope=system · showSystem=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.hosts-editor",
+      "name": "Hosts 编辑",
+      "family": "system",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "本地 hosts 编辑、备份、diff。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.hosts-editor.local@r1",
+          "name": "local",
+          "rev": 1,
+          "status": "active",
+          "description": "backup=true · encoding=utf-8",
+          "params": {
+            "detail": "backup=true · encoding=utf-8"
+          }
+        },
+        {
+          "id": "body.hosts-editor.blocklist@r1",
+          "name": "blocklist",
+          "rev": 1,
+          "status": "active",
+          "description": "blocklist=true · backup=true",
+          "params": {
+            "detail": "blocklist=true · backup=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.env-vars",
+      "name": "环境变量",
+      "family": "system",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "用户/系统环境变量与 PATH 编辑。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.env-vars.user@r1",
+          "name": "user",
+          "rev": 1,
+          "status": "active",
+          "description": "scope=user · backup=true",
+          "params": {
+            "detail": "scope=user · backup=true"
+          }
+        },
+        {
+          "id": "body.env-vars.path@r1",
+          "name": "path",
+          "rev": 1,
+          "status": "active",
+          "description": "scope=user · pathMode=list",
+          "params": {
+            "detail": "scope=user · pathMode=list"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.external-access",
+      "name": "外网访问",
+      "family": "web",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "外网站点 + VPN 保障 + 站点启动器。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.external-access.work@r3",
+          "name": "work",
+          "rev": 3,
+          "status": "active",
+          "description": "vpn=work · policy=required",
+          "params": {
+            "detail": "vpn=work · policy=required"
+          }
+        },
+        {
+          "id": "body.external-access.personal@r2",
+          "name": "personal",
+          "rev": 2,
+          "status": "active",
+          "description": "vpn=personal · policy=preferred",
+          "params": {
+            "detail": "vpn=personal · policy=preferred"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.screenshot-translate",
+      "name": "截图翻译",
+      "family": "ai",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "截屏 → OCR → 翻译 → 浮层显示。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.screenshot-translate.en-zh@r4",
+          "name": "en-zh",
+          "rev": 4,
+          "status": "active",
+          "description": "from=en · to=zh · overlay=true",
+          "params": {
+            "detail": "from=en · to=zh · overlay=true"
+          }
+        },
+        {
+          "id": "body.screenshot-translate.ja-zh@r2",
+          "name": "ja-zh",
+          "rev": 2,
+          "status": "active",
+          "description": "from=ja · to=zh · overlay=false",
+          "params": {
+            "detail": "from=ja · to=zh · overlay=false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.ai-rewrite",
+      "name": "AI 改写",
+      "family": "ai",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "选中文本/剪贴板 → 改写、缩短、翻译。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.ai-rewrite.formal@r2",
+          "name": "formal",
+          "rev": 2,
+          "status": "active",
+          "description": "tone=formal · preview=true",
+          "params": {
+            "detail": "tone=formal · preview=true"
+          }
+        },
+        {
+          "id": "body.ai-rewrite.shorten@r1",
+          "name": "shorten",
+          "rev": 1,
+          "status": "active",
+          "description": "ratio=0.5 · preview=true",
+          "params": {
+            "detail": "ratio=0.5 · preview=true"
+          }
+        },
+        {
+          "id": "body.ai-rewrite.translate@r1",
+          "name": "translate",
+          "rev": 1,
+          "status": "active",
+          "description": "to=en · preview=true",
+          "params": {
+            "detail": "to=en · preview=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.meeting-notes",
+      "name": "会议纪要",
+      "family": "ai",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "录音 → 转录 → 摘要 → 待办。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.meeting-notes.local@r1",
+          "name": "local",
+          "rev": 1,
+          "status": "active",
+          "description": "engine=local · retention=30d",
+          "params": {
+            "detail": "engine=local · retention=30d"
+          }
+        },
+        {
+          "id": "body.meeting-notes.cloud@r1",
+          "name": "cloud",
+          "rev": 1,
+          "status": "active",
+          "description": "engine=cloud · consent=true",
+          "params": {
+            "detail": "engine=cloud · consent=true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.invoice-archive",
+      "name": "发票归档",
+      "family": "content",
+      "priority": "P1",
+      "effect": "L2",
+      "status": "active",
+      "description": "OCR → 解析 → 规则 → 归档。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.invoice-archive.company@r6",
+          "name": "company",
+          "rev": 6,
+          "status": "active",
+          "description": "ocr=zh · rules=company",
+          "params": {
+            "detail": "ocr=zh · rules=company"
+          }
+        },
+        {
+          "id": "body.invoice-archive.personal@r2",
+          "name": "personal",
+          "rev": 2,
+          "status": "active",
+          "description": "ocr=en · rules=personal",
+          "params": {
+            "detail": "ocr=en · rules=personal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.suite",
+      "name": "套件",
+      "family": "suite",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "把多个体打包成一个套件。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.suite.office@r1",
+          "name": "office",
+          "rev": 1,
+          "status": "active",
+          "description": "members=external-access,invoice-archive,screenshot-translate",
+          "params": {
+            "detail": "members=external-access,invoice-archive,screenshot-translate"
+          }
+        },
+        {
+          "id": "body.suite.dev@r1",
+          "name": "dev",
+          "rev": 1,
+          "status": "active",
+          "description": "members=external-access,workspace,ocr,quick-launch",
+          "params": {
+            "detail": "members=external-access,workspace,ocr,quick-launch"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.web-clipper",
+      "name": "网页剪藏",
+      "family": "web",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "选中内容/整页 → Markdown。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.web-clipper.selection@r1",
+          "name": "selection",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=selection · frontmatter=true",
+          "params": {
+            "detail": "mode=selection · frontmatter=true"
+          }
+        },
+        {
+          "id": "body.web-clipper.page@r1",
+          "name": "page",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=page · assets=true",
+          "params": {
+            "detail": "mode=page · assets=true"
+          }
+        },
+        {
+          "id": "body.web-clipper.readability@r1",
+          "name": "readability",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=readability · images=local",
+          "params": {
+            "detail": "mode=readability · images=local"
+          }
+        }
+      ]
+    },
+    {
+      "id": "body.backup-sync",
+      "name": "备份同步",
+      "family": "system",
+      "priority": "P2",
+      "effect": "L2",
+      "status": "active",
+      "description": "文件夹快照、每日增量、校验。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.backup-sync.folder@r1",
+          "name": "folder",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=snapshot · verify=true",
+          "params": {
+            "detail": "mode=snapshot · verify=true"
+          }
+        },
+        {
+          "id": "body.backup-sync.daily@r1",
+          "name": "daily",
+          "rev": 1,
+          "status": "active",
+          "description": "mode=incremental · retention=30d",
+          "params": {
+            "detail": "mode=incremental · retention=30d"
+          }
+        }
+      ]
+    }
+  ],
+  "field": [
+    {
+      "id": "field.observe",
+      "name": "observe",
+      "family": "perceive",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "context snapshot → all · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.observe.desktop@r1",
+          "name": "observe.desktop",
+          "rev": 1,
+          "status": "active",
+          "description": "global · 前台进程/窗口/时间/空闲",
+          "params": {
+            "detail": "global · 前台进程/窗口/时间/空闲"
+          }
+        },
+        {
+          "id": "field.observe.selection@r1",
+          "name": "observe.selection",
+          "rev": 1,
+          "status": "active",
+          "description": "global · 选中文本/剪贴板/文件",
+          "params": {
+            "detail": "global · 选中文本/剪贴板/文件"
+          }
+        },
+        {
+          "id": "field.observe.run-history@r1",
+          "name": "observe.run-history",
+          "rev": 1,
+          "status": "active",
+          "description": "run history · 最近运行/失败/耗时",
+          "params": {
+            "detail": "run history · 最近运行/失败/耗时"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.classify",
+      "name": "classify",
+      "family": "understand",
+      "priority": "P1",
+      "effect": "A2",
+      "status": "active",
+      "description": "label → point/surface/body · 自主度上限 A2",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.classify.intent@r1",
+          "name": "classify.intent",
+          "rev": 1,
+          "status": "active",
+          "description": "command palette · action/flow/body/question",
+          "params": {
+            "detail": "command palette · action/flow/body/question"
+          }
+        },
+        {
+          "id": "field.classify.file-type@r1",
+          "name": "classify.file-type",
+          "rev": 1,
+          "status": "active",
+          "description": "body.file-preview · text/image/pdf/video/audio",
+          "params": {
+            "detail": "body.file-preview · text/image/pdf/video/audio"
+          }
+        },
+        {
+          "id": "field.classify.ocr-mode@r1",
+          "name": "classify.ocr-mode",
+          "rev": 1,
+          "status": "active",
+          "description": "body.ocr · text/math/qr/table",
+          "params": {
+            "detail": "body.ocr · text/math/qr/table"
+          }
+        },
+        {
+          "id": "field.classify.error-kind@r1",
+          "name": "classify.error-kind",
+          "rev": 1,
+          "status": "active",
+          "description": "flow runtime · uia/network/permission/param",
+          "params": {
+            "detail": "flow runtime · uia/network/permission/param"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.prefill",
+      "name": "prefill",
+      "family": "perceive",
+      "priority": "P1",
+      "effect": "A2",
+      "status": "active",
+      "description": "param suggestion → point · 自主度上限 A2",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.prefill.point-params@r1",
+          "name": "prefill.point-params",
+          "rev": 1,
+          "status": "active",
+          "description": "point instances · 参数默认值",
+          "params": {
+            "detail": "point instances · 参数默认值"
+          }
+        },
+        {
+          "id": "field.prefill.vpn-profile@r1",
+          "name": "prefill.vpn-profile",
+          "rev": 1,
+          "status": "active",
+          "description": "body.external-access · vpn.profile",
+          "params": {
+            "detail": "body.external-access · vpn.profile"
+          }
+        },
+        {
+          "id": "field.prefill.ocr-language@r1",
+          "name": "prefill.ocr-language",
+          "rev": 1,
+          "status": "active",
+          "description": "body.ocr.text · ocr.language",
+          "params": {
+            "detail": "body.ocr.text · ocr.language"
+          }
+        },
+        {
+          "id": "field.prefill.rename-pattern@r1",
+          "name": "prefill.rename-pattern",
+          "rev": 1,
+          "status": "active",
+          "description": "body.batch-rename.regex · rename.pattern",
+          "params": {
+            "detail": "body.batch-rename.regex · rename.pattern"
+          }
+        },
+        {
+          "id": "field.prefill.search-query@r1",
+          "name": "prefill.search-query",
+          "rev": 1,
+          "status": "active",
+          "description": "command palette · query",
+          "params": {
+            "detail": "command palette · query"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.rank",
+      "name": "rank",
+      "family": "perceive",
+      "priority": "P1",
+      "effect": "A2",
+      "status": "active",
+      "description": "ranking → surface · 自主度上限 A2",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.rank.scene-grid@r1",
+          "name": "rank.scene-grid",
+          "rev": 1,
+          "status": "active",
+          "description": "surface.launch-dock · tile.order",
+          "params": {
+            "detail": "surface.launch-dock · tile.order"
+          }
+        },
+        {
+          "id": "field.rank.command-palette@r1",
+          "name": "rank.command-palette",
+          "rev": 1,
+          "status": "active",
+          "description": "surface.command-palette · result.order",
+          "params": {
+            "detail": "surface.command-palette · result.order"
+          }
+        },
+        {
+          "id": "field.rank.body-market@r1",
+          "name": "rank.body-market",
+          "rev": 1,
+          "status": "active",
+          "description": "surface.card-grid · body.order",
+          "params": {
+            "detail": "surface.card-grid · body.order"
+          }
+        },
+        {
+          "id": "field.rank.ocr-mode@r1",
+          "name": "rank.ocr-mode",
+          "rev": 1,
+          "status": "active",
+          "description": "body.ocr · mode order",
+          "params": {
+            "detail": "body.ocr · mode order"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.recommend",
+      "name": "recommend",
+      "family": "perceive",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "suggestion → point/line/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.recommend.next-action@r1",
+          "name": "recommend.next-action",
+          "rev": 1,
+          "status": "active",
+          "description": "point/surface · action suggestion",
+          "params": {
+            "detail": "point/surface · action suggestion"
+          }
+        },
+        {
+          "id": "field.recommend.body@r1",
+          "name": "recommend.body",
+          "rev": 1,
+          "status": "active",
+          "description": "body market · body suggestion",
+          "params": {
+            "detail": "body market · body suggestion"
+          }
+        },
+        {
+          "id": "field.recommend.template@r1",
+          "name": "recommend.template",
+          "rev": 1,
+          "status": "active",
+          "description": "flow editor · template suggestion",
+          "params": {
+            "detail": "flow editor · template suggestion"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.detect",
+      "name": "detect",
+      "family": "perceive",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "signal → line/body · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.detect.repetition@r1",
+          "name": "detect.repetition",
+          "rev": 1,
+          "status": "active",
+          "description": "global · repeated manual sequence",
+          "params": {
+            "detail": "global · repeated manual sequence"
+          }
+        },
+        {
+          "id": "field.detect.anomaly@r1",
+          "name": "detect.anomaly",
+          "rev": 1,
+          "status": "active",
+          "description": "run history · unusual failure/latency",
+          "params": {
+            "detail": "run history · unusual failure/latency"
+          }
+        },
+        {
+          "id": "field.detect.opportunity@r1",
+          "name": "detect.opportunity",
+          "rev": 1,
+          "status": "active",
+          "description": "body usage · automation opportunity",
+          "params": {
+            "detail": "body usage · automation opportunity"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.generate",
+      "name": "generate",
+      "family": "generate",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "draft → point/line/surface/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.generate.point-action@r1",
+          "name": "generate.point-action",
+          "rev": 1,
+          "status": "active",
+          "description": "point editor · Action DSL draft",
+          "params": {
+            "detail": "point editor · Action DSL draft"
+          }
+        },
+        {
+          "id": "field.generate.flow@r1",
+          "name": "generate.flow",
+          "rev": 1,
+          "status": "active",
+          "description": "line editor · FlowClass/FlowInstance draft",
+          "params": {
+            "detail": "line editor · FlowClass/FlowInstance draft"
+          }
+        },
+        {
+          "id": "field.generate.surface-layout@r1",
+          "name": "generate.surface-layout",
+          "rev": 1,
+          "status": "active",
+          "description": "surface editor · SurfaceClass/Instance draft",
+          "params": {
+            "detail": "surface editor · SurfaceClass/Instance draft"
+          }
+        },
+        {
+          "id": "field.generate.body-manifest@r1",
+          "name": "generate.body-manifest",
+          "rev": 1,
+          "status": "active",
+          "description": "body editor · BodyManifest draft",
+          "params": {
+            "detail": "body editor · BodyManifest draft"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.compose",
+      "name": "compose",
+      "family": "generate",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "draft → line/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.compose.flow-from-points@r1",
+          "name": "compose.flow-from-points",
+          "rev": 1,
+          "status": "active",
+          "description": "line editor · flow composition draft",
+          "params": {
+            "detail": "line editor · flow composition draft"
+          }
+        },
+        {
+          "id": "field.compose.surface-from-data@r1",
+          "name": "compose.surface-from-data",
+          "rev": 1,
+          "status": "active",
+          "description": "surface editor · surface binding draft",
+          "params": {
+            "detail": "surface editor · surface binding draft"
+          }
+        },
+        {
+          "id": "field.compose.body-from-flows@r1",
+          "name": "compose.body-from-flows",
+          "rev": 1,
+          "status": "active",
+          "description": "body editor · body composition draft",
+          "params": {
+            "detail": "body editor · body composition draft"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.plan",
+      "name": "plan",
+      "family": "generate",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "plan → line/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.plan.single-app@r1",
+          "name": "plan.single-app",
+          "rev": 1,
+          "status": "active",
+          "description": "task · app-specific plan",
+          "params": {
+            "detail": "task · app-specific plan"
+          }
+        },
+        {
+          "id": "field.plan.cross-app@r1",
+          "name": "plan.cross-app",
+          "rev": 1,
+          "status": "active",
+          "description": "task · multi-app plan",
+          "params": {
+            "detail": "task · multi-app plan"
+          }
+        },
+        {
+          "id": "field.plan.batch@r1",
+          "name": "plan.batch",
+          "rev": 1,
+          "status": "active",
+          "description": "batch · batch plan",
+          "params": {
+            "detail": "batch · batch plan"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.translate",
+      "name": "translate",
+      "family": "generate",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "text/dsl → point/line · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.translate.nl-to-dsl@r1",
+          "name": "translate.nl-to-dsl",
+          "rev": 1,
+          "status": "active",
+          "description": "editor · NL → DSL",
+          "params": {
+            "detail": "editor · NL → DSL"
+          }
+        },
+        {
+          "id": "field.translate.dsl-to-nl@r1",
+          "name": "translate.dsl-to-nl",
+          "rev": 1,
+          "status": "active",
+          "description": "inspector · DSL → 人话",
+          "params": {
+            "detail": "inspector · DSL → 人话"
+          }
+        },
+        {
+          "id": "field.translate.error-to-human@r1",
+          "name": "translate.error-to-human",
+          "rev": 1,
+          "status": "active",
+          "description": "run history · error → 解释",
+          "params": {
+            "detail": "run history · error → 解释"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.summarize",
+      "name": "summarize",
+      "family": "generate",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "summary → surface/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.summarize.run-history@r1",
+          "name": "summarize.run-history",
+          "rev": 1,
+          "status": "active",
+          "description": "surface.run-history · 运行摘要",
+          "params": {
+            "detail": "surface.run-history · 运行摘要"
+          }
+        },
+        {
+          "id": "field.summarize.context@r1",
+          "name": "summarize.context",
+          "rev": 1,
+          "status": "active",
+          "description": "command palette · 上下文摘要",
+          "params": {
+            "detail": "command palette · 上下文摘要"
+          }
+        },
+        {
+          "id": "field.summarize.document@r1",
+          "name": "summarize.document",
+          "rev": 1,
+          "status": "active",
+          "description": "body · 文档摘要",
+          "params": {
+            "detail": "body · 文档摘要"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.diagnose",
+      "name": "diagnose",
+      "family": "evolve",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "diagnosis → line/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.diagnose.flow-failure@r1",
+          "name": "diagnose.flow-failure",
+          "rev": 1,
+          "status": "active",
+          "description": "flow run · cause + fix",
+          "params": {
+            "detail": "flow run · cause + fix"
+          }
+        },
+        {
+          "id": "field.diagnose.uia-timeout@r1",
+          "name": "diagnose.uia-timeout",
+          "rev": 1,
+          "status": "active",
+          "description": "UIA step · selector/timing fix",
+          "params": {
+            "detail": "UIA step · selector/timing fix"
+          }
+        },
+        {
+          "id": "field.diagnose.vpn-unreachable@r1",
+          "name": "diagnose.vpn-unreachable",
+          "rev": 1,
+          "status": "active",
+          "description": "external access · network/VPN cause",
+          "params": {
+            "detail": "external access · network/VPN cause"
+          }
+        },
+        {
+          "id": "field.diagnose.ocr-low-confidence@r1",
+          "name": "diagnose.ocr-low-confidence",
+          "rev": 1,
+          "status": "active",
+          "description": "body.ocr · preprocess/mode fix",
+          "params": {
+            "detail": "body.ocr · preprocess/mode fix"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.repair",
+      "name": "repair",
+      "family": "evolve",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "patch → line/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.repair.flow-patch@r1",
+          "name": "repair.flow-patch",
+          "rev": 1,
+          "status": "active",
+          "description": "flow · patch",
+          "params": {
+            "detail": "flow · patch"
+          }
+        },
+        {
+          "id": "field.repair.selector-patch@r1",
+          "name": "repair.selector-patch",
+          "rev": 1,
+          "status": "active",
+          "description": "UIA step · selector patch",
+          "params": {
+            "detail": "UIA step · selector patch"
+          }
+        },
+        {
+          "id": "field.repair.settings-patch@r1",
+          "name": "repair.settings-patch",
+          "rev": 1,
+          "status": "active",
+          "description": "body/flow · settings patch",
+          "params": {
+            "detail": "body/flow · settings patch"
+          }
+        },
+        {
+          "id": "field.repair.permission-fix@r1",
+          "name": "repair.permission-fix",
+          "rev": 1,
+          "status": "active",
+          "description": "permission error · grant/scope fix",
+          "params": {
+            "detail": "permission error · grant/scope fix"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.mine",
+      "name": "mine",
+      "family": "evolve",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "suggestion → line/body · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.mine.action-sequence@r1",
+          "name": "mine.action-sequence",
+          "rev": 1,
+          "status": "active",
+          "description": "global · action sequence suggestion",
+          "params": {
+            "detail": "global · action sequence suggestion"
+          }
+        },
+        {
+          "id": "field.mine.flow-template@r1",
+          "name": "mine.flow-template",
+          "rev": 1,
+          "status": "active",
+          "description": "line · flow template",
+          "params": {
+            "detail": "line · flow template"
+          }
+        },
+        {
+          "id": "field.mine.body-candidate@r1",
+          "name": "mine.body-candidate",
+          "rev": 1,
+          "status": "active",
+          "description": "body · body candidate",
+          "params": {
+            "detail": "body · body candidate"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.learn",
+      "name": "learn",
+      "family": "evolve",
+      "priority": "P1",
+      "effect": "A2",
+      "status": "active",
+      "description": "weights/thresholds → point/surface · 自主度上限 A2",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.learn.ranking@r1",
+          "name": "learn.ranking",
+          "rev": 1,
+          "status": "active",
+          "description": "surface rank · weight update",
+          "params": {
+            "detail": "surface rank · weight update"
+          }
+        },
+        {
+          "id": "field.learn.prefill@r1",
+          "name": "learn.prefill",
+          "rev": 1,
+          "status": "active",
+          "description": "point prefill · default update",
+          "params": {
+            "detail": "point prefill · default update"
+          }
+        },
+        {
+          "id": "field.learn.threshold@r1",
+          "name": "learn.threshold",
+          "rev": 1,
+          "status": "active",
+          "description": "field policy · confidence threshold",
+          "params": {
+            "detail": "field policy · confidence threshold"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.personalize",
+      "name": "personalize",
+      "family": "evolve",
+      "priority": "P1",
+      "effect": "A2",
+      "status": "active",
+      "description": "defaults/layout → point/surface · 自主度上限 A2",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.personalize.shortcut@r1",
+          "name": "personalize.shortcut",
+          "rev": 1,
+          "status": "active",
+          "description": "global · shortcut suggestion",
+          "params": {
+            "detail": "global · shortcut suggestion"
+          }
+        },
+        {
+          "id": "field.personalize.layout@r1",
+          "name": "personalize.layout",
+          "rev": 1,
+          "status": "active",
+          "description": "surface · layout suggestion",
+          "params": {
+            "detail": "surface · layout suggestion"
+          }
+        },
+        {
+          "id": "field.personalize.defaults@r1",
+          "name": "personalize.defaults",
+          "rev": 1,
+          "status": "active",
+          "description": "point/body · defaults",
+          "params": {
+            "detail": "point/body · defaults"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.critique",
+      "name": "critique",
+      "family": "evolve",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "review → line/body · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.critique.flow@r1",
+          "name": "critique.flow",
+          "rev": 1,
+          "status": "active",
+          "description": "flow · review findings",
+          "params": {
+            "detail": "flow · review findings"
+          }
+        },
+        {
+          "id": "field.critique.body@r1",
+          "name": "critique.body",
+          "rev": 1,
+          "status": "active",
+          "description": "body · review findings",
+          "params": {
+            "detail": "body · review findings"
+          }
+        },
+        {
+          "id": "field.critique.permission@r1",
+          "name": "critique.permission",
+          "rev": 1,
+          "status": "active",
+          "description": "permission · over-broad permission warning",
+          "params": {
+            "detail": "permission · over-broad permission warning"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.route",
+      "name": "route",
+      "family": "govern",
+      "priority": "P1",
+      "effect": "A2",
+      "status": "active",
+      "description": "route decision → all · 自主度上限 A2",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.route.model@r1",
+          "name": "route.model",
+          "rev": 1,
+          "status": "active",
+          "description": "global · local/cloud/fallback",
+          "params": {
+            "detail": "global · local/cloud/fallback"
+          }
+        },
+        {
+          "id": "field.route.tool@r1",
+          "name": "route.tool",
+          "rev": 1,
+          "status": "active",
+          "description": "command palette · point/flow/body",
+          "params": {
+            "detail": "command palette · point/flow/body"
+          }
+        },
+        {
+          "id": "field.route.body@r1",
+          "name": "route.body",
+          "rev": 1,
+          "status": "active",
+          "description": "file/trigger · body instance",
+          "params": {
+            "detail": "file/trigger · body instance"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.guard",
+      "name": "guard",
+      "family": "govern",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "risk/decision → all · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.guard.risk@r1",
+          "name": "guard.risk",
+          "rev": 1,
+          "status": "active",
+          "description": "all drafts · L0–L3",
+          "params": {
+            "detail": "all drafts · L0–L3"
+          }
+        },
+        {
+          "id": "field.guard.permission@r1",
+          "name": "guard.permission",
+          "rev": 1,
+          "status": "active",
+          "description": "all drafts · allow/deny/ask",
+          "params": {
+            "detail": "all drafts · allow/deny/ask"
+          }
+        },
+        {
+          "id": "field.guard.confidence@r1",
+          "name": "guard.confidence",
+          "rev": 1,
+          "status": "active",
+          "description": "all suggestions · pass/ask/reject",
+          "params": {
+            "detail": "all suggestions · pass/ask/reject"
+          }
+        },
+        {
+          "id": "field.guard.privacy@r1",
+          "name": "guard.privacy",
+          "rev": 1,
+          "status": "active",
+          "description": "context · redact/block",
+          "params": {
+            "detail": "context · redact/block"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.ask",
+      "name": "ask",
+      "family": "govern",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "question → all · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.ask.clarify@r1",
+          "name": "ask.clarify",
+          "rev": 1,
+          "status": "active",
+          "description": "ambiguous request · question + options",
+          "params": {
+            "detail": "ambiguous request · question + options"
+          }
+        },
+        {
+          "id": "field.ask.confirm@r1",
+          "name": "ask.confirm",
+          "rev": 1,
+          "status": "active",
+          "description": "A1/A2 · confirm dialog",
+          "params": {
+            "detail": "A1/A2 · confirm dialog"
+          }
+        },
+        {
+          "id": "field.ask.choose@r1",
+          "name": "ask.choose",
+          "rev": 1,
+          "status": "active",
+          "description": "multiple matches · chooser",
+          "params": {
+            "detail": "multiple matches · chooser"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.explain",
+      "name": "explain",
+      "family": "govern",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "explanation → all · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.explain.suggestion@r1",
+          "name": "explain.suggestion",
+          "rev": 1,
+          "status": "active",
+          "description": "surface · why this suggestion",
+          "params": {
+            "detail": "surface · why this suggestion"
+          }
+        },
+        {
+          "id": "field.explain.point-run@r1",
+          "name": "explain.point-run",
+          "rev": 1,
+          "status": "active",
+          "description": "point run · what happened",
+          "params": {
+            "detail": "point run · what happened"
+          }
+        },
+        {
+          "id": "field.explain.flow-run@r1",
+          "name": "explain.flow-run",
+          "rev": 1,
+          "status": "active",
+          "description": "flow run · step trace",
+          "params": {
+            "detail": "flow run · step trace"
+          }
+        },
+        {
+          "id": "field.explain.permission@r1",
+          "name": "explain.permission",
+          "rev": 1,
+          "status": "active",
+          "description": "permission prompt · why needed",
+          "params": {
+            "detail": "permission prompt · why needed"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.simulate",
+      "name": "simulate",
+      "family": "govern",
+      "priority": "P0",
+      "effect": "A0",
+      "status": "active",
+      "description": "preview/impact → line/body · 自主度上限 A0",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.simulate.dry-run@r1",
+          "name": "simulate.dry-run",
+          "rev": 1,
+          "status": "active",
+          "description": "draft/patch · dry-run result",
+          "params": {
+            "detail": "draft/patch · dry-run result"
+          }
+        },
+        {
+          "id": "field.simulate.impact@r1",
+          "name": "simulate.impact",
+          "rev": 1,
+          "status": "active",
+          "description": "body/flow · impact analysis",
+          "params": {
+            "detail": "body/flow · impact analysis"
+          }
+        },
+        {
+          "id": "field.simulate.rollback@r1",
+          "name": "simulate.rollback",
+          "rev": 1,
+          "status": "active",
+          "description": "A2 apply · rollback plan",
+          "params": {
+            "detail": "A2 apply · rollback plan"
+          }
+        }
+      ]
+    },
+    {
+      "id": "field.memory",
+      "name": "memory",
+      "family": "govern",
+      "priority": "P1",
+      "effect": "A1",
+      "status": "active",
+      "description": "memory op → all · 自主度上限 A1",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "field.memory.preference@r1",
+          "name": "memory.preference",
+          "rev": 1,
+          "status": "active",
+          "description": "global · preference read/write",
+          "params": {
+            "detail": "global · preference read/write"
+          }
+        },
+        {
+          "id": "field.memory.episodic@r1",
+          "name": "memory.episodic",
+          "rev": 1,
+          "status": "active",
+          "description": "run history · episode recall",
+          "params": {
+            "detail": "run history · episode recall"
+          }
+        },
+        {
+          "id": "field.memory.knowledge@r1",
+          "name": "memory.knowledge",
+          "rev": 1,
+          "status": "active",
+          "description": "body/domain · knowledge recall",
+          "params": {
+            "detail": "body/domain · knowledge recall"
+          }
+        }
+      ]
+    }
+  ]
+}

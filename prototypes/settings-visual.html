@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>整个软件设置 · Settings Workspace</title>
+<style>
+:root{
+  --bg:#070b12;--panel:#0d1420;--card:#111a29;--card2:#152235;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.25);
+  --ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;
+  --amber:#f59e0b;--green:#22c55e;--red:#ef4444;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{display:grid;grid-template-columns:246px minmax(0,1fr) 300px;grid-template-rows:54px minmax(0,1fr) 30px;height:100%}
+header{position:relative;grid-column:1/-1;display:flex;align-items:center;gap:9px;padding:0 13px;background:linear-gradient(180deg,#0e1725,#0a111c);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;min-width:110px}
+.brand .mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#04121a;font:800 13px var(--mono)}
+.brand b{font-size:13px}
+.brand span{display:block;font:7px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.section-sel{display:none;border:1px solid var(--line);background:#0a1420;color:#a9bbd0;border-radius:6px;padding:5px 6px;font:8.5px var(--mono);outline:none}
+.scope{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:6px;padding:4px 7px;background:#0a1420}
+.scope label{font:7px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+.scope select{border:none;background:transparent;color:#a9bbd0;font-size:9px;outline:none;padding:2px 1px}
+.search{flex:1;min-width:0;max-width:420px;margin-left:auto;border:1px solid var(--line);border-radius:7px;background:#0a1420;padding:7px 9px;color:var(--ink);font-size:10.5px;outline:none}
+.search::placeholder{color:var(--faint)}
+.search:focus{border-color:rgba(34,211,238,.42);box-shadow:0 0 0 2px rgba(34,211,238,.06)}
+.btn{border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:6px;padding:6px 9px;font-size:9px}
+.btn:hover{color:#dbeafe;border-color:var(--line2)}
+.btn.primary{border-color:rgba(34,211,238,.35);background:rgba(34,211,238,.11);color:#a5f3fc}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed}
+.btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.05)}
+.more-btn{padding:5px 8px;font-size:13px;line-height:1}
+.more-menu{display:none;position:absolute;right:10px;top:48px;z-index:40;min-width:150px;flex-direction:column;gap:2px;border:1px solid var(--line2);border-radius:7px;background:#0e1826;padding:4px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.more-menu.on{display:flex}
+.more-menu button{border:none;background:transparent;color:#9fb1c8;text-align:left;border-radius:4px;padding:6px 8px;font-size:9px}
+.more-menu button:hover{background:#152235;color:#dbeafe}
+#nav{grid-row:2;background:linear-gradient(180deg,#0e1624,#080d15);border-right:1px solid var(--line);overflow-y:auto;padding:10px 8px 20px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#nav::-webkit-scrollbar{width:7px}
+#nav::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.nav-group{margin-bottom:10px}
+.nav-label{font:7px var(--mono);color:var(--faint);letter-spacing:.15em;text-transform:uppercase;padding:5px 7px 4px}
+.nav-item{display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid transparent;border-radius:7px;cursor:pointer;margin-bottom:1px;position:relative}
+.nav-item:hover{background:#121d2c;border-color:var(--line)}
+.nav-item.on{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.22)}
+.nav-icon{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:11px;background:#162234;border:1px solid var(--line);color:var(--cat,#22d3ee);flex:0 0 22px}
+.nav-main{min-width:0;flex:1}
+.nav-name{font-size:10.5px;color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-sub{font:7px var(--mono);color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 7px var(--amber);flex:0 0 6px}
+.nav-lock{font-size:8px;color:#fca5a5;flex:0 0 auto}
+#main{grid-row:2;min-width:0;min-height:0;overflow-y:auto;background:radial-gradient(circle at 25% 0%,rgba(34,211,238,.04),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);padding:16px 18px 26px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#main::-webkit-scrollbar{width:8px}
+#main::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #070b12}
+.section-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.section-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#162234;border:1px solid var(--line2);color:var(--cat,#22d3ee);font-size:16px;flex:0 0 38px}
+.section-text{min-width:0;flex:1}
+.section-kicker{font:7.5px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
+.section-head h1{font-size:18px;margin:2px 0 2px}
+.section-head p{margin:0;color:#94a8c0;font-size:10.5px;line-height:1.55;max-width:760px}
+.section-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.group{border:1px solid var(--line);border-radius:9px;background:rgba(17,26,41,.72);margin-bottom:10px;overflow:hidden}
+.group-head{display:flex;align-items:center;gap:7px;padding:8px 11px;border-bottom:1px solid var(--line);background:rgba(15,26,41,.85)}
+.group-head b{font:8.5px var(--mono);color:#a9bbd0;letter-spacing:.03em}
+.group-head span{font-size:7.5px;color:var(--faint);margin-left:auto}
+.group-body{padding:0 11px}
+.setting-row{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(130px,1fr) 82px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(148,163,184,.075);position:relative}
+.setting-row:last-child{border-bottom:none}
+.setting-row:hover{background:rgba(34,211,238,.018)}
+.setting-row.dirty{background:rgba(245,158,11,.035);box-shadow:inset 2px 0 0 rgba(245,158,11,.55)}
+.setting-row.highlight{background:rgba(34,211,238,.065);box-shadow:inset 2px 0 0 rgba(34,211,238,.65)}
+.row-main{min-width:0}
+.row-label{font-size:10px;color:#dbeafe;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.row-desc{font-size:7.5px;color:var(--faint);line-height:1.5;margin-top:2px;max-width:520px}
+.row-meta{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.mini{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c}
+.mini.l1{color:#a5f3fc;border-color:rgba(34,211,238,.2);background:rgba(34,211,238,.05)}
+.mini.l2{color:#fcd34d;border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.05)}
+.mini.restart{color:#fca5a5;border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.05)}
+.mini.secret{color:#c4b5fd;border-color:rgba(139,92,246,.2);background:rgba(139,92,246,.06)}
+.row-control{min-width:0}
+.row-control select,.row-control input[type=text],.row-control input[type=number],.row-control input[type=password]{width:100%;border:1px solid var(--line);background:#0a1420;color:#a9bbd0;border-radius:4px;font:8.5px var(--mono);padding:5px 6px;outline:none}
+.row-control select:focus,.row-control input:focus{border-color:rgba(34,211,238,.35)}
+.row-control input:disabled,.row-control select:disabled{opacity:.55;cursor:not-allowed}
+.switch{position:relative;display:inline-block;width:32px;height:18px;vertical-align:middle}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:#1e293b;border:1px solid var(--line);border-radius:99px;transition:.15s}
+.switch span::before{content:"";position:absolute;width:12px;height:12px;left:2px;top:2px;border-radius:50%;background:#64748b;transition:.15s}
+.switch input:checked+span{background:rgba(34,211,238,.18);border-color:rgba(34,211,238,.4)}
+.switch input:checked+span::before{transform:translateX(14px);background:#22d3ee;box-shadow:0 0 6px #22d3ee}
+.switch input:disabled+span{opacity:.45}
+.row-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0}
+.src{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c}
+.src.user{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.05)}
+.src.workspace{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.05)}
+.src.machine{color:#c4b5fd;border-color:rgba(139,92,246,.22);background:rgba(139,92,246,.05)}
+.src.policy{color:#fca5a5;border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.05)}
+.reset{border:none;background:transparent;color:#5f7188;font:7px var(--mono);padding:1px 2px}
+.reset:hover{color:#a5f3fc}
+.secret-box{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.secret-dot{font:7.5px var(--mono);color:#c4b5fd;border:1px solid rgba(139,92,246,.22);border-radius:3px;padding:2px 4px;background:rgba(139,92,246,.06)}
+.secret-btn{border:1px solid var(--line);background:#121d2c;color:#9fb1c8;border-radius:3px;padding:2px 4px;font:7px var(--mono)}
+.section-foot{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.foot-note{font:7px var(--mono);color:var(--faint);margin-left:auto}
+.policy-banner{border:1px solid rgba(245,158,11,.25);background:rgba(245,158,11,.05);color:#fcd34d;border-radius:7px;padding:8px 10px;font-size:9px;line-height:1.5;margin-bottom:10px}
+.search-results .result{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:8px;margin-bottom:6px;cursor:pointer}
+.search-results .result:hover{border-color:rgba(34,211,238,.28);background:#121f30}
+.result-top{display:flex;align-items:center;gap:6px}
+.result-label{font-size:9.5px;color:#dbeafe}
+.result-key{font:7px var(--mono);color:var(--faint);margin-left:auto}
+.result-desc{font-size:7.5px;color:var(--faint);margin-top:3px;line-height:1.5}
+.empty{padding:28px 10px;text-align:center;color:var(--faint);font-size:9px}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.info-card{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:10px}
+.info-card h3{margin:0 0 6px;font:8.5px var(--mono);color:#a5f3fc;letter-spacing:.05em;display:flex;align-items:center;gap:5px}
+.info-kv{display:grid;grid-template-columns:78px 1fr;gap:3px 6px;font:7.5px var(--mono);line-height:1.5}
+.info-kv .k{color:var(--faint)}
+.info-kv .v{color:#b9c7da;word-break:break-all}
+.info-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.info-btn{border:1px solid var(--line);background:#121d2c;color:#93a4ba;border-radius:4px;padding:3px 5px;font:7px var(--mono)}
+.info-btn:hover{color:#a5f3fc;border-color:rgba(34,211,238,.25)}
+#changes{grid-row:2;border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:12px 11px 24px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#changes::-webkit-scrollbar{width:7px}
+#changes::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.ch-head{display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.ch-head b{font:8px var(--mono);color:#a9bbd0;letter-spacing:.08em;text-transform:uppercase}
+.ch-count{margin-left:auto;font:7px var(--mono);color:#fcd34d}
+.ch-list{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:7px;margin-bottom:8px;max-height:330px;overflow:auto}
+.ch-row{padding:5px 0;border-bottom:1px solid rgba(148,163,184,.07);font:7.5px var(--mono)}
+.ch-row:last-child{border-bottom:none}
+.ch-label{color:#b9c7da;display:block;margin-bottom:2px}
+.ch-diff{color:#8fa2bb;word-break:break-all}
+.ch-diff .from{color:#fca5a5;text-decoration:line-through}
+.ch-diff .to{color:#86efac}
+.ch-actions{display:flex;gap:5px}
+.ch-actions .btn{flex:1;text-align:center}
+.restart-box{border:1px solid rgba(245,158,11,.22);background:rgba(245,158,11,.045);border-radius:6px;padding:7px;margin-top:8px;font-size:8px;color:#fcd34d;line-height:1.5}
+#status{grid-column:1/-1;grid-row:3;display:flex;align-items:center;gap:7px;padding:0 12px;border-top:1px solid var(--line);background:#080e17;font:7px var(--mono);color:var(--faint)}
+#status .dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+#status .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:42px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:7px 11px;border-radius:7px;font-size:9px;z-index:60;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1050px){#app{grid-template-columns:218px minmax(0,1fr)}#changes{display:none}}
+@media(max-width:760px){#app{grid-template-columns:168px minmax(0,1fr)}.brand{min-width:auto}.brand span{display:none}.scope label{display:none}.search{max-width:130px}#importBtn,#exportBtn{display:none}.setting-row{grid-template-columns:1fr;gap:5px;padding:9px 0}.row-side{flex-direction:row;align-items:center}.info-grid{grid-template-columns:1fr}}
+@media(max-width:560px){#app{grid-template-columns:1fr}#nav{display:none}#status{font-size:6.5px}.search{display:none}.section-sel{display:block;width:92px}.brand b{font-size:12px}#applyBtn{padding:5px 6px;font-size:8px}#closeBtn{padding:5px 7px}}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.info-btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.24);background:rgba(239,68,68,.05)}
+#changes.dirty .ch-head b{color:#fcd34d}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="mark">⚙</div>
+      <div><b>Settings</b><span>Settings Workspace</span></div>
+    </div>
+    <select class="section-sel" id="sectionSel"></select>
+    <div class="scope">
+      <label>Scope</label>
+      <select id="scopeSel">
+        <option value="User">User</option>
+        <option value="Workspace">Workspace</option>
+        <option value="Machine">Machine</option>
+        <option value="Policy">Policy</option>
+      </select>
+    </div>
+    <input class="search" id="search" placeholder="搜索设置…  Cmd/Ctrl+K">
+    <button class="btn primary" id="applyBtn" disabled>Apply</button>
+    <button class="btn more-btn" id="moreBtn">⋯</button>
+    <div class="more-menu" id="moreMenu">
+      <button data-more="import">Import settings…</button>
+      <button data-more="export">Export settings…</button>
+      <button data-more="close">Close</button>
+    </div>
+  </header>
+
+  <nav id="nav"></nav>
+
+  <main id="main"></main>
+
+  <aside id="changes"></aside>
+
+  <footer id="status">
+    <span class="dot"></span>
+    <span id="statusLeft">Settings · User scope · clean</span>
+    <span class="grow"></span>
+    <span id="statusRight">v1.4.2 · build 2026.11.23</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = v => JSON.parse(JSON.stringify(v));
+
+function S(key, label, desc, type, def, opts = {}) {
+  return { key, label, desc, type, default: def, options: opts.options, unit: opts.unit, min: opts.min, max: opts.max, effect: opts.effect || 'L0', restart: opts.restart || null, secret: !!opts.secret, policy: !!opts.policy, initialSource: opts.initialSource || null, advanced: !!opts.advanced, alias: opts.alias || [], impact: opts.impact || [] };
+}
+
+const SECTIONS = [
+  {
+    id: 'general', group: 'General', icon: '⚙', color: '#22d3ee', title: '通用设置',
+    desc: '应用级外观、语言、启动、通知、隐私、网络/更新、可访问性与高级选项。',
+    groups: [
+      { label: 'Appearance', desc: '全局视觉；Surface 只放布局与交互。', settings: [
+        S('general.theme', 'Theme', '应用主题；跟随系统时由 OS 决定。', 'enum', 'dark', { options: ['dark', 'light', 'system'], effect: 'L0', initialSource: 'user' }),
+        S('general.accent', 'Accent color', '强调色；用于选中、焦点与主操作。', 'enum', 'cyan', { options: ['cyan', 'blue', 'violet', 'amber'], effect: 'L0', initialSource: 'user' }),
+        S('general.fontScale', 'Font scale', '全局字体缩放，100% 为默认。', 'number', 100, { min: 80, max: 140, unit: '%', effect: 'L0', initialSource: 'user' }),
+        S('general.density', 'UI density', 'comfortable 更适合阅读，compact 更适合高信息密度。', 'enum', 'comfortable', { options: ['comfortable', 'compact'], effect: 'L0', initialSource: 'user' })
+      ]},
+      { label: 'Language & Region', desc: '应用语言与数字/日期格式。', settings: [
+        S('general.language', 'Language', '界面语言；需要重启的文案会单独标注。', 'enum', 'zh-CN', { options: ['zh-CN', 'en-US', 'ja-JP'], effect: 'L0', initialSource: 'user', restart: 'app' }),
+        S('general.dateFormat', 'Date format', '日期显示格式。', 'enum', 'YYYY-MM-DD', { options: ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM/DD/YYYY'], effect: 'L0' }),
+        S('general.numberFormat', 'Number format', '数字千分位/小数格式。', 'enum', '1,234.56', { options: ['1,234.56', '1.234,56', '1 234,56'], effect: 'L0' })
+      ]},
+      { label: 'Startup', desc: '应用启动与工作区恢复。', settings: [
+        S('general.launchAtLogin', 'Launch at login', '登录 Windows 后自动启动。', 'bool', false, { effect: 'L1' }),
+        S('general.startMinimized', 'Start minimized', '启动后进入托盘/最小化。', 'bool', false, { effect: 'L1' }),
+        S('general.restoreLastWorkspace', 'Restore last workspace', '恢复上次打开的工作区与面板布局。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Notifications', desc: '通知与提示行为。', settings: [
+        S('general.toastDuration', 'Toast duration', '轻提示停留时间。', 'enum', 'normal', { options: ['short', 'normal', 'long'], effect: 'L0' }),
+        S('general.doNotDisturb', 'Do not disturb', '暂停非关键通知。', 'bool', false, { effect: 'L0' }),
+        S('general.sound', 'Notification sound', '通知是否播放声音。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Privacy & Telemetry', desc: '遥测、崩溃报告与使用数据。', settings: [
+        S('general.telemetry', 'Telemetry', 'off 完全关闭；basic 只发匿名性能指标。', 'enum', 'basic', { options: ['off', 'basic', 'full'], effect: 'L1', policy: true }),
+        S('general.crashReports', 'Crash reports', '崩溃时发送诊断包。', 'bool', true, { effect: 'L1' }),
+        S('general.usageData', 'Usage data', '发送功能使用统计。', 'bool', false, { effect: 'L1' })
+      ]},
+      { label: 'Network & Updates', desc: '代理、应用更新通道与检查。', settings: [
+        S('general.proxy', 'Proxy', 'system 使用系统代理；也可填 http://host:port。', 'string', 'system', { effect: 'L1' }),
+        S('general.updateChannel', 'Update channel', '应用自身更新通道，不是 Body 更新。', 'enum', 'stable', { options: ['stable', 'beta', 'dev'], effect: 'L1', initialSource: 'user' }),
+        S('general.autoCheckUpdates', 'Auto check updates', '启动时检查应用更新。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Accessibility', desc: '对比度、动效与键盘提示。', settings: [
+        S('general.highContrast', 'High contrast', '增强边框与文本对比度。', 'bool', false, { effect: 'L0' }),
+        S('general.reduceMotion', 'Reduce motion', '减少动画；应用设置只能比系统更严格。', 'bool', false, { effect: 'L0' }),
+        S('general.keyboardHints', 'Keyboard hints', '显示快捷键提示。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Advanced', desc: '开发与实验选项。', settings: [
+        S('general.developerMode', 'Developer mode', '显示调试工具与实验入口。', 'bool', false, { effect: 'L1', advanced: true }),
+        S('general.experimentalFeatures', 'Experimental features', '启用未稳定的功能。', 'bool', false, { effect: 'L1', advanced: true }),
+        S('general.logLevel', 'Log level', '应用日志级别。', 'enum', 'info', { options: ['info', 'debug', 'warn', 'error'], effect: 'L0', advanced: true })
+      ]}
+    ]
+  },
+  {
+    id: 'point', group: 'Layers', icon: '◆', color: '#22d3ee', title: '点层设置',
+    desc: '点运行时、效果/权限、registry 与 secrets。flow 重试/审批不在这里。',
+    groups: [
+      { label: 'Runtime', desc: '点执行的默认超时、并发与沙箱。', settings: [
+        S('point.defaultTimeoutMs', 'Default timeout', '点执行默认超时；单个 PointInstance 可覆盖。', 'number', 12000, { min: 1000, max: 120000, unit: 'ms', effect: 'L1', initialSource: 'user' }),
+        S('point.maxConcurrency', 'Max concurrency', '同时运行的点实例上限。', 'number', 4, { min: 1, max: 32, effect: 'L1' }),
+        S('point.sandbox', 'Sandbox', 'strict 最安全；off 仅开发机。', 'enum', 'balanced', { options: ['strict', 'balanced', 'off'], effect: 'L2', restart: 'app' })
+      ]},
+      { label: 'Effects & Permissions', desc: '效果等级与权限默认策略。', settings: [
+        S('point.maxEffect', 'Max effect', '单点允许的最高效果等级；policy 锁定。', 'enum', 'L2', { options: ['L0', 'L1', 'L2', 'L3'], effect: 'L2', policy: true }),
+        S('point.requireApprovalForL2', 'Require approval for L2', 'L2 点默认需要审批。', 'bool', true, { effect: 'L2', policy: true }),
+        S('point.logInputs', 'Log point inputs', '可能含敏感数据；默认关闭。', 'bool', false, { effect: 'L1', policy: true })
+      ]},
+      { label: 'Registry & Sources', desc: '点来源、签名与缓存。', settings: [
+        S('point.registryUrl', 'Registry URL', '点 registry 地址。', 'string', 'https://registry.local', { effect: 'L1' }),
+        S('point.allowUnsignedPoints', 'Allow unsigned points', '关闭时只加载签名点；开启需要 L3 确认。', 'bool', false, { effect: 'L3', policy: true }),
+        S('point.cacheTtl', 'Cache TTL', 'registry 缓存时间。', 'number', 3600, { min: 0, max: 86400, unit: 's', effect: 'L0' })
+      ]},
+      { label: 'Secrets', desc: '凭据存储与显示策略。', settings: [
+        S('point.secretStore', 'Secret store', 'os/keychain 使用系统凭据库；file 仅开发。', 'enum', 'os', { options: ['os', 'keychain', 'file'], effect: 'L2' }),
+        S('point.revealPolicy', 'Reveal policy', 'never 最安全；once 仅显示一次。', 'enum', 'never', { options: ['never', 'once', 'session'], effect: 'L2', policy: true })
+      ]}
+    ]
+  },
+  {
+    id: 'line', group: 'Layers', icon: '↝', color: '#3b82f6', title: '线层设置',
+    desc: 'flow 执行、重试/错误策略、审批闸门、trace/retention 与 scheduler。',
+    groups: [
+      { label: 'Execution', desc: 'flow 超时、并发与重试。', settings: [
+        S('line.defaultTimeoutMs', 'Default timeout', 'flow 默认超时。', 'number', 30000, { min: 1000, max: 600000, unit: 'ms', effect: 'L1' }),
+        S('line.maxParallelFlows', 'Max parallel flows', '同时运行的 flow 上限。', 'number', 3, { min: 1, max: 16, effect: 'L1' }),
+        S('line.retryPolicy', 'Retry policy', '重试策略；点只声明可重试性，不拥有 retry。', 'enum', 'exponential', { options: ['none', 'linear', 'exponential'], effect: 'L1' }),
+        S('line.maxRetries', 'Max retries', '最大重试次数。', 'number', 2, { min: 0, max: 10, effect: 'L1' })
+      ]},
+      { label: 'Gates & Approvals', desc: '审批闸门与超时。', settings: [
+        S('line.requireApprovalForL2', 'Require approval for L2', 'L2 flow 默认需要审批。', 'bool', true, { effect: 'L2', policy: true }),
+        S('line.approvalTimeoutS', 'Approval timeout', '等待审批的秒数。', 'number', 60, { min: 5, max: 600, unit: 's', effect: 'L1' }),
+        S('line.autoDenyOnTimeout', 'Auto deny on timeout', '超时自动拒绝；安全优先。', 'bool', true, { effect: 'L2', policy: true })
+      ]},
+      { label: 'Tracing & Retention', desc: 'trace 采样、运行保留与日志级别。', settings: [
+        S('line.traceSampling', 'Trace sampling', '采样率越高越占性能/磁盘。', 'number', 10, { min: 0, max: 100, unit: '%', effect: 'L1' }),
+        S('line.runRetentionDays', 'Run retention', '运行记录保留天数。', 'number', 30, { min: 1, max: 365, unit: 'days', effect: 'L1' }),
+        S('line.logLevel', 'Log level', 'flow 日志级别。', 'enum', 'info', { options: ['info', 'debug', 'warn', 'error'], effect: 'L0' })
+      ]},
+      { label: 'Scheduler', desc: '错过的调度与 timezone。', settings: [
+        S('line.missedRunPolicy', 'Missed run policy', '错过的定时 flow 如何处理。', 'enum', 'skip', { options: ['skip', 'runOnce', 'ask'], effect: 'L1' }),
+        S('line.timezone', 'Timezone', '调度时区。', 'string', 'Asia/Shanghai', { effect: 'L0' })
+      ]}
+    ]
+  },
+  {
+    id: 'surface', group: 'Layers', icon: '▦', color: '#8b5cf6', title: '面层设置',
+    desc: '布局、面板、交互、动效、可访问性与显示格式。只影响呈现/交互。',
+    groups: [
+      { label: 'Layout & Panels', desc: '面板默认位置、宽度与表格密度。', settings: [
+        S('surface.defaultPanelSide', 'Default panel side', '新开面板默认在右/左。', 'enum', 'right', { options: ['right', 'left'], effect: 'L0', initialSource: 'user' }),
+        S('surface.panelWidth', 'Default panel width', '默认宽度；PanelInstance 可覆盖，用户调整后 remember。', 'number', 380, { min: 300, max: 620, unit: 'px', effect: 'L0', initialSource: 'user' }),
+        S('surface.rememberPanelSize', 'Remember panel size', '记住用户拖拽后的面板尺寸。', 'bool', true, { effect: 'L0' }),
+        S('surface.tableDensity', 'Table density', 'table/tree/list 的默认密度。', 'enum', 'comfortable', { options: ['comfortable', 'compact'], effect: 'L0' })
+      ]},
+      { label: 'Interaction', desc: '双击、中键与滚轮行为。', settings: [
+        S('surface.doubleClickAction', 'Double-click action', '双击列表/卡片时的默认动作。', 'enum', 'open', { options: ['open', 'run', 'none'], effect: 'L0' }),
+        S('surface.middleClickAction', 'Middle-click action', '中键默认动作。', 'enum', 'none', { options: ['none', 'open', 'run'], effect: 'L0' }),
+        S('surface.wheelBehavior', 'Wheel behavior', '滚轮滚动或缩放。', 'enum', 'scroll', { options: ['scroll', 'zoom'], effect: 'L0' })
+      ]},
+      { label: 'Motion', desc: '动效速度；reduce motion 在 General。', settings: [
+        S('surface.animationSpeed', 'Animation speed', 'slow/normal/fast；受 reduce motion 约束。', 'enum', 'normal', { options: ['slow', 'normal', 'fast'], effect: 'L0' })
+      ]},
+      { label: 'Accessibility', desc: '焦点环、读屏提示与焦点归还。', settings: [
+        S('surface.focusRing', 'Focus ring', 'auto 跟随系统；always 始终显示。', 'enum', 'auto', { options: ['auto', 'always'], effect: 'L0' }),
+        S('surface.screenReaderHints', 'Screen reader hints', '为复杂面板提供额外读屏提示。', 'bool', true, { effect: 'L0' }),
+        S('surface.panelFocusReturn', 'Return focus on close', '关闭面板后回到触发元素。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Locale & Format', desc: '时间、周起始与度量。', settings: [
+        S('surface.timeFormat', 'Time format', '24h 或 12h。', 'enum', '24h', { options: ['24h', '12h'], effect: 'L0' }),
+        S('surface.firstDayOfWeek', 'First day of week', '日历周起始。', 'enum', 'monday', { options: ['monday', 'sunday'], effect: 'L0' }),
+        S('surface.measurementSystem', 'Measurement system', 'metric/imperial。', 'enum', 'metric', { options: ['metric', 'imperial'], effect: 'L0' })
+      ]}
+    ]
+  },
+  {
+    id: 'body', group: 'Layers', icon: '▣', color: '#f59e0b', title: '体层设置',
+    desc: '已安装体、更新通道、信任/签名、权限、数据保留与隔离。',
+    groups: [
+      { label: 'Updates & Channels', desc: '体更新与应用更新分开。', settings: [
+        S('body.autoUpdate', 'Auto update bodies', '自动更新已安装体。', 'bool', true, { effect: 'L1', initialSource: 'user' }),
+        S('body.updateChannel', 'Body update channel', '体更新通道。', 'enum', 'stable', { options: ['stable', 'beta', 'dev'], effect: 'L1' }),
+        S('body.allowPrerelease', 'Allow prerelease', '允许预发布体；生产环境通常关闭。', 'bool', false, { effect: 'L2', policy: true })
+      ]},
+      { label: 'Trust & Signatures', desc: '签名与发布者信任。', settings: [
+        S('body.requireSignature', 'Require signature', '关闭需要 L3 确认。', 'bool', true, { effect: 'L3', policy: true }),
+        S('body.allowUnknownPublisher', 'Allow unknown publisher', '允许未知发布者；高风险。', 'bool', false, { effect: 'L3', policy: true }),
+        S('body.verifyOnLaunch', 'Verify on launch', '启动时校验 digest/signature。', 'bool', true, { effect: 'L2' })
+      ]},
+      { label: 'Permissions', desc: '权限审查与请求日志。', settings: [
+        S('body.permissionReview', 'Permission review', 'always 最安全；never 不建议。', 'enum', 'always', { options: ['always', 'firstRun', 'never'], effect: 'L2' }),
+        S('body.requestLog', 'Permission request log', '记录权限请求。', 'bool', true, { effect: 'L1' })
+      ]},
+      { label: 'Data & Retention', desc: '保留、备份与回滚版本。', settings: [
+        S('body.retentionDays', 'Data retention', '体数据保留天数。', 'number', 90, { min: 1, max: 3650, unit: 'days', effect: 'L1' }),
+        S('body.backupBeforeUpdate', 'Backup before update', '更新前备份。', 'bool', true, { effect: 'L1' }),
+        S('body.rollbackKeepVersions', 'Keep versions for rollback', '至少保留 2 个版本。', 'number', 2, { min: 1, max: 5, effect: 'L1' })
+      ]},
+      { label: 'Isolation', desc: '沙箱、网络与文件系统范围。', settings: [
+        S('body.sandbox', 'Sandbox', 'strict/balanced/off。', 'enum', 'strict', { options: ['strict', 'balanced', 'off'], effect: 'L2', restart: 'body' }),
+        S('body.networkAccess', 'Network access', 'ask/allow/deny。', 'enum', 'ask', { options: ['ask', 'allow', 'deny'], effect: 'L2' }),
+        S('body.filesystemScope', 'Filesystem scope', 'body/workspace/user。', 'enum', 'body', { options: ['body', 'workspace', 'user'], effect: 'L2' }),
+        S('body.installDir', 'Install directory', '体安装目录。', 'path', '%LOCALAPPDATA%\\Atom\\Bodies', { effect: 'L1', restart: 'app' })
+      ]}
+    ]
+  },
+  {
+    id: 'field', group: 'Layers', icon: '✦', color: '#ec4899', title: '场层设置',
+    desc: '模型 provider、上下文/记忆、routing、autonomy、safety、成本与评估。',
+    groups: [
+      { label: 'Providers & Models', desc: '模型接入；API key 只存 secretRef。', settings: [
+        S('field.provider', 'Provider', 'openai/azure/openai-compatible/local。', 'enum', 'openai-compatible', { options: ['openai', 'azure', 'openai-compatible', 'local'], effect: 'L1', initialSource: 'user' }),
+        S('field.baseUrl', 'Base URL', '兼容 OpenAI 的 API base URL。', 'string', 'https://api.openai.com/v1', { effect: 'L1', initialSource: 'user' }),
+        S('field.apiKeyRef', 'API key', '只保存 secretRef；不回显明文。', 'secret', 'env:OPENAI_API_KEY', { effect: 'L2', secret: true, initialSource: 'user' }),
+        S('field.defaultModel', 'Default model', 'auto 由 router 选择。', 'string', 'auto', { effect: 'L1', initialSource: 'user' })
+      ]},
+      { label: 'Context & Memory', desc: '上下文预算、记忆范围与引用。', settings: [
+        S('field.contextBudget', 'Context budget', '每次请求的 context token 预算。', 'number', 32000, { min: 1000, max: 200000, unit: 'tokens', effect: 'L1' }),
+        S('field.memoryScope', 'Memory scope', 'session/workspace/global。', 'enum', 'workspace', { options: ['session', 'workspace', 'global'], effect: 'L1' }),
+        S('field.citationPolicy', 'Citation policy', '高风险场景强制 always。', 'enum', 'whenAvailable', { options: ['always', 'whenAvailable', 'off'], effect: 'L1' })
+      ]},
+      { label: 'Routing', desc: '模型路由与 fallback。', settings: [
+        S('field.routingMode', 'Routing mode', 'auto/manual/fallback。', 'enum', 'auto', { options: ['auto', 'manual', 'fallback'], effect: 'L1' }),
+        S('field.fallbackModel', 'Fallback model', '主模型失败时的 fallback。', 'string', 'auto', { effect: 'L1' }),
+        S('field.latencyBudget', 'Latency budget', '路由延迟预算。', 'number', 8000, { min: 500, max: 120000, unit: 'ms', effect: 'L1' })
+      ]},
+      { label: 'Autonomy', desc: '自主等级、审批与单次成本上限。', settings: [
+        S('field.autonomyLevel', 'Autonomy level', 'A0 建议/A1 草稿/A2 自动可撤销/A3 禁止。', 'enum', 'A1', { options: ['A0', 'A1', 'A2', 'A3'], effect: 'L2', initialSource: 'user' }),
+        S('field.requireApprovalForL2', 'Require approval for L2', '不可被单次 run 绕过。', 'bool', true, { effect: 'L2', policy: true }),
+        S('field.maxCostPerRun', 'Max cost per run', '单次运行成本上限。', 'number', 0.50, { min: 0, max: 100, unit: 'USD', effect: 'L1' })
+      ]},
+      { label: 'Safety & Citations', desc: '内容过滤、secret redaction 与 prompt 日志。', settings: [
+        S('field.contentFilter', 'Content filter', 'standard/strict/off。', 'enum', 'standard', { options: ['standard', 'strict', 'off'], effect: 'L2' }),
+        S('field.redactSecrets', 'Redact secrets', '日志/诊断自动脱敏。', 'bool', true, { effect: 'L2', policy: true }),
+        S('field.logPrompts', 'Log prompts', '可能含敏感数据；默认关闭。', 'bool', false, { effect: 'L2', policy: true })
+      ]},
+      { label: 'Cost & Limits', desc: '预算、单次上限与告警。', settings: [
+        S('field.monthlyBudget', 'Monthly budget', '月度预算。', 'number', 50, { min: 0, max: 10000, unit: 'USD', effect: 'L1' }),
+        S('field.perRunCap', 'Per-run cap', '单次运行上限。', 'number', 0.50, { min: 0, max: 100, unit: 'USD', effect: 'L1' }),
+        S('field.alertThreshold', 'Alert threshold', '预算告警阈值。', 'number', 80, { min: 1, max: 100, unit: '%', effect: 'L0' })
+      ]},
+      { label: 'Evaluation', desc: '保存时评估与回归集。', settings: [
+        S('field.evalOnSave', 'Evaluate on save', '保存配置时跑评估。', 'bool', false, { effect: 'L1' }),
+        S('field.regressionSuite', 'Regression suite', '评估使用的回归集。', 'string', 'default', { effect: 'L1' })
+      ]}
+    ]
+  },
+  { id: 'info', group: 'Info', icon: 'ⓘ', color: '#94a3b8', title: '信息', desc: '只读版本、运行时、数据位置、诊断、许可证、更新历史与支持动作。', info: true }
+];
+
+const INFO_CARDS = [
+  { title: 'About', icon: 'ⓘ', rows: [['Version', '1.4.2'], ['Build', '2026.11.23'], ['Channel', 'stable'], ['Commit', '9f2c4e7']], actions: [['Copy version', 'Version copied']] },
+  { title: 'Runtime & Platform', icon: '▤', rows: [['OS', 'Windows 11 24H2'], ['Arch', 'x64'], ['Runtime', '.NET 9'], ['WebView', '2.0']], actions: [['Copy diagnostics', 'Diagnostics copied']] },
+  { title: 'Data Locations', icon: '⌂', rows: [['Config', '%APPDATA%/Atom/config'], ['Data', '%LOCALAPPDATA%/Atom/data'], ['Cache', '%LOCALAPPDATA%/Atom/cache'], ['Logs', '%LOCALAPPDATA%/Atom/logs']], actions: [['Open data folder', 'Opening data folder…'], ['Open logs', 'Opening logs…']] },
+  { title: 'Diagnostics & Logs', icon: '⌁', rows: [['Log level', 'info'], ['Last error', 'none'], ['Trace sampling', '10%'], ['Support bundle', 'redacted']], actions: [['Export support bundle', 'Support bundle queued'], ['Copy diagnostics', 'Diagnostics copied']] },
+  { title: 'Licenses & Credits', icon: '§', rows: [['App license', 'Proprietary'], ['OSS', '42 packages'], ['Fonts', 'IBM Plex / Inter'], ['Assets', '3rd-party credits']], actions: [['View licenses', 'Opening licenses…']] },
+  { title: 'Updates', icon: '↻', rows: [['Last check', '2 min ago'], ['Current', '1.4.2'], ['Available', 'none'], ['History', '1.4.0 → 1.4.2']], actions: [['Check updates', 'Checking updates…'], ['Release notes', 'Opening release notes…']] },
+  { title: 'Support / Reset', icon: '!', rows: [['Reset settings', 'keeps data'], ['Reset app', 'deletes local data'], ['Safe mode', 'starts clean'], ['Backup', 'recommended']], actions: [['Reset settings', 'Reset settings requires confirmation'], ['Reset app', 'Reset app requires confirmation']], danger: true }
+];
+
+const state = {
+  sectionId: 'general',
+  scope: 'User',
+  query: '',
+  values: {},
+  saved: {},
+  highlightKey: null,
+  showAdvanced: false,
+  restartPending: [],
+  toastTimer: null
+};
+
+const ALL_SETTINGS = SECTIONS.flatMap(s => (s.groups || []).flatMap(g => g.settings));
+const settingById = key => ALL_SETTINGS.find(s => s.key === key);
+const sectionById = id => SECTIONS.find(s => s.id === id);
+
+function initValues() {
+  state.values = {};
+  for (const s of ALL_SETTINGS) {
+    state.values[s.key] = { value: s.default, source: s.policy ? 'policy' : (s.initialSource || 'default') };
+  }
+  state.saved = clone(state.values);
+}
+initValues();
+
+/* ============================================================
+   状态 / 渲染
+   ============================================================ */
+function dirtyKeys() {
+  return ALL_SETTINGS.filter(s => JSON.stringify(state.values[s.key]?.value) !== JSON.stringify(state.saved[s.key]?.value)).map(s => s.key);
+}
+function isDirty(key) { return dirtyKeys().includes(key); }
+function sectionSettings(id) {
+  const sec = sectionById(id);
+  return sec && sec.groups ? sec.groups.flatMap(g => g.settings) : [];
+}
+function sectionDirty(id) { return sectionSettings(id).some(s => isDirty(s.key)); }
+function sectionLocks(id) { return sectionSettings(id).filter(s => state.values[s.key]?.source === 'policy').length; }
+function formatVal(spec, v) {
+  if (spec.secret) return v ? '••••••••' : 'not configured';
+  if (typeof v === 'boolean') return v ? 'on' : 'off';
+  if (v === '' || v === null || v === undefined) return '—';
+  return String(v);
+}
+
+function renderHeader() {
+  const n = dirtyKeys().length;
+  $('#scopeSel').value = state.scope;
+  if ($('#sectionSel')) $('#sectionSel').value = state.sectionId;
+  const apply = $('#applyBtn');
+  apply.disabled = n === 0 || state.scope === 'Policy';
+  apply.textContent = n ? `Apply (${n})` : 'Apply';
+}
+
+function renderNav() {
+  const groups = [
+    { label: 'General', ids: ['general'] },
+    { label: 'Layers', ids: ['point', 'line', 'surface', 'body', 'field'] },
+    { label: 'Info', ids: ['info'] }
+  ];
+  $('#nav').innerHTML = groups.map(g => `<div class="nav-group"><div class="nav-label">${esc(g.label)}</div>${g.ids.map(id => {
+    const s = sectionById(id);
+    const dirty = sectionDirty(id);
+    const locks = sectionLocks(id);
+    return `<div class="nav-item ${s.id === state.sectionId ? 'on' : ''}" data-section="${esc(s.id)}" style="--cat:${s.color}">
+      <div class="nav-icon">${esc(s.icon)}</div>
+      <div class="nav-main"><div class="nav-name">${esc(s.title)}</div><div class="nav-sub">${esc(s.id)}${locks ? ' · ' + locks + ' locked' : ''}</div></div>
+      ${dirty ? '<span class="nav-dot"></span>' : ''}${locks ? '<span class="nav-lock">🔒</span>' : ''}
+    </div>`;
+  }).join('')}</div>`).join('');
+  $$('#nav [data-section]').forEach(el => el.onclick = () => { state.sectionId = el.dataset.section; state.query = ''; $('#search').value = ''; renderAll(); });
+}
+
+function sourceBadge(src) { return `<span class="src ${esc(src)}">${esc(src)}</span>`; }
+
+function controlHTML(spec, v, locked) {
+  if (spec.type === 'secret') {
+    return `<div class="secret-box"><span class="secret-dot">${v ? 'Configured' : 'Not configured'}</span><span style="font:7px var(--mono);color:var(--faint)">${v ? esc(v) : 'no secretRef'}</span><button class="secret-btn" data-secret="${esc(spec.key)}" ${locked ? 'disabled' : ''}>${v ? 'Replace' : 'Set'}</button></div>`;
+  }
+  if (spec.type === 'bool') {
+    return `<label class="switch"><input type="checkbox" data-key="${esc(spec.key)}" ${v ? 'checked' : ''} ${locked ? 'disabled' : ''}><span></span></label>`;
+  }
+  if (spec.type === 'enum') {
+    return `<select data-key="${esc(spec.key)}" ${locked ? 'disabled' : ''}>${(spec.options || []).map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  }
+  if (spec.type === 'number') {
+    return `<input type="number" data-key="${esc(spec.key)}" value="${esc(v)}" min="${spec.min ?? ''}" max="${spec.max ?? ''}" ${locked ? 'disabled' : ''}>`;
+  }
+  return `<input type="text" data-key="${esc(spec.key)}" value="${esc(v)}" ${locked ? 'disabled' : ''}>`;
+}
+
+function rowHTML(spec, section) {
+  const cur = state.values[spec.key] || { value: spec.default, source: 'default' };
+  const locked = cur.source === 'policy' || state.scope === 'Policy';
+  const dirty = isDirty(spec.key);
+  const highlight = state.highlightKey === spec.key;
+  const badges = [`<span class="mini l${String(spec.effect).slice(1)}">${esc(spec.effect)}</span>`];
+  if (spec.restart) badges.push(`<span class="mini restart">restart ${esc(spec.restart)}</span>`);
+  if (spec.secret) badges.push('<span class="mini secret">secretRef</span>');
+  if (cur.source === 'policy') badges.push('<span class="mini restart">policy locked</span>');
+  if (spec.unit) badges.push(`<span class="mini">${esc(spec.unit)}</span>`);
+  const showReset = !locked && (dirty || cur.source !== 'default');
+  return `<div class="setting-row ${dirty ? 'dirty' : ''} ${highlight ? 'highlight' : ''}" data-row="${esc(spec.key)}">
+    <div class="row-main">
+      <div class="row-label">${esc(spec.label)} ${badges.join('')}</div>
+      <div class="row-desc">${esc(spec.desc)}</div>
+    </div>
+    <div class="row-control">${controlHTML(spec, cur.value, locked)}</div>
+    <div class="row-side">${sourceBadge(cur.source)}${showReset ? `<button class="reset" data-reset="${esc(spec.key)}">reset</button>` : ''}</div>
+  </div>`;
+}
+
+function renderSection() {
+  const sec = sectionById(state.sectionId) || SECTIONS[0];
+  if (sec.info) return renderInfo(sec);
+  const dirty = sectionDirty(sec.id);
+  const locks = sectionLocks(sec.id);
+  $('#main').innerHTML = `
+    <div class="section-head">
+      <div class="section-icon" style="--cat:${sec.color}">${esc(sec.icon)}</div>
+      <div class="section-text"><div class="section-kicker">${esc(sec.group)} / ${esc(sec.id)}</div><h1>${esc(sec.title)}</h1><p>${esc(sec.desc)}</p></div>
+      <div class="section-actions"><span class="mini l${locks ? '2' : '1'}">${esc(state.scope)} scope</span>${dirty ? '<span class="mini restart">unsaved</span>' : ''}${locks ? `<span class="mini restart">${locks} locked</span>` : ''}</div>
+    </div>
+    ${state.scope === 'Policy' ? '<div class="policy-banner">Policy view · 只读。组织策略优先级最高；修改请切换到 User / Workspace / Machine scope，或联系管理员。</div>' : ''}
+    ${sec.groups.map(g => {
+      const visible = g.settings.filter(s => state.showAdvanced || !s.advanced);
+      if (!visible.length) return '';
+      return `<div class="group"><div class="group-head"><b>${esc(g.label)}</b><span>${esc(g.desc || '')}</span></div><div class="group-body">${visible.map(s => rowHTML(s, sec)).join('')}</div></div>`;
+    }).join('')}
+    <div class="section-foot">
+      <label style="display:flex;align-items:center;gap:5px;font-size:8px;color:#8fa2bb;cursor:pointer"><input type="checkbox" data-show-advanced ${state.showAdvanced ? 'checked' : ''} style="accent-color:var(--cyan);width:12px;height:12px;margin:0"> Show advanced</label>
+      <button class="btn" data-reset-section>Reset section</button>
+      <span class="foot-note">effective value + source badge · policy 锁定项不可编辑</span>
+    </div>`;
+}
+
+function renderInfo(sec) {
+  $('#main').innerHTML = `
+    <div class="section-head">
+      <div class="section-icon" style="--cat:${sec.color}">${esc(sec.icon)}</div>
+      <div class="section-text"><div class="section-kicker">Info / read only</div><h1>${esc(sec.title)}</h1><p>${esc(sec.desc)}</p></div>
+      <div class="section-actions"><span class="mini l1">read only</span><span class="mini">v1.4.2</span></div>
+    </div>
+    <div class="info-grid">${INFO_CARDS.map(c => `<div class="info-card"><h3>${esc(c.icon)} ${esc(c.title)}</h3><div class="info-kv">${c.rows.map(([k, v]) => `<div class="k">${esc(k)}</div><div class="v">${esc(v)}</div>`).join('')}</div><div class="info-actions">${(c.actions || []).map(([label]) => `<button class="info-btn ${c.danger ? 'danger' : ''}" data-info-action="${esc(label)}">${esc(label)}</button>`).join('')}</div></div>`).join('')}</div>`;
+}
+
+function renderSearch() {
+  const q = state.query.trim().toLowerCase();
+  const matches = ALL_SETTINGS.filter(s => {
+    const hay = [s.key, s.label, s.desc, ...(s.alias || []), ...(s.options || [])].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  const grouped = {};
+  for (const s of matches) {
+    const sec = SECTIONS.find(x => (x.groups || []).some(g => g.settings.includes(s)));
+    if (!sec) continue;
+    (grouped[sec.id] ||= []).push(s);
+  }
+  $('#main').innerHTML = `
+    <div class="section-head"><div class="section-icon" style="--cat:#22d3ee">⌕</div><div class="section-text"><div class="section-kicker">Search / ${matches.length} results</div><h1>搜索设置</h1><p>匹配 key、label、描述、alias 与 enum 选项。点击结果跳到对应 section。</p></div><div class="section-actions"><span class="mini">${esc(state.query)}</span></div></div>
+    <div class="search-results">${Object.entries(grouped).map(([id, list]) => {
+      const sec = sectionById(id);
+      if (!sec) return '';
+      return `<div class="group"><div class="group-head"><b>${esc(sec.icon)} ${esc(sec.title)}</b><span>${list.length} matches</span></div><div class="group-body">${list.map(s => {
+        const cur = state.values[s.key];
+        return `<div class="result" data-result="${esc(s.key)}"><div class="result-top"><span class="result-label">${esc(s.label)}</span><span class="result-key">${esc(s.key)}</span></div><div class="result-desc">${esc(s.desc)}</div><div style="margin-top:3px"><span class="src ${esc(cur.source)}">${esc(cur.source)}</span> <span class="mini">${esc(formatVal(s, cur.value))}</span></div></div>`;
+      }).join('')}</div></div>`;
+    }).join('') || '<div class="empty">没有匹配的设置。试试 “theme”、“timeout”、“policy” 或 “model”。</div>'}</div>`;
+  $$('#main [data-result]').forEach(el => el.onclick = () => {
+    const spec = settingById(el.dataset.result);
+    const sec = SECTIONS.find(x => (x.groups || []).some(g => g.settings.includes(spec)));
+    state.sectionId = sec.id;
+    state.query = '';
+    $('#search').value = '';
+    state.highlightKey = spec.key;
+    renderAll();
+    setTimeout(() => { state.highlightKey = null; if (!state.query) renderSection(); }, 1600);
+  });
+}
+
+function renderMain() {
+  if (state.query.trim()) renderSearch();
+  else renderSection();
+}
+
+function renderChanges() {
+  const keys = dirtyKeys();
+  const restart = [...new Set(keys.map(k => settingById(k)?.restart).filter(Boolean))];
+  const rows = keys.map(k => {
+    const s = settingById(k);
+    const from = state.saved[k]?.value;
+    const to = state.values[k]?.value;
+    return `<div class="ch-row"><span class="ch-label">${esc(s.label)}</span><span class="ch-diff"><span class="from">${esc(formatVal(s, from))}</span> → <span class="to">${esc(formatVal(s, to))}</span></span></div>`;
+  }).join('');
+  $('#changes').innerHTML = `
+    <div class="ch-head"><b>Changes</b><span class="ch-count">${keys.length} unsaved</span></div>
+    ${keys.length ? `<div class="ch-list">${rows}</div>` : '<div class="empty">No unsaved changes.</div>'}
+    <div class="ch-actions"><button class="btn primary" data-apply ${keys.length ? '' : 'disabled'}>Apply</button><button class="btn" data-discard ${keys.length ? '' : 'disabled'}>Discard</button></div>
+    ${restart.length || state.restartPending.length ? `<div class="restart-box">Restart required: ${esc([...new Set([...restart, ...state.restartPending])].join(' / '))}${state.restartPending.length ? ' · applied, pending restart' : ''}</div>` : ''}`;
+  $$('#changes [data-apply]').forEach(b => b.onclick = applyChanges);
+  $$('#changes [data-discard]').forEach(b => b.onclick = discardChanges);
+}
+
+function renderStatus() {
+  const n = dirtyKeys().length;
+  const errs = 0;
+  $('#statusLeft').textContent = `Settings · ${state.scope} scope · ${n ? n + ' unsaved' : 'clean'} · ${errs} errors`;
+  $('#statusRight').textContent = state.restartPending.length ? `restart required: ${state.restartPending.join('/')}` : 'v1.4.2 · build 2026.11.23';
+  $('#changes').classList.toggle('dirty', n > 0);
+}
+
+function renderAll() {
+  renderHeader(); renderNav(); renderMain(); renderChanges(); renderStatus();
+}
+
+/* ============================================================
+   变更
+   ============================================================ */
+function setValue(key, value) {
+  if (state.scope === 'Policy') return;
+  const spec = settingById(key);
+  if (!spec || state.values[key]?.source === 'policy') return;
+  state.values[key] = { value, source: state.scope.toLowerCase() };
+  state.highlightKey = null;
+  renderAll();
+}
+
+function resetKey(key) {
+  const spec = settingById(key);
+  if (!spec || state.values[key]?.source === 'policy' || state.scope === 'Policy') return;
+  state.values[key] = { value: spec.default, source: 'default' };
+  renderAll();
+}
+
+function resetSection() {
+  if (state.scope === 'Policy') return;
+  const sec = sectionById(state.sectionId);
+  for (const s of sectionSettings(sec.id)) {
+    if (state.values[s.key]?.source !== 'policy') state.values[s.key] = { value: s.default, source: 'default' };
+  }
+  renderAll();
+  toast('Section reset to defaults');
+}
+
+function applyChanges() {
+  if (state.scope === 'Policy') return;
+  const restart = [...new Set(dirtyKeys().map(k => settingById(k)?.restart).filter(Boolean))];
+  state.restartPending = [...new Set([...state.restartPending, ...restart])];
+  state.saved = clone(state.values);
+  renderAll();
+  toast(restart.length ? `Applied · restart ${restart.join('/')} required` : 'Settings applied');
+}
+
+function discardChanges() {
+  state.values = clone(state.saved);
+  state.restartPending = [];
+  renderAll();
+  toast('Changes discarded');
+}
+
+function exportSettings() {
+  const out = { schema: 1, scope: state.scope, values: {}, secrets: {} };
+  for (const s of ALL_SETTINGS) {
+    const v = state.values[s.key];
+    if (s.secret) out.secrets[s.key] = v.value ? 'secretRef' : null;
+    else out.values[s.key] = v.value;
+  }
+  copyText(JSON.stringify(out, null, 2), 'Settings exported (secrets as refs only)');
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => t.classList.remove('show'), 1700);
+}
+
+function copyText(text, label) {
+  const done = () => toast(label || '已复制');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  done();
+}
+
+/* ============================================================
+   事件
+   ============================================================ */
+function init() {
+  renderAll();
+
+  $('#sectionSel').innerHTML = SECTIONS.map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join('');
+  $('#sectionSel').addEventListener('change', e => { state.sectionId = e.target.value; state.query = ''; $('#search').value = ''; renderAll(); });
+
+  $('#scopeSel').addEventListener('change', e => {
+    state.scope = e.target.value;
+    renderAll();
+    toast(`Scope: ${state.scope}${state.scope === 'Policy' ? ' · read only' : ''}`);
+  });
+  $('#search').addEventListener('input', e => {
+    state.query = e.target.value;
+    renderMain();
+  });
+  $('#applyBtn').addEventListener('click', applyChanges);
+  $('#moreBtn').addEventListener('click', e => { e.stopPropagation(); $('#moreMenu').classList.toggle('on'); });
+  document.addEventListener('click', e => { if (!e.target.closest('#moreMenu') && !e.target.closest('#moreBtn')) $('#moreMenu').classList.remove('on'); });
+  $('#moreMenu').addEventListener('click', e => {
+    const b = e.target.closest('[data-more]');
+    if (!b) return;
+    $('#moreMenu').classList.remove('on');
+    if (b.dataset.more === 'import') toast('Import: schema validation → diff preview → apply');
+    if (b.dataset.more === 'export') exportSettings();
+    if (b.dataset.more === 'close') toast(dirtyKeys().length ? 'Unsaved changes · Apply or Discard first' : 'Close settings');
+  });
+
+  $('#main').addEventListener('change', e => {
+    const adv = e.target.closest('[data-show-advanced]');
+    if (adv) { state.showAdvanced = adv.checked; renderMain(); return; }
+    const el = e.target.closest('[data-key]');
+    if (!el) return;
+    const spec = settingById(el.dataset.key);
+    let val = el.type === 'checkbox' ? el.checked : el.value;
+    if (spec.type === 'number') val = Number(val);
+    setValue(el.dataset.key, val);
+  });
+  $('#main').addEventListener('click', e => {
+    const reset = e.target.closest('[data-reset]');
+    if (reset) { resetKey(reset.dataset.reset); return; }
+    const resetSec = e.target.closest('[data-reset-section]');
+    if (resetSec) { resetSection(); return; }
+    const secret = e.target.closest('[data-secret]');
+    if (secret) { toast('Credential dialog: value stored in OS credential vault, never shown'); return; }
+    const info = e.target.closest('[data-info-action]');
+    if (info) { toast(`${info.textContent.trim()} · simulated`); return; }
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      $('#search').focus();
+    }
+    if (e.key === 'Escape') {
+      if (document.activeElement === $('#search')) {
+        state.query = '';
+        $('#search').value = '';
+        $('#search').blur();
+        renderMain();
+      } else {
+        toast(dirtyKeys().length ? 'Unsaved changes · Apply or Discard first' : 'Close settings');
+      }
+    }
+  });
+}
+
+init();
+})();
+
+</script>
+</body>
+</html>

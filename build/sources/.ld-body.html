@@ -1,0 +1,37 @@
+<body>
+<div class="desktop" id="desktop">
+  <div class="desk-label">CLaunch 式启动坞 · 双击桌面 / 边缘 / <kbd>Ctrl+Space</kbd> 唤出</div>
+  <div class="desk-badge"><span class="live-dot"></span>SurfaceInstance · launch-dock.desktop@r1</div>
+
+  <div class="dock-wrap" id="dockWrap">
+    <div class="dock" id="dock">
+      <header class="dock-head">
+        <div class="tabs" id="tabs"></div>
+        <div class="dock-tools">
+          <div class="search"><span>⌕</span><input id="search" autocomplete="off" placeholder="搜索图标…"></div>
+          <button class="icon-btn" id="pinBtn" title="固定/取消自动隐藏">📌</button>
+          <button class="icon-btn" id="themeBtn" title="切换主题">☾</button>
+        </div>
+      </header>
+      <div class="grid" id="grid"></div>
+      <footer class="dock-foot">
+        <div class="pages" id="pages"></div>
+        <div class="foot-tools">
+          <label class="size-label">ICON <input type="range" id="size" min="64" max="92" value="74"></label>
+          <button class="add-btn" id="addBtn">＋ 添加</button>
+          <button class="settings-btn" id="settingsBtn">⚙ 设置</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <button class="show-dock" id="showDock">显示启动坞</button>
+
+  <div class="launch-bubble" id="bubble">
+    <div class="lb-head"><span class="lb-kind" id="lbKind">FLOW</span><span class="lb-name" id="lbName">—</span><span class="lb-status" id="lbStatus">running</span></div>
+    <div class="lb-bar"><i id="lbBar"></i></div>
+    <div class="lb-sub"><span id="lbSub">—</span><span id="lbPct">0%</span></div>
+  </div>
+
+  <div class="ctx" id="ctx"></div>
+  <div class="toast" id="toast"></div>
+</div>

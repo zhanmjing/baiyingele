@@ -1,0 +1,75 @@
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">◈</div>
+      <div>
+        <div class="brand-name">面层实例可视化</div>
+        <div class="brand-sub">SurfaceInstance × SurfaceClass × Bindings</div>
+      </div>
+    </div>
+    <div class="search">
+      <span>⌕</span>
+      <input id="search" autocomplete="off" placeholder="搜索实例 / 类 / 绑定目标…（/ 聚焦）">
+    </div>
+    <button class="icon-btn" id="themeBtn" title="切换主题">☾</button>
+  </header>
+
+  <div class="layout">
+    <aside class="panel instance-list">
+      <div class="panel-head"><span>SurfaceInstance</span><span class="n" id="instCount"></span></div>
+      <div id="instanceList"></div>
+    </aside>
+
+    <main class="panel stage">
+      <div class="stage-head">
+        <div>
+          <div class="kicker" id="stageKicker">SURFACEINSTANCE</div>
+          <h1 id="instName">—</h1>
+          <code id="instId">—</code>
+          <p id="instDesc">—</p>
+        </div>
+        <div class="badges" id="instBadges"></div>
+      </div>
+
+      <div class="stage-grid">
+        <section class="card">
+          <div class="card-label"><span>LIVE WIREFRAME</span><span class="right" id="placementLabel">—</span></div>
+          <div class="preview-wrap"><div class="preview" id="preview"></div></div>
+          <div class="state-strip" id="stateStrip"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-label"><span>BINDINGS</span><span class="right" id="bindingCount">—</span></div>
+          <div class="binding-wrap" id="bindingMap"></div>
+        </section>
+      </div>
+
+      <section class="card" style="margin-top:12px">
+        <div class="card-label"><span>PLACEMENT</span><span class="right" id="placementMeta">—</span></div>
+        <div class="placement-map">
+          <div class="monitor" id="monitor"></div>
+          <div class="place-meta" id="placeMeta"></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="panel inspector" id="inspector"></aside>
+  </div>
+</div>
+<div class="picker-backdrop" id="picker">
+  <div class="picker">
+    <div class="picker-head">
+      <div>
+        <div class="wire-kicker" id="pickerKicker">CHANGE BINDING</div>
+        <h2 id="pickerTitle">更换绑定</h2>
+        <p id="pickerSub">—</p>
+      </div>
+      <button class="icon-btn" id="pickerClose" title="关闭">✕</button>
+    </div>
+    <div class="picker-search"><span>⌕</span><input id="pickerSearch" autocomplete="off" placeholder="搜索 target / kind / 说明…"></div>
+    <div class="picker-list" id="pickerList"></div>
+    <div class="picker-foot"><span>选择后立即生成新的 SurfaceInstance revision</span><button class="wire-btn" id="pickerCancel">取消</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>

@@ -1,0 +1,1902 @@
+{
+  "classes": [
+    {
+      "id": "body.file-preview",
+      "name": "文件预览",
+      "icon": "◈",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "任意文件预览：文本、图片、PDF、视频、音频统一窗口。",
+      "flows": [
+        "flow.preview-file"
+      ],
+      "surfaces": [
+        "surface.preview-window"
+      ],
+      "points": [
+        "file.read",
+        "render.text",
+        "render.image"
+      ],
+      "settings": [
+        "preview.maxBytes",
+        "preview.encoding",
+        "preview.zoom"
+      ],
+      "perms": [
+        "fs.read",
+        "window.open"
+      ],
+      "instances": [
+        {
+          "label": "text",
+          "desc": "文本预览，支持编码/换行识别",
+          "rev": 1,
+          "acts": [
+            ".txt",
+            ".log",
+            ".json"
+          ],
+          "settings": "renderer=text · UTF-8",
+          "status": "active"
+        },
+        {
+          "label": "markdown",
+          "desc": "Markdown 渲染与代码块",
+          "rev": 1,
+          "acts": [
+            ".md",
+            ".markdown"
+          ],
+          "settings": "renderer=markdown · sanitize=true",
+          "status": "active"
+        },
+        {
+          "label": "image",
+          "desc": "图片预览，fit/zoom",
+          "rev": 1,
+          "acts": [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp",
+            ".gif"
+          ],
+          "settings": "renderer=image · fit=contain",
+          "status": "active"
+        },
+        {
+          "label": "pdf",
+          "desc": "PDF 分页/缩放",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "renderer=pdf · page=1 · zoom=fit",
+          "status": "active"
+        },
+        {
+          "label": "video",
+          "desc": "视频播放器，流式读取",
+          "rev": 1,
+          "acts": [
+            ".mp4",
+            ".webm",
+            ".mkv"
+          ],
+          "settings": "renderer=video · stream=true",
+          "status": "active"
+        },
+        {
+          "label": "audio",
+          "desc": "音频波形与播放",
+          "rev": 1,
+          "acts": [
+            ".mp3",
+            ".wav",
+            ".flac"
+          ],
+          "settings": "renderer=audio · waveform=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.text",
+        "smoke.image",
+        "smoke.pdf",
+        "contract.renderer"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.ocr",
+      "name": "OCR 识别",
+      "icon": "⌘",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "识别文字、数学公式、二维码、表格与手写内容。",
+      "flows": [
+        "flow.ocr.recognize"
+      ],
+      "surfaces": [
+        "surface.ocr-result"
+      ],
+      "points": [
+        "image.preprocess",
+        "ocr.text",
+        "ocr.table"
+      ],
+      "settings": [
+        "ocr.language",
+        "ocr.confidenceThreshold",
+        "ocr.outputFormat"
+      ],
+      "perms": [
+        "screen.capture",
+        "fs.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "text",
+          "desc": "普通文字识别",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+O",
+            "screenshot"
+          ],
+          "settings": "mode=text · language=auto",
+          "status": "active"
+        },
+        {
+          "label": "math",
+          "desc": "数学公式 → LaTeX",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+M",
+            "screenshot"
+          ],
+          "settings": "mode=math · output=latex",
+          "status": "active"
+        },
+        {
+          "label": "qr",
+          "desc": "二维码/条码解码",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Q",
+            "screenshot"
+          ],
+          "settings": "mode=qr · formats=qr,code128",
+          "status": "active"
+        },
+        {
+          "label": "table",
+          "desc": "表格结构 → CSV",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+T",
+            "screenshot"
+          ],
+          "settings": "mode=table · output=markdown",
+          "status": "active"
+        },
+        {
+          "label": "handwriting",
+          "desc": "手写内容识别",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+H"
+          ],
+          "settings": "mode=handwriting · threshold=0.4",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.text",
+        "smoke.qr",
+        "smoke.table",
+        "contract.recognizer"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.image-resizer",
+      "name": "图片尺寸",
+      "icon": "▦",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "批量图片尺寸调整，预设化输出。",
+      "flows": [
+        "flow.resize-image"
+      ],
+      "surfaces": [
+        "surface.resize-dialog"
+      ],
+      "points": [
+        "file.read.image",
+        "image.resize",
+        "file.write.image"
+      ],
+      "settings": [
+        "resize.width",
+        "resize.height",
+        "resize.format",
+        "resize.quality"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "web",
+          "desc": "1920px 长边 / JPEG 85%",
+          "rev": 2,
+          "acts": [
+            ".jpg",
+            ".png",
+            ".webp"
+          ],
+          "settings": "suffix=-web · quality=85",
+          "status": "active"
+        },
+        {
+          "label": "thumbnail",
+          "desc": "256×256 cover / WebP 80%",
+          "rev": 1,
+          "acts": [
+            ".jpg",
+            ".png"
+          ],
+          "settings": "fit=cover · quality=80",
+          "status": "active"
+        },
+        {
+          "label": "avatar",
+          "desc": "512×512 cover / PNG",
+          "rev": 1,
+          "acts": [
+            ".jpg",
+            ".png"
+          ],
+          "settings": "fit=cover · format=png",
+          "status": "active"
+        },
+        {
+          "label": "email",
+          "desc": "1280px 长边 / ≤500KB",
+          "rev": 1,
+          "acts": [
+            ".jpg",
+            ".png"
+          ],
+          "settings": "maxBytes=512000 · quality=75",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.web",
+        "smoke.avatar",
+        "contract.resize"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.batch-rename",
+      "name": "批量重命名",
+      "icon": "⌁",
+      "cat": "content",
+      "prio": "P0",
+      "desc": "批量重命名：预览、冲突检测、撤销。",
+      "flows": [
+        "flow.rename-files"
+      ],
+      "surfaces": [
+        "surface.rename-dialog",
+        "surface.diff"
+      ],
+      "points": [
+        "file.list",
+        "rename.plan",
+        "file.move"
+      ],
+      "settings": [
+        "rename.pattern",
+        "rename.sequenceStart",
+        "rename.dryRun"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "regex",
+          "desc": "正则替换",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=regex · dryRun=true",
+          "status": "active"
+        },
+        {
+          "label": "sequence",
+          "desc": "IMG_0001 序列",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=sequence · start=1",
+          "status": "active"
+        },
+        {
+          "label": "date-prefix",
+          "desc": "日期前缀",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=date · format=YYYY-MM-DD",
+          "status": "active"
+        },
+        {
+          "label": "extension-normalize",
+          "desc": "扩展名统一",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "mode=extension · .jpeg→.jpg",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.regex",
+        "smoke.sequence",
+        "contract.preview"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.pdf-toolkit",
+      "name": "PDF 工具",
+      "icon": "▤",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "PDF 合并、拆分、压缩、旋转。",
+      "flows": [
+        "flow.pdf-op"
+      ],
+      "surfaces": [
+        "surface.pdf-workspace"
+      ],
+      "points": [
+        "pdf.read",
+        "pdf.merge",
+        "pdf.write"
+      ],
+      "settings": [
+        "pdf.output",
+        "pdf.quality",
+        "pdf.pageRange"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "merge",
+          "desc": "合并多个 PDF",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=merge · sort=name",
+          "status": "active"
+        },
+        {
+          "label": "split",
+          "desc": "按页拆分",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=split · range=1-3",
+          "status": "active"
+        },
+        {
+          "label": "compress",
+          "desc": "压缩 PDF",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=compress · quality=ebook",
+          "status": "active"
+        },
+        {
+          "label": "rotate",
+          "desc": "旋转/整理页面",
+          "rev": 1,
+          "acts": [
+            ".pdf"
+          ],
+          "settings": "op=rotate · angle=90",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.merge",
+        "smoke.split",
+        "contract.pdf"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.media-converter",
+      "name": "媒体转换",
+      "icon": "▷",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "图片、视频、音频格式转换。",
+      "flows": [
+        "flow.convert-media"
+      ],
+      "surfaces": [
+        "surface.convert-dialog"
+      ],
+      "points": [
+        "media.probe",
+        "media.transcode",
+        "file.write"
+      ],
+      "settings": [
+        "media.format",
+        "media.bitrate",
+        "media.preset"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "image",
+          "desc": "PNG / JPG / WebP",
+          "rev": 1,
+          "acts": [
+            ".png",
+            ".jpg",
+            ".webp"
+          ],
+          "settings": "preset=image · quality=85",
+          "status": "active"
+        },
+        {
+          "label": "video",
+          "desc": "MP4 / WebM",
+          "rev": 1,
+          "acts": [
+            ".mp4",
+            ".webm",
+            ".mkv"
+          ],
+          "settings": "preset=video · h264",
+          "status": "active"
+        },
+        {
+          "label": "audio",
+          "desc": "MP3 / WAV",
+          "rev": 1,
+          "acts": [
+            ".mp3",
+            ".wav",
+            ".flac"
+          ],
+          "settings": "preset=audio · 192k",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.image",
+        "smoke.video",
+        "contract.transcode"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.file-organizer",
+      "name": "文件整理",
+      "icon": "⌸",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "按类型/日期整理下载、截图与重复文件。",
+      "flows": [
+        "flow.organize-files"
+      ],
+      "surfaces": [
+        "surface.organize-preview"
+      ],
+      "points": [
+        "file.scan",
+        "file.classify",
+        "file.move"
+      ],
+      "settings": [
+        "organize.rule",
+        "organize.dryRun",
+        "organize.conflict"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "downloads",
+          "desc": "按类型/日期整理下载",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "rule=type-date · dryRun=true",
+          "status": "active"
+        },
+        {
+          "label": "screenshots",
+          "desc": "截图归档",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "rule=screenshot · month=true",
+          "status": "active"
+        },
+        {
+          "label": "duplicates",
+          "desc": "重复文件检测",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "rule=hash · action=report",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.downloads",
+        "smoke.duplicates",
+        "contract.preview"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.advanced-paste",
+      "name": "高级粘贴",
+      "icon": "⌫",
+      "cat": "clipboard",
+      "prio": "P0",
+      "desc": "剪贴板内容 → 目标格式。",
+      "flows": [
+        "flow.paste-transform"
+      ],
+      "surfaces": [
+        "surface.paste-preview"
+      ],
+      "points": [
+        "clipboard.read",
+        "text.transform",
+        "clipboard.write"
+      ],
+      "settings": [
+        "paste.format",
+        "paste.aiModel",
+        "paste.preview"
+      ],
+      "perms": [
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "plain",
+          "desc": "去格式纯文本",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+V"
+          ],
+          "settings": "format=plain · preview=false",
+          "status": "active"
+        },
+        {
+          "label": "markdown",
+          "desc": "HTML → Markdown",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+M"
+          ],
+          "settings": "format=markdown · preview=true",
+          "status": "active"
+        },
+        {
+          "label": "json",
+          "desc": "JSON 格式化/压缩",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+J"
+          ],
+          "settings": "format=json · indent=2",
+          "status": "active"
+        },
+        {
+          "label": "ai",
+          "desc": "AI 改写/摘要",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+A"
+          ],
+          "settings": "format=ai · model=local",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.plain",
+        "smoke.markdown",
+        "contract.transform"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.clipboard-history",
+      "name": "剪贴板历史",
+      "icon": "▣",
+      "cat": "clipboard",
+      "prio": "P1",
+      "desc": "最近复制内容、固定片段与搜索。",
+      "flows": [
+        "flow.clipboard-history"
+      ],
+      "surfaces": [
+        "surface.clipboard-list"
+      ],
+      "points": [
+        "clipboard.watch",
+        "store.query",
+        "clipboard.write"
+      ],
+      "settings": [
+        "clipboard.maxItems",
+        "clipboard.retention",
+        "clipboard.excludeSecrets"
+      ],
+      "perms": [
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "recent",
+          "desc": "最近 100 条",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+V"
+          ],
+          "settings": "maxItems=100 · retention=7d",
+          "status": "active"
+        },
+        {
+          "label": "pinned",
+          "desc": "固定片段",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+P"
+          ],
+          "settings": "maxItems=20 · pinned=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.recent",
+        "contract.secrets"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.color-picker",
+      "name": "取色器",
+      "icon": "◉",
+      "cat": "clipboard",
+      "prio": "P0",
+      "desc": "屏幕取色，HEX/RGB/HSL 与调色板。",
+      "flows": [
+        "flow.pick-color"
+      ],
+      "surfaces": [
+        "surface.color-inspector"
+      ],
+      "points": [
+        "screen.pick",
+        "color.convert",
+        "clipboard.write"
+      ],
+      "settings": [
+        "color.format",
+        "color.copyOnPick",
+        "color.history"
+      ],
+      "perms": [
+        "screen.capture",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "hex",
+          "desc": "HEX/RGB/HSL 取色",
+          "rev": 1,
+          "acts": [
+            "Win+Shift+C"
+          ],
+          "settings": "format=hex · copy=true",
+          "status": "active"
+        },
+        {
+          "label": "palette",
+          "desc": "屏幕取色板",
+          "rev": 1,
+          "acts": [
+            "Win+Shift+P"
+          ],
+          "settings": "palette=12 · history=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.hex",
+        "smoke.palette"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.screen-ruler",
+      "name": "屏幕标尺",
+      "icon": "⌗",
+      "cat": "clipboard",
+      "prio": "P1",
+      "desc": "像素、英寸、角度测量。",
+      "flows": [
+        "flow.measure-screen"
+      ],
+      "surfaces": [
+        "surface.hud.ruler"
+      ],
+      "points": [
+        "screen.region",
+        "measure.length",
+        "measure.angle"
+      ],
+      "settings": [
+        "ruler.unit",
+        "ruler.snap",
+        "ruler.theme"
+      ],
+      "perms": [
+        "screen.capture"
+      ],
+      "instances": [
+        {
+          "label": "px",
+          "desc": "像素测量",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+R"
+          ],
+          "settings": "unit=px · snap=4",
+          "status": "active"
+        },
+        {
+          "label": "inches",
+          "desc": "英寸/厘米",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+I"
+          ],
+          "settings": "unit=inch · dpi=96",
+          "status": "active"
+        },
+        {
+          "label": "angle",
+          "desc": "角度测量",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+G"
+          ],
+          "settings": "unit=deg · snap=1",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.px",
+        "smoke.angle"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.window-layout",
+      "name": "窗口布局",
+      "icon": "▥",
+      "cat": "window",
+      "prio": "P0",
+      "desc": "把窗口摆成开发/会议/超宽布局。",
+      "flows": [
+        "flow.layout-windows"
+      ],
+      "surfaces": [
+        "surface.layout-editor"
+      ],
+      "points": [
+        "window.list",
+        "window.move",
+        "window.resize"
+      ],
+      "settings": [
+        "layout.preset",
+        "layout.monitor",
+        "layout.gap"
+      ],
+      "perms": [
+        "process",
+        "window"
+      ],
+      "instances": [
+        {
+          "label": "dev",
+          "desc": "VS Code + 终端 + 浏览器",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+1"
+          ],
+          "settings": "preset=dev · monitor=main",
+          "status": "active"
+        },
+        {
+          "label": "meeting",
+          "desc": "会议 + 笔记",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+2"
+          ],
+          "settings": "preset=meeting · monitor=main",
+          "status": "active"
+        },
+        {
+          "label": "ultrawide",
+          "desc": "超宽三栏",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+3"
+          ],
+          "settings": "preset=ultrawide · gap=8",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.dev",
+        "smoke.ultrawide"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.always-on-top",
+      "name": "窗口置顶",
+      "icon": "⌃",
+      "cat": "window",
+      "prio": "P1",
+      "desc": "钉住窗口或屏幕区域。",
+      "flows": [
+        "flow.pin-window"
+      ],
+      "surfaces": [
+        "surface.pin-indicator"
+      ],
+      "points": [
+        "window.find",
+        "window.pin",
+        "window.restore"
+      ],
+      "settings": [
+        "pin.mode",
+        "pin.opacity",
+        "pin.hotkey"
+      ],
+      "perms": [
+        "window",
+        "process"
+      ],
+      "instances": [
+        {
+          "label": "window",
+          "desc": "钉住当前窗口",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+T"
+          ],
+          "settings": "mode=window · opacity=0.92",
+          "status": "active"
+        },
+        {
+          "label": "region",
+          "desc": "钉住屏幕区域",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Shift+T"
+          ],
+          "settings": "mode=region · crop=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.window",
+        "smoke.region"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.awake",
+      "name": "保持唤醒",
+      "icon": "◷",
+      "cat": "system",
+      "prio": "P1",
+      "desc": "一段时间/到指定时间/应用运行期间保持唤醒。",
+      "flows": [
+        "flow.keep-awake"
+      ],
+      "surfaces": [
+        "surface.awake-status"
+      ],
+      "points": [
+        "power.state",
+        "power.keepAwake",
+        "timer.wait"
+      ],
+      "settings": [
+        "awake.duration",
+        "awake.until",
+        "awake.whileApp"
+      ],
+      "perms": [
+        "power"
+      ],
+      "instances": [
+        {
+          "label": "30m",
+          "desc": "保持 30 分钟",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "duration=30m · display=on",
+          "status": "active"
+        },
+        {
+          "label": "until",
+          "desc": "保持到指定时间",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "until=18:00 · display=on",
+          "status": "active"
+        },
+        {
+          "label": "while-app",
+          "desc": "应用运行期间",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "whileApp=build.exe",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.duration",
+        "smoke.while-app"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.workspace",
+      "name": "工作区",
+      "icon": "◫",
+      "cat": "window",
+      "prio": "P1",
+      "desc": "一键打开开发/会议/写作工作区。",
+      "flows": [
+        "flow.open-workspace"
+      ],
+      "surfaces": [
+        "surface.workspace-launcher"
+      ],
+      "points": [
+        "process.launch",
+        "window.layout",
+        "workspace.restore"
+      ],
+      "settings": [
+        "workspace.preset",
+        "workspace.monitor",
+        "workspace.startup"
+      ],
+      "perms": [
+        "process",
+        "window"
+      ],
+      "instances": [
+        {
+          "label": "dev",
+          "desc": "开发工作区",
+          "rev": 3,
+          "acts": [
+            "Ctrl+Alt+W"
+          ],
+          "settings": "preset=dev · monitor=dual",
+          "status": "active"
+        },
+        {
+          "label": "meeting",
+          "desc": "会议工作区",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+M"
+          ],
+          "settings": "preset=meeting · monitor=main",
+          "status": "active"
+        },
+        {
+          "label": "writing",
+          "desc": "写作工作区",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+K"
+          ],
+          "settings": "preset=writing · monitor=main",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.dev",
+        "smoke.meeting"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.quick-launch",
+      "name": "快速启动",
+      "icon": "⌘",
+      "cat": "window",
+      "prio": "P0",
+      "desc": "CLaunch 式启动坞 / 命令面板。",
+      "flows": [
+        "flow.launch-target"
+      ],
+      "surfaces": [
+        "surface.launch-dock",
+        "surface.quick-launch"
+      ],
+      "points": [
+        "launch.search",
+        "launch.run",
+        "usage.rank"
+      ],
+      "settings": [
+        "launch.hotkey",
+        "launch.autoHide",
+        "launch.pageSize"
+      ],
+      "perms": [
+        "process",
+        "fs.read"
+      ],
+      "instances": [
+        {
+          "label": "dock",
+          "desc": "5×2 分页启动坞",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Space"
+          ],
+          "settings": "tabs=5 · pageSize=10",
+          "status": "active"
+        },
+        {
+          "label": "palette",
+          "desc": "键盘优先命令面板",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Shift+Space"
+          ],
+          "settings": "mode=palette · fuzzy=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.dock",
+        "smoke.palette"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.system-monitor",
+      "name": "系统监控",
+      "icon": "◴",
+      "cat": "system",
+      "prio": "P1",
+      "desc": "CPU/GPU/内存/网络/磁盘状态。",
+      "flows": [
+        "flow.metric-stream"
+      ],
+      "surfaces": [
+        "surface.system-monitor",
+        "surface.hud.system-status"
+      ],
+      "points": [
+        "sys.cpu.stats",
+        "sys.gpu.stats",
+        "sys.memory.stats"
+      ],
+      "settings": [
+        "monitor.refreshMs",
+        "monitor.history",
+        "monitor.hud"
+      ],
+      "perms": [
+        "process",
+        "sensor"
+      ],
+      "instances": [
+        {
+          "label": "desktop",
+          "desc": "Dashboard + HUD",
+          "rev": 2,
+          "acts": [
+            "tray"
+          ],
+          "settings": "refreshMs=1000 · history=60s",
+          "status": "active"
+        },
+        {
+          "label": "minimal",
+          "desc": "托盘 + 2×2 HUD",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "refreshMs=2000 · hud=2x2",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.desktop",
+        "contract.metrics"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.service-health",
+      "name": "服务健康",
+      "icon": "◍",
+      "cat": "system",
+      "prio": "P1",
+      "desc": "检查 Docker / 本地 API / VPN 健康状态。",
+      "flows": [
+        "flow.ensure-service"
+      ],
+      "surfaces": [
+        "surface.service-dashboard"
+      ],
+      "points": [
+        "service.status",
+        "service.start",
+        "net.reachable"
+      ],
+      "settings": [
+        "service.target",
+        "service.timeout",
+        "service.retry"
+      ],
+      "perms": [
+        "process",
+        "network"
+      ],
+      "instances": [
+        {
+          "label": "docker",
+          "desc": "Docker Desktop 健康",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "target=docker · timeout=5s",
+          "status": "active"
+        },
+        {
+          "label": "local-api",
+          "desc": "localhost:3000",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "target=http://localhost:3000",
+          "status": "active"
+        },
+        {
+          "label": "vpn",
+          "desc": "VPN 隧道健康",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "target=vpn · retry=3",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.docker",
+        "smoke.local-api"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.file-locksmith",
+      "name": "文件占用",
+      "icon": "⌕",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "查找占用文件的进程/句柄。",
+      "flows": [
+        "flow.find-file-lock"
+      ],
+      "surfaces": [
+        "surface.lock-list"
+      ],
+      "points": [
+        "file.handle",
+        "process.open",
+        "process.kill"
+      ],
+      "settings": [
+        "lock.scope",
+        "lock.showSystem",
+        "lock.confirmKill"
+      ],
+      "perms": [
+        "process",
+        "fs.read"
+      ],
+      "instances": [
+        {
+          "label": "process",
+          "desc": "按文件找进程",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "scope=user · confirmKill=true",
+          "status": "active"
+        },
+        {
+          "label": "handle",
+          "desc": "句柄搜索",
+          "rev": 1,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "scope=system · showSystem=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.process",
+        "smoke.handle"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.hosts-editor",
+      "name": "Hosts 编辑",
+      "icon": "⌸",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "本地 hosts 编辑、备份、diff。",
+      "flows": [
+        "flow.edit-hosts"
+      ],
+      "surfaces": [
+        "surface.text-editor",
+        "surface.diff"
+      ],
+      "points": [
+        "hosts.read",
+        "hosts.validate",
+        "hosts.write"
+      ],
+      "settings": [
+        "hosts.backup",
+        "hosts.encoding",
+        "hosts.requireAdmin"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write",
+        "admin"
+      ],
+      "instances": [
+        {
+          "label": "local",
+          "desc": "本地 hosts 管理",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "backup=true · encoding=utf-8",
+          "status": "active"
+        },
+        {
+          "label": "blocklist",
+          "desc": "广告/域名 blocklist",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "blocklist=true · backup=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.local",
+        "contract.admin"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.env-vars",
+      "name": "环境变量",
+      "icon": "⌁",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "用户/系统环境变量与 PATH 编辑。",
+      "flows": [
+        "flow.edit-env"
+      ],
+      "surfaces": [
+        "surface.key-value-editor"
+      ],
+      "points": [
+        "env.read",
+        "env.validate",
+        "env.write"
+      ],
+      "settings": [
+        "env.scope",
+        "env.backup",
+        "env.pathMode"
+      ],
+      "perms": [
+        "env.read",
+        "env.write"
+      ],
+      "instances": [
+        {
+          "label": "user",
+          "desc": "用户变量",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "scope=user · backup=true",
+          "status": "active"
+        },
+        {
+          "label": "path",
+          "desc": "PATH 编辑器",
+          "rev": 1,
+          "acts": [
+            "settings"
+          ],
+          "settings": "scope=user · pathMode=list",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.user",
+        "smoke.path"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.external-access",
+      "name": "外网访问",
+      "icon": "+",
+      "cat": "web",
+      "prio": "P0",
+      "desc": "外网站点 + VPN 保障 + 站点启动器。",
+      "flows": [
+        "flow.open-external-site",
+        "flow.ensure-vpn"
+      ],
+      "surfaces": [
+        "surface.site-launcher",
+        "surface.settings.vpn"
+      ],
+      "points": [
+        "vpn.status",
+        "net.reachable",
+        "browser.open"
+      ],
+      "settings": [
+        "vpn.profile",
+        "site.policy",
+        "browser.target"
+      ],
+      "perms": [
+        "network",
+        "process",
+        "uia"
+      ],
+      "instances": [
+        {
+          "label": "work",
+          "desc": "工作外网：GitHub/YouTube/内网",
+          "rev": 3,
+          "acts": [
+            "Ctrl+Alt+E",
+            "gesture LDR"
+          ],
+          "settings": "vpn=work · policy=required",
+          "status": "active"
+        },
+        {
+          "label": "personal",
+          "desc": "个人外网：YouTube/Google",
+          "rev": 2,
+          "acts": [
+            "gesture LDR"
+          ],
+          "settings": "vpn=personal · policy=preferred",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.work",
+        "smoke.personal",
+        "contract.vpn"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.screenshot-translate",
+      "name": "截图翻译",
+      "icon": "文",
+      "cat": "ai",
+      "prio": "P1",
+      "desc": "截屏 → OCR → 翻译 → 浮层显示。",
+      "flows": [
+        "flow.screenshot-translate"
+      ],
+      "surfaces": [
+        "surface.hud.translate",
+        "surface.settings.translate"
+      ],
+      "points": [
+        "screen.capture",
+        "ocr.text",
+        "translate.text"
+      ],
+      "settings": [
+        "translate.from",
+        "translate.to",
+        "translate.overlay"
+      ],
+      "perms": [
+        "screen.capture",
+        "clipboard.write",
+        "network"
+      ],
+      "instances": [
+        {
+          "label": "en-zh",
+          "desc": "英文截图 → 中文",
+          "rev": 4,
+          "acts": [
+            "Ctrl+Alt+S"
+          ],
+          "settings": "from=en · to=zh · overlay=true",
+          "status": "active"
+        },
+        {
+          "label": "ja-zh",
+          "desc": "日文截图 → 中文",
+          "rev": 2,
+          "acts": [
+            "Ctrl+Alt+J"
+          ],
+          "settings": "from=ja · to=zh · overlay=false",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.en-zh",
+        "smoke.ja-zh",
+        "contract.overlay"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.ai-rewrite",
+      "name": "AI 改写",
+      "icon": "✦",
+      "cat": "ai",
+      "prio": "P1",
+      "desc": "选中文本/剪贴板 → 改写、缩短、翻译。",
+      "flows": [
+        "flow.ai-rewrite"
+      ],
+      "surfaces": [
+        "surface.diff",
+        "surface.prompt-preview"
+      ],
+      "points": [
+        "text.read",
+        "ai.rewrite",
+        "text.diff"
+      ],
+      "settings": [
+        "ai.model",
+        "ai.tone",
+        "ai.maxTokens"
+      ],
+      "perms": [
+        "network",
+        "clipboard.read",
+        "clipboard.write"
+      ],
+      "instances": [
+        {
+          "label": "formal",
+          "desc": "正式化改写",
+          "rev": 2,
+          "acts": [
+            "Ctrl+Alt+F"
+          ],
+          "settings": "tone=formal · preview=true",
+          "status": "active"
+        },
+        {
+          "label": "shorten",
+          "desc": "压缩到 50%",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+S"
+          ],
+          "settings": "ratio=0.5 · preview=true",
+          "status": "active"
+        },
+        {
+          "label": "translate",
+          "desc": "翻译为英文",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+E"
+          ],
+          "settings": "to=en · preview=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.formal",
+        "contract.diff"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.meeting-notes",
+      "name": "会议纪要",
+      "icon": "◫",
+      "cat": "ai",
+      "prio": "P2",
+      "desc": "录音 → 转录 → 摘要 → 待办。",
+      "flows": [
+        "flow.transcribe",
+        "flow.summarize"
+      ],
+      "surfaces": [
+        "surface.notes"
+      ],
+      "points": [
+        "audio.capture",
+        "speech.transcribe",
+        "ai.summarize"
+      ],
+      "settings": [
+        "meeting.language",
+        "meeting.speakerDiarization",
+        "meeting.retention"
+      ],
+      "perms": [
+        "microphone",
+        "network",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "local",
+          "desc": "本地转录",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+N"
+          ],
+          "settings": "engine=local · retention=30d",
+          "status": "active"
+        },
+        {
+          "label": "cloud",
+          "desc": "云端转录",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Shift+N"
+          ],
+          "settings": "engine=cloud · consent=true",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.local",
+        "smoke.cloud",
+        "contract.privacy"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.invoice-archive",
+      "name": "发票归档",
+      "icon": "▤",
+      "cat": "content",
+      "prio": "P1",
+      "desc": "OCR → 解析 → 规则 → 归档。",
+      "flows": [
+        "flow.batch-archive"
+      ],
+      "surfaces": [
+        "surface.table",
+        "surface.settings.invoice"
+      ],
+      "points": [
+        "ocr.table",
+        "invoice.parse",
+        "file.move"
+      ],
+      "settings": [
+        "invoice.archiveRoot",
+        "invoice.rules",
+        "invoice.ocrLanguage"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write",
+        "ocr"
+      ],
+      "instances": [
+        {
+          "label": "company",
+          "desc": "公司发票归档",
+          "rev": 6,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "ocr=zh · rules=company",
+          "status": "active"
+        },
+        {
+          "label": "personal",
+          "desc": "个人发票归档",
+          "rev": 2,
+          "acts": [
+            "context-menu"
+          ],
+          "settings": "ocr=en · rules=personal",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.company",
+        "smoke.personal",
+        "contract.rules"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.suite",
+      "name": "套件",
+      "icon": "❖",
+      "cat": "suite",
+      "prio": "P2",
+      "desc": "把多个体打包成一个套件。",
+      "flows": [
+        "flow.suite.launch"
+      ],
+      "surfaces": [
+        "surface.card-grid",
+        "surface.settings.suite"
+      ],
+      "points": [
+        "body.activate",
+        "permission.check",
+        "surface.show"
+      ],
+      "settings": [
+        "suite.members",
+        "suite.startup",
+        "suite.theme"
+      ],
+      "perms": [
+        "process",
+        "network",
+        "fs.read"
+      ],
+      "instances": [
+        {
+          "label": "office",
+          "desc": "办公套件",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "members=external-access,invoice-archive,screenshot-translate",
+          "status": "active"
+        },
+        {
+          "label": "dev",
+          "desc": "开发套件",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "members=external-access,workspace,ocr,quick-launch",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.office",
+        "smoke.dev",
+        "contract.permissions"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.web-clipper",
+      "name": "网页剪藏",
+      "icon": "✂",
+      "cat": "web",
+      "prio": "P2",
+      "desc": "选中内容/整页 → Markdown。",
+      "flows": [
+        "flow.clip-page"
+      ],
+      "surfaces": [
+        "surface.clipper-preview"
+      ],
+      "points": [
+        "browser.read",
+        "html.toMarkdown",
+        "file.write"
+      ],
+      "settings": [
+        "clip.mode",
+        "clip.assets",
+        "clip.frontmatter"
+      ],
+      "perms": [
+        "browser",
+        "fs.write",
+        "network"
+      ],
+      "instances": [
+        {
+          "label": "selection",
+          "desc": "选中内容 → Markdown",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+C"
+          ],
+          "settings": "mode=selection · frontmatter=true",
+          "status": "active"
+        },
+        {
+          "label": "page",
+          "desc": "整页 → Markdown",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+Shift+C"
+          ],
+          "settings": "mode=page · assets=true",
+          "status": "active"
+        },
+        {
+          "label": "readability",
+          "desc": "正文提取",
+          "rev": 1,
+          "acts": [
+            "Ctrl+Alt+R"
+          ],
+          "settings": "mode=readability · images=local",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.selection",
+        "smoke.page",
+        "contract.markdown"
+      ],
+      "version": "1.0.0"
+    },
+    {
+      "id": "body.backup-sync",
+      "name": "备份同步",
+      "icon": "⇄",
+      "cat": "system",
+      "prio": "P2",
+      "desc": "文件夹快照、每日增量、校验。",
+      "flows": [
+        "flow.backup-folder"
+      ],
+      "surfaces": [
+        "surface.backup-status"
+      ],
+      "points": [
+        "file.scan",
+        "file.copy",
+        "hash.verify"
+      ],
+      "settings": [
+        "backup.source",
+        "backup.target",
+        "backup.retention"
+      ],
+      "perms": [
+        "fs.read",
+        "fs.write"
+      ],
+      "instances": [
+        {
+          "label": "folder",
+          "desc": "文件夹快照",
+          "rev": 1,
+          "acts": [
+            "tray"
+          ],
+          "settings": "mode=snapshot · verify=true",
+          "status": "active"
+        },
+        {
+          "label": "daily",
+          "desc": "每日增量",
+          "rev": 1,
+          "acts": [
+            "schedule"
+          ],
+          "settings": "mode=incremental · retention=30d",
+          "status": "active"
+        }
+      ],
+      "tests": [
+        "smoke.folder",
+        "smoke.daily",
+        "contract.verify"
+      ],
+      "version": "1.0.0"
+    }
+  ]
+}

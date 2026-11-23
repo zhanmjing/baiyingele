@@ -1,0 +1,1175 @@
+{
+  "classes": [
+    {
+      "id": "field.observe",
+      "family": "perceive",
+      "output": "context snapshot",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.observe.desktop@r1",
+          "classId": "field.observe",
+          "scope": "global",
+          "output": "前台进程/窗口/时间/空闲",
+          "rev": 1,
+          "name": "observe.desktop",
+          "status": "active",
+          "detail": "global · 前台进程/窗口/时间/空闲"
+        },
+        {
+          "id": "field.observe.selection@r1",
+          "classId": "field.observe",
+          "scope": "global",
+          "output": "选中文本/剪贴板/文件",
+          "rev": 1,
+          "name": "observe.selection",
+          "status": "active",
+          "detail": "global · 选中文本/剪贴板/文件"
+        },
+        {
+          "id": "field.observe.run-history@r1",
+          "classId": "field.observe",
+          "scope": "run history",
+          "output": "最近运行/失败/耗时",
+          "rev": 1,
+          "name": "observe.run-history",
+          "status": "active",
+          "detail": "run history · 最近运行/失败/耗时"
+        }
+      ],
+      "name": "observe",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "context snapshot → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.classify",
+      "family": "understand",
+      "output": "label",
+      "landing": "point/surface/body",
+      "autonomy": "A2",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.classify.intent@r1",
+          "classId": "field.classify",
+          "scope": "command palette",
+          "output": "action/flow/body/question",
+          "rev": 1,
+          "name": "classify.intent",
+          "status": "active",
+          "detail": "command palette · action/flow/body/question"
+        },
+        {
+          "id": "field.classify.file-type@r1",
+          "classId": "field.classify",
+          "scope": "body.file-preview",
+          "output": "text/image/pdf/video/audio",
+          "rev": 1,
+          "name": "classify.file-type",
+          "status": "active",
+          "detail": "body.file-preview · text/image/pdf/video/audio"
+        },
+        {
+          "id": "field.classify.ocr-mode@r1",
+          "classId": "field.classify",
+          "scope": "body.ocr",
+          "output": "text/math/qr/table",
+          "rev": 1,
+          "name": "classify.ocr-mode",
+          "status": "active",
+          "detail": "body.ocr · text/math/qr/table"
+        },
+        {
+          "id": "field.classify.error-kind@r1",
+          "classId": "field.classify",
+          "scope": "flow runtime",
+          "output": "uia/network/permission/param",
+          "rev": 1,
+          "name": "classify.error-kind",
+          "status": "active",
+          "detail": "flow runtime · uia/network/permission/param"
+        }
+      ],
+      "name": "classify",
+      "group": "understand",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "label → point/surface/body · 自主度上限 A2"
+    },
+    {
+      "id": "field.prefill",
+      "family": "perceive",
+      "output": "param suggestion",
+      "landing": "point",
+      "autonomy": "A2",
+      "count": 5,
+      "instances": [
+        {
+          "id": "field.prefill.point-params@r1",
+          "classId": "field.prefill",
+          "scope": "point instances",
+          "output": "参数默认值",
+          "rev": 1,
+          "name": "prefill.point-params",
+          "status": "active",
+          "detail": "point instances · 参数默认值"
+        },
+        {
+          "id": "field.prefill.vpn-profile@r1",
+          "classId": "field.prefill",
+          "scope": "body.external-access",
+          "output": "vpn.profile",
+          "rev": 1,
+          "name": "prefill.vpn-profile",
+          "status": "active",
+          "detail": "body.external-access · vpn.profile"
+        },
+        {
+          "id": "field.prefill.ocr-language@r1",
+          "classId": "field.prefill",
+          "scope": "body.ocr.text",
+          "output": "ocr.language",
+          "rev": 1,
+          "name": "prefill.ocr-language",
+          "status": "active",
+          "detail": "body.ocr.text · ocr.language"
+        },
+        {
+          "id": "field.prefill.rename-pattern@r1",
+          "classId": "field.prefill",
+          "scope": "body.batch-rename.regex",
+          "output": "rename.pattern",
+          "rev": 1,
+          "name": "prefill.rename-pattern",
+          "status": "active",
+          "detail": "body.batch-rename.regex · rename.pattern"
+        },
+        {
+          "id": "field.prefill.search-query@r1",
+          "classId": "field.prefill",
+          "scope": "command palette",
+          "output": "query",
+          "rev": 1,
+          "name": "prefill.search-query",
+          "status": "active",
+          "detail": "command palette · query"
+        }
+      ],
+      "name": "prefill",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "param suggestion → point · 自主度上限 A2"
+    },
+    {
+      "id": "field.rank",
+      "family": "perceive",
+      "output": "ranking",
+      "landing": "surface",
+      "autonomy": "A2",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.rank.scene-grid@r1",
+          "classId": "field.rank",
+          "scope": "surface.launch-dock",
+          "output": "tile.order",
+          "rev": 1,
+          "name": "rank.scene-grid",
+          "status": "active",
+          "detail": "surface.launch-dock · tile.order"
+        },
+        {
+          "id": "field.rank.command-palette@r1",
+          "classId": "field.rank",
+          "scope": "surface.command-palette",
+          "output": "result.order",
+          "rev": 1,
+          "name": "rank.command-palette",
+          "status": "active",
+          "detail": "surface.command-palette · result.order"
+        },
+        {
+          "id": "field.rank.body-market@r1",
+          "classId": "field.rank",
+          "scope": "surface.card-grid",
+          "output": "body.order",
+          "rev": 1,
+          "name": "rank.body-market",
+          "status": "active",
+          "detail": "surface.card-grid · body.order"
+        },
+        {
+          "id": "field.rank.ocr-mode@r1",
+          "classId": "field.rank",
+          "scope": "body.ocr",
+          "output": "mode order",
+          "rev": 1,
+          "name": "rank.ocr-mode",
+          "status": "active",
+          "detail": "body.ocr · mode order"
+        }
+      ],
+      "name": "rank",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "ranking → surface · 自主度上限 A2"
+    },
+    {
+      "id": "field.recommend",
+      "family": "perceive",
+      "output": "suggestion",
+      "landing": "point/line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.recommend.next-action@r1",
+          "classId": "field.recommend",
+          "scope": "point/surface",
+          "output": "action suggestion",
+          "rev": 1,
+          "name": "recommend.next-action",
+          "status": "active",
+          "detail": "point/surface · action suggestion"
+        },
+        {
+          "id": "field.recommend.body@r1",
+          "classId": "field.recommend",
+          "scope": "body market",
+          "output": "body suggestion",
+          "rev": 1,
+          "name": "recommend.body",
+          "status": "active",
+          "detail": "body market · body suggestion"
+        },
+        {
+          "id": "field.recommend.template@r1",
+          "classId": "field.recommend",
+          "scope": "flow editor",
+          "output": "template suggestion",
+          "rev": 1,
+          "name": "recommend.template",
+          "status": "active",
+          "detail": "flow editor · template suggestion"
+        }
+      ],
+      "name": "recommend",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "suggestion → point/line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.detect",
+      "family": "perceive",
+      "output": "signal",
+      "landing": "line/body",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.detect.repetition@r1",
+          "classId": "field.detect",
+          "scope": "global",
+          "output": "repeated manual sequence",
+          "rev": 1,
+          "name": "detect.repetition",
+          "status": "active",
+          "detail": "global · repeated manual sequence"
+        },
+        {
+          "id": "field.detect.anomaly@r1",
+          "classId": "field.detect",
+          "scope": "run history",
+          "output": "unusual failure/latency",
+          "rev": 1,
+          "name": "detect.anomaly",
+          "status": "active",
+          "detail": "run history · unusual failure/latency"
+        },
+        {
+          "id": "field.detect.opportunity@r1",
+          "classId": "field.detect",
+          "scope": "body usage",
+          "output": "automation opportunity",
+          "rev": 1,
+          "name": "detect.opportunity",
+          "status": "active",
+          "detail": "body usage · automation opportunity"
+        }
+      ],
+      "name": "detect",
+      "group": "perceive",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "signal → line/body · 自主度上限 A0"
+    },
+    {
+      "id": "field.generate",
+      "family": "generate",
+      "output": "draft",
+      "landing": "point/line/surface/body",
+      "autonomy": "A1",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.generate.point-action@r1",
+          "classId": "field.generate",
+          "scope": "point editor",
+          "output": "Action DSL draft",
+          "rev": 1,
+          "name": "generate.point-action",
+          "status": "active",
+          "detail": "point editor · Action DSL draft"
+        },
+        {
+          "id": "field.generate.flow@r1",
+          "classId": "field.generate",
+          "scope": "line editor",
+          "output": "FlowClass/FlowInstance draft",
+          "rev": 1,
+          "name": "generate.flow",
+          "status": "active",
+          "detail": "line editor · FlowClass/FlowInstance draft"
+        },
+        {
+          "id": "field.generate.surface-layout@r1",
+          "classId": "field.generate",
+          "scope": "surface editor",
+          "output": "SurfaceClass/Instance draft",
+          "rev": 1,
+          "name": "generate.surface-layout",
+          "status": "active",
+          "detail": "surface editor · SurfaceClass/Instance draft"
+        },
+        {
+          "id": "field.generate.body-manifest@r1",
+          "classId": "field.generate",
+          "scope": "body editor",
+          "output": "BodyManifest draft",
+          "rev": 1,
+          "name": "generate.body-manifest",
+          "status": "active",
+          "detail": "body editor · BodyManifest draft"
+        }
+      ],
+      "name": "generate",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "draft → point/line/surface/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.compose",
+      "family": "generate",
+      "output": "draft",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.compose.flow-from-points@r1",
+          "classId": "field.compose",
+          "scope": "line editor",
+          "output": "flow composition draft",
+          "rev": 1,
+          "name": "compose.flow-from-points",
+          "status": "active",
+          "detail": "line editor · flow composition draft"
+        },
+        {
+          "id": "field.compose.surface-from-data@r1",
+          "classId": "field.compose",
+          "scope": "surface editor",
+          "output": "surface binding draft",
+          "rev": 1,
+          "name": "compose.surface-from-data",
+          "status": "active",
+          "detail": "surface editor · surface binding draft"
+        },
+        {
+          "id": "field.compose.body-from-flows@r1",
+          "classId": "field.compose",
+          "scope": "body editor",
+          "output": "body composition draft",
+          "rev": 1,
+          "name": "compose.body-from-flows",
+          "status": "active",
+          "detail": "body editor · body composition draft"
+        }
+      ],
+      "name": "compose",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "draft → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.plan",
+      "family": "generate",
+      "output": "plan",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.plan.single-app@r1",
+          "classId": "field.plan",
+          "scope": "task",
+          "output": "app-specific plan",
+          "rev": 1,
+          "name": "plan.single-app",
+          "status": "active",
+          "detail": "task · app-specific plan"
+        },
+        {
+          "id": "field.plan.cross-app@r1",
+          "classId": "field.plan",
+          "scope": "task",
+          "output": "multi-app plan",
+          "rev": 1,
+          "name": "plan.cross-app",
+          "status": "active",
+          "detail": "task · multi-app plan"
+        },
+        {
+          "id": "field.plan.batch@r1",
+          "classId": "field.plan",
+          "scope": "batch",
+          "output": "batch plan",
+          "rev": 1,
+          "name": "plan.batch",
+          "status": "active",
+          "detail": "batch · batch plan"
+        }
+      ],
+      "name": "plan",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "plan → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.translate",
+      "family": "generate",
+      "output": "text/dsl",
+      "landing": "point/line",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.translate.nl-to-dsl@r1",
+          "classId": "field.translate",
+          "scope": "editor",
+          "output": "NL → DSL",
+          "rev": 1,
+          "name": "translate.nl-to-dsl",
+          "status": "active",
+          "detail": "editor · NL → DSL"
+        },
+        {
+          "id": "field.translate.dsl-to-nl@r1",
+          "classId": "field.translate",
+          "scope": "inspector",
+          "output": "DSL → 人话",
+          "rev": 1,
+          "name": "translate.dsl-to-nl",
+          "status": "active",
+          "detail": "inspector · DSL → 人话"
+        },
+        {
+          "id": "field.translate.error-to-human@r1",
+          "classId": "field.translate",
+          "scope": "run history",
+          "output": "error → 解释",
+          "rev": 1,
+          "name": "translate.error-to-human",
+          "status": "active",
+          "detail": "run history · error → 解释"
+        }
+      ],
+      "name": "translate",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "text/dsl → point/line · 自主度上限 A1"
+    },
+    {
+      "id": "field.summarize",
+      "family": "generate",
+      "output": "summary",
+      "landing": "surface/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.summarize.run-history@r1",
+          "classId": "field.summarize",
+          "scope": "surface.run-history",
+          "output": "运行摘要",
+          "rev": 1,
+          "name": "summarize.run-history",
+          "status": "active",
+          "detail": "surface.run-history · 运行摘要"
+        },
+        {
+          "id": "field.summarize.context@r1",
+          "classId": "field.summarize",
+          "scope": "command palette",
+          "output": "上下文摘要",
+          "rev": 1,
+          "name": "summarize.context",
+          "status": "active",
+          "detail": "command palette · 上下文摘要"
+        },
+        {
+          "id": "field.summarize.document@r1",
+          "classId": "field.summarize",
+          "scope": "body",
+          "output": "文档摘要",
+          "rev": 1,
+          "name": "summarize.document",
+          "status": "active",
+          "detail": "body · 文档摘要"
+        }
+      ],
+      "name": "summarize",
+      "group": "generate",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "summary → surface/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.diagnose",
+      "family": "evolve",
+      "output": "diagnosis",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.diagnose.flow-failure@r1",
+          "classId": "field.diagnose",
+          "scope": "flow run",
+          "output": "cause + fix",
+          "rev": 1,
+          "name": "diagnose.flow-failure",
+          "status": "active",
+          "detail": "flow run · cause + fix"
+        },
+        {
+          "id": "field.diagnose.uia-timeout@r1",
+          "classId": "field.diagnose",
+          "scope": "UIA step",
+          "output": "selector/timing fix",
+          "rev": 1,
+          "name": "diagnose.uia-timeout",
+          "status": "active",
+          "detail": "UIA step · selector/timing fix"
+        },
+        {
+          "id": "field.diagnose.vpn-unreachable@r1",
+          "classId": "field.diagnose",
+          "scope": "external access",
+          "output": "network/VPN cause",
+          "rev": 1,
+          "name": "diagnose.vpn-unreachable",
+          "status": "active",
+          "detail": "external access · network/VPN cause"
+        },
+        {
+          "id": "field.diagnose.ocr-low-confidence@r1",
+          "classId": "field.diagnose",
+          "scope": "body.ocr",
+          "output": "preprocess/mode fix",
+          "rev": 1,
+          "name": "diagnose.ocr-low-confidence",
+          "status": "active",
+          "detail": "body.ocr · preprocess/mode fix"
+        }
+      ],
+      "name": "diagnose",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "diagnosis → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.repair",
+      "family": "evolve",
+      "output": "patch",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.repair.flow-patch@r1",
+          "classId": "field.repair",
+          "scope": "flow",
+          "output": "patch",
+          "rev": 1,
+          "name": "repair.flow-patch",
+          "status": "active",
+          "detail": "flow · patch"
+        },
+        {
+          "id": "field.repair.selector-patch@r1",
+          "classId": "field.repair",
+          "scope": "UIA step",
+          "output": "selector patch",
+          "rev": 1,
+          "name": "repair.selector-patch",
+          "status": "active",
+          "detail": "UIA step · selector patch"
+        },
+        {
+          "id": "field.repair.settings-patch@r1",
+          "classId": "field.repair",
+          "scope": "body/flow",
+          "output": "settings patch",
+          "rev": 1,
+          "name": "repair.settings-patch",
+          "status": "active",
+          "detail": "body/flow · settings patch"
+        },
+        {
+          "id": "field.repair.permission-fix@r1",
+          "classId": "field.repair",
+          "scope": "permission error",
+          "output": "grant/scope fix",
+          "rev": 1,
+          "name": "repair.permission-fix",
+          "status": "active",
+          "detail": "permission error · grant/scope fix"
+        }
+      ],
+      "name": "repair",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "patch → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.mine",
+      "family": "evolve",
+      "output": "suggestion",
+      "landing": "line/body",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.mine.action-sequence@r1",
+          "classId": "field.mine",
+          "scope": "global",
+          "output": "action sequence suggestion",
+          "rev": 1,
+          "name": "mine.action-sequence",
+          "status": "active",
+          "detail": "global · action sequence suggestion"
+        },
+        {
+          "id": "field.mine.flow-template@r1",
+          "classId": "field.mine",
+          "scope": "line",
+          "output": "flow template",
+          "rev": 1,
+          "name": "mine.flow-template",
+          "status": "active",
+          "detail": "line · flow template"
+        },
+        {
+          "id": "field.mine.body-candidate@r1",
+          "classId": "field.mine",
+          "scope": "body",
+          "output": "body candidate",
+          "rev": 1,
+          "name": "mine.body-candidate",
+          "status": "active",
+          "detail": "body · body candidate"
+        }
+      ],
+      "name": "mine",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "suggestion → line/body · 自主度上限 A1"
+    },
+    {
+      "id": "field.learn",
+      "family": "evolve",
+      "output": "weights/thresholds",
+      "landing": "point/surface",
+      "autonomy": "A2",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.learn.ranking@r1",
+          "classId": "field.learn",
+          "scope": "surface rank",
+          "output": "weight update",
+          "rev": 1,
+          "name": "learn.ranking",
+          "status": "active",
+          "detail": "surface rank · weight update"
+        },
+        {
+          "id": "field.learn.prefill@r1",
+          "classId": "field.learn",
+          "scope": "point prefill",
+          "output": "default update",
+          "rev": 1,
+          "name": "learn.prefill",
+          "status": "active",
+          "detail": "point prefill · default update"
+        },
+        {
+          "id": "field.learn.threshold@r1",
+          "classId": "field.learn",
+          "scope": "field policy",
+          "output": "confidence threshold",
+          "rev": 1,
+          "name": "learn.threshold",
+          "status": "active",
+          "detail": "field policy · confidence threshold"
+        }
+      ],
+      "name": "learn",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "weights/thresholds → point/surface · 自主度上限 A2"
+    },
+    {
+      "id": "field.personalize",
+      "family": "evolve",
+      "output": "defaults/layout",
+      "landing": "point/surface",
+      "autonomy": "A2",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.personalize.shortcut@r1",
+          "classId": "field.personalize",
+          "scope": "global",
+          "output": "shortcut suggestion",
+          "rev": 1,
+          "name": "personalize.shortcut",
+          "status": "active",
+          "detail": "global · shortcut suggestion"
+        },
+        {
+          "id": "field.personalize.layout@r1",
+          "classId": "field.personalize",
+          "scope": "surface",
+          "output": "layout suggestion",
+          "rev": 1,
+          "name": "personalize.layout",
+          "status": "active",
+          "detail": "surface · layout suggestion"
+        },
+        {
+          "id": "field.personalize.defaults@r1",
+          "classId": "field.personalize",
+          "scope": "point/body",
+          "output": "defaults",
+          "rev": 1,
+          "name": "personalize.defaults",
+          "status": "active",
+          "detail": "point/body · defaults"
+        }
+      ],
+      "name": "personalize",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "defaults/layout → point/surface · 自主度上限 A2"
+    },
+    {
+      "id": "field.critique",
+      "family": "evolve",
+      "output": "review",
+      "landing": "line/body",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.critique.flow@r1",
+          "classId": "field.critique",
+          "scope": "flow",
+          "output": "review findings",
+          "rev": 1,
+          "name": "critique.flow",
+          "status": "active",
+          "detail": "flow · review findings"
+        },
+        {
+          "id": "field.critique.body@r1",
+          "classId": "field.critique",
+          "scope": "body",
+          "output": "review findings",
+          "rev": 1,
+          "name": "critique.body",
+          "status": "active",
+          "detail": "body · review findings"
+        },
+        {
+          "id": "field.critique.permission@r1",
+          "classId": "field.critique",
+          "scope": "permission",
+          "output": "over-broad permission warning",
+          "rev": 1,
+          "name": "critique.permission",
+          "status": "active",
+          "detail": "permission · over-broad permission warning"
+        }
+      ],
+      "name": "critique",
+      "group": "evolve",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "review → line/body · 自主度上限 A0"
+    },
+    {
+      "id": "field.route",
+      "family": "govern",
+      "output": "route decision",
+      "landing": "all",
+      "autonomy": "A2",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.route.model@r1",
+          "classId": "field.route",
+          "scope": "global",
+          "output": "local/cloud/fallback",
+          "rev": 1,
+          "name": "route.model",
+          "status": "active",
+          "detail": "global · local/cloud/fallback"
+        },
+        {
+          "id": "field.route.tool@r1",
+          "classId": "field.route",
+          "scope": "command palette",
+          "output": "point/flow/body",
+          "rev": 1,
+          "name": "route.tool",
+          "status": "active",
+          "detail": "command palette · point/flow/body"
+        },
+        {
+          "id": "field.route.body@r1",
+          "classId": "field.route",
+          "scope": "file/trigger",
+          "output": "body instance",
+          "rev": 1,
+          "name": "route.body",
+          "status": "active",
+          "detail": "file/trigger · body instance"
+        }
+      ],
+      "name": "route",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A2",
+      "priority": "P1",
+      "summary": "route decision → all · 自主度上限 A2"
+    },
+    {
+      "id": "field.guard",
+      "family": "govern",
+      "output": "risk/decision",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.guard.risk@r1",
+          "classId": "field.guard",
+          "scope": "all drafts",
+          "output": "L0–L3",
+          "rev": 1,
+          "name": "guard.risk",
+          "status": "active",
+          "detail": "all drafts · L0–L3"
+        },
+        {
+          "id": "field.guard.permission@r1",
+          "classId": "field.guard",
+          "scope": "all drafts",
+          "output": "allow/deny/ask",
+          "rev": 1,
+          "name": "guard.permission",
+          "status": "active",
+          "detail": "all drafts · allow/deny/ask"
+        },
+        {
+          "id": "field.guard.confidence@r1",
+          "classId": "field.guard",
+          "scope": "all suggestions",
+          "output": "pass/ask/reject",
+          "rev": 1,
+          "name": "guard.confidence",
+          "status": "active",
+          "detail": "all suggestions · pass/ask/reject"
+        },
+        {
+          "id": "field.guard.privacy@r1",
+          "classId": "field.guard",
+          "scope": "context",
+          "output": "redact/block",
+          "rev": 1,
+          "name": "guard.privacy",
+          "status": "active",
+          "detail": "context · redact/block"
+        }
+      ],
+      "name": "guard",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "risk/decision → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.ask",
+      "family": "govern",
+      "output": "question",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.ask.clarify@r1",
+          "classId": "field.ask",
+          "scope": "ambiguous request",
+          "output": "question + options",
+          "rev": 1,
+          "name": "ask.clarify",
+          "status": "active",
+          "detail": "ambiguous request · question + options"
+        },
+        {
+          "id": "field.ask.confirm@r1",
+          "classId": "field.ask",
+          "scope": "A1/A2",
+          "output": "confirm dialog",
+          "rev": 1,
+          "name": "ask.confirm",
+          "status": "active",
+          "detail": "A1/A2 · confirm dialog"
+        },
+        {
+          "id": "field.ask.choose@r1",
+          "classId": "field.ask",
+          "scope": "multiple matches",
+          "output": "chooser",
+          "rev": 1,
+          "name": "ask.choose",
+          "status": "active",
+          "detail": "multiple matches · chooser"
+        }
+      ],
+      "name": "ask",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "question → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.explain",
+      "family": "govern",
+      "output": "explanation",
+      "landing": "all",
+      "autonomy": "A0",
+      "count": 4,
+      "instances": [
+        {
+          "id": "field.explain.suggestion@r1",
+          "classId": "field.explain",
+          "scope": "surface",
+          "output": "why this suggestion",
+          "rev": 1,
+          "name": "explain.suggestion",
+          "status": "active",
+          "detail": "surface · why this suggestion"
+        },
+        {
+          "id": "field.explain.point-run@r1",
+          "classId": "field.explain",
+          "scope": "point run",
+          "output": "what happened",
+          "rev": 1,
+          "name": "explain.point-run",
+          "status": "active",
+          "detail": "point run · what happened"
+        },
+        {
+          "id": "field.explain.flow-run@r1",
+          "classId": "field.explain",
+          "scope": "flow run",
+          "output": "step trace",
+          "rev": 1,
+          "name": "explain.flow-run",
+          "status": "active",
+          "detail": "flow run · step trace"
+        },
+        {
+          "id": "field.explain.permission@r1",
+          "classId": "field.explain",
+          "scope": "permission prompt",
+          "output": "why needed",
+          "rev": 1,
+          "name": "explain.permission",
+          "status": "active",
+          "detail": "permission prompt · why needed"
+        }
+      ],
+      "name": "explain",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "explanation → all · 自主度上限 A0"
+    },
+    {
+      "id": "field.simulate",
+      "family": "govern",
+      "output": "preview/impact",
+      "landing": "line/body",
+      "autonomy": "A0",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.simulate.dry-run@r1",
+          "classId": "field.simulate",
+          "scope": "draft/patch",
+          "output": "dry-run result",
+          "rev": 1,
+          "name": "simulate.dry-run",
+          "status": "active",
+          "detail": "draft/patch · dry-run result"
+        },
+        {
+          "id": "field.simulate.impact@r1",
+          "classId": "field.simulate",
+          "scope": "body/flow",
+          "output": "impact analysis",
+          "rev": 1,
+          "name": "simulate.impact",
+          "status": "active",
+          "detail": "body/flow · impact analysis"
+        },
+        {
+          "id": "field.simulate.rollback@r1",
+          "classId": "field.simulate",
+          "scope": "A2 apply",
+          "output": "rollback plan",
+          "rev": 1,
+          "name": "simulate.rollback",
+          "status": "active",
+          "detail": "A2 apply · rollback plan"
+        }
+      ],
+      "name": "simulate",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A0",
+      "priority": "P0",
+      "summary": "preview/impact → line/body · 自主度上限 A0"
+    },
+    {
+      "id": "field.memory",
+      "family": "govern",
+      "output": "memory op",
+      "landing": "all",
+      "autonomy": "A1",
+      "count": 3,
+      "instances": [
+        {
+          "id": "field.memory.preference@r1",
+          "classId": "field.memory",
+          "scope": "global",
+          "output": "preference read/write",
+          "rev": 1,
+          "name": "memory.preference",
+          "status": "active",
+          "detail": "global · preference read/write"
+        },
+        {
+          "id": "field.memory.episodic@r1",
+          "classId": "field.memory",
+          "scope": "run history",
+          "output": "episode recall",
+          "rev": 1,
+          "name": "memory.episodic",
+          "status": "active",
+          "detail": "run history · episode recall"
+        },
+        {
+          "id": "field.memory.knowledge@r1",
+          "classId": "field.memory",
+          "scope": "body/domain",
+          "output": "knowledge recall",
+          "rev": 1,
+          "name": "memory.knowledge",
+          "status": "active",
+          "detail": "body/domain · knowledge recall"
+        }
+      ],
+      "name": "memory",
+      "group": "govern",
+      "version": "1.0.0",
+      "status": "active",
+      "effect": "A1",
+      "priority": "P1",
+      "summary": "memory op → all · 自主度上限 A1"
+    }
+  ]
+}

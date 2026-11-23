@@ -1,0 +1,4488 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>整个软件设置 · Settings Workspace</title>
+<style>
+:root{
+  --bg:#070b12;--panel:#0d1420;--card:#111a29;--card2:#152235;--line:rgba(148,163,184,.14);--line2:rgba(148,163,184,.25);
+  --ink:#e6eef9;--dim:#8fa2bb;--faint:#5f7188;--cyan:#22d3ee;--blue:#3b82f6;--violet:#8b5cf6;
+  --amber:#f59e0b;--green:#22c55e;--red:#ef4444;
+  --mono:"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  --font:"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{display:grid;grid-template-columns:246px minmax(0,1fr) 300px;grid-template-rows:54px minmax(0,1fr) 30px;height:100%}
+header{position:relative;grid-column:1/-1;display:flex;align-items:center;gap:9px;padding:0 13px;background:linear-gradient(180deg,#0e1725,#0a111c);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;min-width:110px}
+.brand .mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,#22d3ee,#8b5cf6);color:#04121a;font:800 13px var(--mono)}
+.brand b{font-size:13px}
+.brand span{display:block;font:7px var(--mono);color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.section-sel{display:none;border:1px solid var(--line);background:#0a1420;color:#a9bbd0;border-radius:6px;padding:5px 6px;font:8.5px var(--mono);outline:none}
+.scope{display:flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:6px;padding:4px 7px;background:#0a1420}
+.scope label{font:7px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+.scope select{border:none;background:transparent;color:#a9bbd0;font-size:9px;outline:none;padding:2px 1px}
+.search{flex:1;min-width:0;max-width:420px;margin-left:auto;border:1px solid var(--line);border-radius:7px;background:#0a1420;padding:7px 9px;color:var(--ink);font-size:10.5px;outline:none}
+.search::placeholder{color:var(--faint)}
+.search:focus{border-color:rgba(34,211,238,.42);box-shadow:0 0 0 2px rgba(34,211,238,.06)}
+.btn{border:1px solid var(--line);background:#111b28;color:#9fb1c8;border-radius:6px;padding:6px 9px;font-size:9px}
+.btn:hover{color:#dbeafe;border-color:var(--line2)}
+.btn.primary{border-color:rgba(34,211,238,.35);background:rgba(34,211,238,.11);color:#a5f3fc}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed}
+.btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.05)}
+.more-btn{padding:5px 8px;font-size:13px;line-height:1}
+.more-menu{display:none;position:absolute;right:10px;top:48px;z-index:40;min-width:150px;flex-direction:column;gap:2px;border:1px solid var(--line2);border-radius:7px;background:#0e1826;padding:4px;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.more-menu.on{display:flex}
+.more-menu button{border:none;background:transparent;color:#9fb1c8;text-align:left;border-radius:4px;padding:6px 8px;font-size:9px}
+.more-menu button:hover{background:#152235;color:#dbeafe}
+#nav{grid-row:2;background:linear-gradient(180deg,#0e1624,#080d15);border-right:1px solid var(--line);overflow-y:auto;padding:10px 8px 20px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#nav::-webkit-scrollbar{width:7px}
+#nav::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.nav-group{margin-bottom:10px}
+.nav-label{font:7px var(--mono);color:var(--faint);letter-spacing:.15em;text-transform:uppercase;padding:5px 7px 4px}
+.nav-item{display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid transparent;border-radius:7px;cursor:pointer;margin-bottom:1px;position:relative}
+.nav-item:hover{background:#121d2c;border-color:var(--line)}
+.nav-item.on{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.22)}
+.nav-icon{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:11px;background:#162234;border:1px solid var(--line);color:var(--cat,#22d3ee);flex:0 0 22px}
+.nav-main{min-width:0;flex:1}
+.nav-name{font-size:10.5px;color:#dbeafe;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-sub{font:7px var(--mono);color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 7px var(--amber);flex:0 0 6px}
+.nav-lock{font-size:8px;color:#fca5a5;flex:0 0 auto}
+#main{grid-row:2;min-width:0;min-height:0;overflow-y:auto;background:radial-gradient(circle at 25% 0%,rgba(34,211,238,.04),transparent 45%),linear-gradient(180deg,#0a111c,#070b12);padding:16px 18px 26px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#main::-webkit-scrollbar{width:8px}
+#main::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #070b12}
+.section-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.section-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#162234;border:1px solid var(--line2);color:var(--cat,#22d3ee);font-size:16px;flex:0 0 38px}
+.section-text{min-width:0;flex:1}
+.section-kicker{font:7.5px var(--mono);color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
+.section-head h1{font-size:18px;margin:2px 0 2px}
+.section-head p{margin:0;color:#94a8c0;font-size:10.5px;line-height:1.55;max-width:760px}
+.section-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.group{border:1px solid var(--line);border-radius:9px;background:rgba(17,26,41,.72);margin-bottom:10px;overflow:hidden}
+.group-head{display:flex;align-items:center;gap:7px;padding:8px 11px;border-bottom:1px solid var(--line);background:rgba(15,26,41,.85)}
+.group-head b{font:8.5px var(--mono);color:#a9bbd0;letter-spacing:.03em}
+.group-head span{font-size:7.5px;color:var(--faint);margin-left:auto}
+.group-body{padding:0 11px}
+.setting-row{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(130px,1fr) 82px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(148,163,184,.075);position:relative}
+.setting-row:last-child{border-bottom:none}
+.setting-row:hover{background:rgba(34,211,238,.018)}
+.setting-row.dirty{background:rgba(245,158,11,.035);box-shadow:inset 2px 0 0 rgba(245,158,11,.55)}
+.setting-row.highlight{background:rgba(34,211,238,.065);box-shadow:inset 2px 0 0 rgba(34,211,238,.65)}
+.row-main{min-width:0}
+.row-label{font-size:10px;color:#dbeafe;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.row-desc{font-size:7.5px;color:var(--faint);line-height:1.5;margin-top:2px;max-width:520px}
+.row-meta{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.mini{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c}
+.mini.l1{color:#a5f3fc;border-color:rgba(34,211,238,.2);background:rgba(34,211,238,.05)}
+.mini.l2{color:#fcd34d;border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.05)}
+.mini.restart{color:#fca5a5;border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.05)}
+.mini.secret{color:#c4b5fd;border-color:rgba(139,92,246,.2);background:rgba(139,92,246,.06)}
+.row-control{min-width:0}
+.row-control select,.row-control input[type=text],.row-control input[type=number],.row-control input[type=password]{width:100%;border:1px solid var(--line);background:#0a1420;color:#a9bbd0;border-radius:4px;font:8.5px var(--mono);padding:5px 6px;outline:none}
+.row-control select:focus,.row-control input:focus{border-color:rgba(34,211,238,.35)}
+.row-control input:disabled,.row-control select:disabled{opacity:.55;cursor:not-allowed}
+.switch{position:relative;display:inline-block;width:32px;height:18px;vertical-align:middle}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:#1e293b;border:1px solid var(--line);border-radius:99px;transition:.15s}
+.switch span::before{content:"";position:absolute;width:12px;height:12px;left:2px;top:2px;border-radius:50%;background:#64748b;transition:.15s}
+.switch input:checked+span{background:rgba(34,211,238,.18);border-color:rgba(34,211,238,.4)}
+.switch input:checked+span::before{transform:translateX(14px);background:#22d3ee;box-shadow:0 0 6px #22d3ee}
+.switch input:disabled+span{opacity:.45}
+.row-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0}
+.src{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c}
+.src.user{color:#a5f3fc;border-color:rgba(34,211,238,.22);background:rgba(34,211,238,.05)}
+.src.workspace{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.05)}
+.src.machine{color:#c4b5fd;border-color:rgba(139,92,246,.22);background:rgba(139,92,246,.05)}
+.src.policy{color:#fca5a5;border-color:rgba(239,68,68,.22);background:rgba(239,68,68,.05)}
+.reset{border:none;background:transparent;color:#5f7188;font:7px var(--mono);padding:1px 2px}
+.reset:hover{color:#a5f3fc}
+.secret-box{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.secret-dot{font:7.5px var(--mono);color:#c4b5fd;border:1px solid rgba(139,92,246,.22);border-radius:3px;padding:2px 4px;background:rgba(139,92,246,.06)}
+.secret-btn{border:1px solid var(--line);background:#121d2c;color:#9fb1c8;border-radius:3px;padding:2px 4px;font:7px var(--mono)}
+.section-foot{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.foot-note{font:7px var(--mono);color:var(--faint);margin-left:auto}
+.policy-banner{border:1px solid rgba(245,158,11,.25);background:rgba(245,158,11,.05);color:#fcd34d;border-radius:7px;padding:8px 10px;font-size:9px;line-height:1.5;margin-bottom:10px}
+.search-results .result{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:8px;margin-bottom:6px;cursor:pointer}
+.search-results .result:hover{border-color:rgba(34,211,238,.28);background:#121f30}
+.result-top{display:flex;align-items:center;gap:6px}
+.result-label{font-size:9.5px;color:#dbeafe}
+.result-key{font:7px var(--mono);color:var(--faint);margin-left:auto}
+.result-desc{font-size:7.5px;color:var(--faint);margin-top:3px;line-height:1.5}
+.empty{padding:28px 10px;text-align:center;color:var(--faint);font-size:9px}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.info-card{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:10px}
+.info-card h3{margin:0 0 6px;font:8.5px var(--mono);color:#a5f3fc;letter-spacing:.05em;display:flex;align-items:center;gap:5px}
+.info-kv{display:grid;grid-template-columns:78px 1fr;gap:3px 6px;font:7.5px var(--mono);line-height:1.5}
+.info-kv .k{color:var(--faint)}
+.info-kv .v{color:#b9c7da;word-break:break-all}
+.info-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.info-btn{border:1px solid var(--line);background:#121d2c;color:#93a4ba;border-radius:4px;padding:3px 5px;font:7px var(--mono)}
+.info-btn:hover{color:#a5f3fc;border-color:rgba(34,211,238,.25)}
+#changes{grid-row:2;border-left:1px solid var(--line);background:linear-gradient(180deg,#0e1624,#080d15);overflow-y:auto;padding:12px 11px 24px;scrollbar-width:thin;scrollbar-color:#26344a transparent}
+#changes::-webkit-scrollbar{width:7px}
+#changes::-webkit-scrollbar-thumb{background:#26344a;border-radius:5px;border:2px solid #080d15}
+.ch-head{display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.ch-head b{font:8px var(--mono);color:#a9bbd0;letter-spacing:.08em;text-transform:uppercase}
+.ch-count{margin-left:auto;font:7px var(--mono);color:#fcd34d}
+.ch-list{border:1px solid var(--line);border-radius:7px;background:var(--card);padding:7px;margin-bottom:8px;max-height:330px;overflow:auto}
+.ch-row{padding:5px 0;border-bottom:1px solid rgba(148,163,184,.07);font:7.5px var(--mono)}
+.ch-row:last-child{border-bottom:none}
+.ch-label{color:#b9c7da;display:block;margin-bottom:2px}
+.ch-diff{color:#8fa2bb;word-break:break-all}
+.ch-diff .from{color:#fca5a5;text-decoration:line-through}
+.ch-diff .to{color:#86efac}
+.ch-actions{display:flex;gap:5px}
+.ch-actions .btn{flex:1;text-align:center}
+.restart-box{border:1px solid rgba(245,158,11,.22);background:rgba(245,158,11,.045);border-radius:6px;padding:7px;margin-top:8px;font-size:8px;color:#fcd34d;line-height:1.5}
+#status{grid-column:1/-1;grid-row:3;display:flex;align-items:center;gap:7px;padding:0 12px;border-top:1px solid var(--line);background:#080e17;font:7px var(--mono);color:var(--faint)}
+#status .dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+#status .grow{flex:1}
+.toast{position:fixed;left:50%;bottom:42px;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:#0b1420;border:1px solid var(--line2);color:#dbeafe;padding:7px 11px;border-radius:7px;font-size:9px;z-index:60;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:1050px){#app{grid-template-columns:218px minmax(0,1fr)}#changes{display:none}}
+@media(max-width:760px){#app{grid-template-columns:168px minmax(0,1fr)}.brand{min-width:auto}.brand span{display:none}.scope label{display:none}.search{max-width:130px}#importBtn,#exportBtn{display:none}.setting-row{grid-template-columns:1fr;gap:5px;padding:9px 0}.row-side{flex-direction:row;align-items:center}.info-grid{grid-template-columns:1fr}}
+@media(max-width:560px){#app{grid-template-columns:1fr}#nav{display:none}#status{font-size:6.5px}.search{display:none}.section-sel{display:block;width:92px}.brand b{font-size:12px}#applyBtn{padding:5px 6px;font-size:8px}#closeBtn{padding:5px 7px}}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.info-btn.danger{color:#fca5a5;border-color:rgba(239,68,68,.24);background:rgba(239,68,68,.05)}
+#changes.dirty .ch-head b{color:#fcd34d}
+
+/* Layer catalogs */
+.layer-tabs{display:flex;gap:2px;border:1px solid var(--line);border-radius:7px;padding:2px;background:#0a1420;width:max-content;max-width:100%;margin-bottom:10px}
+.layer-tab{border:none;background:transparent;color:#7e91a7;border-radius:5px;padding:5px 9px;font-size:9px;white-space:nowrap}
+.layer-tab span{font:6.5px var(--mono);color:var(--faint);margin-left:3px}
+.layer-tab.on{background:rgba(34,211,238,.10);color:#a5f3fc}
+.layer-tab:hover{color:#dbeafe}
+.cat-stats{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+.cat-group{margin-bottom:11px}
+.cat-group-head{display:flex;align-items:center;gap:6px;font:8px var(--mono);color:var(--faint);letter-spacing:.1em;text-transform:uppercase;padding:4px 2px 6px}
+.cat-group-head span{color:#8fa2bb}
+.cat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.cat-class{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px;cursor:pointer;min-width:0}
+.cat-class:hover{border-color:rgba(34,211,238,.25);background:#121f30}
+.cat-class.on{border-color:rgba(34,211,238,.42);box-shadow:inset 0 0 0 1px rgba(34,211,238,.12);background:rgba(34,211,238,.035)}
+.cc-top{display:flex;align-items:center;gap:5px}
+.cc-id{font:7.5px var(--mono);color:#a5f3fc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.cc-status{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#86efac;background:rgba(34,197,94,.05);white-space:nowrap}
+.cc-status.draft{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.05)}
+.cc-status.active{color:#86efac;border-color:rgba(34,197,94,.22);background:rgba(34,197,94,.05)}
+.cc-name{font-size:9.5px;color:#dbeafe;margin-top:3px}
+.cc-desc{font-size:7.3px;color:var(--faint);line-height:1.45;margin-top:2px;max-height:22px;overflow:hidden}
+.cc-meta{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.cat-badge{font:6.3px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#8fa2bb;background:#121d2c}
+.cat-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+.cat-toolbar select{border:1px solid var(--line);background:#0a1420;color:#a9bbd0;border-radius:4px;font:8px var(--mono);padding:4px 5px;outline:none;max-width:260px}
+.cat-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:calc(100vh - 280px);background:#0a1420}
+.cat-table{width:100%;border-collapse:collapse;font-size:8px}
+.cat-table th{position:sticky;top:0;z-index:2;text-align:left;font:7px var(--mono);color:var(--faint);padding:6px 7px;border-bottom:1px solid var(--line);background:#0d1926;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.cat-table td{padding:5px 7px;border-bottom:1px solid rgba(148,163,184,.07);color:#9fb1c8;white-space:nowrap;max-width:320px;overflow:hidden;text-overflow:ellipsis}
+.cat-table tr:hover td{background:#101d2c;cursor:pointer}
+.cat-table tr.on td{background:rgba(34,211,238,.06);color:#dbeafe}
+.cat-table .muted{color:var(--faint);white-space:normal;max-width:360px;line-height:1.4}
+.cat-table .status{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#86efac;background:rgba(34,197,94,.05)}
+.cat-table .status.draft{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.05)}
+.cat-table .status.disabled{color:#94a3b8;background:#121d2c}
+.cat-insp-kicker{font:6.8px var(--mono);color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+.cat-insp-id{font:8px var(--mono);color:#a5f3fc;word-break:break-all;margin-top:3px;line-height:1.4}
+.cat-insp-name{font-size:12px;color:#dbeafe;margin-top:3px}
+.cat-insp-desc{font-size:7.5px;color:var(--faint);line-height:1.5;margin-top:3px}
+.cat-instance-list{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:5px;background:#0a1420}
+.cat-inst-btn{display:flex;justify-content:space-between;gap:5px;width:100%;border:none;border-bottom:1px solid rgba(148,163,184,.07);background:transparent;color:#8fa2bb;text-align:left;padding:5px 6px;font:7px var(--mono)}
+.cat-inst-btn:hover{background:#121f30;color:#dbeafe}
+.cat-inst-btn.on{background:rgba(34,211,238,.07);color:#a5f3fc}
+.cat-inst-btn span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-inst-btn span:last-child{color:var(--faint);flex:0 0 auto}
+.cat-inst-detail{border:1px solid var(--line);border-radius:6px;background:#0c1623;padding:7px;margin-top:7px}
+.cat-detail-text{font-size:7.2px;color:#8fa2bb;line-height:1.5;margin-top:4px;max-height:80px;overflow:auto;word-break:break-word}
+@media(max-width:900px){.cat-grid{grid-template-columns:1fr}}
+
+/* combined layer management */
+.mgmt-summary{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.mgmt-toolbar{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.mgmt-table-wrap{border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:calc(100vh - 280px);background:#0a1420}
+.mgmt-combined{width:100%;border-collapse:collapse;font-size:8px}
+.mgmt-combined th{position:sticky;top:0;z-index:2;text-align:left;font:7px var(--mono);color:var(--faint);padding:7px 8px;border-bottom:1px solid var(--line);background:#0d1926;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.mgmt-combined td{padding:6px 8px;border-bottom:1px solid rgba(148,163,184,.07);color:#9fb1c8;vertical-align:middle}
+.mgmt-cls-row{cursor:pointer;background:rgba(255,255,255,.012)}
+.mgmt-cls-row:hover td{background:#101d2c}
+.mgmt-cls-row.on td{background:rgba(34,211,238,.055);color:#dbeafe}
+.mgmt-cls-row b{font-size:9.5px;color:#dbeafe}
+.mgmt-chev{display:inline-block;width:12px;color:#7e91a7;font:8px var(--mono)}
+.mgmt-cls-id{font:7px var(--mono);color:var(--faint);margin-top:2px;word-break:break-all}
+.mgmt-inst-row{cursor:pointer;background:#08111c}
+.mgmt-inst-row:hover td{background:#101d2c}
+.mgmt-inst-row.on td{background:rgba(34,211,238,.04)}
+.mgmt-indent{color:#3f5269;margin-right:4px;font:8px var(--mono)}
+.mgmt-inst-name{font-size:8.5px;color:#b9c7da}
+.mgmt-inst-id{display:block;font:6.8px var(--mono);color:var(--faint);margin-top:1px;word-break:break-all}
+.mgmt-status{font:6.5px var(--mono);padding:1px 3px;border-radius:2px;border:1px solid var(--line);color:#86efac;background:rgba(34,197,94,.05);white-space:nowrap}
+.mgmt-status.draft{color:#fcd34d;border-color:rgba(245,158,11,.22);background:rgba(245,158,11,.05)}
+.mgmt-status.archived,.mgmt-status.disabled{color:#94a3b8;border-color:var(--line);background:#121d2c}
+.mgmt-detail{color:var(--faint);max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){.mgmt-detail{max-width:160px}}
+
+.manage-jump{display:flex;align-items:center;gap:9px;border:1px solid rgba(34,211,238,.20);border-radius:8px;background:rgba(34,211,238,.035);padding:8px 10px;margin-bottom:10px}
+.mj-icon{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:rgba(34,211,238,.09);border:1px solid rgba(34,211,238,.22);color:#a5f3fc;font-size:12px;flex:0 0 26px}
+.mj-main{min-width:0;flex:1}.mj-main b{display:block;font:8.5px var(--mono);color:#a5f3fc}.mj-main span{display:block;font-size:7.5px;color:var(--faint);line-height:1.5;margin-top:2px}
+@media(max-width:700px){.manage-jump{align-items:flex-start;flex-wrap:wrap}.manage-jump .btn{margin-left:35px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="mark">⚙</div>
+      <div><b>Settings</b><span>Settings Workspace</span></div>
+    </div>
+    <select class="section-sel" id="sectionSel"></select>
+    <div class="scope">
+      <label>Scope</label>
+      <select id="scopeSel">
+        <option value="User">User</option>
+        <option value="Workspace">Workspace</option>
+        <option value="Machine">Machine</option>
+        <option value="Policy">Policy</option>
+      </select>
+    </div>
+    <input class="search" id="search" placeholder="搜索设置…  Cmd/Ctrl+K">
+    <button class="btn primary" id="applyBtn" disabled>Apply</button>
+    <button class="btn more-btn" id="moreBtn">⋯</button>
+    <div class="more-menu" id="moreMenu">
+      <button data-more="import">Import settings…</button>
+      <button data-more="export">Export settings…</button>
+      <button data-more="close">Close</button>
+    </div>
+  </header>
+
+  <nav id="nav"></nav>
+
+  <main id="main"></main>
+
+  <aside id="changes"></aside>
+
+  <footer id="status">
+    <span class="dot"></span>
+    <span id="statusLeft">Settings · User scope · clean</span>
+    <span class="grow"></span>
+    <span id="statusRight">v1.4.2 · build 2026.11.23</span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const LAYER_CATALOGS = {
+  "point": {
+    "layer": "point",
+    "label": "点层",
+    "classes": [
+      {
+        "id": "win.key.send",
+        "name": "发送快捷键",
+        "group": "hotkey",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "向目标窗口发送组合键；复制、粘贴、剪切只是不同 keys 的实例。",
+        "instances": [
+          {
+            "id": "win.key.send.i-copy@r1",
+            "name": "复制",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+C\",\"mode\":\"press\",\"repeat\":1}"
+          },
+          {
+            "id": "win.key.send.i-paste@r1",
+            "name": "粘贴",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+V\",\"mode\":\"press\",\"repeat\":1}"
+          },
+          {
+            "id": "win.key.send.i-cut@r1",
+            "name": "剪切",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+X\",\"mode\":\"press\",\"repeat\":1}"
+          },
+          {
+            "id": "win.key.send.i-undo@r1",
+            "name": "撤销",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+Z\",\"mode\":\"press\",\"repeat\":1}"
+          },
+          {
+            "id": "win.key.send.i-select-all@r1",
+            "name": "全选",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+A\",\"mode\":\"press\",\"repeat\":1}"
+          }
+        ]
+      },
+      {
+        "id": "win.key.trigger",
+        "name": "监听快捷键",
+        "group": "hotkey",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "全局或按应用监听组合键，发出 trigger 事件；和发送快捷键共用 Hotkey 契约。",
+        "instances": [
+          {
+            "id": "win.key.trigger.i-trigger-panel@r1",
+            "name": "打开面板",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+Alt+Space\",\"scope\":\"global\"}"
+          },
+          {
+            "id": "win.key.trigger.i-trigger-shot@r1",
+            "name": "截图翻译",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"keys\":\"Ctrl+Alt+T\",\"scope\":\"global\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.window.control",
+        "name": "控制窗口",
+        "group": "window",
+        "version": "1.2.0",
+        "status": "stable",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "按 WindowSelector 找到顶层窗口，执行聚焦、移动、缩放、置顶、关闭等操作。",
+        "instances": [
+          {
+            "id": "win.window.control.i-focus-notepad@r1",
+            "name": "聚焦记事本",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"op\":\"focus\",\"selector\":{\"strategy\":\"process\",\"process\":\"notepad.exe\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}"
+          },
+          {
+            "id": "win.window.control.i-move-chrome@r1",
+            "name": "Chrome 移到副屏左半",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"op\":\"move\",\"monitor\":1,\"rect\":\"0,0,0.5,1\",\"selector\":{\"strategy\":\"process\",\"process\":\"chrome.exe\",\"title\":\"GitHub\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}"
+          },
+          {
+            "id": "win.window.control.i-topmost@r1",
+            "name": "当前窗口置顶切换",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"op\":\"topmost\",\"mode\":\"toggle\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}"
+          },
+          {
+            "id": "win.window.control.i-close-explorer@r1",
+            "name": "关闭所有资源管理器",
+            "rev": 1,
+            "status": "draft",
+            "detail": "{\"op\":\"close\",\"match\":\"all\",\"selector\":{\"strategy\":\"class\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"CabinetWClass\",\"match\":\"all\"}}"
+          }
+        ]
+      },
+      {
+        "id": "win.window.query",
+        "name": "查询窗口",
+        "group": "window",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "只读查询顶层窗口，返回 WindowInfo[]；用于选择器测试、批量操作前预览。",
+        "instances": [
+          {
+            "id": "win.window.query.i-list-windows@r1",
+            "name": "列出可见窗口",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"limit\":50,\"sort\":\"z_order\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"all\"}}"
+          },
+          {
+            "id": "win.window.query.i-foreground@r1",
+            "name": "当前前台窗口",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"limit\":1,\"sort\":\"z_order\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"first\"}}"
+          }
+        ]
+      },
+      {
+        "id": "win.open",
+        "name": "打开目标",
+        "group": "open",
+        "version": "1.1.0",
+        "status": "stable",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "一个类覆盖文件、文件夹、应用、URL；kind 参数决定解析路径与默认处理器。",
+        "instances": [
+          {
+            "id": "win.open.i-open-downloads@r1",
+            "name": "打开下载文件夹",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"kind\":\"folder\",\"target\":\"%USERPROFILE%\\\\Downloads\",\"app\":\"\",\"args\":\"\"}"
+          },
+          {
+            "id": "win.open.i-open-github@r1",
+            "name": "打开 GitHub",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"kind\":\"url\",\"target\":\"https://github.com\",\"app\":\"\",\"args\":\"\"}"
+          },
+          {
+            "id": "win.open.i-open-project@r1",
+            "name": "用 VS Code 打开项目",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"kind\":\"folder\",\"target\":\"C:\\\\project\",\"app\":\"code.exe\",\"args\":\".\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.audio.volume",
+        "name": "控制系统音量",
+        "group": "settings",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "主音量与静音控制；action 参数覆盖 up/down/set/mute/toggle。应用音量放 P1。",
+        "instances": [
+          {
+            "id": "win.audio.volume.i-vol-up@r1",
+            "name": "音量 +5",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"action\":\"up\",\"step\":5,\"level\":50,\"app\":\"\"}"
+          },
+          {
+            "id": "win.audio.volume.i-vol-toggle@r1",
+            "name": "静音切换",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"action\":\"toggle\",\"step\":5,\"level\":50,\"app\":\"\"}"
+          },
+          {
+            "id": "win.audio.volume.i-vol-30@r1",
+            "name": "设 30%",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"action\":\"set\",\"step\":5,\"level\":30,\"app\":\"\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.display.brightness",
+        "name": "控制亮度",
+        "group": "settings",
+        "version": "0.9.0",
+        "status": "draft",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "内屏走 WMI、外屏走 DDC/CI；不支持时明确失败，不用假值。",
+        "instances": [
+          {
+            "id": "win.display.brightness.i-bright-60@r1",
+            "name": "内屏亮度 60%",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"action\":\"set\",\"value\":60,\"step\":10,\"monitor\":\"internal\",\"method\":\"auto\"}"
+          },
+          {
+            "id": "win.display.brightness.i-bright-up@r1",
+            "name": "亮度 +10",
+            "rev": 1,
+            "status": "draft",
+            "detail": "{\"action\":\"up\",\"value\":60,\"step\":10,\"monitor\":\"internal\",\"method\":\"auto\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.theme.mode",
+        "name": "深浅主题",
+        "group": "settings",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "写 AppsUseLightTheme / SystemUsesLightTheme 并广播 ImmersiveColorSet；部分应用需重启。",
+        "instances": [
+          {
+            "id": "win.theme.mode.i-dark@r1",
+            "name": "深色模式",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"action\":\"set\",\"mode\":\"dark\",\"scope\":\"both\"}"
+          },
+          {
+            "id": "win.theme.mode.i-light-apps@r1",
+            "name": "应用浅色",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"action\":\"set\",\"mode\":\"light\",\"scope\":\"apps\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.ocr.read",
+        "name": "OCR 识别",
+        "group": "capture",
+        "version": "1.1.0",
+        "status": "stable",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "从图片/截图提取文字；优先 Windows AI OCR，语言不支持时回退 PaddleOCR。",
+        "instances": [
+          {
+            "id": "win.ocr.read.i-ocr-auto@r1",
+            "name": "截图转文字",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"image\":\"$screenshot\",\"lang\":\"auto\",\"layout\":true}"
+          },
+          {
+            "id": "win.ocr.read.i-ocr-en@r1",
+            "name": "英文截图",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"image\":\"$screenshot\",\"lang\":\"en\",\"layout\":false}"
+          }
+        ]
+      },
+      {
+        "id": "win.clipboard.get",
+        "name": "读取剪贴板",
+        "group": "file",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "读取文本/图片/文件列表；format 参数决定输出类型。",
+        "instances": [
+          {
+            "id": "win.clipboard.get.i-clip-text@r1",
+            "name": "取文本",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"format\":\"text\"}"
+          },
+          {
+            "id": "win.clipboard.get.i-clip-image@r1",
+            "name": "取图片",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"format\":\"image\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.http.request",
+        "name": "HTTP 请求",
+        "group": "network",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "统一 GET/POST/PUT/DELETE，带超时、重试、SSRF 防护和响应大小限制。",
+        "instances": [
+          {
+            "id": "win.http.request.i-http-github@r1",
+            "name": "GET GitHub API",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"method\":\"GET\",\"url\":\"https://api.github.com/repos/owner/repo\",\"body\":\"\"}"
+          },
+          {
+            "id": "win.http.request.i-http-webhook@r1",
+            "name": "POST Webhook",
+            "rev": 1,
+            "status": "draft",
+            "detail": "{\"method\":\"POST\",\"url\":\"https://example.com/hook\",\"body\":\"{\\\"event\\\":\\\"done\\\"}\"}"
+          }
+        ]
+      },
+      {
+        "id": "ui.form",
+        "name": "用户表单",
+        "group": "human",
+        "version": "0.8.0",
+        "status": "draft",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "JSON Schema 驱动的表单；取消/超时返回明确状态，审批是 gate 不是这个类。",
+        "instances": [
+          {
+            "id": "ui.form.i-form-confirm@r1",
+            "name": "发布确认",
+            "rev": 1,
+            "status": "draft",
+            "detail": "{\"title\":\"确认发布\",\"fields\":\"备注, 版本号\"}"
+          }
+        ]
+      },
+      {
+        "id": "win.screen.capture",
+        "name": "抓屏",
+        "group": "capture",
+        "version": "1.0.0",
+        "status": "stable",
+        "effect": "L2",
+        "priority": "P0",
+        "summary": "抓屏保存 PNG；全屏或区域截图。",
+        "instances": [
+          {
+            "id": "win.screen.capture.i-full@r1",
+            "name": "全屏截图",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"region\":\"full\",\"format\":\"png\"}"
+          },
+          {
+            "id": "win.screen.capture.i-region@r1",
+            "name": "区域截图",
+            "rev": 1,
+            "status": "stable",
+            "detail": "{\"region\":\"120x80\",\"format\":\"png\"}"
+          }
+        ]
+      }
+    ]
+  },
+  "line": {
+    "layer": "line",
+    "label": "线层",
+    "classes": [
+      {
+        "id": "flow.ensure-vpn",
+        "name": "flow.ensure-vpn",
+        "group": "Guard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "确保 VPN 已连接",
+        "instances": [
+          {
+            "id": "inst.ensure-vpn-ask@r2",
+            "name": "ensure-vpn-ask",
+            "rev": 2,
+            "status": "active",
+            "detail": "默认询问"
+          },
+          {
+            "id": "inst.ensure-vpn-auto@r1",
+            "name": "ensure-vpn-auto",
+            "rev": 1,
+            "status": "active",
+            "detail": "自动打开软件"
+          },
+          {
+            "id": "inst.ensure-vpn-auto-connect@r1",
+            "name": "ensure-vpn-auto-connect",
+            "rev": 1,
+            "status": "active",
+            "detail": "自动打开并连接"
+          },
+          {
+            "id": "inst.ensure-vpn-manual@r1",
+            "name": "ensure-vpn-manual",
+            "rev": 1,
+            "status": "active",
+            "detail": "只提示"
+          }
+        ]
+      },
+      {
+        "id": "flow.ensure-app",
+        "name": "flow.ensure-app",
+        "group": "Guard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "确保应用已安装/已运行",
+        "instances": [
+          {
+            "id": "inst.ensure-app-vscode@r2",
+            "name": "ensure-app-vscode",
+            "rev": 2,
+            "status": "active",
+            "detail": "确保 VS Code"
+          },
+          {
+            "id": "inst.ensure-app-notepad@r1",
+            "name": "ensure-app-notepad",
+            "rev": 1,
+            "status": "active",
+            "detail": "确保记事本"
+          }
+        ]
+      },
+      {
+        "id": "flow.ensure-service",
+        "name": "flow.ensure-service",
+        "group": "Guard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "确保本地服务/端口可用",
+        "instances": [
+          {
+            "id": "inst.ensure-service-docker@r1",
+            "name": "ensure-service-docker",
+            "rev": 1,
+            "status": "active",
+            "detail": "确保 Docker"
+          },
+          {
+            "id": "inst.ensure-service-local-api@r1",
+            "name": "ensure-service-local-api",
+            "rev": 1,
+            "status": "active",
+            "detail": "确保本地 API"
+          }
+        ]
+      },
+      {
+        "id": "flow.ensure-download",
+        "name": "flow.ensure-download",
+        "group": "Guard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "下载并校验文件",
+        "instances": [
+          {
+            "id": "inst.ensure-download-vscode@r2",
+            "name": "ensure-download-vscode",
+            "rev": 2,
+            "status": "active",
+            "detail": "下载 VS Code"
+          },
+          {
+            "id": "inst.ensure-download-driver@r1",
+            "name": "ensure-download-driver",
+            "rev": 1,
+            "status": "active",
+            "detail": "下载驱动"
+          }
+        ]
+      },
+      {
+        "id": "flow.open-external-site",
+        "name": "flow.open-external-site",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "按策略确保 VPN 后打开外网",
+        "instances": [
+          {
+            "id": "inst.site-youtube@r3",
+            "name": "site-youtube",
+            "rev": 3,
+            "status": "active",
+            "detail": "url=YouTube；vpn=inst.ensure-vpn-ask@r2"
+          },
+          {
+            "id": "inst.site-github@r1",
+            "name": "site-github",
+            "rev": 1,
+            "status": "active",
+            "detail": "url=GitHub；vpn=inst.ensure-vpn-ask@r2"
+          },
+          {
+            "id": "inst.site-google@r1",
+            "name": "site-google",
+            "rev": 1,
+            "status": "active",
+            "detail": "url=Google；vpn=inst.ensure-vpn-ask@r2"
+          },
+          {
+            "id": "inst.site-intranet@r1",
+            "name": "site-intranet",
+            "rev": 1,
+            "status": "active",
+            "detail": "vpnRequirement=none"
+          }
+        ]
+      },
+      {
+        "id": "flow.open-app",
+        "name": "flow.open-app",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "确保应用可用后打开文件/项目/URL",
+        "instances": [
+          {
+            "id": "inst.open-app-vscode-project@r2",
+            "name": "open-app-vscode-project",
+            "rev": 2,
+            "status": "active",
+            "detail": "ensure=inst.ensure-app-vscode@r2"
+          },
+          {
+            "id": "inst.open-app-notepad-file@r1",
+            "name": "open-app-notepad-file",
+            "rev": 1,
+            "status": "active",
+            "detail": "ensure=inst.ensure-app-notepad@r1"
+          }
+        ]
+      },
+      {
+        "id": "flow.open-workspace",
+        "name": "flow.open-workspace",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "打开多个应用并布局/聚焦",
+        "instances": [
+          {
+            "id": "inst.workspace-dev@r3",
+            "name": "workspace-dev",
+            "rev": 3,
+            "status": "active",
+            "detail": "editor=VS Code；terminal；dual"
+          },
+          {
+            "id": "inst.workspace-meeting@r1",
+            "name": "workspace-meeting",
+            "rev": 1,
+            "status": "active",
+            "detail": "meeting；single"
+          }
+        ]
+      },
+      {
+        "id": "flow.clipboard-to-file",
+        "name": "flow.clipboard-to-file",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "剪贴板 → 模板 → 写文件",
+        "instances": [
+          {
+            "id": "inst.clipboard-inbox@r3",
+            "name": "clipboard-inbox",
+            "rev": 3,
+            "status": "active",
+            "detail": "path=inbox.md；append=true"
+          },
+          {
+            "id": "inst.clipboard-daily@r2",
+            "name": "clipboard-daily",
+            "rev": 2,
+            "status": "active",
+            "detail": "path=daily/...；append=false"
+          }
+        ]
+      },
+      {
+        "id": "flow.screenshot-translate",
+        "name": "flow.screenshot-translate",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "截图 → OCR → 翻译 → 浮层",
+        "instances": [
+          {
+            "id": "inst.screenshot-en-zh@r4",
+            "name": "screenshot-en-zh",
+            "rev": 4,
+            "status": "active",
+            "detail": "en→zh；overlay=true"
+          },
+          {
+            "id": "inst.screenshot-ja-zh@r2",
+            "name": "screenshot-ja-zh",
+            "rev": 2,
+            "status": "active",
+            "detail": "ja→zh；overlay=false"
+          }
+        ]
+      },
+      {
+        "id": "flow.http-extract",
+        "name": "flow.http-extract",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "HTTP → 解析 → 模板 → 保存/通知",
+        "instances": [
+          {
+            "id": "inst.http-github-status@r2",
+            "name": "http-github-status",
+            "rev": 2,
+            "status": "active",
+            "detail": "GitHub API"
+          },
+          {
+            "id": "inst.http-weather@r1",
+            "name": "http-weather",
+            "rev": 1,
+            "status": "active",
+            "detail": "Open-Meteo"
+          }
+        ]
+      },
+      {
+        "id": "flow.ai-rewrite",
+        "name": "flow.ai-rewrite",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "选中文字 → LLM → 预览/审批 → 替换",
+        "instances": [
+          {
+            "id": "inst.ai-rewrite-formal@r2",
+            "name": "ai-rewrite-formal",
+            "rev": 2,
+            "status": "active",
+            "detail": "formal；approval=true"
+          },
+          {
+            "id": "inst.ai-rewrite-shorten@r1",
+            "name": "ai-rewrite-shorten",
+            "rev": 1,
+            "status": "active",
+            "detail": "shorten；approval=true"
+          },
+          {
+            "id": "inst.ai-rewrite-translate@r1",
+            "name": "ai-rewrite-translate",
+            "rev": 1,
+            "status": "active",
+            "detail": "translate；approval=false"
+          }
+        ]
+      },
+      {
+        "id": "flow.batch-archive",
+        "name": "flow.batch-archive",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "批量扫描 → OCR/提取 → 校验 → 归档",
+        "instances": [
+          {
+            "id": "inst.invoice-company@r6",
+            "name": "invoice-company",
+            "rev": 6,
+            "status": "active",
+            "detail": "company；zh OCR"
+          },
+          {
+            "id": "inst.invoice-personal@r2",
+            "name": "invoice-personal",
+            "rev": 2,
+            "status": "active",
+            "detail": "personal；en OCR"
+          }
+        ]
+      },
+      {
+        "id": "flow.approval-action",
+        "name": "flow.approval-action",
+        "group": "Action",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "审批通过后执行一个子流程",
+        "instances": [
+          {
+            "id": "inst.approval-publish@r1",
+            "name": "approval-publish",
+            "rev": 1,
+            "status": "active",
+            "detail": "action=publish"
+          },
+          {
+            "id": "inst.approval-delete@r1",
+            "name": "approval-delete",
+            "rev": 1,
+            "status": "active",
+            "detail": "action=cleanup"
+          },
+          {
+            "id": "inst.approval-deploy@r1",
+            "name": "approval-deploy",
+            "rev": 1,
+            "status": "active",
+            "detail": "action=deploy"
+          }
+        ]
+      }
+    ]
+  },
+  "surface": {
+    "layer": "surface",
+    "label": "面层",
+    "classes": [
+      {
+        "id": "surface.form",
+        "name": "表单",
+        "group": "input",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "schema 驱动的表单；设置、参数、创建/编辑。",
+        "instances": [
+          {
+            "id": "surface.settings.vpn",
+            "name": "VPN 设置",
+            "rev": 3,
+            "status": "active",
+            "detail": "默认 VPN / 自动打开 / 自动连接 / 超时 · settings"
+          },
+          {
+            "id": "surface.settings.general",
+            "name": "通用设置",
+            "rev": 2,
+            "status": "active",
+            "detail": "主题 / 语言 / 启动行为 · settings"
+          },
+          {
+            "id": "surface.point-params",
+            "name": "点实例参数",
+            "rev": 1,
+            "status": "active",
+            "detail": "编辑 PointInstance 的参数与 revision · sidebar"
+          },
+          {
+            "id": "surface.settings.system-monitor",
+            "name": "系统监控设置",
+            "rev": 2,
+            "status": "active",
+            "detail": "采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings"
+          }
+        ]
+      },
+      {
+        "id": "surface.wizard",
+        "name": "向导",
+        "group": "input",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "多步引导；新建流程、绑定槽位、首次配置。",
+        "instances": [
+          {
+            "id": "surface.wizard.new-flow",
+            "name": "新建流程",
+            "rev": 1,
+            "status": "active",
+            "detail": "选模板 → 绑槽位 → 试运行 · modal"
+          },
+          {
+            "id": "surface.wizard.vpn-setup",
+            "name": "VPN 首次配置",
+            "rev": 1,
+            "status": "active",
+            "detail": "选软件 → 测试 → 保存 · modal"
+          }
+        ]
+      },
+      {
+        "id": "surface.inspector",
+        "name": "检查器",
+        "group": "input",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "查看/编辑选中对象的属性；点类、点实例、槽位、运行节点。",
+        "instances": [
+          {
+            "id": "surface.inspector.point",
+            "name": "点检查器",
+            "rev": 4,
+            "status": "active",
+            "detail": "PointClass / PointInstance 契约与参数 · sidebar"
+          },
+          {
+            "id": "surface.inspector.slot-vpn",
+            "name": "VPN 槽位检查器",
+            "rev": 2,
+            "status": "active",
+            "detail": "slot.vpn 的 accepts / default / bound · sidebar"
+          },
+          {
+            "id": "surface.inspector.run-node",
+            "name": "运行节点检查器",
+            "rev": 1,
+            "status": "active",
+            "detail": "PointRun 输入/输出/耗时 · sidebar"
+          }
+        ]
+      },
+      {
+        "id": "surface.table",
+        "name": "表格",
+        "group": "browse",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "表格浏览、排序、筛选、批量操作。",
+        "instances": [
+          {
+            "id": "surface.point-catalog",
+            "name": "点目录",
+            "rev": 5,
+            "status": "active",
+            "detail": "38 个点类 / 实例列表 · main"
+          },
+          {
+            "id": "surface.flow-instances",
+            "name": "线实例列表",
+            "rev": 3,
+            "status": "active",
+            "detail": "FlowInstance 目录 · main"
+          },
+          {
+            "id": "surface.run-history.table",
+            "name": "运行列表",
+            "rev": 2,
+            "status": "active",
+            "detail": "FlowRun / PointRun 表格 · main"
+          }
+        ]
+      },
+      {
+        "id": "surface.card-grid",
+        "name": "卡片墙",
+        "group": "browse",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "卡片墙；站点启动、模板市场、Body 市场。",
+        "instances": [
+          {
+            "id": "surface.site-launcher",
+            "name": "站点启动器",
+            "rev": 3,
+            "status": "active",
+            "detail": "YouTube / GitHub / Google / 内网 · main"
+          },
+          {
+            "id": "surface.body-market",
+            "name": "Body 市场",
+            "rev": 1,
+            "status": "active",
+            "detail": "安装 body / 模板 · main"
+          },
+          {
+            "id": "surface.flow-gallery",
+            "name": "流程模板",
+            "rev": 2,
+            "status": "active",
+            "detail": "FlowClass 模板库 · main"
+          }
+        ]
+      },
+      {
+        "id": "surface.tree",
+        "name": "树",
+        "group": "browse",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "层级导航；Domain → PointClass、FlowClass → 节点。",
+        "instances": [
+          {
+            "id": "surface.point-domains",
+            "name": "点 Domain 树",
+            "rev": 2,
+            "status": "active",
+            "detail": "15 domain → 38 类 · sidebar"
+          },
+          {
+            "id": "surface.flow-outline",
+            "name": "流程大纲",
+            "rev": 1,
+            "status": "active",
+            "detail": "FlowClass 节点树 · sidebar"
+          }
+        ]
+      },
+      {
+        "id": "surface.command-palette",
+        "name": "命令面板",
+        "group": "browse",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "全局搜索与动作启动；键盘优先。",
+        "instances": [
+          {
+            "id": "surface.command-palette.global",
+            "name": "全局命令面板",
+            "rev": 4,
+            "status": "active",
+            "detail": "搜索 Flow / Point / 设置 · overlay"
+          },
+          {
+            "id": "surface.command-palette.points",
+            "name": "点实例面板",
+            "rev": 2,
+            "status": "active",
+            "detail": "搜索并运行点实例 · overlay"
+          }
+        ]
+      },
+      {
+        "id": "surface.canvas",
+        "name": "画布",
+        "group": "visualize",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "节点图编辑；线层编辑器、Body 组合器。",
+        "instances": [
+          {
+            "id": "surface.canvas.flow-editor",
+            "name": "线层编辑器",
+            "rev": 6,
+            "status": "active",
+            "detail": "FlowClass 图 / 槽位绑定 · main"
+          },
+          {
+            "id": "surface.canvas.body-composer",
+            "name": "Body 组合器",
+            "rev": 1,
+            "status": "active",
+            "detail": "面 + 线 + 权限打包 · main"
+          }
+        ]
+      },
+      {
+        "id": "surface.dashboard",
+        "name": "仪表盘",
+        "group": "visualize",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "指标、状态、健康度；系统总览、VPN 状态。",
+        "instances": [
+          {
+            "id": "surface.dashboard.system",
+            "name": "系统总览",
+            "rev": 2,
+            "status": "active",
+            "detail": "运行数 / 成功率 / 成本 · main"
+          },
+          {
+            "id": "surface.dashboard.vpn",
+            "name": "VPN 健康",
+            "rev": 1,
+            "status": "active",
+            "detail": "VPN 状态 / 连接耗时 / 失败 · main"
+          },
+          {
+            "id": "surface.system-monitor",
+            "name": "系统状态总览",
+            "rev": 2,
+            "status": "active",
+            "detail": "CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main"
+          }
+        ]
+      },
+      {
+        "id": "surface.run-history",
+        "name": "运行历史",
+        "group": "visualize",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "运行历史、节点 trace、变量快照、回放。",
+        "instances": [
+          {
+            "id": "surface.run-history.flow",
+            "name": "流程运行历史",
+            "rev": 3,
+            "status": "active",
+            "detail": "FlowRun + PointRun trace · main"
+          },
+          {
+            "id": "surface.run-history.vpn",
+            "name": "VPN 运行历史",
+            "rev": 2,
+            "status": "active",
+            "detail": "GuardResult / 子 FlowRun · main"
+          }
+        ]
+      },
+      {
+        "id": "surface.diff",
+        "name": "差异",
+        "group": "visualize",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "版本/实例差异；FlowClass 版本、SurfaceInstance revision。",
+        "instances": [
+          {
+            "id": "surface.diff.flow-version",
+            "name": "流程版本 diff",
+            "rev": 1,
+            "status": "active",
+            "detail": "FlowClass v1 vs v2 · main"
+          },
+          {
+            "id": "surface.diff.instance-revision",
+            "name": "实例 revision diff",
+            "rev": 1,
+            "status": "active",
+            "detail": "绑定/参数变化 · main"
+          }
+        ]
+      },
+      {
+        "id": "surface.dialog",
+        "name": "对话框",
+        "group": "communicate",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "确认、审批、危险操作；模态。",
+        "instances": [
+          {
+            "id": "surface.dialog.vpn-approval",
+            "name": "VPN 审批",
+            "rev": 2,
+            "status": "active",
+            "detail": "打开 VPN / 我已手动打开 / 取消 · modal"
+          },
+          {
+            "id": "surface.dialog.delete-confirm",
+            "name": "删除确认",
+            "rev": 1,
+            "status": "active",
+            "detail": "危险操作确认 · modal"
+          },
+          {
+            "id": "surface.dialog.deploy-approval",
+            "name": "部署审批",
+            "rev": 1,
+            "status": "active",
+            "detail": "生产发布审批 · modal"
+          }
+        ]
+      },
+      {
+        "id": "surface.notification",
+        "name": "通知",
+        "group": "communicate",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P0",
+        "summary": "Toast / Tray / Banner；显示结果与下一步。",
+        "instances": [
+          {
+            "id": "surface.notify.vpn",
+            "name": "VPN 通知",
+            "rev": 3,
+            "status": "active",
+            "detail": "GuardResult → 下一步 · toast"
+          },
+          {
+            "id": "surface.notify.run",
+            "name": "运行通知",
+            "rev": 2,
+            "status": "active",
+            "detail": "成功/失败/耗时 · toast"
+          },
+          {
+            "id": "surface.notify.download",
+            "name": "下载通知",
+            "rev": 1,
+            "status": "active",
+            "detail": "下载/校验结果 · tray"
+          },
+          {
+            "id": "surface.notify.system-threshold",
+            "name": "系统阈值告警",
+            "rev": 1,
+            "status": "active",
+            "detail": "CPU/GPU 温度、内存、磁盘超阈值提示 · toast"
+          }
+        ]
+      },
+      {
+        "id": "surface.tray-menu",
+        "name": "托盘菜单",
+        "group": "communicate",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "托盘/右键菜单；快速入口。",
+        "instances": [
+          {
+            "id": "surface.tray.quick-actions",
+            "name": "快捷动作",
+            "rev": 2,
+            "status": "active",
+            "detail": "收藏的 FlowInstance · tray"
+          },
+          {
+            "id": "surface.tray.vpn",
+            "name": "VPN 托盘菜单",
+            "rev": 1,
+            "status": "active",
+            "detail": "打开 / 连接 / 状态 · tray"
+          },
+          {
+            "id": "surface.tray.system-status",
+            "name": "系统状态托盘",
+            "rev": 1,
+            "status": "active",
+            "detail": "CPU/GPU/内存/网速文本摘要 · tray"
+          }
+        ]
+      },
+      {
+        "id": "surface.hud",
+        "name": "HUD 浮层",
+        "group": "communicate",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "屏幕浮层；翻译结果、VPN 状态、录屏提示。",
+        "instances": [
+          {
+            "id": "surface.hud.translate",
+            "name": "翻译浮层",
+            "rev": 2,
+            "status": "active",
+            "detail": "截图翻译结果 · overlay"
+          },
+          {
+            "id": "surface.hud.vpn-status",
+            "name": "VPN 状态浮层",
+            "rev": 1,
+            "status": "active",
+            "detail": "连接状态/耗时 · overlay"
+          },
+          {
+            "id": "surface.hud.system-status",
+            "name": "系统状态浮层",
+            "rev": 1,
+            "status": "active",
+            "detail": "CPU/GPU/内存/网速紧凑显示，可置顶 · overlay"
+          }
+        ]
+      },
+      {
+        "id": "surface.metric-card",
+        "name": "指标卡",
+        "group": "visualize",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L0",
+        "priority": "P1",
+        "summary": "单个系统指标：数值、单位、阈值、状态、历史 sparkline；CPU/GPU/内存/网络/磁盘都是实例。",
+        "instances": [
+          {
+            "id": "metric.cpu",
+            "name": "CPU",
+            "rev": 1,
+            "status": "active",
+            "detail": "使用率 / 温度 / 频率 / 每核负载 · main"
+          },
+          {
+            "id": "metric.gpu",
+            "name": "GPU",
+            "rev": 1,
+            "status": "active",
+            "detail": "使用率 / 温度 / VRAM / 风扇 · main"
+          },
+          {
+            "id": "metric.memory",
+            "name": "内存",
+            "rev": 1,
+            "status": "active",
+            "detail": "已用 / 总量 / 百分比 / Swap · main"
+          },
+          {
+            "id": "metric.network",
+            "name": "网速",
+            "rev": 1,
+            "status": "active",
+            "detail": "下行 / 上行 / 总流量 / 延迟 · main"
+          },
+          {
+            "id": "metric.disk",
+            "name": "磁盘",
+            "rev": 1,
+            "status": "active",
+            "detail": "已用 / 剩余 / 读写 / 温度 · main"
+          }
+        ]
+      }
+    ]
+  },
+  "body": {
+    "layer": "body",
+    "label": "体层",
+    "classes": [
+      {
+        "id": "body.file-preview",
+        "name": "文件预览",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "任意文件预览：文本、图片、PDF、视频、音频统一窗口。",
+        "instances": [
+          {
+            "name": "text",
+            "rev": 1,
+            "status": "active",
+            "detail": "renderer=text · UTF-8"
+          },
+          {
+            "name": "markdown",
+            "rev": 1,
+            "status": "active",
+            "detail": "renderer=markdown · sanitize=true"
+          },
+          {
+            "name": "image",
+            "rev": 1,
+            "status": "active",
+            "detail": "renderer=image · fit=contain"
+          },
+          {
+            "name": "pdf",
+            "rev": 1,
+            "status": "active",
+            "detail": "renderer=pdf · page=1 · zoom=fit"
+          },
+          {
+            "name": "video",
+            "rev": 1,
+            "status": "active",
+            "detail": "renderer=video · stream=true"
+          },
+          {
+            "name": "audio",
+            "rev": 1,
+            "status": "active",
+            "detail": "renderer=audio · waveform=true"
+          }
+        ]
+      },
+      {
+        "id": "body.ocr",
+        "name": "OCR 识别",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "识别文字、数学公式、二维码、表格与手写内容。",
+        "instances": [
+          {
+            "name": "text",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=text · language=auto"
+          },
+          {
+            "name": "math",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=math · output=latex"
+          },
+          {
+            "name": "qr",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=qr · formats=qr,code128"
+          },
+          {
+            "name": "table",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=table · output=markdown"
+          },
+          {
+            "name": "handwriting",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=handwriting · threshold=0.4"
+          }
+        ]
+      },
+      {
+        "id": "body.image-resizer",
+        "name": "图片尺寸",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "批量图片尺寸调整，预设化输出。",
+        "instances": [
+          {
+            "name": "web",
+            "rev": 2,
+            "status": "active",
+            "detail": "suffix=-web · quality=85"
+          },
+          {
+            "name": "thumbnail",
+            "rev": 1,
+            "status": "active",
+            "detail": "fit=cover · quality=80"
+          },
+          {
+            "name": "avatar",
+            "rev": 1,
+            "status": "active",
+            "detail": "fit=cover · format=png"
+          },
+          {
+            "name": "email",
+            "rev": 1,
+            "status": "active",
+            "detail": "maxBytes=512000 · quality=75"
+          }
+        ]
+      },
+      {
+        "id": "body.batch-rename",
+        "name": "批量重命名",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "批量重命名：预览、冲突检测、撤销。",
+        "instances": [
+          {
+            "name": "regex",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=regex · dryRun=true"
+          },
+          {
+            "name": "sequence",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=sequence · start=1"
+          },
+          {
+            "name": "date-prefix",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=date · format=YYYY-MM-DD"
+          },
+          {
+            "name": "extension-normalize",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=extension · .jpeg→.jpg"
+          }
+        ]
+      },
+      {
+        "id": "body.pdf-toolkit",
+        "name": "PDF 工具",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "PDF 合并、拆分、压缩、旋转。",
+        "instances": [
+          {
+            "name": "merge",
+            "rev": 1,
+            "status": "active",
+            "detail": "op=merge · sort=name"
+          },
+          {
+            "name": "split",
+            "rev": 1,
+            "status": "active",
+            "detail": "op=split · range=1-3"
+          },
+          {
+            "name": "compress",
+            "rev": 1,
+            "status": "active",
+            "detail": "op=compress · quality=ebook"
+          },
+          {
+            "name": "rotate",
+            "rev": 1,
+            "status": "active",
+            "detail": "op=rotate · angle=90"
+          }
+        ]
+      },
+      {
+        "id": "body.media-converter",
+        "name": "媒体转换",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "图片、视频、音频格式转换。",
+        "instances": [
+          {
+            "name": "image",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=image · quality=85"
+          },
+          {
+            "name": "video",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=video · h264"
+          },
+          {
+            "name": "audio",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=audio · 192k"
+          }
+        ]
+      },
+      {
+        "id": "body.file-organizer",
+        "name": "文件整理",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "按类型/日期整理下载、截图与重复文件。",
+        "instances": [
+          {
+            "name": "downloads",
+            "rev": 1,
+            "status": "active",
+            "detail": "rule=type-date · dryRun=true"
+          },
+          {
+            "name": "screenshots",
+            "rev": 1,
+            "status": "active",
+            "detail": "rule=screenshot · month=true"
+          },
+          {
+            "name": "duplicates",
+            "rev": 1,
+            "status": "active",
+            "detail": "rule=hash · action=report"
+          }
+        ]
+      },
+      {
+        "id": "body.advanced-paste",
+        "name": "高级粘贴",
+        "group": "clipboard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "剪贴板内容 → 目标格式。",
+        "instances": [
+          {
+            "name": "plain",
+            "rev": 1,
+            "status": "active",
+            "detail": "format=plain · preview=false"
+          },
+          {
+            "name": "markdown",
+            "rev": 1,
+            "status": "active",
+            "detail": "format=markdown · preview=true"
+          },
+          {
+            "name": "json",
+            "rev": 1,
+            "status": "active",
+            "detail": "format=json · indent=2"
+          },
+          {
+            "name": "ai",
+            "rev": 1,
+            "status": "active",
+            "detail": "format=ai · model=local"
+          }
+        ]
+      },
+      {
+        "id": "body.clipboard-history",
+        "name": "剪贴板历史",
+        "group": "clipboard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "最近复制内容、固定片段与搜索。",
+        "instances": [
+          {
+            "name": "recent",
+            "rev": 1,
+            "status": "active",
+            "detail": "maxItems=100 · retention=7d"
+          },
+          {
+            "name": "pinned",
+            "rev": 1,
+            "status": "active",
+            "detail": "maxItems=20 · pinned=true"
+          }
+        ]
+      },
+      {
+        "id": "body.color-picker",
+        "name": "取色器",
+        "group": "clipboard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "屏幕取色，HEX/RGB/HSL 与调色板。",
+        "instances": [
+          {
+            "name": "hex",
+            "rev": 1,
+            "status": "active",
+            "detail": "format=hex · copy=true"
+          },
+          {
+            "name": "palette",
+            "rev": 1,
+            "status": "active",
+            "detail": "palette=12 · history=true"
+          }
+        ]
+      },
+      {
+        "id": "body.screen-ruler",
+        "name": "屏幕标尺",
+        "group": "clipboard",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "像素、英寸、角度测量。",
+        "instances": [
+          {
+            "name": "px",
+            "rev": 1,
+            "status": "active",
+            "detail": "unit=px · snap=4"
+          },
+          {
+            "name": "inches",
+            "rev": 1,
+            "status": "active",
+            "detail": "unit=inch · dpi=96"
+          },
+          {
+            "name": "angle",
+            "rev": 1,
+            "status": "active",
+            "detail": "unit=deg · snap=1"
+          }
+        ]
+      },
+      {
+        "id": "body.window-layout",
+        "name": "窗口布局",
+        "group": "window",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "把窗口摆成开发/会议/超宽布局。",
+        "instances": [
+          {
+            "name": "dev",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=dev · monitor=main"
+          },
+          {
+            "name": "meeting",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=meeting · monitor=main"
+          },
+          {
+            "name": "ultrawide",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=ultrawide · gap=8"
+          }
+        ]
+      },
+      {
+        "id": "body.always-on-top",
+        "name": "窗口置顶",
+        "group": "window",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "钉住窗口或屏幕区域。",
+        "instances": [
+          {
+            "name": "window",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=window · opacity=0.92"
+          },
+          {
+            "name": "region",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=region · crop=true"
+          }
+        ]
+      },
+      {
+        "id": "body.awake",
+        "name": "保持唤醒",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "一段时间/到指定时间/应用运行期间保持唤醒。",
+        "instances": [
+          {
+            "name": "30m",
+            "rev": 1,
+            "status": "active",
+            "detail": "duration=30m · display=on"
+          },
+          {
+            "name": "until",
+            "rev": 1,
+            "status": "active",
+            "detail": "until=18:00 · display=on"
+          },
+          {
+            "name": "while-app",
+            "rev": 1,
+            "status": "active",
+            "detail": "whileApp=build.exe"
+          }
+        ]
+      },
+      {
+        "id": "body.workspace",
+        "name": "工作区",
+        "group": "window",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "一键打开开发/会议/写作工作区。",
+        "instances": [
+          {
+            "name": "dev",
+            "rev": 3,
+            "status": "active",
+            "detail": "preset=dev · monitor=dual"
+          },
+          {
+            "name": "meeting",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=meeting · monitor=main"
+          },
+          {
+            "name": "writing",
+            "rev": 1,
+            "status": "active",
+            "detail": "preset=writing · monitor=main"
+          }
+        ]
+      },
+      {
+        "id": "body.quick-launch",
+        "name": "快速启动",
+        "group": "window",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "CLaunch 式启动坞 / 命令面板。",
+        "instances": [
+          {
+            "name": "dock",
+            "rev": 1,
+            "status": "active",
+            "detail": "tabs=5 · pageSize=10"
+          },
+          {
+            "name": "palette",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=palette · fuzzy=true"
+          }
+        ]
+      },
+      {
+        "id": "body.system-monitor",
+        "name": "系统监控",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "CPU/GPU/内存/网络/磁盘状态。",
+        "instances": [
+          {
+            "name": "desktop",
+            "rev": 2,
+            "status": "active",
+            "detail": "refreshMs=1000 · history=60s"
+          },
+          {
+            "name": "minimal",
+            "rev": 1,
+            "status": "active",
+            "detail": "refreshMs=2000 · hud=2x2"
+          }
+        ]
+      },
+      {
+        "id": "body.service-health",
+        "name": "服务健康",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "检查 Docker / 本地 API / VPN 健康状态。",
+        "instances": [
+          {
+            "name": "docker",
+            "rev": 1,
+            "status": "active",
+            "detail": "target=docker · timeout=5s"
+          },
+          {
+            "name": "local-api",
+            "rev": 1,
+            "status": "active",
+            "detail": "target=http://localhost:3000"
+          },
+          {
+            "name": "vpn",
+            "rev": 1,
+            "status": "active",
+            "detail": "target=vpn · retry=3"
+          }
+        ]
+      },
+      {
+        "id": "body.file-locksmith",
+        "name": "文件占用",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "查找占用文件的进程/句柄。",
+        "instances": [
+          {
+            "name": "process",
+            "rev": 1,
+            "status": "active",
+            "detail": "scope=user · confirmKill=true"
+          },
+          {
+            "name": "handle",
+            "rev": 1,
+            "status": "active",
+            "detail": "scope=system · showSystem=true"
+          }
+        ]
+      },
+      {
+        "id": "body.hosts-editor",
+        "name": "Hosts 编辑",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "本地 hosts 编辑、备份、diff。",
+        "instances": [
+          {
+            "name": "local",
+            "rev": 1,
+            "status": "active",
+            "detail": "backup=true · encoding=utf-8"
+          },
+          {
+            "name": "blocklist",
+            "rev": 1,
+            "status": "active",
+            "detail": "blocklist=true · backup=true"
+          }
+        ]
+      },
+      {
+        "id": "body.env-vars",
+        "name": "环境变量",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "用户/系统环境变量与 PATH 编辑。",
+        "instances": [
+          {
+            "name": "user",
+            "rev": 1,
+            "status": "active",
+            "detail": "scope=user · backup=true"
+          },
+          {
+            "name": "path",
+            "rev": 1,
+            "status": "active",
+            "detail": "scope=user · pathMode=list"
+          }
+        ]
+      },
+      {
+        "id": "body.external-access",
+        "name": "外网访问",
+        "group": "web",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P0",
+        "summary": "外网站点 + VPN 保障 + 站点启动器。",
+        "instances": [
+          {
+            "name": "work",
+            "rev": 3,
+            "status": "active",
+            "detail": "vpn=work · policy=required"
+          },
+          {
+            "name": "personal",
+            "rev": 2,
+            "status": "active",
+            "detail": "vpn=personal · policy=preferred"
+          }
+        ]
+      },
+      {
+        "id": "body.screenshot-translate",
+        "name": "截图翻译",
+        "group": "ai",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "截屏 → OCR → 翻译 → 浮层显示。",
+        "instances": [
+          {
+            "name": "en-zh",
+            "rev": 4,
+            "status": "active",
+            "detail": "from=en · to=zh · overlay=true"
+          },
+          {
+            "name": "ja-zh",
+            "rev": 2,
+            "status": "active",
+            "detail": "from=ja · to=zh · overlay=false"
+          }
+        ]
+      },
+      {
+        "id": "body.ai-rewrite",
+        "name": "AI 改写",
+        "group": "ai",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "选中文本/剪贴板 → 改写、缩短、翻译。",
+        "instances": [
+          {
+            "name": "formal",
+            "rev": 2,
+            "status": "active",
+            "detail": "tone=formal · preview=true"
+          },
+          {
+            "name": "shorten",
+            "rev": 1,
+            "status": "active",
+            "detail": "ratio=0.5 · preview=true"
+          },
+          {
+            "name": "translate",
+            "rev": 1,
+            "status": "active",
+            "detail": "to=en · preview=true"
+          }
+        ]
+      },
+      {
+        "id": "body.meeting-notes",
+        "name": "会议纪要",
+        "group": "ai",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "录音 → 转录 → 摘要 → 待办。",
+        "instances": [
+          {
+            "name": "local",
+            "rev": 1,
+            "status": "active",
+            "detail": "engine=local · retention=30d"
+          },
+          {
+            "name": "cloud",
+            "rev": 1,
+            "status": "active",
+            "detail": "engine=cloud · consent=true"
+          }
+        ]
+      },
+      {
+        "id": "body.invoice-archive",
+        "name": "发票归档",
+        "group": "content",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P1",
+        "summary": "OCR → 解析 → 规则 → 归档。",
+        "instances": [
+          {
+            "name": "company",
+            "rev": 6,
+            "status": "active",
+            "detail": "ocr=zh · rules=company"
+          },
+          {
+            "name": "personal",
+            "rev": 2,
+            "status": "active",
+            "detail": "ocr=en · rules=personal"
+          }
+        ]
+      },
+      {
+        "id": "body.suite",
+        "name": "套件",
+        "group": "suite",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "把多个体打包成一个套件。",
+        "instances": [
+          {
+            "name": "office",
+            "rev": 1,
+            "status": "active",
+            "detail": "members=external-access,invoice-archive,screenshot-translate"
+          },
+          {
+            "name": "dev",
+            "rev": 1,
+            "status": "active",
+            "detail": "members=external-access,workspace,ocr,quick-launch"
+          }
+        ]
+      },
+      {
+        "id": "body.web-clipper",
+        "name": "网页剪藏",
+        "group": "web",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "选中内容/整页 → Markdown。",
+        "instances": [
+          {
+            "name": "selection",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=selection · frontmatter=true"
+          },
+          {
+            "name": "page",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=page · assets=true"
+          },
+          {
+            "name": "readability",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=readability · images=local"
+          }
+        ]
+      },
+      {
+        "id": "body.backup-sync",
+        "name": "备份同步",
+        "group": "system",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L2",
+        "priority": "P2",
+        "summary": "文件夹快照、每日增量、校验。",
+        "instances": [
+          {
+            "name": "folder",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=snapshot · verify=true"
+          },
+          {
+            "name": "daily",
+            "rev": 1,
+            "status": "active",
+            "detail": "mode=incremental · retention=30d"
+          }
+        ]
+      }
+    ]
+  },
+  "field": {
+    "layer": "field",
+    "label": "场层",
+    "classes": [
+      {
+        "id": "ai.model",
+        "name": "ai.model",
+        "group": "模型与提示",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "模型/provider/上下文窗口/价格/能力 · 示例：fast / reasoning / vision / embedding / rerank / local",
+        "instances": [
+          {
+            "id": "ai.model.fast@r1",
+            "name": "fast",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · fast"
+          },
+          {
+            "id": "ai.model.reasoning@r1",
+            "name": "reasoning",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · reasoning"
+          },
+          {
+            "id": "ai.model.vision@r1",
+            "name": "vision",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · vision"
+          },
+          {
+            "id": "ai.model.embedding@r1",
+            "name": "embedding",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · embedding"
+          },
+          {
+            "id": "ai.model.rerank@r1",
+            "name": "rerank",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · rerank"
+          },
+          {
+            "id": "ai.model.local@r1",
+            "name": "local",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · local"
+          }
+        ]
+      },
+      {
+        "id": "ai.prompt",
+        "name": "ai.prompt",
+        "group": "模型与提示",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "系统指令、模板、few-shot、输出风格 · 示例：system / researcher / coder / support / extractor / critic",
+        "instances": [
+          {
+            "id": "ai.prompt.system@r1",
+            "name": "system",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · system"
+          },
+          {
+            "id": "ai.prompt.researcher@r1",
+            "name": "researcher",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · researcher"
+          },
+          {
+            "id": "ai.prompt.coder@r1",
+            "name": "coder",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · coder"
+          },
+          {
+            "id": "ai.prompt.support@r1",
+            "name": "support",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · support"
+          },
+          {
+            "id": "ai.prompt.extractor@r1",
+            "name": "extractor",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · extractor"
+          },
+          {
+            "id": "ai.prompt.critic@r1",
+            "name": "critic",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · critic"
+          }
+        ]
+      },
+      {
+        "id": "ai.router",
+        "name": "ai.router",
+        "group": "模型与提示",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "按任务/成本/延迟/隐私选模型或工具 · 示例：fast / reasoning / private / cheap",
+        "instances": [
+          {
+            "id": "ai.router.fast@r1",
+            "name": "fast",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · fast"
+          },
+          {
+            "id": "ai.router.reasoning@r1",
+            "name": "reasoning",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · reasoning"
+          },
+          {
+            "id": "ai.router.private@r1",
+            "name": "private",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · private"
+          },
+          {
+            "id": "ai.router.cheap@r1",
+            "name": "cheap",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · cheap"
+          }
+        ]
+      },
+      {
+        "id": "ai.fallback",
+        "name": "ai.fallback",
+        "group": "模型与提示",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "模型/工具/检索失败降级 · 示例：model / tool / retrieval",
+        "instances": [
+          {
+            "id": "ai.fallback.model@r1",
+            "name": "model",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · model"
+          },
+          {
+            "id": "ai.fallback.tool@r1",
+            "name": "tool",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool"
+          },
+          {
+            "id": "ai.fallback.retrieval@r1",
+            "name": "retrieval",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · retrieval"
+          }
+        ]
+      },
+      {
+        "id": "ai.cache",
+        "name": "ai.cache",
+        "group": "模型与提示",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "提示/检索/工具结果缓存 · 示例：prompt / retrieval / tool",
+        "instances": [
+          {
+            "id": "ai.cache.prompt@r1",
+            "name": "prompt",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · prompt"
+          },
+          {
+            "id": "ai.cache.retrieval@r1",
+            "name": "retrieval",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · retrieval"
+          },
+          {
+            "id": "ai.cache.tool@r1",
+            "name": "tool",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool"
+          }
+        ]
+      },
+      {
+        "id": "ai.quota",
+        "name": "ai.quota",
+        "group": "模型与提示",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "用户/租户/模型/工具配额 · 示例：user / tenant / model / tool",
+        "instances": [
+          {
+            "id": "ai.quota.user@r1",
+            "name": "user",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · user"
+          },
+          {
+            "id": "ai.quota.tenant@r1",
+            "name": "tenant",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tenant"
+          },
+          {
+            "id": "ai.quota.model@r1",
+            "name": "model",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · model"
+          },
+          {
+            "id": "ai.quota.tool@r1",
+            "name": "tool",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool"
+          }
+        ]
+      },
+      {
+        "id": "ai.context",
+        "name": "ai.context",
+        "group": "上下文与知识",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "组装任务上下文 · 示例：chat / copilot / agent / rag",
+        "instances": [
+          {
+            "id": "ai.context.chat@r1",
+            "name": "chat",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · chat"
+          },
+          {
+            "id": "ai.context.copilot@r1",
+            "name": "copilot",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · copilot"
+          },
+          {
+            "id": "ai.context.agent@r1",
+            "name": "agent",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · agent"
+          },
+          {
+            "id": "ai.context.rag@r1",
+            "name": "rag",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · rag"
+          }
+        ]
+      },
+      {
+        "id": "ai.retriever",
+        "name": "ai.retriever",
+        "group": "上下文与知识",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "检索证据 · 示例：docs / code / web / database",
+        "instances": [
+          {
+            "id": "ai.retriever.docs@r1",
+            "name": "docs",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · docs"
+          },
+          {
+            "id": "ai.retriever.code@r1",
+            "name": "code",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · code"
+          },
+          {
+            "id": "ai.retriever.web@r1",
+            "name": "web",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · web"
+          },
+          {
+            "id": "ai.retriever.database@r1",
+            "name": "database",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · database"
+          }
+        ]
+      },
+      {
+        "id": "ai.knowledge-base",
+        "name": "ai.knowledge-base",
+        "group": "上下文与知识",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "知识库/索引/版本 · 示例：product / policy / code / support",
+        "instances": [
+          {
+            "id": "ai.knowledge-base.product@r1",
+            "name": "product",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · product"
+          },
+          {
+            "id": "ai.knowledge-base.policy@r1",
+            "name": "policy",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · policy"
+          },
+          {
+            "id": "ai.knowledge-base.code@r1",
+            "name": "code",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · code"
+          },
+          {
+            "id": "ai.knowledge-base.support@r1",
+            "name": "support",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · support"
+          }
+        ]
+      },
+      {
+        "id": "ai.memory",
+        "name": "ai.memory",
+        "group": "上下文与知识",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "短期/长期/项目/情景记忆 · 示例：session / user / project / episodic / semantic",
+        "instances": [
+          {
+            "id": "ai.memory.session@r1",
+            "name": "session",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · session"
+          },
+          {
+            "id": "ai.memory.user@r1",
+            "name": "user",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · user"
+          },
+          {
+            "id": "ai.memory.project@r1",
+            "name": "project",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · project"
+          },
+          {
+            "id": "ai.memory.episodic@r1",
+            "name": "episodic",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · episodic"
+          },
+          {
+            "id": "ai.memory.semantic@r1",
+            "name": "semantic",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · semantic"
+          }
+        ]
+      },
+      {
+        "id": "ai.multimodal",
+        "name": "ai.multimodal",
+        "group": "上下文与知识",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "图像/音频/视频/文档输入输出 · 示例：image / audio / video / document",
+        "instances": [
+          {
+            "id": "ai.multimodal.image@r1",
+            "name": "image",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · image"
+          },
+          {
+            "id": "ai.multimodal.audio@r1",
+            "name": "audio",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · audio"
+          },
+          {
+            "id": "ai.multimodal.video@r1",
+            "name": "video",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · video"
+          },
+          {
+            "id": "ai.multimodal.document@r1",
+            "name": "document",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · document"
+          }
+        ]
+      },
+      {
+        "id": "ai.agent",
+        "name": "ai.agent",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "角色 + 指令 + 工具 + 循环 · 示例：researcher / coder / reviewer / support / planner / ops",
+        "instances": [
+          {
+            "id": "ai.agent.researcher@r1",
+            "name": "researcher",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · researcher"
+          },
+          {
+            "id": "ai.agent.coder@r1",
+            "name": "coder",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · coder"
+          },
+          {
+            "id": "ai.agent.reviewer@r1",
+            "name": "reviewer",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · reviewer"
+          },
+          {
+            "id": "ai.agent.support@r1",
+            "name": "support",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · support"
+          },
+          {
+            "id": "ai.agent.planner@r1",
+            "name": "planner",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · planner"
+          },
+          {
+            "id": "ai.agent.ops@r1",
+            "name": "ops",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · ops"
+          }
+        ]
+      },
+      {
+        "id": "ai.handoff",
+        "name": "ai.handoff",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "任务委派/转交 · 示例：triage-to-specialist / coder-to-reviewer / support-to-billing",
+        "instances": [
+          {
+            "id": "ai.handoff.triage-to-specialist@r1",
+            "name": "triage-to-specialist",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · triage-to-specialist"
+          },
+          {
+            "id": "ai.handoff.coder-to-reviewer@r1",
+            "name": "coder-to-reviewer",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · coder-to-reviewer"
+          },
+          {
+            "id": "ai.handoff.support-to-billing@r1",
+            "name": "support-to-billing",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · support-to-billing"
+          },
+          {
+            "id": "ai.handoff.researcher-to-writer@r1",
+            "name": "researcher-to-writer",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · researcher-to-writer"
+          }
+        ]
+      },
+      {
+        "id": "ai.workflow",
+        "name": "ai.workflow",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "有状态图/节点/边/检查点 · 示例：invoice / support / content / research / etl",
+        "instances": [
+          {
+            "id": "ai.workflow.invoice@r1",
+            "name": "invoice",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · invoice"
+          },
+          {
+            "id": "ai.workflow.support@r1",
+            "name": "support",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · support"
+          },
+          {
+            "id": "ai.workflow.content@r1",
+            "name": "content",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · content"
+          },
+          {
+            "id": "ai.workflow.research@r1",
+            "name": "research",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · research"
+          },
+          {
+            "id": "ai.workflow.etl@r1",
+            "name": "etl",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · etl"
+          }
+        ]
+      },
+      {
+        "id": "ai.planner",
+        "name": "ai.planner",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "任务分解/计划 · 示例：task / multi-step / multi-agent",
+        "instances": [
+          {
+            "id": "ai.planner.task@r1",
+            "name": "task",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · task"
+          },
+          {
+            "id": "ai.planner.multi-step@r1",
+            "name": "multi-step",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · multi-step"
+          },
+          {
+            "id": "ai.planner.multi-agent@r1",
+            "name": "multi-agent",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · multi-agent"
+          }
+        ]
+      },
+      {
+        "id": "ai.critic",
+        "name": "ai.critic",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "反思/审查/评分 · 示例：factuality / code / style / security",
+        "instances": [
+          {
+            "id": "ai.critic.factuality@r1",
+            "name": "factuality",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · factuality"
+          },
+          {
+            "id": "ai.critic.code@r1",
+            "name": "code",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · code"
+          },
+          {
+            "id": "ai.critic.style@r1",
+            "name": "style",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · style"
+          },
+          {
+            "id": "ai.critic.security@r1",
+            "name": "security",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · security"
+          }
+        ]
+      },
+      {
+        "id": "ai.tool",
+        "name": "ai.tool",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "函数调用/外部动作 · 示例：web-search / http / sql / python / files / calendar / email",
+        "instances": [
+          {
+            "id": "ai.tool.web-search@r1",
+            "name": "web-search",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · web-search"
+          },
+          {
+            "id": "ai.tool.http@r1",
+            "name": "http",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · http"
+          },
+          {
+            "id": "ai.tool.sql@r1",
+            "name": "sql",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · sql"
+          },
+          {
+            "id": "ai.tool.python@r1",
+            "name": "python",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · python"
+          },
+          {
+            "id": "ai.tool.files@r1",
+            "name": "files",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · files"
+          },
+          {
+            "id": "ai.tool.calendar@r1",
+            "name": "calendar",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · calendar"
+          },
+          {
+            "id": "ai.tool.email@r1",
+            "name": "email",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · email"
+          }
+        ]
+      },
+      {
+        "id": "ai.mcp",
+        "name": "ai.mcp",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "MCP server/client 连接 · 示例：github / slack / notion / database / filesystem",
+        "instances": [
+          {
+            "id": "ai.mcp.github@r1",
+            "name": "github",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · github"
+          },
+          {
+            "id": "ai.mcp.slack@r1",
+            "name": "slack",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · slack"
+          },
+          {
+            "id": "ai.mcp.notion@r1",
+            "name": "notion",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · notion"
+          },
+          {
+            "id": "ai.mcp.database@r1",
+            "name": "database",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · database"
+          },
+          {
+            "id": "ai.mcp.filesystem@r1",
+            "name": "filesystem",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · filesystem"
+          }
+        ]
+      },
+      {
+        "id": "ai.sandbox",
+        "name": "ai.sandbox",
+        "group": "推理与行动",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "隔离执行环境 · 示例：python / shell / browser",
+        "instances": [
+          {
+            "id": "ai.sandbox.python@r1",
+            "name": "python",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · python"
+          },
+          {
+            "id": "ai.sandbox.shell@r1",
+            "name": "shell",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · shell"
+          },
+          {
+            "id": "ai.sandbox.browser@r1",
+            "name": "browser",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · browser"
+          }
+        ]
+      },
+      {
+        "id": "ai.structured-output",
+        "name": "ai.structured-output",
+        "group": "输出与信任",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "schema 约束输出 · 示例：invoice / ticket / contract / resume / event",
+        "instances": [
+          {
+            "id": "ai.structured-output.invoice@r1",
+            "name": "invoice",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · invoice"
+          },
+          {
+            "id": "ai.structured-output.ticket@r1",
+            "name": "ticket",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · ticket"
+          },
+          {
+            "id": "ai.structured-output.contract@r1",
+            "name": "contract",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · contract"
+          },
+          {
+            "id": "ai.structured-output.resume@r1",
+            "name": "resume",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · resume"
+          },
+          {
+            "id": "ai.structured-output.event@r1",
+            "name": "event",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · event"
+          }
+        ]
+      },
+      {
+        "id": "ai.citation",
+        "name": "ai.citation",
+        "group": "输出与信任",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "引用/归因/来源 · 示例：docs / web / database",
+        "instances": [
+          {
+            "id": "ai.citation.docs@r1",
+            "name": "docs",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · docs"
+          },
+          {
+            "id": "ai.citation.web@r1",
+            "name": "web",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · web"
+          },
+          {
+            "id": "ai.citation.database@r1",
+            "name": "database",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · database"
+          }
+        ]
+      },
+      {
+        "id": "ai.clarify",
+        "name": "ai.clarify",
+        "group": "输出与信任",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "澄清/确认/消歧 · 示例：missing-slot / ambiguous-intent / risky-action",
+        "instances": [
+          {
+            "id": "ai.clarify.missing-slot@r1",
+            "name": "missing-slot",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · missing-slot"
+          },
+          {
+            "id": "ai.clarify.ambiguous-intent@r1",
+            "name": "ambiguous-intent",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · ambiguous-intent"
+          },
+          {
+            "id": "ai.clarify.risky-action@r1",
+            "name": "risky-action",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · risky-action"
+          }
+        ]
+      },
+      {
+        "id": "ai.guardrail",
+        "name": "ai.guardrail",
+        "group": "输出与信任",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "输入/输出/工具护栏 · 示例：pii / prompt-injection / toxicity / tool-permission / output-schema",
+        "instances": [
+          {
+            "id": "ai.guardrail.pii@r1",
+            "name": "pii",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · pii"
+          },
+          {
+            "id": "ai.guardrail.prompt-injection@r1",
+            "name": "prompt-injection",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · prompt-injection"
+          },
+          {
+            "id": "ai.guardrail.toxicity@r1",
+            "name": "toxicity",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · toxicity"
+          },
+          {
+            "id": "ai.guardrail.tool-permission@r1",
+            "name": "tool-permission",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool-permission"
+          },
+          {
+            "id": "ai.guardrail.output-schema@r1",
+            "name": "output-schema",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · output-schema"
+          }
+        ]
+      },
+      {
+        "id": "ai.human-approval",
+        "name": "ai.human-approval",
+        "group": "输出与信任",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "人工审批/中断/恢复 · 示例：high-risk / tool-call / publish / payment",
+        "instances": [
+          {
+            "id": "ai.human-approval.high-risk@r1",
+            "name": "high-risk",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · high-risk"
+          },
+          {
+            "id": "ai.human-approval.tool-call@r1",
+            "name": "tool-call",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool-call"
+          },
+          {
+            "id": "ai.human-approval.publish@r1",
+            "name": "publish",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · publish"
+          },
+          {
+            "id": "ai.human-approval.payment@r1",
+            "name": "payment",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · payment"
+          }
+        ]
+      },
+      {
+        "id": "ai.policy",
+        "name": "ai.policy",
+        "group": "输出与信任",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "租户/数据驻留/模型白名单/保留 · 示例：tenant / data-residency / model-allowlist / retention",
+        "instances": [
+          {
+            "id": "ai.policy.tenant@r1",
+            "name": "tenant",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tenant"
+          },
+          {
+            "id": "ai.policy.data-residency@r1",
+            "name": "data-residency",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · data-residency"
+          },
+          {
+            "id": "ai.policy.model-allowlist@r1",
+            "name": "model-allowlist",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · model-allowlist"
+          },
+          {
+            "id": "ai.policy.retention@r1",
+            "name": "retention",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · retention"
+          }
+        ]
+      },
+      {
+        "id": "ai.tracer",
+        "name": "ai.tracer",
+        "group": "运维与学习",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "LLM/工具/agent 调用追踪 · 示例：llm / tool / agent / otel",
+        "instances": [
+          {
+            "id": "ai.tracer.llm@r1",
+            "name": "llm",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · llm"
+          },
+          {
+            "id": "ai.tracer.tool@r1",
+            "name": "tool",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool"
+          },
+          {
+            "id": "ai.tracer.agent@r1",
+            "name": "agent",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · agent"
+          },
+          {
+            "id": "ai.tracer.otel@r1",
+            "name": "otel",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · otel"
+          }
+        ]
+      },
+      {
+        "id": "ai.evaluator",
+        "name": "ai.evaluator",
+        "group": "运维与学习",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "数据集/grader/指标 · 示例：answer-quality / tool-correctness / safety / cost / latency",
+        "instances": [
+          {
+            "id": "ai.evaluator.answer-quality@r1",
+            "name": "answer-quality",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · answer-quality"
+          },
+          {
+            "id": "ai.evaluator.tool-correctness@r1",
+            "name": "tool-correctness",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · tool-correctness"
+          },
+          {
+            "id": "ai.evaluator.safety@r1",
+            "name": "safety",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · safety"
+          },
+          {
+            "id": "ai.evaluator.cost@r1",
+            "name": "cost",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · cost"
+          },
+          {
+            "id": "ai.evaluator.latency@r1",
+            "name": "latency",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · latency"
+          }
+        ]
+      },
+      {
+        "id": "ai.feedback",
+        "name": "ai.feedback",
+        "group": "运维与学习",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "点赞/纠正/排序/标注 · 示例：thumbs / correction / ranking / annotation",
+        "instances": [
+          {
+            "id": "ai.feedback.thumbs@r1",
+            "name": "thumbs",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · thumbs"
+          },
+          {
+            "id": "ai.feedback.correction@r1",
+            "name": "correction",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · correction"
+          },
+          {
+            "id": "ai.feedback.ranking@r1",
+            "name": "ranking",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · ranking"
+          },
+          {
+            "id": "ai.feedback.annotation@r1",
+            "name": "annotation",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · annotation"
+          }
+        ]
+      },
+      {
+        "id": "ai.experiment",
+        "name": "ai.experiment",
+        "group": "运维与学习",
+        "version": "1.0.0",
+        "status": "active",
+        "effect": "L1",
+        "priority": "P1",
+        "summary": "prompt/model/retriever A/B · 示例：prompt-ab / model-ab / retriever-ab",
+        "instances": [
+          {
+            "id": "ai.experiment.prompt-ab@r1",
+            "name": "prompt-ab",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · prompt-ab"
+          },
+          {
+            "id": "ai.experiment.model-ab@r1",
+            "name": "model-ab",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · model-ab"
+          },
+          {
+            "id": "ai.experiment.retriever-ab@r1",
+            "name": "retriever-ab",
+            "rev": 1,
+            "status": "active",
+            "detail": "运维与学习 · retriever-ab"
+          }
+        ]
+      }
+    ]
+  }
+};
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = v => JSON.parse(JSON.stringify(v));
+
+function S(key, label, desc, type, def, opts = {}) {
+  return { key, label, desc, type, default: def, options: opts.options, unit: opts.unit, min: opts.min, max: opts.max, effect: opts.effect || 'L0', restart: opts.restart || null, secret: !!opts.secret, policy: !!opts.policy, initialSource: opts.initialSource || null, advanced: !!opts.advanced, alias: opts.alias || [], impact: opts.impact || [] };
+}
+
+const SECTIONS = [
+  {
+    id: 'general', group: 'General', icon: '⚙', color: '#22d3ee', title: '通用设置',
+    desc: '应用级外观、语言、启动、通知、隐私、网络/更新、可访问性与高级选项。',
+    groups: [
+      { label: 'Appearance', desc: '全局视觉；Surface 只放布局与交互。', settings: [
+        S('general.theme', 'Theme', '应用主题；跟随系统时由 OS 决定。', 'enum', 'dark', { options: ['dark', 'light', 'system'], effect: 'L0', initialSource: 'user' }),
+        S('general.accent', 'Accent color', '强调色；用于选中、焦点与主操作。', 'enum', 'cyan', { options: ['cyan', 'blue', 'violet', 'amber'], effect: 'L0', initialSource: 'user' }),
+        S('general.fontScale', 'Font scale', '全局字体缩放，100% 为默认。', 'number', 100, { min: 80, max: 140, unit: '%', effect: 'L0', initialSource: 'user' }),
+        S('general.density', 'UI density', 'comfortable 更适合阅读，compact 更适合高信息密度。', 'enum', 'comfortable', { options: ['comfortable', 'compact'], effect: 'L0', initialSource: 'user' })
+      ]},
+      { label: 'Language & Region', desc: '应用语言与数字/日期格式。', settings: [
+        S('general.language', 'Language', '界面语言；需要重启的文案会单独标注。', 'enum', 'zh-CN', { options: ['zh-CN', 'en-US', 'ja-JP'], effect: 'L0', initialSource: 'user', restart: 'app' }),
+        S('general.dateFormat', 'Date format', '日期显示格式。', 'enum', 'YYYY-MM-DD', { options: ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM/DD/YYYY'], effect: 'L0' }),
+        S('general.numberFormat', 'Number format', '数字千分位/小数格式。', 'enum', '1,234.56', { options: ['1,234.56', '1.234,56', '1 234,56'], effect: 'L0' })
+      ]},
+      { label: 'Startup', desc: '应用启动与工作区恢复。', settings: [
+        S('general.launchAtLogin', 'Launch at login', '登录 Windows 后自动启动。', 'bool', false, { effect: 'L1' }),
+        S('general.startMinimized', 'Start minimized', '启动后进入托盘/最小化。', 'bool', false, { effect: 'L1' }),
+        S('general.restoreLastWorkspace', 'Restore last workspace', '恢复上次打开的工作区与面板布局。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Notifications', desc: '通知与提示行为。', settings: [
+        S('general.toastDuration', 'Toast duration', '轻提示停留时间。', 'enum', 'normal', { options: ['short', 'normal', 'long'], effect: 'L0' }),
+        S('general.doNotDisturb', 'Do not disturb', '暂停非关键通知。', 'bool', false, { effect: 'L0' }),
+        S('general.sound', 'Notification sound', '通知是否播放声音。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Privacy & Telemetry', desc: '遥测、崩溃报告与使用数据。', settings: [
+        S('general.telemetry', 'Telemetry', 'off 完全关闭；basic 只发匿名性能指标。', 'enum', 'basic', { options: ['off', 'basic', 'full'], effect: 'L1', policy: true }),
+        S('general.crashReports', 'Crash reports', '崩溃时发送诊断包。', 'bool', true, { effect: 'L1' }),
+        S('general.usageData', 'Usage data', '发送功能使用统计。', 'bool', false, { effect: 'L1' })
+      ]},
+      { label: 'Network & Updates', desc: '代理、应用更新通道与检查。', settings: [
+        S('general.proxy', 'Proxy', 'system 使用系统代理；也可填 http://host:port。', 'string', 'system', { effect: 'L1' }),
+        S('general.updateChannel', 'Update channel', '应用自身更新通道，不是 Body 更新。', 'enum', 'stable', { options: ['stable', 'beta', 'dev'], effect: 'L1', initialSource: 'user' }),
+        S('general.autoCheckUpdates', 'Auto check updates', '启动时检查应用更新。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Accessibility', desc: '对比度、动效与键盘提示。', settings: [
+        S('general.highContrast', 'High contrast', '增强边框与文本对比度。', 'bool', false, { effect: 'L0' }),
+        S('general.reduceMotion', 'Reduce motion', '减少动画；应用设置只能比系统更严格。', 'bool', false, { effect: 'L0' }),
+        S('general.keyboardHints', 'Keyboard hints', '显示快捷键提示。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Advanced', desc: '开发与实验选项。', settings: [
+        S('general.developerMode', 'Developer mode', '显示调试工具与实验入口。', 'bool', false, { effect: 'L1', advanced: true }),
+        S('general.experimentalFeatures', 'Experimental features', '启用未稳定的功能。', 'bool', false, { effect: 'L1', advanced: true }),
+        S('general.logLevel', 'Log level', '应用日志级别。', 'enum', 'info', { options: ['info', 'debug', 'warn', 'error'], effect: 'L0', advanced: true })
+      ]}
+    ]
+  },
+  {
+    id: 'point', group: 'Layers', icon: '◆', color: '#22d3ee', title: '点层设置',
+    desc: '点运行时、效果/权限、registry 与 secrets。flow 重试/审批不在这里。',
+    groups: [
+      { label: 'Runtime', desc: '点执行的默认超时、并发与沙箱。', settings: [
+        S('point.defaultTimeoutMs', 'Default timeout', '点执行默认超时；单个 PointInstance 可覆盖。', 'number', 12000, { min: 1000, max: 120000, unit: 'ms', effect: 'L1', initialSource: 'user' }),
+        S('point.maxConcurrency', 'Max concurrency', '同时运行的点实例上限。', 'number', 4, { min: 1, max: 32, effect: 'L1' }),
+        S('point.sandbox', 'Sandbox', 'strict 最安全；off 仅开发机。', 'enum', 'balanced', { options: ['strict', 'balanced', 'off'], effect: 'L2', restart: 'app' })
+      ]},
+      { label: 'Effects & Permissions', desc: '效果等级与权限默认策略。', settings: [
+        S('point.maxEffect', 'Max effect', '单点允许的最高效果等级；policy 锁定。', 'enum', 'L2', { options: ['L0', 'L1', 'L2', 'L3'], effect: 'L2', policy: true }),
+        S('point.requireApprovalForL2', 'Require approval for L2', 'L2 点默认需要审批。', 'bool', true, { effect: 'L2', policy: true }),
+        S('point.logInputs', 'Log point inputs', '可能含敏感数据；默认关闭。', 'bool', false, { effect: 'L1', policy: true })
+      ]},
+      { label: 'Registry & Sources', desc: '点来源、签名与缓存。', settings: [
+        S('point.registryUrl', 'Registry URL', '点 registry 地址。', 'string', 'https://registry.local', { effect: 'L1' }),
+        S('point.allowUnsignedPoints', 'Allow unsigned points', '关闭时只加载签名点；开启需要 L3 确认。', 'bool', false, { effect: 'L3', policy: true }),
+        S('point.cacheTtl', 'Cache TTL', 'registry 缓存时间。', 'number', 3600, { min: 0, max: 86400, unit: 's', effect: 'L0' })
+      ]},
+      { label: 'Secrets', desc: '凭据存储与显示策略。', settings: [
+        S('point.secretStore', 'Secret store', 'os/keychain 使用系统凭据库；file 仅开发。', 'enum', 'os', { options: ['os', 'keychain', 'file'], effect: 'L2' }),
+        S('point.revealPolicy', 'Reveal policy', 'never 最安全；once 仅显示一次。', 'enum', 'never', { options: ['never', 'once', 'session'], effect: 'L2', policy: true })
+      ]}
+    ]
+  },
+  {
+    id: 'line', group: 'Layers', icon: '↝', color: '#3b82f6', title: '线层设置',
+    desc: 'flow 执行、重试/错误策略、审批闸门、trace/retention 与 scheduler。',
+    groups: [
+      { label: 'Execution', desc: 'flow 超时、并发与重试。', settings: [
+        S('line.defaultTimeoutMs', 'Default timeout', 'flow 默认超时。', 'number', 30000, { min: 1000, max: 600000, unit: 'ms', effect: 'L1' }),
+        S('line.maxParallelFlows', 'Max parallel flows', '同时运行的 flow 上限。', 'number', 3, { min: 1, max: 16, effect: 'L1' }),
+        S('line.retryPolicy', 'Retry policy', '重试策略；点只声明可重试性，不拥有 retry。', 'enum', 'exponential', { options: ['none', 'linear', 'exponential'], effect: 'L1' }),
+        S('line.maxRetries', 'Max retries', '最大重试次数。', 'number', 2, { min: 0, max: 10, effect: 'L1' })
+      ]},
+      { label: 'Gates & Approvals', desc: '审批闸门与超时。', settings: [
+        S('line.requireApprovalForL2', 'Require approval for L2', 'L2 flow 默认需要审批。', 'bool', true, { effect: 'L2', policy: true }),
+        S('line.approvalTimeoutS', 'Approval timeout', '等待审批的秒数。', 'number', 60, { min: 5, max: 600, unit: 's', effect: 'L1' }),
+        S('line.autoDenyOnTimeout', 'Auto deny on timeout', '超时自动拒绝；安全优先。', 'bool', true, { effect: 'L2', policy: true })
+      ]},
+      { label: 'Tracing & Retention', desc: 'trace 采样、运行保留与日志级别。', settings: [
+        S('line.traceSampling', 'Trace sampling', '采样率越高越占性能/磁盘。', 'number', 10, { min: 0, max: 100, unit: '%', effect: 'L1' }),
+        S('line.runRetentionDays', 'Run retention', '运行记录保留天数。', 'number', 30, { min: 1, max: 365, unit: 'days', effect: 'L1' }),
+        S('line.logLevel', 'Log level', 'flow 日志级别。', 'enum', 'info', { options: ['info', 'debug', 'warn', 'error'], effect: 'L0' })
+      ]},
+      { label: 'Scheduler', desc: '错过的调度与 timezone。', settings: [
+        S('line.missedRunPolicy', 'Missed run policy', '错过的定时 flow 如何处理。', 'enum', 'skip', { options: ['skip', 'runOnce', 'ask'], effect: 'L1' }),
+        S('line.timezone', 'Timezone', '调度时区。', 'string', 'Asia/Shanghai', { effect: 'L0' })
+      ]}
+    ]
+  },
+  {
+    id: 'surface', group: 'Layers', icon: '▦', color: '#8b5cf6', title: '面层设置',
+    desc: '布局、面板、交互、动效、可访问性与显示格式。只影响呈现/交互。',
+    groups: [
+      { label: 'Layout & Panels', desc: '面板默认位置、宽度与表格密度。', settings: [
+        S('surface.defaultPanelSide', 'Default panel side', '新开面板默认在右/左。', 'enum', 'right', { options: ['right', 'left'], effect: 'L0', initialSource: 'user' }),
+        S('surface.panelWidth', 'Default panel width', '默认宽度；PanelInstance 可覆盖，用户调整后 remember。', 'number', 380, { min: 300, max: 620, unit: 'px', effect: 'L0', initialSource: 'user' }),
+        S('surface.rememberPanelSize', 'Remember panel size', '记住用户拖拽后的面板尺寸。', 'bool', true, { effect: 'L0' }),
+        S('surface.tableDensity', 'Table density', 'table/tree/list 的默认密度。', 'enum', 'comfortable', { options: ['comfortable', 'compact'], effect: 'L0' })
+      ]},
+      { label: 'Interaction', desc: '双击、中键与滚轮行为。', settings: [
+        S('surface.doubleClickAction', 'Double-click action', '双击列表/卡片时的默认动作。', 'enum', 'open', { options: ['open', 'run', 'none'], effect: 'L0' }),
+        S('surface.middleClickAction', 'Middle-click action', '中键默认动作。', 'enum', 'none', { options: ['none', 'open', 'run'], effect: 'L0' }),
+        S('surface.wheelBehavior', 'Wheel behavior', '滚轮滚动或缩放。', 'enum', 'scroll', { options: ['scroll', 'zoom'], effect: 'L0' })
+      ]},
+      { label: 'Motion', desc: '动效速度；reduce motion 在 General。', settings: [
+        S('surface.animationSpeed', 'Animation speed', 'slow/normal/fast；受 reduce motion 约束。', 'enum', 'normal', { options: ['slow', 'normal', 'fast'], effect: 'L0' })
+      ]},
+      { label: 'Accessibility', desc: '焦点环、读屏提示与焦点归还。', settings: [
+        S('surface.focusRing', 'Focus ring', 'auto 跟随系统；always 始终显示。', 'enum', 'auto', { options: ['auto', 'always'], effect: 'L0' }),
+        S('surface.screenReaderHints', 'Screen reader hints', '为复杂面板提供额外读屏提示。', 'bool', true, { effect: 'L0' }),
+        S('surface.panelFocusReturn', 'Return focus on close', '关闭面板后回到触发元素。', 'bool', true, { effect: 'L0' })
+      ]},
+      { label: 'Locale & Format', desc: '时间、周起始与度量。', settings: [
+        S('surface.timeFormat', 'Time format', '24h 或 12h。', 'enum', '24h', { options: ['24h', '12h'], effect: 'L0' }),
+        S('surface.firstDayOfWeek', 'First day of week', '日历周起始。', 'enum', 'monday', { options: ['monday', 'sunday'], effect: 'L0' }),
+        S('surface.measurementSystem', 'Measurement system', 'metric/imperial。', 'enum', 'metric', { options: ['metric', 'imperial'], effect: 'L0' })
+      ]}
+    ]
+  },
+  {
+    id: 'body', group: 'Layers', icon: '▣', color: '#f59e0b', title: '体层设置',
+    desc: '已安装体、更新通道、信任/签名、权限、数据保留与隔离。',
+    groups: [
+      { label: 'Updates & Channels', desc: '体更新与应用更新分开。', settings: [
+        S('body.autoUpdate', 'Auto update bodies', '自动更新已安装体。', 'bool', true, { effect: 'L1', initialSource: 'user' }),
+        S('body.updateChannel', 'Body update channel', '体更新通道。', 'enum', 'stable', { options: ['stable', 'beta', 'dev'], effect: 'L1' }),
+        S('body.allowPrerelease', 'Allow prerelease', '允许预发布体；生产环境通常关闭。', 'bool', false, { effect: 'L2', policy: true })
+      ]},
+      { label: 'Trust & Signatures', desc: '签名与发布者信任。', settings: [
+        S('body.requireSignature', 'Require signature', '关闭需要 L3 确认。', 'bool', true, { effect: 'L3', policy: true }),
+        S('body.allowUnknownPublisher', 'Allow unknown publisher', '允许未知发布者；高风险。', 'bool', false, { effect: 'L3', policy: true }),
+        S('body.verifyOnLaunch', 'Verify on launch', '启动时校验 digest/signature。', 'bool', true, { effect: 'L2' })
+      ]},
+      { label: 'Permissions', desc: '权限审查与请求日志。', settings: [
+        S('body.permissionReview', 'Permission review', 'always 最安全；never 不建议。', 'enum', 'always', { options: ['always', 'firstRun', 'never'], effect: 'L2' }),
+        S('body.requestLog', 'Permission request log', '记录权限请求。', 'bool', true, { effect: 'L1' })
+      ]},
+      { label: 'Data & Retention', desc: '保留、备份与回滚版本。', settings: [
+        S('body.retentionDays', 'Data retention', '体数据保留天数。', 'number', 90, { min: 1, max: 3650, unit: 'days', effect: 'L1' }),
+        S('body.backupBeforeUpdate', 'Backup before update', '更新前备份。', 'bool', true, { effect: 'L1' }),
+        S('body.rollbackKeepVersions', 'Keep versions for rollback', '至少保留 2 个版本。', 'number', 2, { min: 1, max: 5, effect: 'L1' })
+      ]},
+      { label: 'Isolation', desc: '沙箱、网络与文件系统范围。', settings: [
+        S('body.sandbox', 'Sandbox', 'strict/balanced/off。', 'enum', 'strict', { options: ['strict', 'balanced', 'off'], effect: 'L2', restart: 'body' }),
+        S('body.networkAccess', 'Network access', 'ask/allow/deny。', 'enum', 'ask', { options: ['ask', 'allow', 'deny'], effect: 'L2' }),
+        S('body.filesystemScope', 'Filesystem scope', 'body/workspace/user。', 'enum', 'body', { options: ['body', 'workspace', 'user'], effect: 'L2' }),
+        S('body.installDir', 'Install directory', '体安装目录。', 'path', '%LOCALAPPDATA%\\Atom\\Bodies', { effect: 'L1', restart: 'app' })
+      ]}
+    ]
+  },
+  {
+    id: 'field', group: 'Layers', icon: '✦', color: '#ec4899', title: '场层设置',
+    desc: '模型 provider、上下文/记忆、routing、autonomy、safety、成本与评估。',
+    groups: [
+      { label: 'Providers & Models', desc: '模型接入；API key 只存 secretRef。', settings: [
+        S('field.provider', 'Provider', 'openai/azure/openai-compatible/local。', 'enum', 'openai-compatible', { options: ['openai', 'azure', 'openai-compatible', 'local'], effect: 'L1', initialSource: 'user' }),
+        S('field.baseUrl', 'Base URL', '兼容 OpenAI 的 API base URL。', 'string', 'https://api.openai.com/v1', { effect: 'L1', initialSource: 'user' }),
+        S('field.apiKeyRef', 'API key', '只保存 secretRef；不回显明文。', 'secret', 'env:OPENAI_API_KEY', { effect: 'L2', secret: true, initialSource: 'user' }),
+        S('field.defaultModel', 'Default model', 'auto 由 router 选择。', 'string', 'auto', { effect: 'L1', initialSource: 'user' })
+      ]},
+      { label: 'Context & Memory', desc: '上下文预算、记忆范围与引用。', settings: [
+        S('field.contextBudget', 'Context budget', '每次请求的 context token 预算。', 'number', 32000, { min: 1000, max: 200000, unit: 'tokens', effect: 'L1' }),
+        S('field.memoryScope', 'Memory scope', 'session/workspace/global。', 'enum', 'workspace', { options: ['session', 'workspace', 'global'], effect: 'L1' }),
+        S('field.citationPolicy', 'Citation policy', '高风险场景强制 always。', 'enum', 'whenAvailable', { options: ['always', 'whenAvailable', 'off'], effect: 'L1' })
+      ]},
+      { label: 'Routing', desc: '模型路由与 fallback。', settings: [
+        S('field.routingMode', 'Routing mode', 'auto/manual/fallback。', 'enum', 'auto', { options: ['auto', 'manual', 'fallback'], effect: 'L1' }),
+        S('field.fallbackModel', 'Fallback model', '主模型失败时的 fallback。', 'string', 'auto', { effect: 'L1' }),
+        S('field.latencyBudget', 'Latency budget', '路由延迟预算。', 'number', 8000, { min: 500, max: 120000, unit: 'ms', effect: 'L1' })
+      ]},
+      { label: 'Autonomy', desc: '自主等级、审批与单次成本上限。', settings: [
+        S('field.autonomyLevel', 'Autonomy level', 'A0 建议/A1 草稿/A2 自动可撤销/A3 禁止。', 'enum', 'A1', { options: ['A0', 'A1', 'A2', 'A3'], effect: 'L2', initialSource: 'user' }),
+        S('field.requireApprovalForL2', 'Require approval for L2', '不可被单次 run 绕过。', 'bool', true, { effect: 'L2', policy: true }),
+        S('field.maxCostPerRun', 'Max cost per run', '单次运行成本上限。', 'number', 0.50, { min: 0, max: 100, unit: 'USD', effect: 'L1' })
+      ]},
+      { label: 'Safety & Citations', desc: '内容过滤、secret redaction 与 prompt 日志。', settings: [
+        S('field.contentFilter', 'Content filter', 'standard/strict/off。', 'enum', 'standard', { options: ['standard', 'strict', 'off'], effect: 'L2' }),
+        S('field.redactSecrets', 'Redact secrets', '日志/诊断自动脱敏。', 'bool', true, { effect: 'L2', policy: true }),
+        S('field.logPrompts', 'Log prompts', '可能含敏感数据；默认关闭。', 'bool', false, { effect: 'L2', policy: true })
+      ]},
+      { label: 'Cost & Limits', desc: '预算、单次上限与告警。', settings: [
+        S('field.monthlyBudget', 'Monthly budget', '月度预算。', 'number', 50, { min: 0, max: 10000, unit: 'USD', effect: 'L1' }),
+        S('field.perRunCap', 'Per-run cap', '单次运行上限。', 'number', 0.50, { min: 0, max: 100, unit: 'USD', effect: 'L1' }),
+        S('field.alertThreshold', 'Alert threshold', '预算告警阈值。', 'number', 80, { min: 1, max: 100, unit: '%', effect: 'L0' })
+      ]},
+      { label: 'Evaluation', desc: '保存时评估与回归集。', settings: [
+        S('field.evalOnSave', 'Evaluate on save', '保存配置时跑评估。', 'bool', false, { effect: 'L1' }),
+        S('field.regressionSuite', 'Regression suite', '评估使用的回归集。', 'string', 'default', { effect: 'L1' })
+      ]}
+    ]
+  },
+  { id: 'info', group: 'Info', icon: 'ⓘ', color: '#94a3b8', title: '信息', desc: '只读版本、运行时、数据位置、诊断、许可证、更新历史与支持动作。', info: true }
+];
+
+const INFO_CARDS = [
+  { title: 'About', icon: 'ⓘ', rows: [['Version', '1.4.2'], ['Build', '2026.11.23'], ['Channel', 'stable'], ['Commit', '9f2c4e7']], actions: [['Copy version', 'Version copied']] },
+  { title: 'Runtime & Platform', icon: '▤', rows: [['OS', 'Windows 11 24H2'], ['Arch', 'x64'], ['Runtime', '.NET 9'], ['WebView', '2.0']], actions: [['Copy diagnostics', 'Diagnostics copied']] },
+  { title: 'Data Locations', icon: '⌂', rows: [['Config', '%APPDATA%/Atom/config'], ['Data', '%LOCALAPPDATA%/Atom/data'], ['Cache', '%LOCALAPPDATA%/Atom/cache'], ['Logs', '%LOCALAPPDATA%/Atom/logs']], actions: [['Open data folder', 'Opening data folder…'], ['Open logs', 'Opening logs…']] },
+  { title: 'Diagnostics & Logs', icon: '⌁', rows: [['Log level', 'info'], ['Last error', 'none'], ['Trace sampling', '10%'], ['Support bundle', 'redacted']], actions: [['Export support bundle', 'Support bundle queued'], ['Copy diagnostics', 'Diagnostics copied']] },
+  { title: 'Licenses & Credits', icon: '§', rows: [['App license', 'Proprietary'], ['OSS', '42 packages'], ['Fonts', 'IBM Plex / Inter'], ['Assets', '3rd-party credits']], actions: [['View licenses', 'Opening licenses…']] },
+  { title: 'Updates', icon: '↻', rows: [['Last check', '2 min ago'], ['Current', '1.4.2'], ['Available', 'none'], ['History', '1.4.0 → 1.4.2']], actions: [['Check updates', 'Checking updates…'], ['Release notes', 'Opening release notes…']] },
+  { title: 'Support / Reset', icon: '!', rows: [['Reset settings', 'keeps data'], ['Reset app', 'deletes local data'], ['Safe mode', 'starts clean'], ['Backup', 'recommended']], actions: [['Reset settings', 'Reset settings requires confirmation'], ['Reset app', 'Reset app requires confirmation']], danger: true }
+];
+
+const state = {
+  sectionId: 'point',
+  scope: 'User',
+  query: '',
+  values: {},
+  saved: {},
+  highlightKey: null,
+  showAdvanced: false,
+  restartPending: [],
+  layerTab: 'settings',
+  selectedClassId: null,
+  selectedInstanceId: null,
+  expandedClasses: new Set(),
+  filterClass: 'all',
+  toastTimer: null
+};
+
+const ALL_SETTINGS = SECTIONS.flatMap(s => (s.groups || []).flatMap(g => g.settings));
+const settingById = key => ALL_SETTINGS.find(s => s.key === key);
+const sectionById = id => SECTIONS.find(s => s.id === id);
+
+function initValues() {
+  state.values = {};
+  for (const s of ALL_SETTINGS) {
+    state.values[s.key] = { value: s.default, source: s.policy ? 'policy' : (s.initialSource || 'default') };
+  }
+  state.saved = clone(state.values);
+}
+initValues();
+
+/* ============================================================
+   状态 / 渲染
+   ============================================================ */
+function dirtyKeys() {
+  return ALL_SETTINGS.filter(s => JSON.stringify(state.values[s.key]?.value) !== JSON.stringify(state.saved[s.key]?.value)).map(s => s.key);
+}
+function isDirty(key) { return dirtyKeys().includes(key); }
+function sectionSettings(id) {
+  const sec = sectionById(id);
+  return sec && sec.groups ? sec.groups.flatMap(g => g.settings) : [];
+}
+function sectionDirty(id) { return sectionSettings(id).some(s => isDirty(s.key)); }
+function sectionLocks(id) { return sectionSettings(id).filter(s => state.values[s.key]?.source === 'policy').length; }
+
+const LAYER_IDS = ['point', 'line', 'surface', 'body', 'field'];
+function isLayerSection(id) { return LAYER_IDS.includes(id); }
+function catalogFor(id) { return (typeof LAYER_CATALOGS !== 'undefined' && LAYER_CATALOGS[id]) || null; }
+function catalogInstances(cat) { return cat ? cat.classes.reduce((n, c) => n + c.instances.length, 0) : 0; }
+function currentClass() {
+  const cat = catalogFor(state.sectionId);
+  if (!cat) return null;
+  return cat.classes.find(c => c.id === state.selectedClassId) || cat.classes[0] || null;
+}
+function currentInstance() {
+  const c = currentClass();
+  if (!c) return null;
+  return c.instances.find(i => i.id === state.selectedInstanceId) || c.instances[0] || null;
+}
+function ensureLayerSelection(id) {
+  const cat = catalogFor(id);
+  if (!cat) return;
+  if (!cat.classes.some(c => c.id === state.selectedClassId)) {
+    state.selectedClassId = cat.classes[0]?.id || null;
+    state.selectedInstanceId = cat.classes[0]?.instances[0]?.id || null;
+  }
+  const c = currentClass();
+  if (c && !c.instances.some(i => i.id === state.selectedInstanceId)) state.selectedInstanceId = c.instances[0]?.id || null;
+  if (c && state.expandedClasses) state.expandedClasses.add(c.id);
+}
+function formatVal(spec, v) {
+  if (spec.secret) return v ? '••••••••' : 'not configured';
+  if (typeof v === 'boolean') return v ? 'on' : 'off';
+  if (v === '' || v === null || v === undefined) return '—';
+  return String(v);
+}
+
+function renderHeader() {
+  const n = dirtyKeys().length;
+  $('#scopeSel').value = state.scope;
+  if ($('#sectionSel')) $('#sectionSel').value = state.sectionId;
+  const apply = $('#applyBtn');
+  apply.disabled = n === 0 || state.scope === 'Policy' || (isLayerSection(state.sectionId) && state.layerTab !== 'settings');
+  apply.textContent = n ? `Apply (${n})` : 'Apply';
+}
+
+function renderNav() {
+  const groups = [
+    { label: 'General', ids: ['general'] },
+    { label: 'Layers', ids: LAYER_IDS },
+    { label: 'Info', ids: ['info'] }
+  ];
+  $('#nav').innerHTML = groups.map(g => `<div class="nav-group"><div class="nav-label">${esc(g.label)}</div>${g.ids.map(id => {
+    const s = sectionById(id);
+    const cat = catalogFor(id);
+    const dirty = sectionDirty(id);
+    const locks = sectionLocks(id);
+    const sub = cat ? `${cat.classes.length} 类 / ${catalogInstances(cat)} 实例` : (id === 'general' ? 'app settings' : 'read only');
+    return `<div class="nav-item ${s.id === state.sectionId ? 'on' : ''}" data-section="${esc(s.id)}" style="--cat:${s.color}">
+      <div class="nav-icon">${esc(s.icon)}</div>
+      <div class="nav-main"><div class="nav-name">${esc(s.title)}</div><div class="nav-sub">${esc(sub)}${locks ? ' · ' + locks + ' locked' : ''}</div></div>
+      ${dirty ? '<span class="nav-dot"></span>' : ''}${locks ? '<span class="nav-lock">🔒</span>' : ''}
+    </div>`;
+  }).join('')}</div>`).join('');
+  $$('#nav [data-section]').forEach(el => el.onclick = () => {
+    state.sectionId = el.dataset.section;
+    state.layerTab = 'settings';
+    state.filterClass = 'all';
+    state.query = '';
+    $('#search').value = '';
+    if (isLayerSection(state.sectionId)) ensureLayerSelection(state.sectionId);
+    renderAll();
+  });
+}
+
+function sourceBadge(src) { return `<span class="src ${esc(src)}">${esc(src)}</span>`; }
+
+function controlHTML(spec, v, locked) {
+  if (spec.type === 'secret') {
+    return `<div class="secret-box"><span class="secret-dot">${v ? 'Configured' : 'Not configured'}</span><span style="font:7px var(--mono);color:var(--faint)">${v ? esc(v) : 'no secretRef'}</span><button class="secret-btn" data-secret="${esc(spec.key)}" ${locked ? 'disabled' : ''}>${v ? 'Replace' : 'Set'}</button></div>`;
+  }
+  if (spec.type === 'bool') {
+    return `<label class="switch"><input type="checkbox" data-key="${esc(spec.key)}" ${v ? 'checked' : ''} ${locked ? 'disabled' : ''}><span></span></label>`;
+  }
+  if (spec.type === 'enum') {
+    return `<select data-key="${esc(spec.key)}" ${locked ? 'disabled' : ''}>${(spec.options || []).map(o => `<option ${o === v ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
+  }
+  if (spec.type === 'number') {
+    return `<input type="number" data-key="${esc(spec.key)}" value="${esc(v)}" min="${spec.min ?? ''}" max="${spec.max ?? ''}" ${locked ? 'disabled' : ''}>`;
+  }
+  return `<input type="text" data-key="${esc(spec.key)}" value="${esc(v)}" ${locked ? 'disabled' : ''}>`;
+}
+
+function rowHTML(spec, section) {
+  const cur = state.values[spec.key] || { value: spec.default, source: 'default' };
+  const locked = cur.source === 'policy' || state.scope === 'Policy';
+  const dirty = isDirty(spec.key);
+  const highlight = state.highlightKey === spec.key;
+  const badges = [`<span class="mini l${String(spec.effect).slice(1)}">${esc(spec.effect)}</span>`];
+  if (spec.restart) badges.push(`<span class="mini restart">restart ${esc(spec.restart)}</span>`);
+  if (spec.secret) badges.push('<span class="mini secret">secretRef</span>');
+  if (cur.source === 'policy') badges.push('<span class="mini restart">policy locked</span>');
+  if (spec.unit) badges.push(`<span class="mini">${esc(spec.unit)}</span>`);
+  const showReset = !locked && (dirty || cur.source !== 'default');
+  return `<div class="setting-row ${dirty ? 'dirty' : ''} ${highlight ? 'highlight' : ''}" data-row="${esc(spec.key)}">
+    <div class="row-main">
+      <div class="row-label">${esc(spec.label)} ${badges.join('')}</div>
+      <div class="row-desc">${esc(spec.desc)}</div>
+    </div>
+    <div class="row-control">${controlHTML(spec, cur.value, locked)}</div>
+    <div class="row-side">${sourceBadge(cur.source)}${showReset ? `<button class="reset" data-reset="${esc(spec.key)}">reset</button>` : ''}</div>
+  </div>`;
+}
+
+const MANAGER_ROUTES = {
+  point: 'atom-catalog-management.html',
+  line: 'line-management.html',
+  surface: 'surface-management.html',
+  body: 'body-management.html',
+  field: 'field-management.html'
+};
+function managerUrlFor(id) { return MANAGER_ROUTES[id] || `layer-management.html#${id}`; }
+
+function managementJumpHTML(sec) {
+  return `<div class="manage-jump">
+    <div class="mj-icon">↗</div>
+    <div class="mj-main"><b>管理页</b><span>类与实例的 CRUD、运行、批量操作与资源加载在独立管理页完成；设置页只保留策略与默认值。</span></div>
+    <button class="btn" data-jump-manager>打开管理页 ↗</button>
+  </div>`;
+}
+
+function layerTabsHTML(sec) {
+  const cat = catalogFor(sec.id);
+  if (!cat) return '';
+  const total = catalogInstances(cat);
+  const t = state.layerTab;
+  return `<div class="layer-tabs">
+    <button class="layer-tab ${t === 'settings' ? 'on' : ''}" data-layer-tab="settings">设置</button>
+    <button class="layer-tab ${t === 'manage' ? 'on' : ''}" data-layer-tab="manage">管理 <span>${cat.classes.length} 类 · ${total} 实例</span></button>
+  </div>`;
+}
+
+function renderSection() {
+  const sec = sectionById(state.sectionId) || SECTIONS[0];
+  if (sec.info) return renderInfo(sec);
+  const dirty = sectionDirty(sec.id);
+  const locks = sectionLocks(sec.id);
+  $('#main').innerHTML = `
+    <div class="section-head">
+      <div class="section-icon" style="--cat:${sec.color}">${esc(sec.icon)}</div>
+      <div class="section-text"><div class="section-kicker">${esc(sec.group)} / ${esc(sec.id)}</div><h1>${esc(sec.title)}</h1><p>${esc(sec.desc)}</p></div>
+      <div class="section-actions"><span class="mini l${locks ? '2' : '1'}">${esc(state.scope)} scope</span>${dirty ? '<span class="mini restart">unsaved</span>' : ''}${locks ? `<span class="mini restart">${locks} locked</span>` : ''}</div>
+    </div>
+    ${isLayerSection(sec.id) ? managementJumpHTML(sec) : ''}
+    ${state.scope === 'Policy' ? '<div class="policy-banner">Policy view · 只读。组织策略优先级最高；修改请切换到 User / Workspace / Machine scope，或联系管理员。</div>' : ''}
+    ${sec.groups.map(g => {
+      const visible = g.settings.filter(s => state.showAdvanced || !s.advanced);
+      if (!visible.length) return '';
+      return `<div class="group"><div class="group-head"><b>${esc(g.label)}</b><span>${esc(g.desc || '')}</span></div><div class="group-body">${visible.map(s => rowHTML(s, sec)).join('')}</div></div>`;
+    }).join('')}
+    <div class="section-foot">
+      <label style="display:flex;align-items:center;gap:5px;font-size:8px;color:#8fa2bb;cursor:pointer"><input type="checkbox" data-show-advanced ${state.showAdvanced ? 'checked' : ''} style="accent-color:var(--cyan);width:12px;height:12px;margin:0"> Show advanced</label>
+      <button class="btn" data-reset-section>Reset section</button>
+      <span class="foot-note">effective value + source badge · policy 锁定项不可编辑</span>
+    </div>`;
+}
+
+function renderInfo(sec) {
+  $('#main').innerHTML = `
+    <div class="section-head">
+      <div class="section-icon" style="--cat:${sec.color}">${esc(sec.icon)}</div>
+      <div class="section-text"><div class="section-kicker">Info / read only</div><h1>${esc(sec.title)}</h1><p>${esc(sec.desc)}</p></div>
+      <div class="section-actions"><span class="mini l1">read only</span><span class="mini">v1.4.2</span></div>
+    </div>
+    <div class="info-grid">${INFO_CARDS.map(c => `<div class="info-card"><h3>${esc(c.icon)} ${esc(c.title)}</h3><div class="info-kv">${c.rows.map(([k, v]) => `<div class="k">${esc(k)}</div><div class="v">${esc(v)}</div>`).join('')}</div><div class="info-actions">${(c.actions || []).map(([label]) => `<button class="info-btn ${c.danger ? 'danger' : ''}" data-info-action="${esc(label)}">${esc(label)}</button>`).join('')}</div></div>`).join('')}</div>`;
+}
+
+function renderSearch() {
+  const q = state.query.trim().toLowerCase();
+  const matches = ALL_SETTINGS.filter(s => {
+    const hay = [s.key, s.label, s.desc, ...(s.alias || []), ...(s.options || [])].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  const grouped = {};
+  for (const s of matches) {
+    const sec = SECTIONS.find(x => (x.groups || []).some(g => g.settings.includes(s)));
+    if (!sec) continue;
+    (grouped[sec.id] ||= []).push(s);
+  }
+  const catMatches = [];
+  for (const layer of LAYER_IDS) {
+    const cat = catalogFor(layer);
+    if (!cat) continue;
+    for (const c of cat.classes) {
+      if ([c.id, c.name, c.group, c.summary, c.effect, c.status].join(' ').toLowerCase().includes(q)) {
+        catMatches.push({ kind: 'class', layer, classId: c.id, label: c.name, sub: c.id, desc: c.summary, count: c.instances.length });
+      }
+      for (const ins of c.instances) {
+        if ([ins.id, ins.name, ins.detail, c.id, c.name].join(' ').toLowerCase().includes(q)) {
+          catMatches.push({ kind: 'instance', layer, classId: c.id, instanceId: ins.id, label: ins.name, sub: ins.id, desc: ins.detail, rev: ins.rev });
+        }
+      }
+    }
+  }
+  const shownCat = catMatches.slice(0, 60);
+  $('#main').innerHTML = `
+    <div class="section-head"><div class="section-icon" style="--cat:#22d3ee">⌕</div><div class="section-text"><div class="section-kicker">Search / ${matches.length + catMatches.length} results</div><h1>搜索设置与层目录</h1><p>匹配 key、label、描述、alias、enum 选项，以及 PointClass / FlowClass / SurfaceClass / BodyClass / AIClass 与其实例。</p></div><div class="section-actions"><span class="mini">${esc(state.query)}</span></div></div>
+    <div class="search-results">
+      ${Object.entries(grouped).map(([id, list]) => {
+        const sec = sectionById(id);
+        if (!sec) return '';
+        return `<div class="group"><div class="group-head"><b>${esc(sec.icon)} ${esc(sec.title)} · settings</b><span>${list.length} matches</span></div><div class="group-body">${list.map(s => {
+          const cur = state.values[s.key];
+          return `<div class="result" data-result="${esc(s.key)}"><div class="result-top"><span class="result-label">${esc(s.label)}</span><span class="result-key">${esc(s.key)}</span></div><div class="result-desc">${esc(s.desc)}</div><div style="margin-top:3px"><span class="src ${esc(cur.source)}">${esc(cur.source)}</span> <span class="mini">${esc(formatVal(s, cur.value))}</span></div></div>`;
+        }).join('')}</div></div>`;
+      }).join('')}
+      ${shownCat.length ? `<div class="group"><div class="group-head"><b>Layer Catalog</b><span>${catMatches.length} matches${catMatches.length > 60 ? ' · showing 60' : ''}</span></div><div class="group-body">${shownCat.map(x => `<div class="result" data-cat-kind="${x.kind}" data-layer="${x.layer}" data-class="${esc(x.classId)}" data-instance="${esc(x.instanceId || '')}"><div class="result-top"><span class="result-label">${x.kind === 'class' ? '◆' : '·'} ${esc(x.label)}</span><span class="result-key">${esc(x.sub)}</span></div><div class="result-desc">${esc(x.desc || '')}</div><div style="margin-top:3px"><span class="mini l1">${x.kind === 'class' ? 'class' : 'instance'}</span> <span class="mini">${esc(LAYER_CATALOGS[x.layer].label)}</span>${x.count !== undefined ? `<span class="mini">${x.count} instances</span>` : `<span class="mini">r${x.rev}</span>`}</div></div>`).join('')}</div></div>` : ''}
+      ${matches.length + catMatches.length ? '' : '<div class="empty">没有匹配的设置或层目录项。试试 “theme”、“timeout”、“vpn”、“ocr”、“agent” 或 “body”。</div>'}
+    </div>`;
+  $$('#main [data-result]').forEach(el => el.onclick = () => {
+    const spec = settingById(el.dataset.result);
+    const sec = SECTIONS.find(x => (x.groups || []).some(g => g.settings.includes(spec)));
+    state.sectionId = sec.id;
+    state.layerTab = 'settings';
+    state.query = '';
+    $('#search').value = '';
+    state.highlightKey = spec.key;
+    renderAll();
+    setTimeout(() => { state.highlightKey = null; if (!state.query) renderSection(); }, 1600);
+  });
+  $$('#main [data-cat-kind]').forEach(el => el.onclick = () => {
+    const layer = el.dataset.layer;
+    const c = catalogFor(layer);
+    const cls = c.classes.find(x => x.id === el.dataset.class);
+    const inst = el.dataset.instance || cls?.instances[0]?.id || '';
+    const hash = `#${layer}/${encodeURIComponent(el.dataset.class)}${inst ? '/' + encodeURIComponent(inst) : ''}`;
+    window.location.href = `layer-management.html${hash}`;
+  });
+}
+
+function renderMain() {
+  if (state.query.trim()) return renderSearch();
+  renderSection();
+}
+
+function catalogHeader(sec, cat, title, desc) {
+  return `<div class="section-head">
+    <div class="section-icon" style="--cat:${sec.color}">${esc(sec.icon)}</div>
+    <div class="section-text"><div class="section-kicker">${esc(sec.group)} / ${esc(sec.id)} / ${esc(state.layerTab)}</div><h1>${esc(title)}</h1><p>${esc(desc)}</p></div>
+    <div class="section-actions"><span class="mini l1">${cat.classes.length} classes</span><span class="mini">${catalogInstances(cat)} instances</span></div>
+  </div>${layerTabsHTML(sec)}`;
+}
+
+function renderClassCatalog() {
+  const sec = sectionById(state.sectionId);
+  const cat = catalogFor(state.sectionId);
+  if (!sec || !cat) return renderSection();
+  ensureLayerSelection(state.sectionId);
+  const groups = [...new Set(cat.classes.map(c => c.group))];
+  $('#main').innerHTML = `${catalogHeader(sec, cat, `${sec.title} · 功能类`, `按 group 浏览 ${cat.classes.length} 个类；点击类查看实例与元数据。`)}
+    <div class="cat-stats"><span class="mini l1">${cat.classes.length} classes</span><span class="mini">${catalogInstances(cat)} instances</span><span class="mini">${groups.length} groups</span><span class="foot-note" style="margin-left:auto">class = 契约 · instance = 绑定/参数</span></div>
+    ${groups.map(g => {
+      const list = cat.classes.filter(c => c.group === g);
+      return `<div class="cat-group"><div class="cat-group-head">${esc(g)} <span>${list.length}</span></div><div class="cat-grid">${list.map(c => `<div class="cat-class ${c.id === state.selectedClassId ? 'on' : ''}" data-cat-class="${esc(c.id)}">
+        <div class="cc-top"><span class="cc-id">${esc(c.id)}</span><span class="cc-status ${esc(c.status)}">${esc(c.status)}</span></div>
+        <div class="cc-name">${esc(c.name)}</div>
+        <div class="cc-desc">${esc(c.summary || '')}</div>
+        <div class="cc-meta"><span class="cat-badge">${esc(c.group)}</span><span class="cat-badge">${esc(c.effect || 'L0')}</span><span class="cat-badge">${c.instances.length} inst</span><span class="cat-badge">v${esc(c.version || '1.0.0')}</span></div>
+      </div>`).join('')}</div></div>`;
+    }).join('')}`;
+  $$('#main [data-cat-class]').forEach(el => el.onclick = () => {
+    const c = cat.classes.find(x => x.id === el.dataset.catClass);
+    state.selectedClassId = c.id;
+    state.selectedInstanceId = c.instances[0]?.id || null;
+    renderClassCatalog();
+    renderLayerInspector();
+  });
+}
+
+function renderInstanceCatalog() {
+  const sec = sectionById(state.sectionId);
+  const cat = catalogFor(state.sectionId);
+  if (!sec || !cat) return renderSection();
+  ensureLayerSelection(state.sectionId);
+  if (state.filterClass !== 'all' && !cat.classes.some(c => c.id === state.filterClass)) state.filterClass = 'all';
+  const classes = state.filterClass === 'all' ? cat.classes : cat.classes.filter(c => c.id === state.filterClass);
+  const list = classes.flatMap(c => c.instances.map(ins => ({ ...ins, classId: c.id, className: c.name, group: c.group })));
+  $('#main').innerHTML = `${catalogHeader(sec, cat, `${sec.title} · 实例`, `按类筛选实例；点击行查看 revision、状态与绑定。`)}
+    <div class="cat-toolbar"><span class="mini l1">${list.length} shown</span><select data-class-filter><option value="all">All classes</option>${cat.classes.map(c => `<option value="${esc(c.id)}" ${state.filterClass === c.id ? 'selected' : ''}>${esc(c.id)}</option>`).join('')}</select><span class="foot-note">instance id · class · revision · status</span></div>
+    <div class="cat-table-wrap"><table class="cat-table"><thead><tr><th>Instance</th><th>Class</th><th>Rev</th><th>Status</th><th>Detail</th></tr></thead><tbody>${list.map(ins => `<tr data-cat-instance="${esc(ins.id)}" data-cat-class="${esc(ins.classId)}" class="${ins.id === state.selectedInstanceId ? 'on' : ''}"><td class="mono">${esc(ins.id)}</td><td class="mono">${esc(ins.classId)}</td><td>r${ins.rev}</td><td><span class="status ${esc(ins.status)}">${esc(ins.status)}</span></td><td class="muted">${esc(ins.detail || '')}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No instances.</td></tr>'}</tbody></table></div>`;
+  $$('#main [data-cat-instance]').forEach(el => el.onclick = () => {
+    state.selectedClassId = el.dataset.catClass;
+    state.selectedInstanceId = el.dataset.catInstance;
+    renderInstanceCatalog();
+    renderLayerInspector();
+  });
+}
+
+function renderLayerManagement() {
+  const sec = sectionById(state.sectionId);
+  const cat = catalogFor(state.sectionId);
+  if (!sec || !cat) return renderSection();
+  ensureLayerSelection(state.sectionId);
+  const stable = cat.classes.filter(c => c.status === 'stable').length;
+  const draft = cat.classes.filter(c => c.status === 'draft').length;
+  const archived = cat.classes.filter(c => c.status === 'archived').length;
+  const total = catalogInstances(cat);
+  const expanded = state.expandedClasses || (state.expandedClasses = new Set());
+  const rows = cat.classes.map(c => {
+    const open = expanded.has(c.id);
+    const selected = c.id === state.selectedClassId;
+    const instRows = open ? c.instances.map(i => `<tr class="mgmt-inst-row ${i.id === state.selectedInstanceId ? 'on' : ''}" data-mgmt-inst="${esc(i.id)}" data-mgmt-class="${esc(c.id)}">
+      <td><span class="mgmt-indent">└</span><span class="mgmt-inst-name">${esc(i.name)}</span><span class="mono mgmt-inst-id">${esc(i.id)}</span></td>
+      <td>${esc(c.group)}</td><td><span class="mgmt-status ${esc(i.status)}">${esc(i.status)}</span></td><td>${esc(c.effect || 'L0')}</td><td>r${i.rev}</td><td class="mgmt-detail">${esc(i.detail || '')}</td>
+    </tr>`).join('') : '';
+    return `<tr class="mgmt-cls-row ${selected ? 'on' : ''}" data-mgmt-class="${esc(c.id)}">
+      <td><span class="mgmt-chev">${open ? '▾' : '▸'}</span><b>${esc(c.name)}</b><div class="mono mgmt-cls-id">${esc(c.id)}</div></td>
+      <td>${esc(c.group)}</td><td><span class="mgmt-status ${esc(c.status)}">${esc(c.status)}</span></td><td>${esc(c.effect || 'L0')}</td><td>${c.instances.length}</td><td class="mgmt-detail">${esc(c.summary || '')}</td>
+    </tr>${instRows}`;
+  }).join('');
+  $('#main').innerHTML = `${catalogHeader(sec, cat, `${sec.title} · 管理`, '类与实例合并在一张表；展开类查看实例，点击行打开右侧 Inspector。')}
+    <div class="mgmt-summary"><span class="mini l1">${cat.classes.length} classes</span><span class="mini">${total} instances</span><span class="mini">${stable} stable</span><span class="mini">${draft} draft</span><span class="mini">${archived} archived</span><span class="foot-note" style="margin-left:auto">设置与管理两个 tab；不再拆功能类/实例 tab</span></div>
+    <div class="mgmt-toolbar"><button class="btn" data-expand-all>展开全部类</button><button class="btn" data-collapse-all>收起全部</button><button class="btn" data-open-manager>打开完整管理页</button><span class="foot-note" style="margin-left:auto">类行 → 选中类；实例行 → 选中实例</span></div>
+    <div class="mgmt-table-wrap"><table class="mgmt-combined"><thead><tr><th>类 / 实例</th><th>Group</th><th>Status</th><th>Effect</th><th>Inst</th><th>Summary / Detail</th></tr></thead><tbody>${rows || '<tr><td colspan="6" class="empty">No classes.</td></tr>'}</tbody></table></div>`;
+  $$('#main [data-mgmt-class]').forEach(el => el.onclick = (e) => {
+    if (el.dataset.mgmtInst) {
+      state.selectedClassId = el.dataset.mgmtClass;
+      state.selectedInstanceId = el.dataset.mgmtInst;
+      state.expandedClasses.add(state.selectedClassId);
+    } else {
+      state.selectedClassId = el.dataset.mgmtClass;
+      const c = cat.classes.find(x => x.id === state.selectedClassId);
+      state.selectedInstanceId = c?.instances[0]?.id || null;
+      if (state.expandedClasses.has(state.selectedClassId)) state.expandedClasses.delete(state.selectedClassId); else state.expandedClasses.add(state.selectedClassId);
+    }
+    renderLayerManagement();
+    renderLayerInspector();
+  });
+  $$('#main [data-expand-all]').forEach(b => b.onclick = () => { cat.classes.forEach(c => state.expandedClasses.add(c.id)); renderLayerManagement(); });
+  $$('#main [data-collapse-all]').forEach(b => b.onclick = () => { state.expandedClasses.clear(); renderLayerManagement(); });
+  $$('#main [data-open-manager]').forEach(b => b.onclick = () => openManager());
+}
+
+function openManager() {
+  if (state.sectionId === 'point') {
+    try { window.open('atom-catalog-management.html', '_blank', 'noopener'); } catch (_) { toast('打开点层管理页'); }
+    toast('打开点层管理页：atom-catalog-management.html');
+  } else {
+    toast(`${catalogFor(state.sectionId)?.label || state.sectionId} 管理页 · registry / body manager（模拟）`);
+  }
+}
+
+function renderLayerInspector() {
+  const cat = catalogFor(state.sectionId);
+  if (!cat) return renderChanges();
+  ensureLayerSelection(state.sectionId);
+  const c = currentClass();
+  const ins = currentInstance();
+  if (!c) { $('#changes').innerHTML = '<div class="empty">No class selected.</div>'; return; }
+  const instances = c.instances.slice(0, 14);
+  $('#changes').innerHTML = `
+    <div class="ch-head"><b>Layer Inspector</b><span class="ch-count">${esc(cat.label)}</span></div>
+    <div class="cat-insp">
+      <div class="cat-insp-kicker">${esc(c.group)} · ${esc(c.status || 'active')}</div>
+      <div class="cat-insp-id">${esc(c.id)}</div>
+      <div class="cat-insp-name">${esc(c.name)}</div>
+      <div class="cat-insp-desc">${esc(c.summary || '')}</div>
+      <div class="cat-stats" style="margin-top:7px"><span class="mini">${esc(c.effect || 'L0')}</span><span class="mini">${esc(c.priority || 'P1')}</span><span class="mini">${c.instances.length} inst</span><span class="mini">v${esc(c.version || '1.0.0')}</span></div>
+      <div class="ch-actions"><button class="btn" data-open-layer-settings>设置</button><button class="btn" data-open-manager>管理页</button></div>
+      <div class="lh" style="margin-top:11px">Instances · ${c.instances.length}</div>
+      <div class="cat-instance-list">${instances.map(i => `<button class="cat-inst-btn ${i.id === ins?.id ? 'on' : ''}" data-insp-inst="${esc(i.id)}"><span>${esc(i.id)}</span><span>r${i.rev}</span></button>`).join('') || '<div class="empty">No instances.</div>'}${c.instances.length > instances.length ? `<div class="foot-note">+${c.instances.length - instances.length} more</div>` : ''}</div>
+      ${ins ? `<div class="cat-inst-detail"><div class="lh">Selected instance</div><div class="mono" style="font-size:7.5px;color:#a5f3fc;word-break:break-all">${esc(ins.id)}</div><div class="foot-note" style="margin-top:4px">r${ins.rev} · ${esc(ins.status)}</div><div class="cat-detail-text">${esc(ins.detail || '')}</div></div>` : ''}
+    </div>`;
+  $$('#changes [data-open-layer-settings]').forEach(b => b.onclick = () => { state.layerTab = 'settings'; renderAll(); });
+  $$('#changes [data-open-manager]').forEach(b => b.onclick = openManager);
+  $$('#changes [data-insp-inst]').forEach(b => b.onclick = () => {
+    state.selectedInstanceId = b.dataset.inspInst;
+    if (state.layerTab === 'manage') renderLayerManagement();
+    renderLayerInspector();
+  });
+}
+
+function renderChanges() {
+  const keys = dirtyKeys();
+  const restart = [...new Set(keys.map(k => settingById(k)?.restart).filter(Boolean))];
+  const rows = keys.map(k => {
+    const s = settingById(k);
+    const from = state.saved[k]?.value;
+    const to = state.values[k]?.value;
+    return `<div class="ch-row"><span class="ch-label">${esc(s.label)}</span><span class="ch-diff"><span class="from">${esc(formatVal(s, from))}</span> → <span class="to">${esc(formatVal(s, to))}</span></span></div>`;
+  }).join('');
+  $('#changes').innerHTML = `
+    <div class="ch-head"><b>Changes</b><span class="ch-count">${keys.length} unsaved</span></div>
+    ${keys.length ? `<div class="ch-list">${rows}</div>` : '<div class="empty">No unsaved changes.</div>'}
+    <div class="ch-actions"><button class="btn primary" data-apply ${keys.length ? '' : 'disabled'}>Apply</button><button class="btn" data-discard ${keys.length ? '' : 'disabled'}>Discard</button></div>
+    ${restart.length || state.restartPending.length ? `<div class="restart-box">Restart required: ${esc([...new Set([...restart, ...state.restartPending])].join(' / '))}${state.restartPending.length ? ' · applied, pending restart' : ''}</div>` : ''}`;
+  $$('#changes [data-apply]').forEach(b => b.onclick = applyChanges);
+  $$('#changes [data-discard]').forEach(b => b.onclick = discardChanges);
+}
+
+function renderStatus() {
+  const n = dirtyKeys().length;
+  const errs = 0;
+  $('#statusLeft').textContent = `Settings · ${state.scope} scope · ${n ? n + ' unsaved' : 'clean'} · ${errs} errors`;
+  $('#statusRight').textContent = state.restartPending.length ? `restart required: ${state.restartPending.join('/')}` : 'v1.4.2 · build 2026.11.23';
+  $('#changes').classList.toggle('dirty', n > 0);
+}
+
+function renderAll() {
+  renderHeader(); renderNav(); renderMain(); renderChanges(); renderStatus();
+}
+
+/* ============================================================
+   变更
+   ============================================================ */
+function setValue(key, value) {
+  if (state.scope === 'Policy') return;
+  const spec = settingById(key);
+  if (!spec || state.values[key]?.source === 'policy') return;
+  state.values[key] = { value, source: state.scope.toLowerCase() };
+  state.highlightKey = null;
+  renderAll();
+}
+
+function resetKey(key) {
+  const spec = settingById(key);
+  if (!spec || state.values[key]?.source === 'policy' || state.scope === 'Policy') return;
+  state.values[key] = { value: spec.default, source: 'default' };
+  renderAll();
+}
+
+function resetSection() {
+  if (state.scope === 'Policy') return;
+  const sec = sectionById(state.sectionId);
+  for (const s of sectionSettings(sec.id)) {
+    if (state.values[s.key]?.source !== 'policy') state.values[s.key] = { value: s.default, source: 'default' };
+  }
+  renderAll();
+  toast('Section reset to defaults');
+}
+
+function applyChanges() {
+  if (state.scope === 'Policy') return;
+  const restart = [...new Set(dirtyKeys().map(k => settingById(k)?.restart).filter(Boolean))];
+  state.restartPending = [...new Set([...state.restartPending, ...restart])];
+  state.saved = clone(state.values);
+  renderAll();
+  toast(restart.length ? `Applied · restart ${restart.join('/')} required` : 'Settings applied');
+}
+
+function discardChanges() {
+  state.values = clone(state.saved);
+  state.restartPending = [];
+  renderAll();
+  toast('Changes discarded');
+}
+
+function exportSettings() {
+  const out = { schema: 1, scope: state.scope, values: {}, secrets: {} };
+  for (const s of ALL_SETTINGS) {
+    const v = state.values[s.key];
+    if (s.secret) out.secrets[s.key] = v.value ? 'secretRef' : null;
+    else out.values[s.key] = v.value;
+  }
+  copyText(JSON.stringify(out, null, 2), 'Settings exported (secrets as refs only)');
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(state.toastTimer);
+  state.toastTimer = setTimeout(() => t.classList.remove('show'), 1700);
+}
+
+function copyText(text, label) {
+  const done = () => toast(label || '已复制');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  done();
+}
+
+/* ============================================================
+   事件
+   ============================================================ */
+function init() {
+  try {
+    const hash = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+    if (hash && SECTIONS.some(s => s.id === hash)) state.sectionId = hash;
+  } catch (_) {}
+  $('#sectionSel').innerHTML = SECTIONS.map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join('');
+  $('#sectionSel').addEventListener('change', e => { state.sectionId = e.target.value; state.layerTab = 'settings'; state.filterClass = 'all'; state.query = ''; $('#search').value = ''; if (isLayerSection(state.sectionId)) ensureLayerSelection(state.sectionId); renderAll(); });
+
+  $('#scopeSel').addEventListener('change', e => {
+    state.scope = e.target.value;
+    renderAll();
+    toast(`Scope: ${state.scope}${state.scope === 'Policy' ? ' · read only' : ''}`);
+  });
+  $('#search').addEventListener('input', e => {
+    state.query = e.target.value;
+    renderMain();
+  });
+  $('#applyBtn').addEventListener('click', applyChanges);
+  $('#moreBtn').addEventListener('click', e => { e.stopPropagation(); $('#moreMenu').classList.toggle('on'); });
+  document.addEventListener('click', e => { if (!e.target.closest('#moreMenu') && !e.target.closest('#moreBtn')) $('#moreMenu').classList.remove('on'); });
+  $('#moreMenu').addEventListener('click', e => {
+    const b = e.target.closest('[data-more]');
+    if (!b) return;
+    $('#moreMenu').classList.remove('on');
+    if (b.dataset.more === 'import') toast('Import: schema validation → diff preview → apply');
+    if (b.dataset.more === 'export') exportSettings();
+    if (b.dataset.more === 'close') toast(dirtyKeys().length ? 'Unsaved changes · Apply or Discard first' : 'Close settings');
+  });
+
+  $('#main').addEventListener('change', e => {
+    const cf = e.target.closest('[data-class-filter]');
+    if (cf) { state.filterClass = cf.value; renderInstanceCatalog(); return; }
+    const adv = e.target.closest('[data-show-advanced]');
+    if (adv) { state.showAdvanced = adv.checked; renderMain(); return; }
+    const el = e.target.closest('[data-key]');
+    if (!el) return;
+    const spec = settingById(el.dataset.key);
+    let val = el.type === 'checkbox' ? el.checked : el.value;
+    if (spec.type === 'number') val = Number(val);
+    setValue(el.dataset.key, val);
+  });
+  $('#main').addEventListener('click', e => {
+    const jump = e.target.closest('[data-jump-manager]');
+    if (jump) { window.location.href = managerUrlFor(state.sectionId); return; }
+    const lt = e.target.closest('[data-layer-tab]');
+    if (lt) {
+      state.layerTab = lt.dataset.layerTab;
+      state.filterClass = 'all';
+      state.query = '';
+      $('#search').value = '';
+      ensureLayerSelection(state.sectionId);
+      renderAll();
+      return;
+    }
+    const reset = e.target.closest('[data-reset]');
+    if (reset) { resetKey(reset.dataset.reset); return; }
+    const resetSec = e.target.closest('[data-reset-section]');
+    if (resetSec) { resetSection(); return; }
+    const secret = e.target.closest('[data-secret]');
+    if (secret) { toast('Credential dialog: value stored in OS credential vault, never shown'); return; }
+    const info = e.target.closest('[data-info-action]');
+    if (info) { toast(`${info.textContent.trim()} · simulated`); return; }
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      $('#search').focus();
+    }
+    if (e.key === 'Escape') {
+      if (document.activeElement === $('#search')) {
+        state.query = '';
+        $('#search').value = '';
+        $('#search').blur();
+        renderMain();
+      } else {
+        toast(dirtyKeys().length ? 'Unsaved changes · Apply or Discard first' : 'Close settings');
+      }
+    }
+  });
+
+  renderAll();
+}
+
+init();
+})();
+
+</script>
+</body>
+</html>

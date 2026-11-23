@@ -1,0 +1,64 @@
+<body>
+<div id="app">
+  <aside id="panel">
+    <div class="brand">
+      <h1>Atom 3D</h1>
+      <p>点 · 线 · 面 · 体 · 场。用维度本身表达层级：0D 点、1D 线、2D 面、3D 体、场是包围体的环境。</p>
+    </div>
+
+    <section class="card">
+      <h2>聚合 ↔ 展开</h2>
+      <div class="row"><span>展开度</span><b id="explodeV">0%</b></div>
+      <input type="range" id="explode" min="0" max="100" value="0">
+      <p style="margin:0;color:var(--faint);font-size:10.5px;line-height:1.55">0% = 体包住面，面包住线，线带点；100% = 点/线/面/体分层展开。</p>
+      <div class="btn-row">
+        <button class="btn" id="runBtn">▶ 模拟运行</button>
+        <button class="btn ghost" id="resetBtn">重置视角</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>图层</h2>
+      <div class="layer-grid">
+        <label class="check"><input type="checkbox" id="showPoints" checked> 点</label>
+        <label class="check"><input type="checkbox" id="showLines" checked> 线</label>
+        <label class="check"><input type="checkbox" id="showSurfaces" checked> 面</label>
+        <label class="check"><input type="checkbox" id="showBody" checked> 体</label>
+        <label class="check"><input type="checkbox" id="showField" checked> 场</label>
+        <label class="check"><input type="checkbox" id="autoRotate" checked> 自动旋转</label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>当前选择</h2>
+      <div class="inspector" id="inspector">
+        <div class="empty">点击点 / 线 / 面 / 体查看详情。拖拽旋转，滚轮缩放。</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>图例</h2>
+      <div class="legend">
+        <span><i class="dot" style="background:#22c55e"></i>L0 只读</span>
+        <span><i class="dot" style="background:#3b82f6"></i>L1 可逆</span>
+        <span><i class="dot" style="background:#f59e0b"></i>L2 确认</span>
+        <span><i class="dot" style="background:#ef4444"></i>L3 高风险</span>
+        <span><i class="dot" style="background:#22d3ee"></i>场</span>
+      </div>
+    </section>
+  </aside>
+
+  <main id="stage">
+    <canvas id="gl"></canvas>
+    <div class="hud-top">
+      <div class="name">body.external-access.work <span style="color:#22d3ee">@r3</span></div>
+      <div class="meta">BodyClass body.external-access@1.0.0 · 3 surfaces · 6 flows · 22 points</div>
+      <div class="chips">
+        <span class="pill">network</span><span class="pill">process</span><span class="pill">uia</span><span class="pill">flow runnable</span>
+      </div>
+    </div>
+    <div class="runbar" id="runbar"><i id="runbarFill"></i></div>
+    <div class="hint">拖拽旋转 · 滚轮缩放 · 点击对象 · <kbd>Space</kbd> 运行 · <kbd>R</kbd> 重置</div>
+    <div class="status" id="status">idle · <b>0</b> runs</div>
+  </main>
+</div>
