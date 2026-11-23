@@ -55,6 +55,8 @@ export interface RunRecord {
   elapsedMs: number
   at: string
   createdAt?: number
+  /** 场层运行证据（tier / confidence / reason / attempts） */
+  evidence?: Record<string, unknown>
 }
 
 const p = (key: string, label: string, type: string, required: boolean, description: string): LayerParam => ({

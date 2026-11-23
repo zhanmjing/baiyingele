@@ -308,6 +308,65 @@ async function main() {
   assert.strictEqual(noTarget.status, 'warn', '缺 target 必须 warn')
   console.log('✓ win.open：URL / 非法协议拦截 / %VAR% 展开 / 缺参数 都正确')
 
+  // ── 7f. 场层：field.classify（模型分类 + evidence）──────────────
+  const classifyCtx = (description, input) => ({
+    def: { key: 'field', classLabel: 'FieldClass', classes: [], outputs: {} },
+    instance: { classId: 'field.classify', name: 'classify.intent', params: {}, description },
+    pointClass: {},
+    params: {},
+    input,
+    findInstance: () => undefined
+  })
+
+  let classReply = ''
+  const classServer = await new Promise((resolve) => {
+    const server = http.createServer((req, res) => {
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ choices: [{ message: { content: classReply } }] }))
+    })
+    server.listen(0, '127.0.0.1', () =>
+      resolve({ server, url: `http://127.0.0.1:${server.address().port}/v1` })
+    )
+  })
+  const INTENT_DESC = 'command palette · action/flow/body/question'
+
+  clearTranslateEnv()
+  const noProviderClassify = await CAPABILITIES['field.classify'](classifyCtx(INTENT_DESC, '帮我做个按钮'))
+  assert.strictEqual(noProviderClassify.status, 'warn', '没配 provider 必须 warn')
+  assert.match(noProviderClassify.output, /未配置场层 provider/)
+
+  process.env.BAIYING_TRANSLATE_LOCAL_URL = classServer.url
+
+  classReply = JSON.stringify({ label: 'flow', confidence: 0.82, reason: '需要多步编排' })
+  const okClassify = await CAPABILITIES['field.classify'](
+    classifyCtx(INTENT_DESC, '帮我做一个打开 GitHub 前检查 VPN 的按钮')
+  )
+  assert.strictEqual(okClassify.status, 'ok', `分类应成功: ${okClassify.output}`)
+  const classified = JSON.parse(okClassify.value)
+  assert.strictEqual(classified.label, 'flow')
+  assert.strictEqual(classified.confidence, 0.82)
+  assert.deepStrictEqual(classified.labels, ['action', 'flow', 'body', 'question'], '候选集应从实例描述解析')
+  assert.strictEqual(okClassify.evidence.confidence, 0.82, 'confidence 必须进 evidence')
+  assert.strictEqual(okClassify.evidence.tier, 'local', 'evidence 要记命中的档位')
+
+  classReply = JSON.stringify({ label: 'nonsense', confidence: 0.9 })
+  const badLabel = await CAPABILITIES['field.classify'](classifyCtx('body.ocr · text/math/qr/table', '这张图是表格'))
+  assert.strictEqual(badLabel.status, 'warn', '候选集外的标签必须 warn')
+  assert.match(badLabel.output, /不在候选集里/)
+
+  classReply = '我觉得是 flow 吧'
+  const notJson = await CAPABILITIES['field.classify'](classifyCtx(INTENT_DESC, '随便'))
+  assert.strictEqual(notJson.status, 'warn')
+  assert.match(notJson.output, /没返回合法 JSON/)
+
+  const noLabels = await CAPABILITIES['field.classify'](classifyCtx('没有分隔符的描述', '文本'))
+  assert.strictEqual(noLabels.status, 'warn', '无候选集必须 warn')
+  assert.match(noLabels.output, /没有声明候选标签/)
+
+  clearTranslateEnv()
+  await new Promise((resolve) => classServer.server.close(resolve))
+  console.log('✓ field.classify：未配置 / 正常分类 / 非法标签 / 非 JSON / 无候选集 都正确')
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

@@ -213,7 +213,8 @@ export function LayerManagementPage({
       const record: RunRecord = {
         id: result.runId, layer: layer.key as 'point' | 'line' | 'surface' | 'body', classId: classItem.id, instanceId: instance.id,
         status: result.ok ? 'ok' : 'warn', output: result.output, elapsedMs: result.elapsedMs,
-        at: '刚刚', createdAt: new Date(result.at).getTime()
+        at: '刚刚', createdAt: new Date(result.at).getTime(),
+        evidence: 'evidence' in result ? result.evidence : undefined
       }
       setLastRun(record)
       setSelected({ type: 'instance', classId: classItem.id, instanceId: instance.id })
@@ -631,13 +632,20 @@ function FieldEvidenceView({ runs, onToast }: { runs: RunRecord[]; onToast: (mes
       <div className="field-evidence-head"><div><div className="panel-eyebrow">FIELD / EVIDENCE</div><h3>证据与引用</h3><p>每次场层运行留下的输出、置信度、时间与可撤销入口。</p></div><button className="btn ghost small" onClick={() => onToast('证据导出将在审计接口接入后启用')}>导出证据</button></div>
       {runs.length ? (
         <div className="field-evidence-list">
-          {runs.map((run) => (
-            <article className="field-evidence-card" key={run.id}>
-              <div className="field-evidence-icon"><Sparkles size={15} /></div>
-              <div className="field-evidence-main"><div><strong>{run.output}</strong><span className={`status-pill ${run.status}`}>{run.status === 'ok' ? '证据完整' : '需复核'}</span></div><code>{run.classId} · {run.instanceId}</code><div className="field-evidence-meta"><span>{run.elapsedMs}ms</span><span>confidence 0.84</span><span>{run.at}</span><span>evidence {run.id.slice(-8)}</span></div></div>
-              <button className="text-btn" onClick={() => onToast('证据详情面板待接入')}>查看 →</button>
-            </article>
-          ))}
+          {runs.map((run) => {
+            const confidence = typeof run.evidence?.confidence === 'number'
+              ? (run.evidence.confidence as number).toFixed(2)
+              : '—'
+            const tier = typeof run.evidence?.tier === 'string' ? (run.evidence.tier as string) : null
+            const attempts = Array.isArray(run.evidence?.attempts) ? run.evidence.attempts.length : 0
+            return (
+              <article className="field-evidence-card" key={run.id}>
+                <div className="field-evidence-icon"><Sparkles size={15} /></div>
+                <div className="field-evidence-main"><div><strong>{run.output}</strong><span className={`status-pill ${run.status}`}>{run.status === 'ok' ? '证据完整' : '需复核'}</span></div><code>{run.classId} · {run.instanceId}</code><div className="field-evidence-meta"><span>{run.elapsedMs}ms</span><span>confidence {confidence}</span>{tier && <span>{tier} 档{attempts > 1 ? ` · 重试 ${attempts - 1}` : ''}</span>}<span>{run.at}</span><span>evidence {run.id.slice(-8)}</span></div></div>
+                <button className="text-btn" onClick={() => onToast('证据详情面板待接入')}>查看 →</button>
+              </article>
+            )
+          })}
         </div>
       ) : (
         <div className="point-empty"><Sparkles size={22} /><strong>还没有场层证据</strong><span>在卡片/管理视图运行一个 FieldInstance，证据会出现在这里。</span></div>

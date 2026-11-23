@@ -39,6 +39,8 @@ export interface RunOutcome {
   elapsedMs: number
   /** 原始输出，供线层把上一个节点的结果传给下一个节点（不写入历史） */
   value?: string
+  /** 可解释性证据（场层要求 reason + evidence），会随运行记录持久化 */
+  evidence?: Record<string, unknown>
 }
 
 /** 跨层/跨节点传入的执行上下文（线层给每个节点套用映射时用） */
@@ -297,7 +299,8 @@ export class LayerStore {
       status: outcome.status,
       output: outcome.output,
       elapsedMs: outcome.elapsedMs,
-      createdAt: started
+      createdAt: started,
+      ...(outcome.evidence ? { evidence: outcome.evidence } : {})
     }
     this.state.runs = [record, ...this.state.runs].slice(0, 200)
     this.save()

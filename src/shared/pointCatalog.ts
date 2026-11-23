@@ -51,6 +51,8 @@ export interface PointRunRecord {
   output: string
   elapsedMs: number
   createdAt: number
+  /** 场层等的运行证据（provider / confidence / attempts 等），可选 */
+  evidence?: Record<string, unknown>
 }
 
 export const pointClassesSeed = (fullCatalogs.point as unknown) as PointClassSeed[]

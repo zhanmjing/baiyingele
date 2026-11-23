@@ -39,6 +39,7 @@ export interface RunResult {
   output: string
   elapsedMs: number
   at: string
+  evidence?: Record<string, unknown>
 }
 
 /** 由层名映射出 getPointCatalog / runPoint 这类方法名 */

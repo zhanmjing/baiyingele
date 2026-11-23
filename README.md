@@ -141,11 +141,15 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `clipboard.write` | `clipboard.writeText` + 回读校验；空文本拒绝，不清空用户剪贴板 |
 | `translate.text` | provider 链 **本地 → 网络 → API** 降级（免费优先），key 只读环境变量 |
 | `win.open` | `shell.openExternal` / `openPath`，带 app 时 `spawn`；`%VAR%` 自动展开 |
+| `field.classify` | 场层第一个真能力：按实例自带候选标签做模型分类，输出 `confidence` + `reason` 并写入运行证据 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
 
-其余 91 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 89 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+
+场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
+`evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
 已打通的端到端流程是 `flow.clipboard-to-file`（读剪贴板 → 套模板 → 写文件 → 系统通知）：
 四个节点各产生一条真实 `PointRun`，再聚合成一条 `FlowRun`——`npm run smoke` 可验证。
 

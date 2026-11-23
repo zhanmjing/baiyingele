@@ -3,17 +3,18 @@
 import type { RunContext, RunOutcome } from '../layerStore'
 import type { Capability } from './_shared'
 import * as cap0 from './clipboard.write'
-import * as cap1 from './file.move'
-import * as cap2 from './file.read'
-import * as cap3 from './file.scan'
-import * as cap4 from './file.write'
-import * as cap5 from './notify.toast'
-import * as cap6 from './text.template'
-import * as cap7 from './translate.text'
-import * as cap8 from './win.clipboard.get'
-import * as cap9 from './win.http.request'
-import * as cap10 from './win.open'
-import * as cap11 from './win.screen.capture'
+import * as cap1 from './field.classify'
+import * as cap2 from './file.move'
+import * as cap3 from './file.read'
+import * as cap4 from './file.scan'
+import * as cap5 from './file.write'
+import * as cap6 from './notify.toast'
+import * as cap7 from './text.template'
+import * as cap8 from './translate.text'
+import * as cap9 from './win.clipboard.get'
+import * as cap10 from './win.http.request'
+import * as cap11 from './win.open'
+import * as cap12 from './win.screen.capture'
 
 const MODULES = [
   cap0,
@@ -27,7 +28,8 @@ const MODULES = [
   cap8,
   cap9,
   cap10,
-  cap11
+  cap11,
+  cap12
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(

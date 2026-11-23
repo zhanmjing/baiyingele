@@ -107,7 +107,8 @@ function runToRecord(run: PointRunRecord, layer: 'point' | 'line' | 'surface' | 
     status: run.status,
     output: run.output,
     elapsedMs: run.elapsedMs,
-    at: formatRunTime(run.createdAt)
+    at: formatRunTime(run.createdAt),
+    evidence: run.evidence
   }
 }
 
