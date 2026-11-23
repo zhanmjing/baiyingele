@@ -93,6 +93,22 @@ export function matchesCombo(combo: ParsedCombo, event: KeyEventLike, keymap: Re
   )
 }
 
+/**
+ * 纯函数：把「自己跟踪的修饰键状态」并进事件修饰位。
+ *
+ * 实测 uiohook-napi 在 Windows 上按 Ctrl 组合时，主键事件的 ctrlKey 会是 false
+ * （Alt 正常，Ctrl 丢失），所以不能直接信它，否则 Ctrl+X 永远匹配不上。
+ */
+export function withHeldModifiers(event: KeyEventLike, held: Set<number>, keymap: Record<string, number>): KeyEventLike {
+  return {
+    keycode: event.keycode,
+    ctrlKey: event.ctrlKey || held.has(keymap.Ctrl),
+    altKey: event.altKey || held.has(keymap.Alt),
+    shiftKey: event.shiftKey || held.has(keymap.Shift),
+    metaKey: event.metaKey || held.has(keymap.Meta)
+  }
+}
+
 export interface TriggerFiring {
   at: number
   combo: string
@@ -103,6 +119,8 @@ let hookStarted = false
 let uiohookModule: { uIOhook: any; UiohookKey: Record<string, number> } | null = null
 const registered = new Map<string, ParsedCombo>()
 const firings: TriggerFiring[] = []
+/** 自己跟踪的修饰键按住状态（uiohook 的修饰位不可靠） */
+const heldKeys = new Set<number>()
 
 const firingListeners: ((combo: string) => void)[] = []
 
@@ -146,6 +164,7 @@ export function stopHook(): { stopped: boolean; combos: number } {
     // 已经停了就忽略
   }
   hookStarted = false
+  heldKeys.clear()
   return { stopped: true, combos }
 }
 
@@ -156,9 +175,16 @@ function ensureHook(): { ok: boolean; reason?: string } {
     const mod = require('uiohook-napi')
     uiohookModule = { uIOhook: mod.uIOhook, UiohookKey: mod.UiohookKey }
 
+    mod.uIOhook.on('keyup', (event: KeyEventLike) => {
+      heldKeys.delete(event.keycode)
+    })
+
     mod.uIOhook.on('keydown', (event: KeyEventLike) => {
+      const effective = withHeldModifiers(event, heldKeys, mod.UiohookKey)
+      // 记下这次按键；修饰键自身不会命中任何主键，所以顺序不影响匹配
+      heldKeys.add(event.keycode)
       for (const [label, combo] of registered) {
-        if (!matchesCombo(combo, event, mod.UiohookKey)) continue
+        if (!matchesCombo(combo, effective, mod.UiohookKey)) continue
         firings.unshift({ at: Date.now(), combo: label })
         if (firings.length > 50) firings.length = 50
         for (const listener of firingListeners) {

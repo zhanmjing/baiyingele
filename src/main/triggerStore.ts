@@ -52,6 +52,20 @@ function migrate(raw: Partial<TriggerBinding> & { combo?: string }): TriggerBind
   }
 }
 
+/**
+ * 手势去重：一个 pattern 只能对应一个目标，否则同一手势会触发多个实例。
+ * 保留先出现的那条——用户自己录的优先于种子数据。
+ */
+function dedupeGestures(bindings: TriggerBinding[]): TriggerBinding[] {
+  const seen = new Set<string>()
+  return bindings.filter((binding) => {
+    if (binding.source !== 'gesture') return true
+    if (seen.has(binding.pattern)) return false
+    seen.add(binding.pattern)
+    return true
+  })
+}
+
 export class TriggerStore {
   private readonly filePath: string
   private state: TriggerState
@@ -66,7 +80,13 @@ export class TriggerStore {
       if (!existsSync(this.filePath)) return { version: 2, bindings: [] }
       const parsed = JSON.parse(readFileSync(this.filePath, 'utf8')) as Partial<TriggerState>
       const list = Array.isArray(parsed.bindings) ? parsed.bindings : []
-      return { version: 2, bindings: list.map((item) => migrate(item as never)) }
+      const migrated = list.map((item) => migrate(item as never))
+      const deduped = dedupeGestures(migrated)
+      // 去重真的删掉了东西就落盘，避免每次启动都重算
+      if (deduped.length !== migrated.length) {
+        setTimeout(() => this.save(), 0)
+      }
+      return { version: 2, bindings: deduped }
     } catch {
       return { version: 2, bindings: [] }
     }

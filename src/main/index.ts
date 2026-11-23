@@ -131,7 +131,10 @@ app.whenReady().then(() => {
   const triggerService = new TriggerService({
     store: new TriggerStore(join(dataDir, 'trigger-bindings.json')),
     pointStore: () => store('point'),
-    lineStore: () => store('line')
+    lineStore: () => store('line'),
+    onFired: (record) => {
+      mainWindow?.webContents.send('trigger:fired', record)
+    }
   })
 
   /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */

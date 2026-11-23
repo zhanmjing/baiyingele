@@ -19,6 +19,7 @@ declare global {
       removeTrigger: (id: string) => Promise<boolean>
       simulateTrigger: (combo: string) => Promise<unknown[]>
       dispatchGesture: (points: { x: number; y: number; t?: number }[]) => Promise<unknown>
+      onTriggerFired: (callback: (record: unknown) => void) => () => void
     }
   }
 }

@@ -241,6 +241,16 @@ export function SurfaceManagementPage({
     gesturesBootstrapped.current = true
     void bootstrapGestures()
   }, [])
+
+  // 主进程每次派发后推事件过来：不用轮询，触发次数立刻刷新
+  useEffect(() => {
+    const unsubscribe = window.baiying?.onTriggerFired?.(() => {
+      void reloadTriggers()
+    })
+    return () => {
+      unsubscribe?.()
+    }
+  }, [])
   useEffect(() => {
     if (panelInstance) {
       setPanelMode(panelInstance.mode)
@@ -807,7 +817,6 @@ export function SurfaceManagementPage({
           )}
           {view === 'hotkeys' && (
             <div className="surface-action-bar">
-              <button className="btn primary" onClick={() => void addHotkeyBinding()} disabled={!hotkeyCombo || !hotkeyTargetId}><Plus size={12} /> 添加绑定</button>
               <button className="btn ghost" onClick={() => void reloadTriggers()}><RefreshCw size={12} /> 刷新钩子状态</button>
               <span className="text-btn">已挂载 {hotkeyCombos.length} 个组合{hotkeyFailures.length ? ` · ${hotkeyFailures.length} 个失败` : ''}</span>
             </div>
@@ -831,6 +840,70 @@ export function SurfaceManagementPage({
             <PanelView classItem={panelClass} instance={panelInstance} mode={panelMode} width={panelWidth} viewState={panelViewState} anatomy={panelAnatomy} onModeChange={setPanelMode} onWidthChange={setPanelWidth} onViewStateChange={setPanelViewState} onAnatomyChange={setPanelAnatomy} onSelectInstance={setPanelInstanceLabel} onToast={onToast} />
           ) : view === 'gestures' ? (
             <GestureView gesture={gesture} bindings={gestureBindings} target={selectedGestureTarget} targets={gestureTargets} onOpenTarget={openGestureTarget} onSelectPattern={selectGesture} onToast={onToast} />
+          ) : view === 'hotkeys' ? (
+            <div className="hotkey-view">
+              <div className="surface-hero">
+                <span className="surface-hero-icon gesture">⌘</span>
+                <div>
+                  <div className="panel-eyebrow">TRIGGER · HOTKEY</div>
+                  <h2>全局热键 → 实例</h2>
+                  <p>按下组合键直接跑一个点层或线层实例。钩子由主进程常驻，和手势共用同一条 dispatch。</p>
+                </div>
+                <div className="surface-hero-actions">
+                  <span className={`status-pill ${hotkeyCombos.length ? 'active' : 'draft'}`}>
+                    {hotkeyCombos.length ? `${hotkeyCombos.length} 个组合已挂载` : '钩子未启动'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="hotkey-form">
+                <label>组合键
+                  <input readOnly value={hotkeyCombo || '点这里，然后按下组合键'} onKeyDown={captureHotkey} />
+                </label>
+                <label>目标实例
+                  <select value={hotkeyTargetId} onChange={(event) => setHotkeyTargetId(event.target.value)}>
+                    <option value="">选择点层或线层实例…</option>
+                    {gestureTargets.map((target) => (
+                      <option key={target.id} value={target.id}>{target.kind === 'point' ? '点' : '线'} · {target.label}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>备注
+                  <input value={hotkeyNote} onChange={(event) => setHotkeyNote(event.target.value)} placeholder="可选" />
+                </label>
+                <button className="btn primary" onClick={() => void addHotkeyBinding()} disabled={!hotkeyCombo || !hotkeyTargetId}>
+                  <Plus size={12} /> 绑定
+                </button>
+              </div>
+
+              {hotkeyFailures.length > 0 && (
+                <div className="hotkey-failures">
+                  <strong>注册失败 {hotkeyFailures.length} 条</strong>
+                  {hotkeyFailures.map((failure) => <code key={failure}>{failure}</code>)}
+                </div>
+              )}
+
+              <div className="point-table-wrap">
+                <table className="point-catalog-table">
+                  <thead><tr><th>组合键</th><th>目标</th><th>挂载</th><th>触发</th><th>备注</th><th /></tr></thead>
+                  <tbody>
+                    {hotkeyBindings.length === 0 && (
+                      <tr><td colSpan={6}><span className="text-btn">还没有热键绑定，用上面的表单添加一个</span></td></tr>
+                    )}
+                    {hotkeyBindings.map((binding) => (
+                      <tr key={binding.id} className={hotkeyPattern === binding.pattern ? 'on' : ''} onClick={() => setHotkeyPattern(binding.pattern)}>
+                        <td><strong>{binding.pattern}</strong></td>
+                        <td><code>{binding.targetKind} · {binding.targetId}</code></td>
+                        <td>{hotkeyCombos.includes(binding.pattern) ? <span className="status-pill active">已挂载</span> : <span className="status-pill draft">未挂载</span>}</td>
+                        <td>{binding.fireCount}</td>
+                        <td>{binding.note || '—'}</td>
+                        <td><button className="text-btn" onClick={(event) => { event.stopPropagation(); void removeHotkeyBinding(binding.id) }}>删除</button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           ) : (
             <DockView tab={dockTab} tabs={dockTabs} allTiles={dockTiles} tiles={visibleTiles} selected={dockTile} onSelect={selectDockTile} onToast={onToast} />
           )}

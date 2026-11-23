@@ -70,6 +70,11 @@ const api = {
   simulateTrigger: (combo: string): Promise<unknown[]> => ipcRenderer.invoke('trigger:simulate', combo),
   dispatchGesture: (points: { x: number; y: number; t?: number }[]): Promise<unknown> =>
     ipcRenderer.invoke('trigger:gesture', points),
+  onTriggerFired: (callback: (record: unknown) => void): (() => void) => {
+    const handler = (_event: unknown, record: unknown): void => callback(record)
+    ipcRenderer.on('trigger:fired', handler)
+    return () => ipcRenderer.removeListener('trigger:fired', handler)
+  },
   ...layerApi
 }
 

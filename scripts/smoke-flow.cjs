@@ -86,7 +86,7 @@ const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
 const { selectWindows, parseSelector } = require('../.tmp/smoke/main/capabilities/win.window.query.js')
 const { planThemeChange } = require('../.tmp/smoke/main/capabilities/win.theme.mode.js')
 const { computeRect, resolveTarget } = require('../.tmp/smoke/main/capabilities/win.window.control.js')
-const { parseCombo, matchesCombo, registeredCombos, stopHook } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
+const { parseCombo, matchesCombo, withHeldModifiers, registeredCombos, stopHook } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
 const { TriggerStore } = require('../.tmp/smoke/main/triggerStore.js')
 const { TriggerService } = require('../.tmp/smoke/main/triggerService.js')
 const gesture = require('../.tmp/smoke/shared/gestureRecognizer.js')
@@ -608,6 +608,19 @@ async function main() {
   assert.strictEqual(matchesCombo(spaceCombo, evt(30, { ctrlKey: true, altKey: true }), KEYMAP), false, '主键不同不匹配')
   assert.strictEqual(matchesCombo(parseCombo('F13'), evt(116, {}), KEYMAP), false, 'keymap 里没有的键不匹配')
 
+  // 实测 uiohook 在 Windows 上按 Ctrl 组合时主键事件 ctrlKey 为 false，必须靠自跟踪状态补齐
+  const KEYMAP_M = { ...KEYMAP, Ctrl: 29, Alt: 56, Shift: 42, Meta: 3675 }
+  const heldCtrlAlt = new Set([29, 56])
+  const ctrlLostEvent = evt(57, { ctrlKey: false, altKey: true }) // 真实观测到的形状
+  assert.strictEqual(matchesCombo(spaceCombo, ctrlLostEvent, KEYMAP_M), false, '不补齐时 Ctrl+Alt+Space 匹配不上（复现 bug）')
+  assert.strictEqual(
+    matchesCombo(spaceCombo, withHeldModifiers(ctrlLostEvent, heldCtrlAlt, KEYMAP_M), KEYMAP_M),
+    true,
+    '补齐后应能匹配'
+  )
+  const noHeld = withHeldModifiers(evt(57, { ctrlKey: true, altKey: true }), new Set(), KEYMAP_M)
+  assert.strictEqual(noHeld.ctrlKey, true, '事件自带修饰位时保持原样')
+
   // 钩子起停（真启动全局钩子，随后立刻停掉）
   const trigStart = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'Ctrl+Alt+Space', scope: 'global' }))
   if (trigStart.status === 'ok') {
@@ -713,6 +726,14 @@ async function main() {
     assert.ok(targetStore.instance(seed.target), `种子手势 ${seed.pattern} 的目标不存在: ${seed.target}`)
   }
   console.log(`  种子手势 ${surfaceSeed.gestures.length} 个，目标全部可解析`)
+
+  // 手势去重：一个 pattern 只能有一个目标，改绑即覆盖
+  assert.strictEqual(triggerService.add({ source: 'gesture', pattern: 'LDR', targetKind: 'point', targetId: TRIGGER_TARGET, name: '改绑' }).ok, true)
+  const ldrList = triggerService.list().filter((item) => item.source === 'gesture' && item.pattern === 'LDR')
+  assert.strictEqual(ldrList.length, 1, '同 pattern 只能有一条')
+  assert.strictEqual(ldrList[0].targetId, TRIGGER_TARGET, '应覆盖成新目标')
+  assert.strictEqual(ldrList[0].name, '改绑')
+  assert.strictEqual(ldrList[0].id, 'gesture:LDR')
 
   assert.strictEqual(triggerService.remove(hotBinding.binding.id), true)
   assert.strictEqual(triggerService.remove(gestBinding.binding.id), true)

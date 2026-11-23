@@ -241,6 +241,9 @@ gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑
 | `hotkey` | 组合键**精确**匹配 | `Ctrl+Alt+Space`，由主进程钩子触发 |
 | `gesture` | 方向串**模糊**匹配（编辑距离 ≥ 0.75） | `LDR`，由渲染层送轨迹进来，主进程识别 |
 
+> 手势绑定按 **pattern 唯一**（`gesture:LDR`）：一个手势只能有一个含义，改绑即覆盖。
+> 热键按 `pattern + 目标` 唯一，同一个组合可以绑多个目标。
+
 绑定存在 `%APPDATA%\baiying-electron\trigger-bindings.json`：
 
 ```ts
@@ -305,6 +308,27 @@ gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑
 面层「手势」页的录制板有两个动作：**录制**（定义 pattern，不触发）和**试触发**（用当前轨迹真跑一次派发）。
 两者分开是刻意的——录制定义时不该顺手执行别人的绑定。
 
+### 实测踩到的三个坑
+
+这三条都是**真机跑起来才发现的**，光靠单测和类型检查一个都抓不到：
+
+1. **`uiohook-napi` 报的 `ctrlKey` 不可靠。**
+   实测按 `Ctrl+Alt+G` 时，钩子收到的事件是
+   `{"keycode":34,"ctrl":false,"alt":true}` —— Alt 有，**Ctrl 丢了**。
+   结果是所有 `Ctrl+...` 组合永远匹配不上。修法是自己跟踪修饰键的按下/抬起状态，
+   匹配时用 `event.ctrlKey || held.has(Ctrl键码)`（`withHeldModifiers`）。
+   冒烟测试里有一条专门复现这个形状：不补齐匹配不上，补齐后能匹配。
+
+2. **主内容区是个三元链，末尾分支是无条件兜底。**
+   `view === 'surfaces' ? … : view === 'panels' ? … : view === 'gestures' ? … : <DockView/>` ——
+   新增的 `'hotkeys'` 直接掉进了 dock 分支，页面显示的是启动坞。
+   加分支时必须插在兜底之前。
+
+3. **触发后 UI 不会变。**
+   `fireCount` 只在主进程里涨，渲染层只在增删绑定时才重拉数据。
+   修法是主进程每次派发后 `webContents.send('trigger:fired')`，页面订阅后重拉。
+   实测：按一次热键，触发次数从 2 自动变 3，不用点刷新。
+
 ### 热键视图
 
 面层管理页多了一个「热键」tab（`#hotkeys`）：
@@ -314,6 +338,7 @@ gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑
   选目标实例、填备注，点「绑定」
 - 表格显示每条绑定是否**真的挂到了原生钩子上**（`trigger:list` 返回的 `combos`），
   以及注册失败原因（`failures`）
+- 触发次数会**自动刷新**：主进程派发后推 `trigger:fired`，页面收到就重拉，不用手动点
 
 「已挂载 / 未挂载」这个区分是有意做的：写进 `trigger-bindings.json` 不等于钩子真的挂上了，
 比如 koffi 或 uiohook 加载失败时，绑定存在但按下去没反应。

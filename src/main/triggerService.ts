@@ -44,6 +44,8 @@ export interface TriggerServiceDeps {
   store: TriggerStore
   pointStore: () => LayerStore
   lineStore: () => LayerStore
+  /** 每次派发后回调，用于把结果推给渲染层（让 UI 不用轮询） */
+  onFired?: (record: FiringRecord) => void
 }
 
 const MAX_FIRINGS = 50
@@ -112,8 +114,11 @@ export class TriggerService {
       return { ok: false, message: `目标实例不存在：${input.targetKind}:${input.targetId}` }
     }
 
+    // 手势：一个 pattern 只能有一个目标，改绑时直接覆盖；热键允许多目标
+    const bindingId =
+      input.source === 'gesture' ? `gesture:${pattern}` : `${input.source}:${pattern}→${input.targetId}`
     const binding = this.deps.store.upsert({
-      id: `${input.source}:${pattern}→${input.targetId}`,
+      id: bindingId,
       source: input.source,
       pattern,
       targetKind: input.targetKind,
@@ -248,5 +253,10 @@ export class TriggerService {
   private push(record: FiringRecord): void {
     this.firings.unshift(record)
     if (this.firings.length > MAX_FIRINGS) this.firings.length = MAX_FIRINGS
+    try {
+      this.deps.onFired?.(record)
+    } catch {
+      // 推送失败不能影响派发本身
+    }
   }
 }
