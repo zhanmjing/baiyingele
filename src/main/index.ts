@@ -116,7 +116,26 @@ function registerLayerIpc(): void {
   }
 }
 
+/**
+ * 单实例锁。
+ * 两个实例会共享同一个 userData 目录，同时写 points/flows/surfaces/bodies/runs/trigger-bindings
+ * 这几份 json —— 后写的覆盖先写的，会造成绑定丢失、运行记录串味。
+ * 第二个实例直接退出，把已有窗口拉到前台。
+ */
+const hasSingleInstanceLock = app.requestSingleInstanceLock()
+
+if (!hasSingleInstanceLock) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (!mainWindow) return
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.focus()
+  })
+}
+
 app.whenReady().then(() => {
+  if (!hasSingleInstanceLock) return
   // Windows 上 Electron Notification 需要 AppUserModelId 才会显示
   app.setAppUserModelId('com.baiying.desktop')
 
