@@ -1,0 +1,26 @@
+{
+  "id": "flow.open-app",
+  "name": "flow.open-app",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "确保应用可用后打开文件/项目/URL",
+  "instances": [
+    {
+      "id": "inst.open-app-vscode-project@r2",
+      "name": "open-app-vscode-project",
+      "rev": 2,
+      "status": "active",
+      "detail": "ensure=inst.ensure-app-vscode@r2"
+    },
+    {
+      "id": "inst.open-app-notepad-file@r1",
+      "name": "open-app-notepad-file",
+      "rev": 1,
+      "status": "active",
+      "detail": "ensure=inst.ensure-app-notepad@r1"
+    }
+  ]
+}

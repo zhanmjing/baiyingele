@@ -1,0 +1,47 @@
+{
+  "id": "field.translate",
+  "family": "generate",
+  "output": "text/dsl",
+  "landing": "point/line",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.translate.nl-to-dsl@r1",
+      "classId": "field.translate",
+      "scope": "editor",
+      "output": "NL → DSL",
+      "rev": 1,
+      "name": "translate.nl-to-dsl",
+      "status": "active",
+      "detail": "editor · NL → DSL"
+    },
+    {
+      "id": "field.translate.dsl-to-nl@r1",
+      "classId": "field.translate",
+      "scope": "inspector",
+      "output": "DSL → 人话",
+      "rev": 1,
+      "name": "translate.dsl-to-nl",
+      "status": "active",
+      "detail": "inspector · DSL → 人话"
+    },
+    {
+      "id": "field.translate.error-to-human@r1",
+      "classId": "field.translate",
+      "scope": "run history",
+      "output": "error → 解释",
+      "rev": 1,
+      "name": "translate.error-to-human",
+      "status": "active",
+      "detail": "run history · error → 解释"
+    }
+  ],
+  "name": "translate",
+  "group": "generate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "text/dsl → point/line · 自主度上限 A1"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "body.image-resizer",
+  "name": "图片尺寸",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "批量图片尺寸调整，预设化输出。",
+  "instances": [
+    {
+      "name": "web",
+      "rev": 2,
+      "status": "active",
+      "detail": "suffix=-web · quality=85"
+    },
+    {
+      "name": "thumbnail",
+      "rev": 1,
+      "status": "active",
+      "detail": "fit=cover · quality=80"
+    },
+    {
+      "name": "avatar",
+      "rev": 1,
+      "status": "active",
+      "detail": "fit=cover · format=png"
+    },
+    {
+      "name": "email",
+      "rev": 1,
+      "status": "active",
+      "detail": "maxBytes=512000 · quality=75"
+    }
+  ]
+}

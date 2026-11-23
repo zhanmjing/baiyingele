@@ -1,0 +1,30 @@
+{
+  "id": "body.workspace",
+  "name": "工作区",
+  "group": "window",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "一键打开开发/会议/写作工作区。",
+  "instances": [
+    {
+      "name": "dev",
+      "rev": 3,
+      "status": "active",
+      "detail": "preset=dev · monitor=dual"
+    },
+    {
+      "name": "meeting",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=meeting · monitor=main"
+    },
+    {
+      "name": "writing",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=writing · monitor=main"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "body.ocr",
+  "name": "OCR 识别",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "识别文字、数学公式、二维码、表格与手写内容。",
+  "instances": [
+    {
+      "name": "text",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=text · language=auto"
+    },
+    {
+      "name": "math",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=math · output=latex"
+    },
+    {
+      "name": "qr",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=qr · formats=qr,code128"
+    },
+    {
+      "name": "table",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=table · output=markdown"
+    },
+    {
+      "name": "handwriting",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=handwriting · threshold=0.4"
+    }
+  ]
+}

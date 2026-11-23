@@ -1,0 +1,47 @@
+{
+  "id": "field.mine",
+  "family": "evolve",
+  "output": "suggestion",
+  "landing": "line/body",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.mine.action-sequence@r1",
+      "classId": "field.mine",
+      "scope": "global",
+      "output": "action sequence suggestion",
+      "rev": 1,
+      "name": "mine.action-sequence",
+      "status": "active",
+      "detail": "global · action sequence suggestion"
+    },
+    {
+      "id": "field.mine.flow-template@r1",
+      "classId": "field.mine",
+      "scope": "line",
+      "output": "flow template",
+      "rev": 1,
+      "name": "mine.flow-template",
+      "status": "active",
+      "detail": "line · flow template"
+    },
+    {
+      "id": "field.mine.body-candidate@r1",
+      "classId": "field.mine",
+      "scope": "body",
+      "output": "body candidate",
+      "rev": 1,
+      "name": "mine.body-candidate",
+      "status": "active",
+      "detail": "body · body candidate"
+    }
+  ],
+  "name": "mine",
+  "group": "evolve",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "suggestion → line/body · 自主度上限 A1"
+}

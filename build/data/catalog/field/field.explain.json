@@ -1,0 +1,57 @@
+{
+  "id": "field.explain",
+  "family": "govern",
+  "output": "explanation",
+  "landing": "all",
+  "autonomy": "A0",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.explain.suggestion@r1",
+      "classId": "field.explain",
+      "scope": "surface",
+      "output": "why this suggestion",
+      "rev": 1,
+      "name": "explain.suggestion",
+      "status": "active",
+      "detail": "surface · why this suggestion"
+    },
+    {
+      "id": "field.explain.point-run@r1",
+      "classId": "field.explain",
+      "scope": "point run",
+      "output": "what happened",
+      "rev": 1,
+      "name": "explain.point-run",
+      "status": "active",
+      "detail": "point run · what happened"
+    },
+    {
+      "id": "field.explain.flow-run@r1",
+      "classId": "field.explain",
+      "scope": "flow run",
+      "output": "step trace",
+      "rev": 1,
+      "name": "explain.flow-run",
+      "status": "active",
+      "detail": "flow run · step trace"
+    },
+    {
+      "id": "field.explain.permission@r1",
+      "classId": "field.explain",
+      "scope": "permission prompt",
+      "output": "why needed",
+      "rev": 1,
+      "name": "explain.permission",
+      "status": "active",
+      "detail": "permission prompt · why needed"
+    }
+  ],
+  "name": "explain",
+  "group": "govern",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "explanation → all · 自主度上限 A0"
+}

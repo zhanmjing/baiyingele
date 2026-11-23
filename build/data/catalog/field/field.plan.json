@@ -1,0 +1,47 @@
+{
+  "id": "field.plan",
+  "family": "generate",
+  "output": "plan",
+  "landing": "line/body",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.plan.single-app@r1",
+      "classId": "field.plan",
+      "scope": "task",
+      "output": "app-specific plan",
+      "rev": 1,
+      "name": "plan.single-app",
+      "status": "active",
+      "detail": "task · app-specific plan"
+    },
+    {
+      "id": "field.plan.cross-app@r1",
+      "classId": "field.plan",
+      "scope": "task",
+      "output": "multi-app plan",
+      "rev": 1,
+      "name": "plan.cross-app",
+      "status": "active",
+      "detail": "task · multi-app plan"
+    },
+    {
+      "id": "field.plan.batch@r1",
+      "classId": "field.plan",
+      "scope": "batch",
+      "output": "batch plan",
+      "rev": 1,
+      "name": "plan.batch",
+      "status": "active",
+      "detail": "batch · batch plan"
+    }
+  ],
+  "name": "plan",
+  "group": "generate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "plan → line/body · 自主度上限 A1"
+}

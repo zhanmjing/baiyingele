@@ -1,0 +1,47 @@
+{
+  "id": "field.recommend",
+  "family": "perceive",
+  "output": "suggestion",
+  "landing": "point/line/body",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.recommend.next-action@r1",
+      "classId": "field.recommend",
+      "scope": "point/surface",
+      "output": "action suggestion",
+      "rev": 1,
+      "name": "recommend.next-action",
+      "status": "active",
+      "detail": "point/surface · action suggestion"
+    },
+    {
+      "id": "field.recommend.body@r1",
+      "classId": "field.recommend",
+      "scope": "body market",
+      "output": "body suggestion",
+      "rev": 1,
+      "name": "recommend.body",
+      "status": "active",
+      "detail": "body market · body suggestion"
+    },
+    {
+      "id": "field.recommend.template@r1",
+      "classId": "field.recommend",
+      "scope": "flow editor",
+      "output": "template suggestion",
+      "rev": 1,
+      "name": "recommend.template",
+      "status": "active",
+      "detail": "flow editor · template suggestion"
+    }
+  ],
+  "name": "recommend",
+  "group": "perceive",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "suggestion → point/line/body · 自主度上限 A1"
+}

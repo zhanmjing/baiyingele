@@ -1,0 +1,26 @@
+{
+  "id": "surface.diff",
+  "name": "差异",
+  "group": "visualize",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "版本/实例差异；FlowClass 版本、SurfaceInstance revision。",
+  "instances": [
+    {
+      "id": "surface.diff.flow-version",
+      "name": "流程版本 diff",
+      "rev": 1,
+      "status": "active",
+      "detail": "FlowClass v1 vs v2 · main"
+    },
+    {
+      "id": "surface.diff.instance-revision",
+      "name": "实例 revision diff",
+      "rev": 1,
+      "status": "active",
+      "detail": "绑定/参数变化 · main"
+    }
+  ]
+}

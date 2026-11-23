@@ -1,0 +1,40 @@
+{
+  "id": "flow.ensure-vpn",
+  "name": "flow.ensure-vpn",
+  "group": "Guard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "确保 VPN 已连接",
+  "instances": [
+    {
+      "id": "inst.ensure-vpn-ask@r2",
+      "name": "ensure-vpn-ask",
+      "rev": 2,
+      "status": "active",
+      "detail": "默认询问"
+    },
+    {
+      "id": "inst.ensure-vpn-auto@r1",
+      "name": "ensure-vpn-auto",
+      "rev": 1,
+      "status": "active",
+      "detail": "自动打开软件"
+    },
+    {
+      "id": "inst.ensure-vpn-auto-connect@r1",
+      "name": "ensure-vpn-auto-connect",
+      "rev": 1,
+      "status": "active",
+      "detail": "自动打开并连接"
+    },
+    {
+      "id": "inst.ensure-vpn-manual@r1",
+      "name": "ensure-vpn-manual",
+      "rev": 1,
+      "status": "active",
+      "detail": "只提示"
+    }
+  ]
+}

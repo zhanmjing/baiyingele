@@ -1,0 +1,26 @@
+{
+  "id": "flow.http-extract",
+  "name": "flow.http-extract",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "HTTP → 解析 → 模板 → 保存/通知",
+  "instances": [
+    {
+      "id": "inst.http-github-status@r2",
+      "name": "http-github-status",
+      "rev": 2,
+      "status": "active",
+      "detail": "GitHub API"
+    },
+    {
+      "id": "inst.http-weather@r1",
+      "name": "http-weather",
+      "rev": 1,
+      "status": "active",
+      "detail": "Open-Meteo"
+    }
+  ]
+}

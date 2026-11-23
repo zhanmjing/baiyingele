@@ -1,0 +1,47 @@
+{
+  "id": "field.observe",
+  "family": "perceive",
+  "output": "context snapshot",
+  "landing": "all",
+  "autonomy": "A0",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.observe.desktop@r1",
+      "classId": "field.observe",
+      "scope": "global",
+      "output": "前台进程/窗口/时间/空闲",
+      "rev": 1,
+      "name": "observe.desktop",
+      "status": "active",
+      "detail": "global · 前台进程/窗口/时间/空闲"
+    },
+    {
+      "id": "field.observe.selection@r1",
+      "classId": "field.observe",
+      "scope": "global",
+      "output": "选中文本/剪贴板/文件",
+      "rev": 1,
+      "name": "observe.selection",
+      "status": "active",
+      "detail": "global · 选中文本/剪贴板/文件"
+    },
+    {
+      "id": "field.observe.run-history@r1",
+      "classId": "field.observe",
+      "scope": "run history",
+      "output": "最近运行/失败/耗时",
+      "rev": 1,
+      "name": "observe.run-history",
+      "status": "active",
+      "detail": "run history · 最近运行/失败/耗时"
+    }
+  ],
+  "name": "observe",
+  "group": "perceive",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "context snapshot → all · 自主度上限 A0"
+}

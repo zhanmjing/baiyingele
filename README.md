@@ -74,7 +74,10 @@ npm run package
 | `npm run typecheck` | 主进程 + 渲染层类型检查（约 0.5s） |
 | `npm run validate` | 目录结构 + 跨层引用校验（软问题只报告） |
 | `npm run validate:strict` | 跨层引用未解析也计为失败 |
-| `npm run data:gen` | 用 `build/data` 重新生成五层目录 |
+| `npm run refs` | 跨层引用五态解析（只读） |
+| `npm run refs:apply` | 按 `aliases.json` 自动改写命名漂移的引用 |
+| `npm run refs:write` | 生成 `requirements.generated.json` |
+| `npm run data:gen` | 用 `build/data/catalog` 重新生成五层目录 |
 | `npm run smoke` | 无 GUI 的端到端运行时冒烟测试 |
 | `npm run check` | typecheck + validate + build（提交前跑这个） |
 | `npm run build` / `npm start` | 生产构建 / 运行构建产物 |
@@ -83,12 +86,35 @@ npm run package
 ### 数据管线
 
 ```text
-build/data/.layer-catalogs.json ─┐
-build/data/.field-data.json ─────┴─→ npm run data:gen → src/shared/generatedFullCatalogs.json
+build/data/catalog/<layer>/<class-id>.json   一类一文件（唯一可编辑源）
+build/data/catalog/<layer>/_index.json       该类层的顺序
+build/data/aliases.json                      命名漂移别名表
+build/data/legacy/                           旧整包数据（只作追溯，不再被读取）
+        │
+        ├─ npm run data:gen    → src/shared/generatedFullCatalogs.json（派生产物）
+        ├─ npm run refs        → 五态解析 + 缺口报告
+        └─ npm run refs:write  → src/shared/requirements.generated.json
 ```
 
-`generatedFullCatalogs.json` 是派生产物，**不要手改**：`npm run validate` 会重算一遍并比对，
-手改会直接报「目录漂移」。正确姿势：改 `build/data` → `npm run data:gen` → `npm run validate`。
+补一个能力的完整动作：
+
+1. 在 `build/data/catalog/point/` 新建 `<domain>.<verb>.json`
+2. 把 id 加进同目录 `_index.json`
+3. `npm run data:gen && npm run refs && npm run validate`
+4. 如果要真实执行，再在 `src/shared/implRegistry.ts` 登记、并在 `src/main/capabilities.ts` 写实现
+
+**跨层引用的五种状态**（`npm run refs`）：
+
+| 状态 | 含义 | 处置 |
+|---|---|---|
+| `ok` | 目标存在 | — |
+| `aliased` | 名字漂移，别名表能映射 | `npm run refs:apply` 自动改写 |
+| `kind-mismatch` | 引用了实例，但这里需要类 | 硬错误，自动建议正确的类 |
+| `layer-mismatch` | 引用放错了层（如点层写 `surface.show`） | 硬错误，需人工判断 |
+| `missing` | 真的还没实现 | **合法状态**，计入 `requirements.generated.json` |
+
+`missing` 不是错误：体是蓝图，依赖可以暂时不满足。体层组合视图会把未满足的引用画成虚线，
+并按「补哪个能力能解锁最多组合」排序展示缺口。
 
 ## 真实能力 vs 模拟能力
 

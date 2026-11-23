@@ -1,0 +1,47 @@
+{
+  "id": "field.memory",
+  "family": "govern",
+  "output": "memory op",
+  "landing": "all",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.memory.preference@r1",
+      "classId": "field.memory",
+      "scope": "global",
+      "output": "preference read/write",
+      "rev": 1,
+      "name": "memory.preference",
+      "status": "active",
+      "detail": "global · preference read/write"
+    },
+    {
+      "id": "field.memory.episodic@r1",
+      "classId": "field.memory",
+      "scope": "run history",
+      "output": "episode recall",
+      "rev": 1,
+      "name": "memory.episodic",
+      "status": "active",
+      "detail": "run history · episode recall"
+    },
+    {
+      "id": "field.memory.knowledge@r1",
+      "classId": "field.memory",
+      "scope": "body/domain",
+      "output": "knowledge recall",
+      "rev": 1,
+      "name": "memory.knowledge",
+      "status": "active",
+      "detail": "body/domain · knowledge recall"
+    }
+  ],
+  "name": "memory",
+  "group": "govern",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "memory op → all · 自主度上限 A1"
+}

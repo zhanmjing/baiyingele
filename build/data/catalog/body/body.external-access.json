@@ -1,0 +1,24 @@
+{
+  "id": "body.external-access",
+  "name": "外网访问",
+  "group": "web",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "外网站点 + VPN 保障 + 站点启动器。",
+  "instances": [
+    {
+      "name": "work",
+      "rev": 3,
+      "status": "active",
+      "detail": "vpn=work · policy=required"
+    },
+    {
+      "name": "personal",
+      "rev": 2,
+      "status": "active",
+      "detail": "vpn=personal · policy=preferred"
+    }
+  ]
+}

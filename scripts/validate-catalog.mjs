@@ -14,7 +14,7 @@ import { createRequire } from 'node:module'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { diffAgainstRepo, generateFullCatalogs } from './gen-catalogs.mjs'
+import { auditCatalogDir, diffAgainstRepo, generateFullCatalogs } from './gen-catalogs.mjs'
 import { ALIAS_PATH, collectRefs, groupRequirements, makeClassifier } from './reconcile-refs.mjs'
 
 const require = createRequire(import.meta.url)

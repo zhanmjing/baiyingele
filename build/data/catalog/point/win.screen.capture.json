@@ -1,0 +1,26 @@
+{
+  "id": "win.screen.capture",
+  "name": "抓屏",
+  "group": "capture",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L2",
+  "priority": "P0",
+  "summary": "抓屏保存 PNG；全屏或区域截图。",
+  "instances": [
+    {
+      "id": "win.screen.capture.i-full@r1",
+      "name": "全屏截图",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"region\":\"full\",\"format\":\"png\"}"
+    },
+    {
+      "id": "win.screen.capture.i-region@r1",
+      "name": "区域截图",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"region\":\"120x80\",\"format\":\"png\"}"
+    }
+  ]
+}

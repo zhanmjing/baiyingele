@@ -1,0 +1,24 @@
+{
+  "id": "body.meeting-notes",
+  "name": "会议纪要",
+  "group": "ai",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P2",
+  "summary": "录音 → 转录 → 摘要 → 待办。",
+  "instances": [
+    {
+      "name": "local",
+      "rev": 1,
+      "status": "active",
+      "detail": "engine=local · retention=30d"
+    },
+    {
+      "name": "cloud",
+      "rev": 1,
+      "status": "active",
+      "detail": "engine=cloud · consent=true"
+    }
+  ]
+}

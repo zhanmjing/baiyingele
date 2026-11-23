@@ -1,0 +1,33 @@
+{
+  "id": "surface.inspector",
+  "name": "检查器",
+  "group": "input",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "查看/编辑选中对象的属性；点类、点实例、槽位、运行节点。",
+  "instances": [
+    {
+      "id": "surface.inspector.point",
+      "name": "点检查器",
+      "rev": 4,
+      "status": "active",
+      "detail": "PointClass / PointInstance 契约与参数 · sidebar"
+    },
+    {
+      "id": "surface.inspector.slot-vpn",
+      "name": "VPN 槽位检查器",
+      "rev": 2,
+      "status": "active",
+      "detail": "slot.vpn 的 accepts / default / bound · sidebar"
+    },
+    {
+      "id": "surface.inspector.run-node",
+      "name": "运行节点检查器",
+      "rev": 1,
+      "status": "active",
+      "detail": "PointRun 输入/输出/耗时 · sidebar"
+    }
+  ]
+}

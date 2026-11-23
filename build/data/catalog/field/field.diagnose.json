@@ -1,0 +1,57 @@
+{
+  "id": "field.diagnose",
+  "family": "evolve",
+  "output": "diagnosis",
+  "landing": "line/body",
+  "autonomy": "A1",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.diagnose.flow-failure@r1",
+      "classId": "field.diagnose",
+      "scope": "flow run",
+      "output": "cause + fix",
+      "rev": 1,
+      "name": "diagnose.flow-failure",
+      "status": "active",
+      "detail": "flow run · cause + fix"
+    },
+    {
+      "id": "field.diagnose.uia-timeout@r1",
+      "classId": "field.diagnose",
+      "scope": "UIA step",
+      "output": "selector/timing fix",
+      "rev": 1,
+      "name": "diagnose.uia-timeout",
+      "status": "active",
+      "detail": "UIA step · selector/timing fix"
+    },
+    {
+      "id": "field.diagnose.vpn-unreachable@r1",
+      "classId": "field.diagnose",
+      "scope": "external access",
+      "output": "network/VPN cause",
+      "rev": 1,
+      "name": "diagnose.vpn-unreachable",
+      "status": "active",
+      "detail": "external access · network/VPN cause"
+    },
+    {
+      "id": "field.diagnose.ocr-low-confidence@r1",
+      "classId": "field.diagnose",
+      "scope": "body.ocr",
+      "output": "preprocess/mode fix",
+      "rev": 1,
+      "name": "diagnose.ocr-low-confidence",
+      "status": "active",
+      "detail": "body.ocr · preprocess/mode fix"
+    }
+  ],
+  "name": "diagnose",
+  "group": "evolve",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "diagnosis → line/body · 自主度上限 A1"
+}

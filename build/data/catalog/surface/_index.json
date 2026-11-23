@@ -1,0 +1,21 @@
+{
+  "layer": "surface",
+  "order": [
+    "surface.form",
+    "surface.wizard",
+    "surface.inspector",
+    "surface.table",
+    "surface.card-grid",
+    "surface.tree",
+    "surface.command-palette",
+    "surface.canvas",
+    "surface.dashboard",
+    "surface.run-history",
+    "surface.diff",
+    "surface.dialog",
+    "surface.notification",
+    "surface.tray-menu",
+    "surface.hud",
+    "surface.metric-card"
+  ]
+}

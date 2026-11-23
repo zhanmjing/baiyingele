@@ -1,0 +1,26 @@
+{
+  "id": "flow.batch-archive",
+  "name": "flow.batch-archive",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "批量扫描 → OCR/提取 → 校验 → 归档",
+  "instances": [
+    {
+      "id": "inst.invoice-company@r6",
+      "name": "invoice-company",
+      "rev": 6,
+      "status": "active",
+      "detail": "company；zh OCR"
+    },
+    {
+      "id": "inst.invoice-personal@r2",
+      "name": "invoice-personal",
+      "rev": 2,
+      "status": "active",
+      "detail": "personal；en OCR"
+    }
+  ]
+}

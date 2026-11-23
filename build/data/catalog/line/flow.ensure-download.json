@@ -1,0 +1,26 @@
+{
+  "id": "flow.ensure-download",
+  "name": "flow.ensure-download",
+  "group": "Guard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "下载并校验文件",
+  "instances": [
+    {
+      "id": "inst.ensure-download-vscode@r2",
+      "name": "ensure-download-vscode",
+      "rev": 2,
+      "status": "active",
+      "detail": "下载 VS Code"
+    },
+    {
+      "id": "inst.ensure-download-driver@r1",
+      "name": "ensure-download-driver",
+      "rev": 1,
+      "status": "active",
+      "detail": "下载驱动"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "flow.ai-rewrite",
+  "name": "flow.ai-rewrite",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "选中文字 → LLM → 预览/审批 → 替换",
+  "instances": [
+    {
+      "id": "inst.ai-rewrite-formal@r2",
+      "name": "ai-rewrite-formal",
+      "rev": 2,
+      "status": "active",
+      "detail": "formal；approval=true"
+    },
+    {
+      "id": "inst.ai-rewrite-shorten@r1",
+      "name": "ai-rewrite-shorten",
+      "rev": 1,
+      "status": "active",
+      "detail": "shorten；approval=true"
+    },
+    {
+      "id": "inst.ai-rewrite-translate@r1",
+      "name": "ai-rewrite-translate",
+      "rev": 1,
+      "status": "active",
+      "detail": "translate；approval=false"
+    }
+  ]
+}

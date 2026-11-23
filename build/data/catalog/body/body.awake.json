@@ -1,0 +1,30 @@
+{
+  "id": "body.awake",
+  "name": "保持唤醒",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "一段时间/到指定时间/应用运行期间保持唤醒。",
+  "instances": [
+    {
+      "name": "30m",
+      "rev": 1,
+      "status": "active",
+      "detail": "duration=30m · display=on"
+    },
+    {
+      "name": "until",
+      "rev": 1,
+      "status": "active",
+      "detail": "until=18:00 · display=on"
+    },
+    {
+      "name": "while-app",
+      "rev": 1,
+      "status": "active",
+      "detail": "whileApp=build.exe"
+    }
+  ]
+}

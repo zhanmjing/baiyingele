@@ -1,0 +1,26 @@
+{
+  "id": "surface.command-palette",
+  "name": "命令面板",
+  "group": "browse",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "全局搜索与动作启动；键盘优先。",
+  "instances": [
+    {
+      "id": "surface.command-palette.global",
+      "name": "全局命令面板",
+      "rev": 4,
+      "status": "active",
+      "detail": "搜索 Flow / Point / 设置 · overlay"
+    },
+    {
+      "id": "surface.command-palette.points",
+      "name": "点实例面板",
+      "rev": 2,
+      "status": "active",
+      "detail": "搜索并运行点实例 · overlay"
+    }
+  ]
+}

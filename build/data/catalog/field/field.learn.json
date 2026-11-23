@@ -1,0 +1,47 @@
+{
+  "id": "field.learn",
+  "family": "evolve",
+  "output": "weights/thresholds",
+  "landing": "point/surface",
+  "autonomy": "A2",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.learn.ranking@r1",
+      "classId": "field.learn",
+      "scope": "surface rank",
+      "output": "weight update",
+      "rev": 1,
+      "name": "learn.ranking",
+      "status": "active",
+      "detail": "surface rank · weight update"
+    },
+    {
+      "id": "field.learn.prefill@r1",
+      "classId": "field.learn",
+      "scope": "point prefill",
+      "output": "default update",
+      "rev": 1,
+      "name": "learn.prefill",
+      "status": "active",
+      "detail": "point prefill · default update"
+    },
+    {
+      "id": "field.learn.threshold@r1",
+      "classId": "field.learn",
+      "scope": "field policy",
+      "output": "confidence threshold",
+      "rev": 1,
+      "name": "learn.threshold",
+      "status": "active",
+      "detail": "field policy · confidence threshold"
+    }
+  ],
+  "name": "learn",
+  "group": "evolve",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A2",
+  "priority": "P1",
+  "summary": "weights/thresholds → point/surface · 自主度上限 A2"
+}

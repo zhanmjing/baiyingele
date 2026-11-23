@@ -1,0 +1,30 @@
+{
+  "id": "body.service-health",
+  "name": "服务健康",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "检查 Docker / 本地 API / VPN 健康状态。",
+  "instances": [
+    {
+      "name": "docker",
+      "rev": 1,
+      "status": "active",
+      "detail": "target=docker · timeout=5s"
+    },
+    {
+      "name": "local-api",
+      "rev": 1,
+      "status": "active",
+      "detail": "target=http://localhost:3000"
+    },
+    {
+      "name": "vpn",
+      "rev": 1,
+      "status": "active",
+      "detail": "target=vpn · retry=3"
+    }
+  ]
+}

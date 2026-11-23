@@ -1,0 +1,40 @@
+{
+  "id": "surface.form",
+  "name": "表单",
+  "group": "input",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "schema 驱动的表单；设置、参数、创建/编辑。",
+  "instances": [
+    {
+      "id": "surface.settings.vpn",
+      "name": "VPN 设置",
+      "rev": 3,
+      "status": "active",
+      "detail": "默认 VPN / 自动打开 / 自动连接 / 超时 · settings"
+    },
+    {
+      "id": "surface.settings.general",
+      "name": "通用设置",
+      "rev": 2,
+      "status": "active",
+      "detail": "主题 / 语言 / 启动行为 · settings"
+    },
+    {
+      "id": "surface.point-params",
+      "name": "点实例参数",
+      "rev": 1,
+      "status": "active",
+      "detail": "编辑 PointInstance 的参数与 revision · sidebar"
+    },
+    {
+      "id": "surface.settings.system-monitor",
+      "name": "系统监控设置",
+      "rev": 2,
+      "status": "active",
+      "detail": "采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings"
+    }
+  ]
+}

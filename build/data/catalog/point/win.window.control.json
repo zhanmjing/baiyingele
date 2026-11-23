@@ -1,0 +1,40 @@
+{
+  "id": "win.window.control",
+  "name": "控制窗口",
+  "group": "window",
+  "version": "1.2.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "按 WindowSelector 找到顶层窗口，执行聚焦、移动、缩放、置顶、关闭等操作。",
+  "instances": [
+    {
+      "id": "win.window.control.i-focus-notepad@r1",
+      "name": "聚焦记事本",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"op\":\"focus\",\"selector\":{\"strategy\":\"process\",\"process\":\"notepad.exe\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}"
+    },
+    {
+      "id": "win.window.control.i-move-chrome@r1",
+      "name": "Chrome 移到副屏左半",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"op\":\"move\",\"monitor\":1,\"rect\":\"0,0,0.5,1\",\"selector\":{\"strategy\":\"process\",\"process\":\"chrome.exe\",\"title\":\"GitHub\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}"
+    },
+    {
+      "id": "win.window.control.i-topmost@r1",
+      "name": "当前窗口置顶切换",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"op\":\"topmost\",\"mode\":\"toggle\",\"selector\":{\"strategy\":\"foreground\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"\",\"match\":\"error\"}}"
+    },
+    {
+      "id": "win.window.control.i-close-explorer@r1",
+      "name": "关闭所有资源管理器",
+      "rev": 1,
+      "status": "draft",
+      "detail": "{\"op\":\"close\",\"match\":\"all\",\"selector\":{\"strategy\":\"class\",\"process\":\"\",\"title\":\"\",\"titleMatch\":\"contains\",\"className\":\"CabinetWClass\",\"match\":\"all\"}}"
+    }
+  ]
+}

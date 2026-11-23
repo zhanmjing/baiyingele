@@ -11,8 +11,8 @@
  *   node scripts/gen-catalogs.mjs --write    # 写回文件
  */
 import { createRequire } from 'node:module'
-import { readFileSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
@@ -148,18 +148,59 @@ function transformFieldLayer(source) {
   }))
 }
 
-export function generateFullCatalogs() {
-  const layers = require(resolve(ROOT, 'build/data/.layer-catalogs.json'))
-  const fields = require(resolve(ROOT, 'build/data/.field-data.json'))
+/**
+ * 读一层的数据：优先用 build/data/catalog/<layer>/ 的一类一文件，
+ * 找不到时回落到 build/data/legacy/ 的整包文件（兼容旧检出）。
+ */
+export function readLayer(layer) {
+  const dir = resolve(ROOT, 'build/data/catalog', layer)
+  const indexPath = join(dir, '_index.json')
+  if (existsSync(indexPath)) {
+    const index = JSON.parse(readFileSync(indexPath, 'utf8'))
+    return {
+      classes: index.order.map((id) =>
+        JSON.parse(readFileSync(join(dir, `${id}.json`), 'utf8'))
+      )
+    }
+  }
+  const legacyDir = resolve(ROOT, 'build/data/legacy')
+  if (layer === 'field') {
+    const fields = JSON.parse(readFileSync(join(legacyDir, 'field-data.json'), 'utf8'))
+    return { classes: fields.classes }
+  }
+  const layers = JSON.parse(readFileSync(join(legacyDir, 'layer-catalogs.json'), 'utf8'))
+  return layers[layer]
+}
 
+/** 校验 catalog 目录：_index 与实际文件必须一一对应 */
+export function auditCatalogDir() {
+  const problems = []
+  for (const layer of ['point', 'line', 'surface', 'body', 'field']) {
+    const dir = resolve(ROOT, 'build/data/catalog', layer)
+    const indexPath = join(dir, '_index.json')
+    if (!existsSync(indexPath)) {
+      problems.push(`${layer}: 缺少 _index.json`)
+      continue
+    }
+    const index = JSON.parse(readFileSync(indexPath, 'utf8'))
+    const onDisk = new Set(readdirSync(dir).filter((name) => name.endsWith('.json') && name !== '_index.json').map((name) => name.replace(/\.json$/, '')))
+    const listed = new Set(index.order)
+    for (const id of listed) if (!onDisk.has(id)) problems.push(`${layer}: _index 列了 ${id} 但文件不存在`)
+    for (const id of onDisk) if (!listed.has(id)) problems.push(`${layer}: ${id}.json 没被 _index 收录`)
+    if (listed.size !== index.order.length) problems.push(`${layer}: _index 里有重复 id`)
+  }
+  return problems
+}
+
+export function generateFullCatalogs() {
   return {
-    point: transformPointLayer(layers.point),
-    line: transformFlatLayer(layers.line),
-    surface: transformFlatLayer(layers.surface),
-    body: transformFlatLayer(layers.body, {
+    point: transformPointLayer(readLayer('point')),
+    line: transformFlatLayer(readLayer('line')),
+    surface: transformFlatLayer(readLayer('surface')),
+    body: transformFlatLayer(readLayer('body'), {
       deriveInstanceId: (item, instance) => `${item.id}.${instance.name}@r${instance.rev}`
     }),
-    field: transformFieldLayer(fields)
+    field: transformFieldLayer(readLayer('field'))
   }
 }
 

@@ -1,0 +1,57 @@
+{
+  "id": "field.classify",
+  "family": "understand",
+  "output": "label",
+  "landing": "point/surface/body",
+  "autonomy": "A2",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.classify.intent@r1",
+      "classId": "field.classify",
+      "scope": "command palette",
+      "output": "action/flow/body/question",
+      "rev": 1,
+      "name": "classify.intent",
+      "status": "active",
+      "detail": "command palette · action/flow/body/question"
+    },
+    {
+      "id": "field.classify.file-type@r1",
+      "classId": "field.classify",
+      "scope": "body.file-preview",
+      "output": "text/image/pdf/video/audio",
+      "rev": 1,
+      "name": "classify.file-type",
+      "status": "active",
+      "detail": "body.file-preview · text/image/pdf/video/audio"
+    },
+    {
+      "id": "field.classify.ocr-mode@r1",
+      "classId": "field.classify",
+      "scope": "body.ocr",
+      "output": "text/math/qr/table",
+      "rev": 1,
+      "name": "classify.ocr-mode",
+      "status": "active",
+      "detail": "body.ocr · text/math/qr/table"
+    },
+    {
+      "id": "field.classify.error-kind@r1",
+      "classId": "field.classify",
+      "scope": "flow runtime",
+      "output": "uia/network/permission/param",
+      "rev": 1,
+      "name": "classify.error-kind",
+      "status": "active",
+      "detail": "flow runtime · uia/network/permission/param"
+    }
+  ],
+  "name": "classify",
+  "group": "understand",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A2",
+  "priority": "P1",
+  "summary": "label → point/surface/body · 自主度上限 A2"
+}

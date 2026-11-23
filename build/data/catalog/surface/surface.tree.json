@@ -1,0 +1,26 @@
+{
+  "id": "surface.tree",
+  "name": "树",
+  "group": "browse",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "层级导航；Domain → PointClass、FlowClass → 节点。",
+  "instances": [
+    {
+      "id": "surface.point-domains",
+      "name": "点 Domain 树",
+      "rev": 2,
+      "status": "active",
+      "detail": "15 domain → 38 类 · sidebar"
+    },
+    {
+      "id": "surface.flow-outline",
+      "name": "流程大纲",
+      "rev": 1,
+      "status": "active",
+      "detail": "FlowClass 节点树 · sidebar"
+    }
+  ]
+}

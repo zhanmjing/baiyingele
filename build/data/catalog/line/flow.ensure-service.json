@@ -1,0 +1,26 @@
+{
+  "id": "flow.ensure-service",
+  "name": "flow.ensure-service",
+  "group": "Guard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "确保本地服务/端口可用",
+  "instances": [
+    {
+      "id": "inst.ensure-service-docker@r1",
+      "name": "ensure-service-docker",
+      "rev": 1,
+      "status": "active",
+      "detail": "确保 Docker"
+    },
+    {
+      "id": "inst.ensure-service-local-api@r1",
+      "name": "ensure-service-local-api",
+      "rev": 1,
+      "status": "active",
+      "detail": "确保本地 API"
+    }
+  ]
+}

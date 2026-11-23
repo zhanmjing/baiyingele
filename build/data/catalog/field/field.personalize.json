@@ -1,0 +1,47 @@
+{
+  "id": "field.personalize",
+  "family": "evolve",
+  "output": "defaults/layout",
+  "landing": "point/surface",
+  "autonomy": "A2",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.personalize.shortcut@r1",
+      "classId": "field.personalize",
+      "scope": "global",
+      "output": "shortcut suggestion",
+      "rev": 1,
+      "name": "personalize.shortcut",
+      "status": "active",
+      "detail": "global · shortcut suggestion"
+    },
+    {
+      "id": "field.personalize.layout@r1",
+      "classId": "field.personalize",
+      "scope": "surface",
+      "output": "layout suggestion",
+      "rev": 1,
+      "name": "personalize.layout",
+      "status": "active",
+      "detail": "surface · layout suggestion"
+    },
+    {
+      "id": "field.personalize.defaults@r1",
+      "classId": "field.personalize",
+      "scope": "point/body",
+      "output": "defaults",
+      "rev": 1,
+      "name": "personalize.defaults",
+      "status": "active",
+      "detail": "point/body · defaults"
+    }
+  ],
+  "name": "personalize",
+  "group": "evolve",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A2",
+  "priority": "P1",
+  "summary": "defaults/layout → point/surface · 自主度上限 A2"
+}

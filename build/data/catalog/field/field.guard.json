@@ -1,0 +1,57 @@
+{
+  "id": "field.guard",
+  "family": "govern",
+  "output": "risk/decision",
+  "landing": "all",
+  "autonomy": "A0",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.guard.risk@r1",
+      "classId": "field.guard",
+      "scope": "all drafts",
+      "output": "L0–L3",
+      "rev": 1,
+      "name": "guard.risk",
+      "status": "active",
+      "detail": "all drafts · L0–L3"
+    },
+    {
+      "id": "field.guard.permission@r1",
+      "classId": "field.guard",
+      "scope": "all drafts",
+      "output": "allow/deny/ask",
+      "rev": 1,
+      "name": "guard.permission",
+      "status": "active",
+      "detail": "all drafts · allow/deny/ask"
+    },
+    {
+      "id": "field.guard.confidence@r1",
+      "classId": "field.guard",
+      "scope": "all suggestions",
+      "output": "pass/ask/reject",
+      "rev": 1,
+      "name": "guard.confidence",
+      "status": "active",
+      "detail": "all suggestions · pass/ask/reject"
+    },
+    {
+      "id": "field.guard.privacy@r1",
+      "classId": "field.guard",
+      "scope": "context",
+      "output": "redact/block",
+      "rev": 1,
+      "name": "guard.privacy",
+      "status": "active",
+      "detail": "context · redact/block"
+    }
+  ],
+  "name": "guard",
+  "group": "govern",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "risk/decision → all · 自主度上限 A0"
+}

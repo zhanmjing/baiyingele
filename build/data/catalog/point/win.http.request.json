@@ -1,0 +1,26 @@
+{
+  "id": "win.http.request",
+  "name": "HTTP 请求",
+  "group": "network",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "统一 GET/POST/PUT/DELETE，带超时、重试、SSRF 防护和响应大小限制。",
+  "instances": [
+    {
+      "id": "win.http.request.i-http-github@r1",
+      "name": "GET GitHub API",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"method\":\"GET\",\"url\":\"https://api.github.com/repos/owner/repo\",\"body\":\"\"}"
+    },
+    {
+      "id": "win.http.request.i-http-webhook@r1",
+      "name": "POST Webhook",
+      "rev": 1,
+      "status": "draft",
+      "detail": "{\"method\":\"POST\",\"url\":\"https://example.com/hook\",\"body\":\"{\\\"event\\\":\\\"done\\\"}\"}"
+    }
+  ]
+}

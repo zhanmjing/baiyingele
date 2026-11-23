@@ -1,0 +1,47 @@
+{
+  "id": "field.ask",
+  "family": "govern",
+  "output": "question",
+  "landing": "all",
+  "autonomy": "A0",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.ask.clarify@r1",
+      "classId": "field.ask",
+      "scope": "ambiguous request",
+      "output": "question + options",
+      "rev": 1,
+      "name": "ask.clarify",
+      "status": "active",
+      "detail": "ambiguous request · question + options"
+    },
+    {
+      "id": "field.ask.confirm@r1",
+      "classId": "field.ask",
+      "scope": "A1/A2",
+      "output": "confirm dialog",
+      "rev": 1,
+      "name": "ask.confirm",
+      "status": "active",
+      "detail": "A1/A2 · confirm dialog"
+    },
+    {
+      "id": "field.ask.choose@r1",
+      "classId": "field.ask",
+      "scope": "multiple matches",
+      "output": "chooser",
+      "rev": 1,
+      "name": "ask.choose",
+      "status": "active",
+      "detail": "multiple matches · chooser"
+    }
+  ],
+  "name": "ask",
+  "group": "govern",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "question → all · 自主度上限 A0"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "field.compose",
+  "family": "generate",
+  "output": "draft",
+  "landing": "line/body",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.compose.flow-from-points@r1",
+      "classId": "field.compose",
+      "scope": "line editor",
+      "output": "flow composition draft",
+      "rev": 1,
+      "name": "compose.flow-from-points",
+      "status": "active",
+      "detail": "line editor · flow composition draft"
+    },
+    {
+      "id": "field.compose.surface-from-data@r1",
+      "classId": "field.compose",
+      "scope": "surface editor",
+      "output": "surface binding draft",
+      "rev": 1,
+      "name": "compose.surface-from-data",
+      "status": "active",
+      "detail": "surface editor · surface binding draft"
+    },
+    {
+      "id": "field.compose.body-from-flows@r1",
+      "classId": "field.compose",
+      "scope": "body editor",
+      "output": "body composition draft",
+      "rev": 1,
+      "name": "compose.body-from-flows",
+      "status": "active",
+      "detail": "body editor · body composition draft"
+    }
+  ],
+  "name": "compose",
+  "group": "generate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "draft → line/body · 自主度上限 A1"
+}

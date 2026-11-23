@@ -1,0 +1,28 @@
+{
+  "layer": "field",
+  "order": [
+    "field.observe",
+    "field.classify",
+    "field.prefill",
+    "field.rank",
+    "field.recommend",
+    "field.detect",
+    "field.generate",
+    "field.compose",
+    "field.plan",
+    "field.translate",
+    "field.summarize",
+    "field.diagnose",
+    "field.repair",
+    "field.mine",
+    "field.learn",
+    "field.personalize",
+    "field.critique",
+    "field.route",
+    "field.guard",
+    "field.ask",
+    "field.explain",
+    "field.simulate",
+    "field.memory"
+  ]
+}

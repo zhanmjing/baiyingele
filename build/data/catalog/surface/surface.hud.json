@@ -1,0 +1,33 @@
+{
+  "id": "surface.hud",
+  "name": "HUD 浮层",
+  "group": "communicate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "屏幕浮层；翻译结果、VPN 状态、录屏提示。",
+  "instances": [
+    {
+      "id": "surface.hud.translate",
+      "name": "翻译浮层",
+      "rev": 2,
+      "status": "active",
+      "detail": "截图翻译结果 · overlay"
+    },
+    {
+      "id": "surface.hud.vpn-status",
+      "name": "VPN 状态浮层",
+      "rev": 1,
+      "status": "active",
+      "detail": "连接状态/耗时 · overlay"
+    },
+    {
+      "id": "surface.hud.system-status",
+      "name": "系统状态浮层",
+      "rev": 1,
+      "status": "active",
+      "detail": "CPU/GPU/内存/网速紧凑显示，可置顶 · overlay"
+    }
+  ]
+}

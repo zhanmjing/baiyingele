@@ -1,0 +1,67 @@
+{
+  "id": "field.prefill",
+  "family": "perceive",
+  "output": "param suggestion",
+  "landing": "point",
+  "autonomy": "A2",
+  "count": 5,
+  "instances": [
+    {
+      "id": "field.prefill.point-params@r1",
+      "classId": "field.prefill",
+      "scope": "point instances",
+      "output": "参数默认值",
+      "rev": 1,
+      "name": "prefill.point-params",
+      "status": "active",
+      "detail": "point instances · 参数默认值"
+    },
+    {
+      "id": "field.prefill.vpn-profile@r1",
+      "classId": "field.prefill",
+      "scope": "body.external-access",
+      "output": "vpn.profile",
+      "rev": 1,
+      "name": "prefill.vpn-profile",
+      "status": "active",
+      "detail": "body.external-access · vpn.profile"
+    },
+    {
+      "id": "field.prefill.ocr-language@r1",
+      "classId": "field.prefill",
+      "scope": "body.ocr.text",
+      "output": "ocr.language",
+      "rev": 1,
+      "name": "prefill.ocr-language",
+      "status": "active",
+      "detail": "body.ocr.text · ocr.language"
+    },
+    {
+      "id": "field.prefill.rename-pattern@r1",
+      "classId": "field.prefill",
+      "scope": "body.batch-rename.regex",
+      "output": "rename.pattern",
+      "rev": 1,
+      "name": "prefill.rename-pattern",
+      "status": "active",
+      "detail": "body.batch-rename.regex · rename.pattern"
+    },
+    {
+      "id": "field.prefill.search-query@r1",
+      "classId": "field.prefill",
+      "scope": "command palette",
+      "output": "query",
+      "rev": 1,
+      "name": "prefill.search-query",
+      "status": "active",
+      "detail": "command palette · query"
+    }
+  ],
+  "name": "prefill",
+  "group": "perceive",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A2",
+  "priority": "P1",
+  "summary": "param suggestion → point · 自主度上限 A2"
+}

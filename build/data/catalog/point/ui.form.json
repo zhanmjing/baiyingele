@@ -1,0 +1,19 @@
+{
+  "id": "ui.form",
+  "name": "用户表单",
+  "group": "human",
+  "version": "0.8.0",
+  "status": "draft",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "JSON Schema 驱动的表单；取消/超时返回明确状态，审批是 gate 不是这个类。",
+  "instances": [
+    {
+      "id": "ui.form.i-form-confirm@r1",
+      "name": "发布确认",
+      "rev": 1,
+      "status": "draft",
+      "detail": "{\"title\":\"确认发布\",\"fields\":\"备注, 版本号\"}"
+    }
+  ]
+}

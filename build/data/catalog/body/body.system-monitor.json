@@ -1,0 +1,24 @@
+{
+  "id": "body.system-monitor",
+  "name": "系统监控",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "CPU/GPU/内存/网络/磁盘状态。",
+  "instances": [
+    {
+      "name": "desktop",
+      "rev": 2,
+      "status": "active",
+      "detail": "refreshMs=1000 · history=60s"
+    },
+    {
+      "name": "minimal",
+      "rev": 1,
+      "status": "active",
+      "detail": "refreshMs=2000 · hud=2x2"
+    }
+  ]
+}

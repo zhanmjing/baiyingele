@@ -1,0 +1,24 @@
+{
+  "id": "body.hosts-editor",
+  "name": "Hosts 编辑",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P2",
+  "summary": "本地 hosts 编辑、备份、diff。",
+  "instances": [
+    {
+      "name": "local",
+      "rev": 1,
+      "status": "active",
+      "detail": "backup=true · encoding=utf-8"
+    },
+    {
+      "name": "blocklist",
+      "rev": 1,
+      "status": "active",
+      "detail": "blocklist=true · backup=true"
+    }
+  ]
+}

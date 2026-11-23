@@ -1,0 +1,40 @@
+{
+  "id": "surface.notification",
+  "name": "通知",
+  "group": "communicate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "Toast / Tray / Banner；显示结果与下一步。",
+  "instances": [
+    {
+      "id": "surface.notify.vpn",
+      "name": "VPN 通知",
+      "rev": 3,
+      "status": "active",
+      "detail": "GuardResult → 下一步 · toast"
+    },
+    {
+      "id": "surface.notify.run",
+      "name": "运行通知",
+      "rev": 2,
+      "status": "active",
+      "detail": "成功/失败/耗时 · toast"
+    },
+    {
+      "id": "surface.notify.download",
+      "name": "下载通知",
+      "rev": 1,
+      "status": "active",
+      "detail": "下载/校验结果 · tray"
+    },
+    {
+      "id": "surface.notify.system-threshold",
+      "name": "系统阈值告警",
+      "rev": 1,
+      "status": "active",
+      "detail": "CPU/GPU 温度、内存、磁盘超阈值提示 · toast"
+    }
+  ]
+}

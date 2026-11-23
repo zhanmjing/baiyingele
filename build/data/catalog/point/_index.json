@@ -1,0 +1,21 @@
+{
+  "layer": "point",
+  "order": [
+    "win.key.send",
+    "win.key.trigger",
+    "win.window.control",
+    "win.window.query",
+    "win.open",
+    "win.audio.volume",
+    "win.display.brightness",
+    "win.theme.mode",
+    "win.ocr.read",
+    "win.clipboard.get",
+    "win.http.request",
+    "ui.form",
+    "win.screen.capture",
+    "text.template",
+    "file.write",
+    "notify.toast"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "field.critique",
+  "family": "evolve",
+  "output": "review",
+  "landing": "line/body",
+  "autonomy": "A0",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.critique.flow@r1",
+      "classId": "field.critique",
+      "scope": "flow",
+      "output": "review findings",
+      "rev": 1,
+      "name": "critique.flow",
+      "status": "active",
+      "detail": "flow · review findings"
+    },
+    {
+      "id": "field.critique.body@r1",
+      "classId": "field.critique",
+      "scope": "body",
+      "output": "review findings",
+      "rev": 1,
+      "name": "critique.body",
+      "status": "active",
+      "detail": "body · review findings"
+    },
+    {
+      "id": "field.critique.permission@r1",
+      "classId": "field.critique",
+      "scope": "permission",
+      "output": "over-broad permission warning",
+      "rev": 1,
+      "name": "critique.permission",
+      "status": "active",
+      "detail": "permission · over-broad permission warning"
+    }
+  ],
+  "name": "critique",
+  "group": "evolve",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "review → line/body · 自主度上限 A0"
+}

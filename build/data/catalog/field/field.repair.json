@@ -1,0 +1,57 @@
+{
+  "id": "field.repair",
+  "family": "evolve",
+  "output": "patch",
+  "landing": "line/body",
+  "autonomy": "A1",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.repair.flow-patch@r1",
+      "classId": "field.repair",
+      "scope": "flow",
+      "output": "patch",
+      "rev": 1,
+      "name": "repair.flow-patch",
+      "status": "active",
+      "detail": "flow · patch"
+    },
+    {
+      "id": "field.repair.selector-patch@r1",
+      "classId": "field.repair",
+      "scope": "UIA step",
+      "output": "selector patch",
+      "rev": 1,
+      "name": "repair.selector-patch",
+      "status": "active",
+      "detail": "UIA step · selector patch"
+    },
+    {
+      "id": "field.repair.settings-patch@r1",
+      "classId": "field.repair",
+      "scope": "body/flow",
+      "output": "settings patch",
+      "rev": 1,
+      "name": "repair.settings-patch",
+      "status": "active",
+      "detail": "body/flow · settings patch"
+    },
+    {
+      "id": "field.repair.permission-fix@r1",
+      "classId": "field.repair",
+      "scope": "permission error",
+      "output": "grant/scope fix",
+      "rev": 1,
+      "name": "repair.permission-fix",
+      "status": "active",
+      "detail": "permission error · grant/scope fix"
+    }
+  ],
+  "name": "repair",
+  "group": "evolve",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "patch → line/body · 自主度上限 A1"
+}

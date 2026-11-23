@@ -1,0 +1,47 @@
+{
+  "id": "field.simulate",
+  "family": "govern",
+  "output": "preview/impact",
+  "landing": "line/body",
+  "autonomy": "A0",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.simulate.dry-run@r1",
+      "classId": "field.simulate",
+      "scope": "draft/patch",
+      "output": "dry-run result",
+      "rev": 1,
+      "name": "simulate.dry-run",
+      "status": "active",
+      "detail": "draft/patch · dry-run result"
+    },
+    {
+      "id": "field.simulate.impact@r1",
+      "classId": "field.simulate",
+      "scope": "body/flow",
+      "output": "impact analysis",
+      "rev": 1,
+      "name": "simulate.impact",
+      "status": "active",
+      "detail": "body/flow · impact analysis"
+    },
+    {
+      "id": "field.simulate.rollback@r1",
+      "classId": "field.simulate",
+      "scope": "A2 apply",
+      "output": "rollback plan",
+      "rev": 1,
+      "name": "simulate.rollback",
+      "status": "active",
+      "detail": "A2 apply · rollback plan"
+    }
+  ],
+  "name": "simulate",
+  "group": "govern",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "preview/impact → line/body · 自主度上限 A0"
+}

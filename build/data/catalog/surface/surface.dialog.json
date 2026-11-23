@@ -1,0 +1,33 @@
+{
+  "id": "surface.dialog",
+  "name": "对话框",
+  "group": "communicate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "确认、审批、危险操作；模态。",
+  "instances": [
+    {
+      "id": "surface.dialog.vpn-approval",
+      "name": "VPN 审批",
+      "rev": 2,
+      "status": "active",
+      "detail": "打开 VPN / 我已手动打开 / 取消 · modal"
+    },
+    {
+      "id": "surface.dialog.delete-confirm",
+      "name": "删除确认",
+      "rev": 1,
+      "status": "active",
+      "detail": "危险操作确认 · modal"
+    },
+    {
+      "id": "surface.dialog.deploy-approval",
+      "name": "部署审批",
+      "rev": 1,
+      "status": "active",
+      "detail": "生产发布审批 · modal"
+    }
+  ]
+}

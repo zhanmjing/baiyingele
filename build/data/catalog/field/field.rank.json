@@ -1,0 +1,57 @@
+{
+  "id": "field.rank",
+  "family": "perceive",
+  "output": "ranking",
+  "landing": "surface",
+  "autonomy": "A2",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.rank.scene-grid@r1",
+      "classId": "field.rank",
+      "scope": "surface.launch-dock",
+      "output": "tile.order",
+      "rev": 1,
+      "name": "rank.scene-grid",
+      "status": "active",
+      "detail": "surface.launch-dock · tile.order"
+    },
+    {
+      "id": "field.rank.command-palette@r1",
+      "classId": "field.rank",
+      "scope": "surface.command-palette",
+      "output": "result.order",
+      "rev": 1,
+      "name": "rank.command-palette",
+      "status": "active",
+      "detail": "surface.command-palette · result.order"
+    },
+    {
+      "id": "field.rank.body-market@r1",
+      "classId": "field.rank",
+      "scope": "surface.card-grid",
+      "output": "body.order",
+      "rev": 1,
+      "name": "rank.body-market",
+      "status": "active",
+      "detail": "surface.card-grid · body.order"
+    },
+    {
+      "id": "field.rank.ocr-mode@r1",
+      "classId": "field.rank",
+      "scope": "body.ocr",
+      "output": "mode order",
+      "rev": 1,
+      "name": "rank.ocr-mode",
+      "status": "active",
+      "detail": "body.ocr · mode order"
+    }
+  ],
+  "name": "rank",
+  "group": "perceive",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A2",
+  "priority": "P1",
+  "summary": "ranking → surface · 自主度上限 A2"
+}

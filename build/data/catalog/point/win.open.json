@@ -1,0 +1,33 @@
+{
+  "id": "win.open",
+  "name": "打开目标",
+  "group": "open",
+  "version": "1.1.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "一个类覆盖文件、文件夹、应用、URL；kind 参数决定解析路径与默认处理器。",
+  "instances": [
+    {
+      "id": "win.open.i-open-downloads@r1",
+      "name": "打开下载文件夹",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"kind\":\"folder\",\"target\":\"%USERPROFILE%\\\\Downloads\",\"app\":\"\",\"args\":\"\"}"
+    },
+    {
+      "id": "win.open.i-open-github@r1",
+      "name": "打开 GitHub",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"kind\":\"url\",\"target\":\"https://github.com\",\"app\":\"\",\"args\":\"\"}"
+    },
+    {
+      "id": "win.open.i-open-project@r1",
+      "name": "用 VS Code 打开项目",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"kind\":\"folder\",\"target\":\"C:\\\\project\",\"app\":\"code.exe\",\"args\":\".\"}"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "body.invoice-archive",
+  "name": "发票归档",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "OCR → 解析 → 规则 → 归档。",
+  "instances": [
+    {
+      "name": "company",
+      "rev": 6,
+      "status": "active",
+      "detail": "ocr=zh · rules=company"
+    },
+    {
+      "name": "personal",
+      "rev": 2,
+      "status": "active",
+      "detail": "ocr=en · rules=personal"
+    }
+  ]
+}

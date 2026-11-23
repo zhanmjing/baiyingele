@@ -1,0 +1,47 @@
+{
+  "id": "field.detect",
+  "family": "perceive",
+  "output": "signal",
+  "landing": "line/body",
+  "autonomy": "A0",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.detect.repetition@r1",
+      "classId": "field.detect",
+      "scope": "global",
+      "output": "repeated manual sequence",
+      "rev": 1,
+      "name": "detect.repetition",
+      "status": "active",
+      "detail": "global · repeated manual sequence"
+    },
+    {
+      "id": "field.detect.anomaly@r1",
+      "classId": "field.detect",
+      "scope": "run history",
+      "output": "unusual failure/latency",
+      "rev": 1,
+      "name": "detect.anomaly",
+      "status": "active",
+      "detail": "run history · unusual failure/latency"
+    },
+    {
+      "id": "field.detect.opportunity@r1",
+      "classId": "field.detect",
+      "scope": "body usage",
+      "output": "automation opportunity",
+      "rev": 1,
+      "name": "detect.opportunity",
+      "status": "active",
+      "detail": "body usage · automation opportunity"
+    }
+  ],
+  "name": "detect",
+  "group": "perceive",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A0",
+  "priority": "P0",
+  "summary": "signal → line/body · 自主度上限 A0"
+}

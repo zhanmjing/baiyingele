@@ -1,0 +1,57 @@
+{
+  "id": "field.generate",
+  "family": "generate",
+  "output": "draft",
+  "landing": "point/line/surface/body",
+  "autonomy": "A1",
+  "count": 4,
+  "instances": [
+    {
+      "id": "field.generate.point-action@r1",
+      "classId": "field.generate",
+      "scope": "point editor",
+      "output": "Action DSL draft",
+      "rev": 1,
+      "name": "generate.point-action",
+      "status": "active",
+      "detail": "point editor · Action DSL draft"
+    },
+    {
+      "id": "field.generate.flow@r1",
+      "classId": "field.generate",
+      "scope": "line editor",
+      "output": "FlowClass/FlowInstance draft",
+      "rev": 1,
+      "name": "generate.flow",
+      "status": "active",
+      "detail": "line editor · FlowClass/FlowInstance draft"
+    },
+    {
+      "id": "field.generate.surface-layout@r1",
+      "classId": "field.generate",
+      "scope": "surface editor",
+      "output": "SurfaceClass/Instance draft",
+      "rev": 1,
+      "name": "generate.surface-layout",
+      "status": "active",
+      "detail": "surface editor · SurfaceClass/Instance draft"
+    },
+    {
+      "id": "field.generate.body-manifest@r1",
+      "classId": "field.generate",
+      "scope": "body editor",
+      "output": "BodyManifest draft",
+      "rev": 1,
+      "name": "generate.body-manifest",
+      "status": "active",
+      "detail": "body editor · BodyManifest draft"
+    }
+  ],
+  "name": "generate",
+  "group": "generate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "draft → point/line/surface/body · 自主度上限 A1"
+}

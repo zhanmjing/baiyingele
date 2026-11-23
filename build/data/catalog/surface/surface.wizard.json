@@ -1,0 +1,26 @@
+{
+  "id": "surface.wizard",
+  "name": "向导",
+  "group": "input",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "多步引导；新建流程、绑定槽位、首次配置。",
+  "instances": [
+    {
+      "id": "surface.wizard.new-flow",
+      "name": "新建流程",
+      "rev": 1,
+      "status": "active",
+      "detail": "选模板 → 绑槽位 → 试运行 · modal"
+    },
+    {
+      "id": "surface.wizard.vpn-setup",
+      "name": "VPN 首次配置",
+      "rev": 1,
+      "status": "active",
+      "detail": "选软件 → 测试 → 保存 · modal"
+    }
+  ]
+}

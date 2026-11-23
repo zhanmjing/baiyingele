@@ -1,0 +1,47 @@
+{
+  "id": "field.route",
+  "family": "govern",
+  "output": "route decision",
+  "landing": "all",
+  "autonomy": "A2",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.route.model@r1",
+      "classId": "field.route",
+      "scope": "global",
+      "output": "local/cloud/fallback",
+      "rev": 1,
+      "name": "route.model",
+      "status": "active",
+      "detail": "global · local/cloud/fallback"
+    },
+    {
+      "id": "field.route.tool@r1",
+      "classId": "field.route",
+      "scope": "command palette",
+      "output": "point/flow/body",
+      "rev": 1,
+      "name": "route.tool",
+      "status": "active",
+      "detail": "command palette · point/flow/body"
+    },
+    {
+      "id": "field.route.body@r1",
+      "classId": "field.route",
+      "scope": "file/trigger",
+      "output": "body instance",
+      "rev": 1,
+      "name": "route.body",
+      "status": "active",
+      "detail": "file/trigger · body instance"
+    }
+  ],
+  "name": "route",
+  "group": "govern",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A2",
+  "priority": "P1",
+  "summary": "route decision → all · 自主度上限 A2"
+}

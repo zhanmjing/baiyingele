@@ -1,0 +1,30 @@
+{
+  "id": "body.screen-ruler",
+  "name": "屏幕标尺",
+  "group": "clipboard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "像素、英寸、角度测量。",
+  "instances": [
+    {
+      "name": "px",
+      "rev": 1,
+      "status": "active",
+      "detail": "unit=px · snap=4"
+    },
+    {
+      "name": "inches",
+      "rev": 1,
+      "status": "active",
+      "detail": "unit=inch · dpi=96"
+    },
+    {
+      "name": "angle",
+      "rev": 1,
+      "status": "active",
+      "detail": "unit=deg · snap=1"
+    }
+  ]
+}

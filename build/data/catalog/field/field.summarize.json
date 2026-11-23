@@ -1,0 +1,47 @@
+{
+  "id": "field.summarize",
+  "family": "generate",
+  "output": "summary",
+  "landing": "surface/body",
+  "autonomy": "A1",
+  "count": 3,
+  "instances": [
+    {
+      "id": "field.summarize.run-history@r1",
+      "classId": "field.summarize",
+      "scope": "surface.run-history",
+      "output": "运行摘要",
+      "rev": 1,
+      "name": "summarize.run-history",
+      "status": "active",
+      "detail": "surface.run-history · 运行摘要"
+    },
+    {
+      "id": "field.summarize.context@r1",
+      "classId": "field.summarize",
+      "scope": "command palette",
+      "output": "上下文摘要",
+      "rev": 1,
+      "name": "summarize.context",
+      "status": "active",
+      "detail": "command palette · 上下文摘要"
+    },
+    {
+      "id": "field.summarize.document@r1",
+      "classId": "field.summarize",
+      "scope": "body",
+      "output": "文档摘要",
+      "rev": 1,
+      "name": "summarize.document",
+      "status": "active",
+      "detail": "body · 文档摘要"
+    }
+  ],
+  "name": "summarize",
+  "group": "generate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "A1",
+  "priority": "P1",
+  "summary": "summary → surface/body · 自主度上限 A1"
+}
