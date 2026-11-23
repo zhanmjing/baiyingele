@@ -90,6 +90,7 @@ const { parseCombo, matchesCombo, withHeldModifiers, registeredCombos, stopHook 
 const { TriggerStore } = require('../.tmp/smoke/main/triggerStore.js')
 const { TriggerService } = require('../.tmp/smoke/main/triggerService.js')
 const gesture = require('../.tmp/smoke/shared/gestureRecognizer.js')
+const keysend = require('../.tmp/smoke/main/capabilities/win.key.send.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -804,6 +805,71 @@ async function main() {
   assert.ok(bestMatch.score > 0.7 && bestMatch.score < 1, '置信度应为中间值')
   assert.strictEqual(gesture.matchPattern('RLRL', ['UD', 'LDR'], 0.9), null, '全不匹配应返回 null')
   console.log('✓ 手势识别：5 个轨迹样例 / 抖动 / 0.5x-2x 缩放 / 4 种无效输入 / 模糊匹配 都正确')
+
+  // ── 7n. win.key.send：组合解析 / 事件构造 / 真实发送 ──────────
+  const KEY_CASES = [
+    ['Ctrl+C', 'Ctrl+C'],
+    ['ctrl+shift+alt+a', 'Ctrl+Alt+Shift+A'],
+    ['alt+tab', 'Alt+Tab'],
+    ['F5', 'F5'],
+    ['Ctrl+F24', 'Ctrl+F24'],
+    ['win+e', 'Meta+E'],
+    ['pgdn', 'PageDown'],
+    ['esc', 'Escape']
+  ]
+  for (const [input, expect] of KEY_CASES) {
+    const parsed = keysend.parseKeys(input)
+    assert.strictEqual(parsed?.label, expect, `parseKeys(${input}) 应为 ${expect}，得到 ${parsed?.label}`)
+  }
+
+  assert.strictEqual(keysend.parseKeys('Ctrl'), null, '只有修饰键应拒绝')
+  assert.strictEqual(keysend.parseKeys('Ctrl+A+B'), null, '两个主键应拒绝')
+  assert.strictEqual(keysend.parseKeys('Ctrl+NoSuchKey'), null, '未知键应拒绝')
+  assert.strictEqual(keysend.parseKeys(''), null, '空串应拒绝')
+
+  assert.strictEqual(keysend.virtualKeyOf('C'), 0x43, 'C 的 VK')
+  assert.strictEqual(keysend.virtualKeyOf('F24'), 0x87, 'F24 的 VK')
+  assert.strictEqual(keysend.virtualKeyOf('ArrowLeft'), 0x25, '方向键别名')
+  assert.strictEqual(keysend.isExtendedKey(0x25), true, '方向键是扩展键')
+  assert.strictEqual(keysend.isExtendedKey(0x43), false, '字母不是扩展键')
+
+  // press：Ctrl+Shift+A = 2 修饰下 + 主下 + 主上 + 2 修饰上 = 6
+  const csa = keysend.parseKeys('Ctrl+Shift+A')
+  const pressEvents = keysend.buildKeyEvents(csa, 'press', new Set())
+  assert.strictEqual(pressEvents.length, 6, 'press 应为 6 个事件')
+  assert.deepStrictEqual(pressEvents[0], { vk: 0xa2, extended: false, up: false }, '第一个应是 Ctrl 按下')
+  assert.deepStrictEqual(pressEvents[pressEvents.length - 1], { vk: 0xa2, extended: false, up: true }, '最后一个应是 Ctrl 抬起')
+
+  // 用户已经按着 Shift 时，不能再按/松 Shift
+  const withHeld = keysend.buildKeyEvents(csa, 'press', new Set([0xa0]))
+  assert.strictEqual(withHeld.length, 4, '已按住 Shift 时应只有 4 个事件')
+  assert.strictEqual(withHeld.some((e) => e.vk === 0xa0), false, '不能碰用户已按住的 Shift')
+
+  assert.strictEqual(keysend.buildKeyEvents(keysend.parseKeys('Ctrl+C'), 'press', new Set(), 3).length, 12, 'repeat=3 应为 12')
+  assert.strictEqual(keysend.buildKeyEvents(csa, 'down', new Set()).length, 3, 'down 无 keyup')
+  assert.strictEqual(keysend.buildKeyEvents(keysend.parseKeys('Left'), 'press', new Set())[0].extended, true, '方向键应带扩展标记')
+
+  const unknownMode = await CAPABILITIES['win.key.send'](ctx('win.key.send', { keys: 'F24', mode: 'teleport' }))
+  assert.strictEqual(unknownMode.status, 'warn')
+  assert.match(unknownMode.output, /未知 mode/)
+
+  const sendNoTarget = await CAPABILITIES['win.key.send'](
+    ctx('win.key.send', { keys: 'F24', target: '{"title":"__绝不存在的窗口标题__"}' })
+  )
+  assert.strictEqual(sendNoTarget.status, 'warn', '目标不存在必须 warn')
+  assert.match(sendNoTarget.output, /没有匹配的目标窗口/)
+
+  // 真实发送 F24：所有正常应用都没有绑定这个键，绝对安全
+  const realSend = await CAPABILITIES['win.key.send'](ctx('win.key.send', { keys: 'F24', mode: 'press', repeat: '1' }))
+  if (realSend.status === 'ok') {
+    assert.strictEqual(realSend.evidence.backend, 'sendinput')
+    assert.strictEqual(realSend.evidence.events, 2, 'F24 单击应为 2 个事件')
+    assert.strictEqual(realSend.evidence.sent, 2, 'SendInput 应全部接受')
+    console.log('✓ win.key.send：解析 / 事件构造 / 修饰键保护 / 真实发送（F24）都正确')
+  } else {
+    assert.match(realSend.output, /koffi|发送失败/, `非预期失败: ${realSend.output}`)
+    console.log(`· win.key.send 实机跳过：${realSend.output.slice(0, 60)}`)
+  }
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

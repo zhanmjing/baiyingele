@@ -32,6 +32,8 @@ interface Bindings {
   PostMessageW: (hwnd: unknown, msg: number, wParam: number, lParam: number) => boolean
   SystemParametersInfoW: (action: number, param: number, out: unknown, winIni: number) => boolean
   GetWindowLongW: (hwnd: unknown, index: number) => number
+  SendInput: (count: number, inputs: Buffer, size: number) => number
+  GetAsyncKeyState: (vk: number) => number
   RECT: unknown
   EnumProc: unknown
   IsWindowVisible: (hwnd: unknown) => boolean
@@ -53,6 +55,26 @@ export const WM_CLOSE = 0x0010
 export const SPI_GETWORKAREA = 0x0030
 export const GWL_EXSTYLE = -20
 export const WS_EX_TOPMOST = 0x00000008
+
+// SendInput 相关
+const INPUT_KEYBOARD = 1
+const KEYEVENTF_EXTENDEDKEY = 0x0001
+const KEYEVENTF_KEYUP = 0x0002
+
+/**
+ * INPUT 结构体在内存里的布局（手工算，不用 koffi.struct —— struct 出参已经证明不可靠）。
+ *
+ *   x64: type(4) + padding(4) + union(32) = 40 字节，union 从偏移 8 开始
+ *   x86: type(4) + union(24)              = 28 字节，union 从偏移 4 开始
+ *
+ * KEYBDINPUT 在 union 内：wVk(2) wScan(2) dwFlags(4) time(4) [padding] dwExtraInfo(ptr)
+ */
+const IS_X64 = process.arch === 'x64'
+const INPUT_SIZE = IS_X64 ? 40 : 28
+const INPUT_OFF_VK = IS_X64 ? 8 : 4
+const INPUT_OFF_SCAN = INPUT_OFF_VK + 2
+const INPUT_OFF_FLAGS = INPUT_OFF_VK + 4
+const INPUT_OFF_TIME = INPUT_OFF_VK + 8
 
 const PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
 const MAX_TITLE_CHARS = 512
@@ -103,6 +125,8 @@ function ensure(): Bindings | null {
       ),
       GetCurrentThreadId: kernel32.func('uint32_t __stdcall GetCurrentThreadId()'),
       GetWindowLongW: user32.func('long __stdcall GetWindowLongW(void *hWnd, int nIndex)'),
+      SendInput: user32.func('uint32_t __stdcall SendInput(uint32_t cInputs, void *pInputs, int cbSize)'),
+      GetAsyncKeyState: user32.func('short __stdcall GetAsyncKeyState(int vKey)'),
       RECT: koffi.struct('RECT', { left: 'long', top: 'long', right: 'long', bottom: 'long' })
     }
     return bindings
@@ -306,5 +330,67 @@ export function isTopmost(hwnd: string): boolean | null {
     return (style & WS_EX_TOPMOST) !== 0
   } catch {
     return null
+  }
+}
+
+// ── 键盘事件发送 ──────────────────────────────────────────────
+
+export interface KeyEventSpec {
+  /** 虚拟键码（VK_*） */
+  vk: number
+  /** 扩展键（方向键、Insert/Delete/Home/End/PgUp/PgDn、NumLock 等） */
+  extended: boolean
+  /** true = 抬起 */
+  up: boolean
+}
+
+/**
+ * 这个键当前是否被物理按住。
+ * 返回 null 表示 koffi 不可用（调用方按"没按住"处理）。
+ */
+export function isVirtualKeyDown(vk: number): boolean | null {
+  const api = ensure()
+  if (!api) return null
+  try {
+    return (api.GetAsyncKeyState(vk) & 0x8000) !== 0
+  } catch {
+    return null
+  }
+}
+
+/**
+ * 发送一串键盘事件。
+ *
+ * 用 SendInput 而不是 PostMessage：SendInput 走系统输入队列，目标程序和真实按键无法区分，
+ * 兼容性远好于 WM_KEYDOWN（后者对很多现代应用无效）。
+ * 代价是它只能发给**当前前台窗口** —— 要指定窗口得先聚焦（见 win.window.control）。
+ */
+export function sendKeyEvents(events: KeyEventSpec[]): { ok: boolean; sent: number; reason?: string } {
+  const api = ensure()
+  if (!api) return { ok: false, sent: 0, reason: `koffi 不可用：${win32LoadError() ?? '未知原因'}` }
+  if (!events.length) return { ok: true, sent: 0 }
+
+  const buffer = Buffer.alloc(INPUT_SIZE * events.length)
+  events.forEach((event, index) => {
+    const base = index * INPUT_SIZE
+    buffer.writeUInt32LE(INPUT_KEYBOARD, base)
+    buffer.writeUInt16LE(event.vk, base + INPUT_OFF_VK)
+    buffer.writeUInt16LE(0, base + INPUT_OFF_SCAN) // wScan=0，走 VK 通道
+    let flags = 0
+    if (event.extended) flags |= KEYEVENTF_EXTENDEDKEY
+    if (event.up) flags |= KEYEVENTF_KEYUP
+    buffer.writeUInt32LE(flags, base + INPUT_OFF_FLAGS)
+    buffer.writeUInt32LE(0, base + INPUT_OFF_TIME)
+    // dwExtraInfo 保持 0
+  })
+
+  try {
+    const sent = Number(api.SendInput(events.length, buffer, INPUT_SIZE))
+    if (sent !== events.length) {
+      return { ok: false, sent, reason: `SendInput 只被接受 ${sent}/${events.length} 个事件（可能被 UIPI 拦截）` }
+    }
+    return { ok: true, sent }
+  } catch (error) {
+    return { ok: false, sent: 0, reason: error instanceof Error ? error.message : String(error) }
   }
 }

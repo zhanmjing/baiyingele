@@ -149,10 +149,11 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.ocr.read` | 视觉模型 OCR：`$screenshot` / 本地图片 / 图片 URL 三路输入，复用 provider 降级链 |
 | `win.window.query` | **koffi 直调 user32** 枚举窗口（~0.35ms/次），koffi 不可用时自动回退 PowerShell |
 | `win.window.control` | koffi 控制窗口：focus / move / topmost / close；支持按 `hwnd` 精确指定 |
+| `win.key.send` | koffi **SendInput** 真实发送组合键（走系统输入队列，目标程序分辨不出真假） |
 | `win.key.trigger` | **uiohook-napi** 全局热键监听（常驻钩子，不是一次性执行） |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
-其余 83 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 82 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
@@ -205,6 +206,38 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 2. **同名窗口会选错**：`Clash Verge` 这类应用可能有多个标题相同的窗口，按标题选会在两次调用间选到不同的那个。
    所以 `selector` 支持 `{ "hwnd": "..." }` 精确定位（`win.window.query` 的返回值里带 `hwnd`），
    匹配到多个时输出里也会明确提示。
+
+### 发送按键为什么用 SendInput
+
+`win.key.send` 只有一条路：`SendInput`。另一条常见路 `PostMessage(hwnd, WM_KEYDOWN, …)` 看着更"精准"
+（能直接指定窗口），但**对现代应用基本无效** —— UWP、Electron、Qt、游戏大多不处理合成的 WM_KEYDOWN。
+
+`SendInput` 把事件塞进系统输入队列，走的是和真实键盘完全相同的一条路，所以兼容性最好。
+代价是它**只能发给当前前台窗口**，要指定窗口得先聚焦：
+
+```bash
+win.key.send  keys="Ctrl+C"  mode=press  repeat=1
+win.key.send  keys="Ctrl+C"  target='{"process":"notepad"}'   # 先聚焦再发
+```
+
+**三个实现细节：**
+
+1. **INPUT 结构体手工算内存布局**，不用 `koffi.struct`（struct 出参已经证明不可靠）：
+   x64 上 `INPUT` 是 40 字节，union 从偏移 8 开始，`wVk` 在 8、`dwFlags` 在 12。
+2. **修饰键用左键变体**（`VK_LCONTROL` 0xA2 而非 `VK_CONTROL` 0x11），SendInput 对具体左右键的处理更确定。
+3. **不碰用户正按着的键**：发送前用 `GetAsyncKeyState` 查一遍，用户已经按住的修饰键
+   既不会被我们按下、也不会被我们松开 —— 否则自动化跑完用户的 Shift 就"粘住"了。
+
+**闭环验证**（`SendInput → 系统输入队列 → 全局钩子`）：
+发一个 F24（所有正常应用都没绑定），uiohook 全局钩子能收到 `keycode 107` —— 证明按键真的进了系统。
+真机运行记录：
+
+```json
+{ "output": "已发送 Ctrl+C（4 个事件）", "elapsedMs": 8,
+  "evidence": { "backend": "sendinput", "events": 4, "sent": 4, "preHeldModifiers": [] } }
+```
+
+对比改造前：`{ "output": "已发送组合键", "evidence": null }` —— 一眼能看出哪个是真的。
 
 ### 全局热键为什么是「异类」能力
 
