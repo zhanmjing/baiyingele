@@ -12,7 +12,8 @@ import * as cap6 from './text.template'
 import * as cap7 from './translate.text'
 import * as cap8 from './win.clipboard.get'
 import * as cap9 from './win.http.request'
-import * as cap10 from './win.screen.capture'
+import * as cap10 from './win.open'
+import * as cap11 from './win.screen.capture'
 
 const MODULES = [
   cap0,
@@ -25,7 +26,8 @@ const MODULES = [
   cap7,
   cap8,
   cap9,
-  cap10
+  cap10,
+  cap11
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(

@@ -140,6 +140,7 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `file.scan` | `node:fs` 递归扫描，`limit` 封顶，不可读目录跳过并计入说明 |
 | `clipboard.write` | `clipboard.writeText` + 回读校验；空文本拒绝，不清空用户剪贴板 |
 | `translate.text` | provider 链 **本地 → 网络 → API** 降级（免费优先），key 只读环境变量 |
+| `win.open` | `shell.openExternal` / `openPath`，带 app 时 `spawn`；`%VAR%` 自动展开 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |

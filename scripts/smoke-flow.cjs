@@ -38,6 +38,7 @@ const fakeClipboard = {
     this.text = ''
   }
 }
+const shellCalls = []
 const electronPath = require.resolve('electron')
 require.cache[electronPath] = {
   id: electronPath,
@@ -51,6 +52,15 @@ require.cache[electronPath] = {
         return false
       }
       show() {}
+    },
+    shell: {
+      async openPath(target) {
+        shellCalls.push(['openPath', target])
+        return ''
+      },
+      async openExternal(target) {
+        shellCalls.push(['openExternal', target])
+      }
     },
     desktopCapturer: { async getSources() { return [] } }
   }
@@ -277,6 +287,26 @@ async function main() {
   clearTranslateEnv()
   await new Promise((resolve) => live.server.close(resolve))
   console.log('✓ translate.text：未配置 / 命中本地 / 降级到网络 / 全挂 四种情形都正确')
+
+  // ── 7e. 真实能力：win.open ───────────────────────────────────
+  shellCalls.length = 0
+  process.env.USERPROFILE = 'C:\\Users\\smoke'
+
+  const openUrl = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'url', target: 'https://github.com' }))
+  assert.strictEqual(openUrl.status, 'ok', `打开 URL 应成功: ${openUrl.output}`)
+  assert.deepStrictEqual(shellCalls.at(-1), ['openExternal', 'https://github.com'], '应走 openExternal')
+
+  const badUrl = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'url', target: 'file:///etc/passwd' }))
+  assert.strictEqual(badUrl.status, 'warn', '非 http(s) 必须 warn')
+  assert.strictEqual(shellCalls.length, 1, '非法 URL 不能触达 shell')
+
+  const openFolder = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'folder', target: '%USERPROFILE%\\Downloads' }))
+  assert.strictEqual(openFolder.status, 'ok', `打开文件夹应成功: ${openFolder.output}`)
+  assert.deepStrictEqual(shellCalls.at(-1), ['openPath', 'C:\\Users\\smoke\\Downloads'], '%VAR% 应被展开')
+
+  const noTarget = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'folder', target: '' }))
+  assert.strictEqual(noTarget.status, 'warn', '缺 target 必须 warn')
+  console.log('✓ win.open：URL / 非法协议拦截 / %VAR% 展开 / 缺参数 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

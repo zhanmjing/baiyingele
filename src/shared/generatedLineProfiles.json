@@ -24,9 +24,9 @@
         "label": "OCR",
         "kind": "point",
         "pointClass": "win.ocr.read",
-        "pointInstance": "ocr.zh.screen",
+        "pointInstance": "win.ocr.read.i-ocr-auto@r1",
         "role": "$sourceLang",
-        "rewrittenFrom": "ocr.read"
+        "rewrittenFrom": "ocr.zh.screen"
       },
       {
         "id": "translate",
@@ -37,8 +37,9 @@
         "label": "翻译",
         "kind": "point",
         "pointClass": "translate.text",
-        "pointInstance": "trans.en2zh",
-        "role": "$sourceLang → $targetLang"
+        "pointInstance": "translate.text.i-en2zh@r1",
+        "role": "$sourceLang → $targetLang",
+        "rewrittenFrom": "trans.en2zh"
       },
       {
         "id": "overlay",
@@ -107,9 +108,9 @@
         "label": "OCR",
         "kind": "point",
         "pointClass": "win.ocr.read",
-        "pointInstance": "ocr.zh.invoice",
+        "pointInstance": "win.ocr.read.i-ocr-auto@r1",
         "role": "$ocrLang",
-        "rewrittenFrom": "ocr.read"
+        "rewrittenFrom": "ocr.zh.invoice"
       },
       {
         "id": "extract",
@@ -155,8 +156,9 @@
         "label": "移动归档",
         "kind": "point",
         "pointClass": "file.move",
-        "pointInstance": "move.archive",
-        "role": "to = $archiveDir"
+        "pointInstance": "file.move.i-archive@r1",
+        "role": "to = $archiveDir",
+        "rewrittenFrom": "move.archive"
       },
       {
         "id": "notify",
@@ -167,9 +169,9 @@
         "label": "未匹配通知",
         "kind": "point",
         "pointClass": "notify.toast",
-        "pointInstance": "notify.unmatched",
+        "pointInstance": "notify.toast.i-system@r1",
         "role": "$(else)",
-        "rewrittenFrom": "notify.tray"
+        "rewrittenFrom": "notify.unmatched"
       }
     ],
     "edges": [

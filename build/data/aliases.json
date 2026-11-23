@@ -28,11 +28,33 @@
     "open.browser.github": "win.open.i-open-github@r1",
     "net.reachable.github": "win.http.request.i-http-github@r1",
     "notify.system": "notify.toast.i-system@r1",
-    "overlay.toast": "notify.toast.i-system@r1"
+    "overlay.toast": "notify.toast.i-system@r1",
+    "ocr.zh.screen": "win.ocr.read.i-ocr-auto@r1",
+    "trans.en2zh": "translate.text.i-en2zh@r1",
+    "ocr.zh.invoice": "win.ocr.read.i-ocr-auto@r1",
+    "move.archive": "file.move.i-archive@r1",
+    "notify.unmatched": "notify.toast.i-system@r1"
   },
   "review": [
-    { "from": "window.find", "to": "win.window.query", "risk": "设计上'查'与'定位并激活'可能是两个动作，需确认" },
-    { "from": "ocr.text / ocr.table", "to": "win.ocr.read", "risk": "OCR 的文本/表格输出可能应拆成不同 output，而不是同一类" },
-    { "from": "net.reachable", "to": "win.http.request", "risk": "可达性检查用 HEAD 请求实现，语义可接受但不等价" }
+    {
+      "from": "window.find",
+      "to": "win.window.query",
+      "risk": "设计上'查'与'定位并激活'可能是两个动作，需确认"
+    },
+    {
+      "from": "ocr.text / ocr.table",
+      "to": "win.ocr.read",
+      "risk": "OCR 的文本/表格输出可能应拆成不同 output，而不是同一类"
+    },
+    {
+      "from": "net.reachable",
+      "to": "win.http.request",
+      "risk": "可达性检查用 HEAD 请求实现，语义可接受但不等价"
+    },
+    {
+      "from": "ocr.zh.screen / ocr.zh.invoice",
+      "to": "win.ocr.read.i-ocr-auto@r1",
+      "risk": "原意是「中文 OCR」，auto 能覆盖但不如专用实例明确；等 OCR 真实现后再拆专例"
+    }
   ]
 }

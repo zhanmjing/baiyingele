@@ -2,11 +2,11 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 85,
+    "ok": 90,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 156
+    "missing": 151
   },
   "requirements": [
     {
@@ -994,34 +994,6 @@
       ]
     },
     {
-      "id": "req:point.move.archive.instance",
-      "layer": "point",
-      "capability": "point:move.archive",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.invoice-archive/move",
-          "role": "to = $archiveDir",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.notify.unmatched.instance",
-      "layer": "point",
-      "capability": "point:notify.unmatched",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.invoice-archive/notify",
-          "role": "$(else)",
-          "required": true
-        }
-      ]
-    },
-    {
       "id": "req:point.ocr.read@r1.instance",
       "layer": "point",
       "capability": "point:ocr.read@r1",
@@ -1031,34 +1003,6 @@
           "where": "dock.tile.target",
           "owner": "tool-ocr",
           "role": "OCR",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.ocr.zh.invoice.instance",
-      "layer": "point",
-      "capability": "point:ocr.zh.invoice",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.invoice-archive/ocr",
-          "role": "$ocrLang",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.ocr.zh.screen.instance",
-      "layer": "point",
-      "capability": "point:ocr.zh.screen",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.screenshot-translate/ocr",
-          "role": "$sourceLang",
           "required": true
         }
       ]
@@ -1633,20 +1577,6 @@
           "where": "body.composition",
           "owner": "body.awake",
           "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.trans.en2zh.instance",
-      "layer": "point",
-      "capability": "point:trans.en2zh",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.screenshot-translate/translate",
-          "role": "$sourceLang → $targetLang",
           "required": true
         }
       ]

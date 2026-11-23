@@ -10,6 +10,7 @@ export const IMPLEMENTED_CLASS_IDS = [
   'translate.text',
   'win.clipboard.get',
   'win.http.request',
+  'win.open',
   'win.screen.capture'
 ] as const
 
@@ -24,5 +25,6 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'translate.text': '翻译文本；provider 链 本地 → 网络 → API 降级，key 走环境变量',
   'win.clipboard.get': 'Electron clipboard.readText / read',
   'win.http.request': 'fetch + 10s 超时，返回状态码与字节数',
+  'win.open': 'Electron shell.openExternal / openPath；带 app 时走 spawn',
   'win.screen.capture': 'desktopCapturer 枚举屏幕源'
 }

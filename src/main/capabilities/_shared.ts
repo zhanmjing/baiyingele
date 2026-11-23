@@ -21,9 +21,14 @@ export function elapsed(startedAt: number): number {
   return Date.now() - startedAt
 }
 
-/** `~` 展开为主目录；空串原样返回（调用方自己判断缺参数） */
+/** 展开 Windows 风格的 %VAR%（在非 Windows 上也照做，方便测试） */
+export function expandEnv(raw: string): string {
+  return raw.replace(/%([A-Za-z_][A-Za-z0-9_]*)%/g, (_match, name: string) => process.env[name] ?? '')
+}
+
+/** `%VAR%` 与环境无关地展开，`~` 展开为主目录；空串原样返回（调用方自己判断缺参数） */
 export function expandPath(raw: string): string {
-  const value = raw.trim()
+  const value = expandEnv(raw).trim()
   if (!value) return ''
   if (value.startsWith('~')) return join(homedir(), value.slice(1).replace(/^[\\/]+/, ''))
   return value
