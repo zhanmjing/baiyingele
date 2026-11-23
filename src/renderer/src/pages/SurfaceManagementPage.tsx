@@ -17,6 +17,7 @@ import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
 import type { InstanceDraft } from './instanceDraft'
 import { gesturePath, type DockTab, type DockTile, type GestureBinding, type PanelClass, type PanelInstance } from '../surfaceData'
 import { loadSurfaceResources, saveSurfaceResources, resetSurfaceResources } from '../surfaceResourceStore'
+import { recognize } from '../../../shared/gestureRecognizer'
 
 interface Props {
   layer: LayerMeta
@@ -131,32 +132,6 @@ function gestureTargetsFor(layer: LayerMeta, kind: 'point' | 'line'): GestureTar
     atomRef: instance.id.includes('@r') ? instance.id : `${instance.id}@r${instance.rev}`,
     href: `${kind}-management`
   })))
-}
-
-function gestureDirection(dx: number, dy: number): string {
-  const angle = Math.atan2(dy, dx) * 180 / Math.PI
-  if (angle >= -22.5 && angle < 22.5) return 'R'
-  if (angle >= 22.5 && angle < 67.5) return 'DR'
-  if (angle >= 67.5 && angle < 112.5) return 'D'
-  if (angle >= 112.5 && angle < 157.5) return 'DL'
-  if (angle >= 157.5 || angle < -157.5) return 'L'
-  if (angle >= -157.5 && angle < -112.5) return 'UL'
-  if (angle >= -112.5 && angle < -67.5) return 'U'
-  return 'UR'
-}
-
-function recognizeGesture(points: { x: number; y: number }[]): string {
-  const filtered: { x: number; y: number }[] = []
-  for (const point of points) {
-    const last = filtered[filtered.length - 1]
-    if (!last || Math.hypot(point.x - last.x, point.y - last.y) >= 14) filtered.push(point)
-  }
-  const directions: string[] = []
-  for (let index = 1; index < filtered.length; index++) {
-    const direction = gestureDirection(filtered[index].x - filtered[index - 1].x, filtered[index].y - filtered[index - 1].y)
-    if (directions[directions.length - 1] !== direction) directions.push(direction)
-  }
-  return directions.join('')
 }
 
 function parseHash(): { view: SurfaceView; id: string } {
@@ -500,18 +475,48 @@ export function SurfaceManagementPage({
     })
   }
 
-  function recordPoint(event: ReactPointerEvent<HTMLDivElement>): { x: number; y: number } {
+  function recordPoint(event: ReactPointerEvent<HTMLDivElement>): { x: number; y: number; t: number } {
     const rect = event.currentTarget.getBoundingClientRect()
     return {
-      x: (event.clientX - rect.left) * 600 / rect.width,
-      y: (event.clientY - rect.top) * 230 / rect.height
+      x: ((event.clientX - rect.left) * 600) / rect.width,
+      y: ((event.clientY - rect.top) * 230) / rect.height,
+      t: Date.now()
+    }
+  }
+
+  /** 用手绘轨迹真跑一次触发器（和热键走同一条 dispatch） */
+  async function testTrigger() {
+    const result = recognize(recordPoints)
+    if (!result.directions) {
+      onToast('先画一个手势')
+      return
+    }
+    if (!window.baiying?.dispatchGesture) {
+      onToast('当前环境不支持手势派发')
+      return
+    }
+    try {
+      const payload = (await window.baiying.dispatchGesture(recordPoints)) as {
+        directions?: string
+        records?: { status: string; output: string }[]
+      }
+      const first = payload?.records?.[0]
+      if (!first) {
+        onToast(`手势 ${payload?.directions ?? result.directions} 识别成功，但没有匹配的绑定`)
+      } else if (first.status === 'ok') {
+        onToast(`手势 ${payload?.directions ?? result.directions} → 已触发`)
+      } else {
+        onToast(`手势 ${payload?.directions ?? result.directions} → ${first.output}`)
+      }
+    } catch (error) {
+      onToast(`派发失败：${error instanceof Error ? error.message : '未知错误'}`)
     }
   }
 
   function finishRecording() {
     if (!drawing) return
     setDrawing(false)
-    const pattern = recognizeGesture(recordPoints)
+    const pattern = recognize(recordPoints).directions
     if (!pattern) { onToast('请画出至少一段方向'); return }
     const editPattern = gestureRecorder?.editPattern
     setGestureRecorder(null)
@@ -648,9 +653,9 @@ export function SurfaceManagementPage({
               <div className="gesture-record-grid" />
               <svg viewBox="0 0 600 230" preserveAspectRatio="none"><polyline points={recordPoints.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ')} fill="none" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               {!recordPoints.length && <div className="gesture-record-hint"><b>Gesture Pad</b><span>按住左键画手势</span></div>}
-              <div className="gesture-record-readout">Recognized <strong>{recognizeGesture(recordPoints) || '—'}</strong></div>
+              <div className="gesture-record-readout">Recognized <strong>{recognize(recordPoints).directions || '—'}</strong></div>
             </div>
-            <div className="gesture-record-foot"><span>方向序列：{recognizeGesture(recordPoints) || '—'}</span><span>fuzzy ≤ 1 segment</span><button className="text-btn" onClick={() => setRecordPoints([])}>清空</button></div>
+            <div className="gesture-record-foot"><span>方向序列：{recognize(recordPoints).directions || '—'}</span><span>fuzzy ≤ 1 segment</span><button className="text-btn" onClick={() => { void testTrigger() }}>试触发</button><button className="text-btn" onClick={() => setRecordPoints([])}>清空</button></div>
             <div className="modal-actions"><button className="btn ghost" onClick={() => setGestureRecorder(null)}>取消</button><span className="gesture-record-tip">画完会自动进入绑定编辑</span></div>
           </div>
         </div>

@@ -21,7 +21,7 @@
     "new:point": "node scripts/new-point.mjs",
     "data:gen": "node scripts/gen-catalogs.mjs --write",
     "data:check": "node scripts/gen-catalogs.mjs",
-    "smoke": "npx tsc src/main/layerStore.ts src/main/flowRuntime.ts src/main/capabilities/index.ts src/main/fieldRuntime.ts src/main/undoJournal.ts src/shared/fieldLanding.ts src/main/triggerService.ts src/main/triggerStore.ts --ignoreConfig --rootDir src --outDir .tmp/smoke --module node16 --moduleResolution node16 --target es2022 --skipLibCheck --types node --resolveJsonModule && node scripts/smoke-flow.cjs",
+    "smoke": "npx tsc src/main/layerStore.ts src/main/flowRuntime.ts src/main/capabilities/index.ts src/main/fieldRuntime.ts src/main/undoJournal.ts src/shared/fieldLanding.ts src/shared/gestureRecognizer.ts src/main/triggerService.ts src/main/triggerStore.ts --ignoreConfig --rootDir src --outDir .tmp/smoke --module node16 --moduleResolution node16 --target es2022 --skipLibCheck --types node --resolveJsonModule && node scripts/smoke-flow.cjs",
     "check": "npm run typecheck && npm run impl:check && npm run validate && npm run build",
     "check:full": "npm run check && npm run refs:write && npm run smoke",
     "package": "npm run build && electron-builder --win",

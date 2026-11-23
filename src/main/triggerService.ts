@@ -1,28 +1,35 @@
 /**
  * 触发器服务：把「输入被触发」接到「跑哪个实例」。
  *
- * 对应 design/overview/INPUT-TRIGGER-CLASSES.md 的最后一段：
+ * 对应 design/overview/INPUT-TRIGGER-CLASSES.md：
  *   InputEvent → InputPattern(命中) → InputBinding(作用域/目标) → PointInstance / FlowInstance
  *
- * 目前只接了键盘组合这一种 source；手势那套可以复用同一个 dispatch（pattern 换成方向序列即可）。
+ * 两种 source 共用同一条 dispatch：
+ *   hotkey  —— uiohook-napi 全局钩子，组合键**精确**匹配
+ *   gesture —— 渲染层送来轨迹，识别成方向串后**模糊**匹配（编辑距离 ≥ 阈值）
  */
 import { onFiring, parseCombo, registerCombo, registeredCombos } from './capabilities/win.key.trigger'
+import { matchPattern, recognize, type GesturePoint } from '../shared/gestureRecognizer'
 import type { LayerStore } from './layerStore'
-import type { TriggerBinding, TriggerStore, TriggerTargetKind } from './triggerStore'
+import type { TriggerBinding, TriggerSource, TriggerStore, TriggerTargetKind } from './triggerStore'
 
 export interface FiringRecord {
   at: number
-  combo: string
+  source: TriggerSource
+  pattern: string
   bindingId: string | null
   targetKind: TriggerTargetKind | null
   targetId: string | null
   status: 'ok' | 'warn' | 'skipped'
   output: string
   elapsedMs: number
+  /** 手势专用：识别置信度 */
+  score?: number
 }
 
 export interface AddTriggerInput {
-  combo: string
+  source: TriggerSource
+  pattern: string
   targetKind: TriggerTargetKind
   targetId: string
   note?: string
@@ -36,6 +43,8 @@ export interface TriggerServiceDeps {
 }
 
 const MAX_FIRINGS = 50
+const GESTURE_THRESHOLD = 0.75
+const GESTURE_PATTERN = /^(U|D|L|R|UR|DR|DL|UL)+$/
 
 export class TriggerService {
   private readonly firings: FiringRecord[] = []
@@ -43,11 +52,10 @@ export class TriggerService {
 
   constructor(private readonly deps: TriggerServiceDeps) {}
 
-  /** 订阅钩子事件并把已有绑定挂上去；返回本次实际生效的组合 */
   start(): { combos: string[]; failures: string[] } {
     this.unsubscribe?.()
     this.unsubscribe = onFiring((combo) => {
-      void this.dispatch(combo)
+      void this.dispatchHotkey(combo)
     })
     return this.sync()
   }
@@ -57,14 +65,14 @@ export class TriggerService {
     this.unsubscribe = null
   }
 
-  /** 把 enabled 的绑定重新注册到钩子上（新增/删除/启停后调用） */
+  /** 只把 hotkey 类绑定挂到原生钩子上（手势由渲染层送进来） */
   sync(): { combos: string[]; failures: string[] } {
     const failures: string[] = []
     for (const binding of this.deps.store.list()) {
-      if (!binding.enabled) continue
-      const parsed = parseCombo(binding.combo)
+      if (!binding.enabled || binding.source !== 'hotkey') continue
+      const parsed = parseCombo(binding.pattern)
       if (!parsed) {
-        failures.push(`${binding.id}: 组合键无法解析 ${binding.combo}`)
+        failures.push(`${binding.id}: 组合键无法解析 ${binding.pattern}`)
         continue
       }
       const result = registerCombo(parsed)
@@ -82,8 +90,18 @@ export class TriggerService {
   }
 
   add(input: AddTriggerInput): { ok: true; binding: TriggerBinding } | { ok: false; message: string } {
-    const parsed = parseCombo(input.combo)
-    if (!parsed) return { ok: false, message: `组合键无法解析：${input.combo}` }
+    let pattern: string
+
+    if (input.source === 'hotkey') {
+      const parsed = parseCombo(input.pattern)
+      if (!parsed) return { ok: false, message: `组合键无法解析：${input.pattern}` }
+      pattern = parsed.label
+    } else {
+      pattern = String(input.pattern ?? '').toUpperCase().replace(/\s+/g, '')
+      if (!pattern || !GESTURE_PATTERN.test(pattern)) {
+        return { ok: false, message: `手势模式不合法：${input.pattern}（应为方向串，如 LDR / UD / DLU）` }
+      }
+    }
 
     const targetStore = input.targetKind === 'line' ? this.deps.lineStore() : this.deps.pointStore()
     if (!targetStore.instance(input.targetId)) {
@@ -91,8 +109,9 @@ export class TriggerService {
     }
 
     const binding = this.deps.store.upsert({
-      id: `${parsed.label}→${input.targetId}`,
-      combo: parsed.label,
+      id: `${input.source}:${pattern}→${input.targetId}`,
+      source: input.source,
+      pattern,
       targetKind: input.targetKind,
       targetId: input.targetId,
       enabled: input.enabled ?? true,
@@ -108,36 +127,69 @@ export class TriggerService {
     return removed
   }
 
-  /**
-   * 直接派发一次（不经过键盘）。用于测试与「手动触发」按钮——
-   * 走的是和真实按键完全相同的 dispatch 路径。
-   */
-  async simulate(combo: string): Promise<FiringRecord[]> {
+  /** 热键路径（模拟真实按键，走完全相同的一跳） */
+  async dispatchHotkey(combo: string): Promise<FiringRecord[]> {
     const parsed = parseCombo(combo)
-    return this.dispatch(parsed ? parsed.label : combo)
+    const pattern = parsed ? parsed.label : combo
+    const matched = this.deps.store
+      .list()
+      .filter((binding) => binding.enabled && binding.source === 'hotkey' && binding.pattern === pattern)
+    return this.execute(matched, { source: 'hotkey', pattern })
   }
 
-  private async dispatch(combo: string): Promise<FiringRecord[]> {
-    const startedAt = Date.now()
-    const matched = this.deps.store.list().filter((binding) => binding.enabled && binding.combo === combo)
+  /** 手势路径：先识别，再在启用的手势绑定里挑最像的一个 */
+  async dispatchGesturePoints(points: GesturePoint[]): Promise<{ directions: string; valid: boolean; reason?: string; records: FiringRecord[] }> {
+    const result = recognize(points)
+    if (!result.valid) {
+      return { directions: '', valid: false, reason: result.reason, records: [] }
+    }
 
-    if (!matched.length) {
-      const record: FiringRecord = {
-        at: startedAt,
-        combo,
-        bindingId: null,
-        targetKind: null,
-        targetId: null,
-        status: 'skipped',
-        output: `没有匹配的绑定：${combo}`,
-        elapsedMs: 0
-      }
+    const candidates = this.deps.store
+      .list()
+      .filter((binding) => binding.enabled && binding.source === 'gesture')
+    const best = matchPattern(result.directions, candidates.map((binding) => binding.pattern), GESTURE_THRESHOLD)
+
+    if (!best) {
+      const record = this.makeRecord(
+        { source: 'gesture', pattern: result.directions },
+        null,
+        'skipped',
+        `识别到 ${result.directions}，但没有匹配的绑定`,
+        0
+      )
+      this.push(record)
+      return { directions: result.directions, valid: true, records: [record] }
+    }
+
+    const matched = candidates.filter((binding) => binding.pattern === best.pattern)
+    const records = await this.execute(matched, { source: 'gesture', pattern: best.pattern, directions: result.directions, score: best.score })
+    return { directions: result.directions, valid: true, records }
+  }
+
+  /** 直接按方向串派发（跳过轨迹识别，便于测试） */
+  async dispatchGestureDirections(directions: string): Promise<FiringRecord[]> {
+    const candidates = this.deps.store
+      .list()
+      .filter((binding) => binding.enabled && binding.source === 'gesture')
+    const best = matchPattern(directions.toUpperCase(), candidates.map((binding) => binding.pattern), GESTURE_THRESHOLD)
+    if (!best) return this.execute([], { source: 'gesture', pattern: directions.toUpperCase() })
+    const matched = candidates.filter((binding) => binding.pattern === best.pattern)
+    return this.execute(matched, { source: 'gesture', pattern: best.pattern, directions: directions.toUpperCase(), score: best.score })
+  }
+
+  private async execute(
+    bindings: TriggerBinding[],
+    meta: { source: TriggerSource; pattern: string; directions?: string; score?: number }
+  ): Promise<FiringRecord[]> {
+    if (!bindings.length) {
+      const record = this.makeRecord(meta, null, 'skipped', `没有匹配的绑定：${meta.pattern}`, 0)
       this.push(record)
       return [record]
     }
 
+    const startedAt = Date.now()
     const records: FiringRecord[] = []
-    for (const binding of matched) {
+    for (const binding of bindings) {
       const targetStore = binding.targetKind === 'line' ? this.deps.lineStore() : this.deps.pointStore()
       let status: FiringRecord['status'] = 'ok'
       let output = ''
@@ -152,18 +204,39 @@ export class TriggerService {
       }
       records.push({
         at: startedAt,
-        combo,
+        source: meta.source,
+        pattern: meta.pattern,
         bindingId: binding.id,
         targetKind: binding.targetKind,
         targetId: binding.targetId,
         status,
         output,
-        elapsedMs: Date.now() - startedAt
+        elapsedMs: Date.now() - startedAt,
+        ...(meta.score !== undefined ? { score: meta.score } : {})
       })
     }
-
     for (const record of records) this.push(record)
     return records
+  }
+
+  private makeRecord(
+    meta: { source: TriggerSource; pattern: string },
+    bindingId: string | null,
+    status: FiringRecord['status'],
+    output: string,
+    elapsedMs: number
+  ): FiringRecord {
+    return {
+      at: Date.now(),
+      source: meta.source,
+      pattern: meta.pattern,
+      bindingId,
+      targetKind: null,
+      targetId: null,
+      status,
+      output,
+      elapsedMs
+    }
   }
 
   private push(record: FiringRecord): void {

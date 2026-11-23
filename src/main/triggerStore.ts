@@ -10,9 +10,14 @@ import { dirname } from 'node:path'
 
 export type TriggerTargetKind = 'point' | 'line'
 
+/** 触发源：键盘组合 / 手势方向串。同一套 dispatch，不同 source */
+export type TriggerSource = 'hotkey' | 'gesture'
+
 export interface TriggerBinding {
   id: string
-  combo: string
+  source: TriggerSource
+  /** hotkey: 'Ctrl+Alt+Space'（已规范化）；gesture: 'LDR' */
+  pattern: string
   targetKind: TriggerTargetKind
   targetId: string
   enabled: boolean
@@ -22,8 +27,23 @@ export interface TriggerBinding {
 }
 
 interface TriggerState {
-  version: 1
+  version: 2
   bindings: TriggerBinding[]
+}
+
+/** v1 只有 combo 字段，统一按热键迁移 */
+function migrate(raw: Partial<TriggerBinding> & { combo?: string }): TriggerBinding {
+  return {
+    id: String(raw.id ?? ''),
+    source: (raw.source as TriggerSource) ?? 'hotkey',
+    pattern: String(raw.pattern ?? raw.combo ?? ''),
+    targetKind: (raw.targetKind as TriggerTargetKind) ?? 'point',
+    targetId: String(raw.targetId ?? ''),
+    enabled: raw.enabled !== false,
+    note: String(raw.note ?? ''),
+    fireCount: Number(raw.fireCount ?? 0),
+    lastFiredAt: raw.lastFiredAt ?? null
+  }
 }
 
 export class TriggerStore {
@@ -37,11 +57,12 @@ export class TriggerStore {
 
   private load(): TriggerState {
     try {
-      if (!existsSync(this.filePath)) return { version: 1, bindings: [] }
+      if (!existsSync(this.filePath)) return { version: 2, bindings: [] }
       const parsed = JSON.parse(readFileSync(this.filePath, 'utf8')) as Partial<TriggerState>
-      return { version: 1, bindings: Array.isArray(parsed.bindings) ? parsed.bindings : [] }
+      const list = Array.isArray(parsed.bindings) ? parsed.bindings : []
+      return { version: 2, bindings: list.map((item) => migrate(item as never)) }
     } catch {
-      return { version: 1, bindings: [] }
+      return { version: 2, bindings: [] }
     }
   }
 

@@ -203,7 +203,10 @@ app.whenReady().then(() => {
   }))
   ipcMain.handle('trigger:add', (_event, input) => triggerService.add(input))
   ipcMain.handle('trigger:remove', (_event, id: string) => triggerService.remove(id))
-  ipcMain.handle('trigger:simulate', (_event, combo: string) => triggerService.simulate(combo))
+  ipcMain.handle('trigger:simulate', (_event, combo: string) => triggerService.dispatchHotkey(combo))
+  ipcMain.handle('trigger:gesture', (_event, points: { x: number; y: number; t?: number }[]) =>
+    triggerService.dispatchGesturePoints(points)
+  )
 
   ipcMain.handle('field:undo', (_event, token: string) => {
     const entry = undoJournal.take(token)

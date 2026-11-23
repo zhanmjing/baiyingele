@@ -89,6 +89,7 @@ const { computeRect, resolveTarget } = require('../.tmp/smoke/main/capabilities/
 const { parseCombo, matchesCombo, registeredCombos, stopHook } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
 const { TriggerStore } = require('../.tmp/smoke/main/triggerStore.js')
 const { TriggerService } = require('../.tmp/smoke/main/triggerService.js')
+const gesture = require('../.tmp/smoke/shared/gestureRecognizer.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -625,17 +626,17 @@ async function main() {
   const badScope = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'F5', scope: 'window' }))
   assert.strictEqual(badScope.status, 'warn', '非 global 作用域必须 warn')
 
-  // ── 7l. 触发器服务：绑定 → 派发 → 目标真的跑了 ──────────────
+  // ── 7l. 触发器服务：热键与手势共用一条 dispatch ──────────────
   const trigStore = new TriggerStore(path.join(workdir, 'triggers.json'))
   const ptForTrigger = new LayerStore(
     path.join(workdir, 'pt-trigger.json'),
     { key: 'point', classLabel: 'PointClass', classes: catalogs.point, outputs: {} },
-    () => ({ status: 'ok', output: '触发执行了', elapsedMs: 1 })
+    () => ({ status: 'ok', output: '点被触发了', elapsedMs: 1 })
   )
   const lnForTrigger = new LayerStore(
     path.join(workdir, 'ln-trigger.json'),
     { key: 'line', classLabel: 'FlowClass', classes: catalogs.line, outputs: {} },
-    () => ({ status: 'ok', output: '流程执行了', elapsedMs: 1 })
+    () => ({ status: 'ok', output: '线被触发了', elapsedMs: 1 })
   )
   const triggerService = new TriggerService({
     store: trigStore,
@@ -644,32 +645,125 @@ async function main() {
   })
 
   const TRIGGER_TARGET = 'win.open.i-open-github@r1'
-  const added = triggerService.add({ combo: 'ctrl+alt+space', targetKind: 'point', targetId: TRIGGER_TARGET })
-  assert.strictEqual(added.ok, true, `绑定应成功: ${added.ok ? '' : added.message}`)
-  assert.strictEqual(added.binding.combo, 'Ctrl+Alt+Space', '组合键应规范化大小写')
-  assert.strictEqual(added.binding.id, `Ctrl+Alt+Space→${TRIGGER_TARGET}`, '绑定 id 应稳定')
+  const LINE_TARGET = catalogs.line[0].instances[0].id
 
-  const badCombo = triggerService.add({ combo: 'Ctrl', targetKind: 'point', targetId: TRIGGER_TARGET })
-  assert.strictEqual(badCombo.ok, false, '只有修饰键的组合应被拒绝')
-  const badTarget = triggerService.add({ combo: 'F5', targetKind: 'point', targetId: '不存在的实例' })
-  assert.strictEqual(badTarget.ok, false, '目标不存在应被拒绝')
+  const hotBinding = triggerService.add({ source: 'hotkey', pattern: 'ctrl+alt+space', targetKind: 'point', targetId: TRIGGER_TARGET })
+  assert.strictEqual(hotBinding.ok, true, `热键绑定应成功: ${hotBinding.ok ? '' : hotBinding.message}`)
+  assert.strictEqual(hotBinding.binding.pattern, 'Ctrl+Alt+Space', '组合键应规范化')
+  assert.strictEqual(hotBinding.binding.source, 'hotkey')
 
-  const runsBefore = ptForTrigger.runs(100).length
-  const firedRecords = await triggerService.simulate('Ctrl+Alt+Space')
-  assert.strictEqual(firedRecords.length, 1, '应派发 1 条')
-  assert.strictEqual(firedRecords[0].status, 'ok')
-  assert.strictEqual(ptForTrigger.runs(100).length, runsBefore + 1, '目标实例必须真的跑了一次')
-  assert.strictEqual(trigStore.list()[0].fireCount, 1, '触发计数应 +1')
+  const gestBinding = triggerService.add({ source: 'gesture', pattern: 'ldr', targetKind: 'line', targetId: LINE_TARGET, note: 'LDR 触发流程' })
+  assert.strictEqual(gestBinding.ok, true, `手势绑定应成功: ${gestBinding.ok ? '' : gestBinding.message}`)
+  assert.strictEqual(gestBinding.binding.pattern, 'LDR', '手势模式应大写')
 
-  const notBound = await triggerService.simulate('F12')
-  assert.strictEqual(notBound[0].status, 'skipped', '没有绑定应 skipped')
-  assert.match(notBound[0].output, /没有匹配的绑定/)
+  assert.strictEqual(triggerService.add({ source: 'gesture', pattern: 'XYZ', targetKind: 'line', targetId: LINE_TARGET }).ok, false, '非法手势应拒绝')
+  assert.strictEqual(triggerService.add({ source: 'hotkey', pattern: 'Ctrl', targetKind: 'point', targetId: TRIGGER_TARGET }).ok, false, '只有修饰键应拒绝')
+  assert.strictEqual(triggerService.add({ source: 'hotkey', pattern: 'F5', targetKind: 'point', targetId: '不存在' }).ok, false, '目标不存在应拒绝')
 
-  assert.strictEqual(triggerService.remove(added.binding.id), true, '解绑应成功')
-  assert.strictEqual(triggerService.list().length, 0, '解绑后应为空')
+  const ptRunsBefore = ptForTrigger.runs(100).length
+  const hotFired = await triggerService.dispatchHotkey('Ctrl+Alt+Space')
+  assert.strictEqual(hotFired[0].status, 'ok')
+  assert.strictEqual(ptForTrigger.runs(100).length, ptRunsBefore + 1, '热键目标必须真的跑了')
+  assert.strictEqual(hotFired[0].source, 'hotkey')
+
+  const lnRunsBefore = lnForTrigger.runs(100).length
+  const gestFired = await triggerService.dispatchGestureDirections('LDR')
+  assert.strictEqual(gestFired[0].status, 'ok')
+  assert.strictEqual(lnForTrigger.runs(100).length, lnRunsBefore + 1, '手势目标必须真的跑了')
+  assert.strictEqual(gestFired[0].source, 'gesture')
+  assert.ok(gestFired[0].score >= 0.75, '手势命中应带置信度')
+
+  const fuzzy = await triggerService.dispatchGestureDirections('LDDR')
+  assert.strictEqual(fuzzy[0].status, 'ok', `模糊匹配应命中: ${fuzzy[0].output}`)
+  assert.ok(fuzzy[0].score < 1, '模糊命中置信度应小于 1')
+
+  // 真实轨迹 → 识别 → 派发
+  const ldrTrace = []
+  for (let x = 320; x >= 70; x -= 4) ldrTrace.push({ x, y: 60 })
+  for (let y = 60; y <= 160; y += 4) ldrTrace.push({ x: 70, y })
+  for (let x = 70; x <= 320; x += 4) ldrTrace.push({ x, y: 160 })
+
+  const viaTrace = await triggerService.dispatchGesturePoints(ldrTrace)
+  assert.strictEqual(viaTrace.valid, true)
+  assert.strictEqual(viaTrace.directions, 'LDR', `轨迹应识别为 LDR，得到 ${viaTrace.directions}`)
+  assert.strictEqual(viaTrace.records[0].status, 'ok')
+
+  const badTrace = await triggerService.dispatchGesturePoints([{ x: 0, y: 0 }])
+  assert.strictEqual(badTrace.valid, false, '无效轨迹应拒绝')
+
+  const noMatch = await triggerService.dispatchHotkey('F12')
+  assert.strictEqual(noMatch[0].status, 'skipped')
+  assert.match(noMatch[0].output, /没有匹配的绑定/)
+
+  assert.strictEqual(triggerService.remove(hotBinding.binding.id), true)
+  assert.strictEqual(triggerService.remove(gestBinding.binding.id), true)
+  assert.strictEqual(triggerService.list().length, 0)
 
   stopHook()
-  console.log('✓ 触发器服务：绑定校验 / 派发执行 / 目标真跑 / 无绑定跳过 / 解绑 都正确')
+  console.log('✓ 触发器服务：热键/手势绑定校验 + 两条派发路径 + 目标真跑 + 模糊命中 + 解绑 都正确')
+
+  // ── 7m. 手势识别：用真实轨迹样例验证 ─────────────────────────
+  const densify = (control, step = 4) => {
+    const out = []
+    for (let i = 1; i < control.length; i++) {
+      const [x0, y0] = control[i - 1]
+      const [x1, y1] = control[i]
+      const segments = Math.max(1, Math.round(Math.hypot(x1 - x0, y1 - y0) / step))
+      for (let k = 0; k < segments; k++) {
+        out.push({ x: x0 + ((x1 - x0) * k) / segments, y: y0 + ((y1 - y0) * k) / segments })
+      }
+    }
+    const last = control[control.length - 1]
+    out.push({ x: last[0], y: last[1] })
+    return out
+  }
+
+  // 与 surfaceData.gesturePaths 一致
+  const PATHS = {
+    LDR: [[320, 60], [70, 60], [70, 160], [320, 160]],
+    UD: [[190, 220], [190, 55], [215, 220]],
+    RL: [[65, 150], [330, 150], [65, 150]],
+    DR: [[65, 65], [65, 225], [330, 225]],
+    DLU: [[330, 60], [330, 225], [70, 225], [70, 60]]
+  }
+
+  for (const [name, control] of Object.entries(PATHS)) {
+    const result = gesture.recognize(densify(control))
+    assert.strictEqual(result.directions, name, `${name} 识别错误，得到 ${result.directions || '(空)'}`)
+  }
+
+  // 抖动 ±2px 仍然识别正确（靠噪声段过滤）
+  const jitter = (points, amp = 2) =>
+    points.map((p, i) => ({ x: p.x + Math.sin(i * 1.7) * amp, y: p.y + Math.cos(i * 2.3) * amp }))
+  for (const [name, control] of Object.entries(PATHS)) {
+    const result = gesture.recognize(jitter(densify(control)))
+    assert.strictEqual(result.directions, name, `${name} 加抖动后识别错误: ${result.directions}`)
+  }
+
+  // 缩放 0.5x / 2x 仍然识别（相对阈值，DPI 无关）
+  for (const scale of [0.5, 2]) {
+    for (const [name, control] of Object.entries(PATHS)) {
+      const scaled = densify(control).map((p) => ({ x: p.x * scale, y: p.y * scale }))
+      const result = gesture.recognize(scaled)
+      assert.strictEqual(result.directions, name, `${name} 缩放 ${scale}x 后识别错误: ${result.directions}`)
+    }
+  }
+
+  // 无效输入
+  assert.strictEqual(gesture.recognize([{ x: 0, y: 0 }]).reason, 'too-few-points')
+  assert.strictEqual(gesture.recognize([{ x: 0, y: 0 }, { x: 5, y: 0 }]).reason, 'too-short', '太短应拒绝')
+  const fast = densify(PATHS.LDR).map((p, i) => ({ ...p, t: 1000 + Math.floor(i / 10) }))
+  assert.strictEqual(gesture.recognize(fast).reason, 'too-fast', '太快应拒绝')
+  const slow = densify(PATHS.LDR).map((p, i) => ({ ...p, t: 1000 + i * 100 }))
+  assert.strictEqual(gesture.recognize(slow).reason, 'too-slow', '太慢应拒绝')
+
+  // 模糊匹配：多画一段仍能匹配上，并给出置信度
+  assert.ok(gesture.scorePattern('LDDR', 'LDR') >= 0.75, '多一段应仍在阈值内')
+  const bestMatch = gesture.matchPattern('LDDR', ['UD', 'LDR', 'RL'])
+  assert.strictEqual(bestMatch.pattern, 'LDR', '应挑最像的')
+  assert.ok(bestMatch.score > 0.7 && bestMatch.score < 1, '置信度应为中间值')
+  assert.strictEqual(gesture.matchPattern('RLRL', ['UD', 'LDR'], 0.9), null, '全不匹配应返回 null')
+  console.log('✓ 手势识别：5 个轨迹样例 / 抖动 / 0.5x-2x 缩放 / 4 种无效输入 / 模糊匹配 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

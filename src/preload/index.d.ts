@@ -18,6 +18,7 @@ declare global {
       addTrigger: (input: unknown) => Promise<unknown>
       removeTrigger: (id: string) => Promise<boolean>
       simulateTrigger: (combo: string) => Promise<unknown[]>
+      dispatchGesture: (points: { x: number; y: number; t?: number }[]) => Promise<unknown>
     }
   }
 }

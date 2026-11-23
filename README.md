@@ -227,36 +227,61 @@ win.key.trigger  keys=""                scope=global
 - uiohook-napi 1.5.5 在 **Node modules=137 与 Electron 45 modules=150 两套 ABI 下都能起停钩子**
 - 钩子必须能干净停止：`stopHook()` 会清空注册表并 `uIOhook.stop()`，冒烟测试每次都验证起停
 
-## 触发器服务（热键 → 实例）
+## 触发器服务（输入 → 实例）
 
-`win.key.trigger` 只负责「听见」；真正把它接到执行上的是 `src/main/triggerService.ts`：
+`TriggerService` 是输入层的统一出口：**热键和手势共用同一条 dispatch**。
 
 ```text
-物理按键
-  → uiohook-napi 全局钩子
-  → parseCombo 命中（修饰键精确匹配）
-  → TriggerService.dispatch
-  → 查 trigger-bindings.json 里 enabled 的绑定
-  → 跑对应的 PointInstance / LineInstance
-  → 记录 FiringRecord（状态/输出/耗时）+ 绑定计数
+hotkey   物理按键 → uiohook 钩子 ─┐
+gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑定 → 跑实例 → FiringRecord
 ```
 
-绑定存在 `%APPDATA%\baiying-electron\trigger-bindings.json`，结构是
-`{ id, combo, targetKind: 'point'|'line', targetId, enabled, fireCount, lastFiredAt }`。
+| source | 匹配方式 | 说明 |
+|---|---|---|
+| `hotkey` | 组合键**精确**匹配 | `Ctrl+Alt+Space`，由主进程钩子触发 |
+| `gesture` | 方向串**模糊**匹配（编辑距离 ≥ 0.75） | `LDR`，由渲染层送轨迹进来，主进程识别 |
+
+绑定存在 `%APPDATA%\baiying-electron\trigger-bindings.json`：
+
+```ts
+{ id: 'gesture:LDR→inst.xxx', source: 'gesture', pattern: 'LDR',
+  targetKind: 'line', targetId: 'inst.xxx', enabled: true, fireCount: 3 }
+```
+
+> v1 的 `combo` 字段会在加载时自动迁移成 `{ source: 'hotkey', pattern }`。
 
 **IPC：**
 
 | 通道 | 作用 |
 |---|---|
-| `trigger:list` | 返回绑定 + 最近触发记录 + 当前挂着的组合 + 注册失败原因 |
-| `trigger:add` | 新增绑定（会校验组合键可解析、目标实例存在） |
+| `trigger:list` | 绑定 + 最近触发记录 + 当前挂着的热键组合 + 注册失败原因 |
+| `trigger:add` | 新增绑定（校验组合键/手势串可解析、目标实例存在） |
 | `trigger:remove` | 解绑 |
-| `trigger:simulate` | 不按键直接派发一次，走的是和真实按键**完全相同**的 dispatch 路径 |
+| `trigger:simulate` | 不按键，直接派发一个热键组合 |
+| `trigger:gesture` | 送一段轨迹，识别后派发；返回 `{ directions, valid, records }` |
 
-`trigger:simulate` 既是测试入口，也是将来「手动触发」按钮的底座。
+### 手势识别（`src/shared/gestureRecognizer.ts`）
 
-**还没做的：UI。** 目前只能通过 IPC 建绑定，界面上还没有入口——
-这是下一步，也是 `INPUT-TRIGGER-CLASSES.md` 里那张四层图最后缺的一块皮。
+纯函数，渲染层与主进程共用。算法：**降采样 → 8 方向分桶 → 过滤短噪声段 → 相邻去重 → 方向串**，
+匹配用编辑距离给置信度。
+
+相比原来的实现修了四个硬伤：
+
+| 问题 | 原来 | 现在 |
+|---|---|---|
+| DPI/缩放敏感 | 绝对 14px 降采样 | 按轨迹总长的 **2%** 算步长 |
+| 手抖多一个方向 | 零容错，精确字符串比较 | 一个方向至少连续 2 段才算数 |
+| 误触 | 点一下也出结果 | 最小长度 30px + 时长 80–3000ms 校验 |
+| 无法分级 | 只返回字符串 | 返回相似度 0–1，阈值 0.75 |
+
+**测试覆盖**：5 个轨迹样例（LDR/UD/RL/DR/DLU）+ ±2px 抖动 + 0.5x/2x 缩放 + 4 种无效输入 + 模糊匹配。
+
+### 界面
+
+面层「手势」页的录制板有两个动作：**录制**（定义 pattern，不触发）和**试触发**（用当前轨迹真跑一次派发）。
+两者分开是刻意的——录制定义时不该顺手执行别人的绑定。
+
+**还没做的**：热键绑定的 UI 入口（目前只能通过 `trigger:add` IPC 建）。
 
 ## 场层落点（landing）
 

@@ -68,6 +68,8 @@ const api = {
   addTrigger: (input: unknown): Promise<unknown> => ipcRenderer.invoke('trigger:add', input),
   removeTrigger: (id: string): Promise<boolean> => ipcRenderer.invoke('trigger:remove', id),
   simulateTrigger: (combo: string): Promise<unknown[]> => ipcRenderer.invoke('trigger:simulate', combo),
+  dispatchGesture: (points: { x: number; y: number; t?: number }[]): Promise<unknown> =>
+    ipcRenderer.invoke('trigger:gesture', points),
   ...layerApi
 }
 
