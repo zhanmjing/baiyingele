@@ -147,8 +147,10 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
 | `win.ocr.read` | 视觉模型 OCR：`$screenshot` / 本地图片 / 图片 URL 三路输入，复用 provider 降级链 |
+| `win.window.query` | PowerShell 枚举有主窗口的进程，按进程名/标题筛选（L0 只读） |
+| `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
-其余 87 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 85 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
@@ -161,6 +163,19 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `flow.screenshot-translate` | 抓屏 → OCR（视觉模型）→ 翻译 → 通知 |
 
 `npm run smoke` 会验证第一条的完整链路。
+
+### 没有 native 模块怎么办
+
+窗口枚举、主题切换这类系统能力**没有引入 ffi-napi / win32-api**（在现代 Node + Electron 上编译成功率很低），
+而是走 PowerShell 互操作 —— 代价是每次调用约 200–600ms，换来的是零编译依赖、随包即用。
+
+两个必须处理的坑都写在 `src/main/capabilities/_powershell.ts` 里：
+
+1. PowerShell 5.1 默认按控制台代码页输出，中文窗口标题会乱码 → 统一加 UTF-8 前导
+2. 非 Windows 平台上 `powershell.exe` 不存在 → 每个能力入口先查 `isWindows()`
+
+需要 true native 才能做的（全局键盘钩子 `win.key.trigger`、窗口移动/置顶 `win.window.control`、
+音量 `win.audio.volume`、亮度 `win.display.brightness`）目前仍是模拟，管理页会标出来。
 
 ## 场层落点（landing）
 

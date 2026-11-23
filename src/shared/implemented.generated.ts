@@ -14,7 +14,9 @@ export const IMPLEMENTED_CLASS_IDS = [
   'win.http.request',
   'win.ocr.read',
   'win.open',
-  'win.screen.capture'
+  'win.screen.capture',
+  'win.theme.mode',
+  'win.window.query'
 ] as const
 
 export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string> = {
@@ -32,5 +34,7 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'win.http.request': 'fetch + 10s 超时，返回状态码与字节数',
   'win.ocr.read': '视觉模型 OCR：支持截图 / 本地图片 / 图片 URL，复用 provider 降级链',
   'win.open': 'Electron shell.openExternal / openPath；带 app 时走 spawn',
-  'win.screen.capture': 'desktopCapturer 枚举屏幕源'
+  'win.screen.capture': 'desktopCapturer 枚举屏幕源',
+  'win.theme.mode': 'Windows 深浅主题：读写 HKCU Personalize 注册表键并读回校验',
+  'win.window.query': 'PowerShell 枚举有主窗口的进程；支持按进程名/标题筛选'
 }

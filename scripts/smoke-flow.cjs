@@ -83,6 +83,8 @@ const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
 const { decideLanding } = require('../.tmp/smoke/shared/fieldLanding.js')
 const { applyLanding } = require('../.tmp/smoke/main/fieldRuntime.js')
 const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
+const { selectWindows, parseSelector } = require('../.tmp/smoke/main/capabilities/win.window.query.js')
+const { planThemeChange } = require('../.tmp/smoke/main/capabilities/win.theme.mode.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -513,6 +515,39 @@ async function main() {
 
   fakeClipboard.text = ''
   console.log('✓ 场层落点：A0/A1 只出草稿、A2 落地可撤销、A3 拒绝、prefill 端到端 都正确')
+
+  // ── 7i. 系统级能力：窗口查询 / 主题切换（纯函数 + 一次实机调用）──
+  const WINDOWS = [
+    { id: 1, process: 'Code', title: 'smoke-flow.cjs - baiyingELE - Visual Studio Code' },
+    { id: 2, process: 'notepad', title: '无标题 - 记事本' },
+    { id: 3, process: 'chrome', title: 'GitHub · Where software is built' },
+    { id: 4, process: 'chrome', title: 'Baiying Deck' }
+  ]
+
+  assert.deepStrictEqual(selectWindows(WINDOWS, {}, 10).map((w) => w.id).sort(), [1, 2, 3, 4], '无条件时全返回')
+  assert.deepStrictEqual(selectWindows(WINDOWS, { process: 'chrome' }, 10).map((w) => w.id).sort(), [3, 4], '进程筛选')
+  assert.deepStrictEqual(selectWindows(WINDOWS, { title: 'github', titleMatch: 'contains' }, 10).map((w) => w.id), [3], '标题包含（忽略大小写）')
+  assert.deepStrictEqual(selectWindows(WINDOWS, { title: 'GitHub · Where software is built', titleMatch: 'exact' }, 10).map((w) => w.id), [3], '标题精确')
+  assert.strictEqual(selectWindows(WINDOWS, {}, 2).length, 2, 'limit 生效')
+  assert.deepStrictEqual(parseSelector('not json'), {}, '非法 selector 退化为空条件')
+  assert.deepStrictEqual(parseSelector('{"process":"x"}'), { process: 'x' }, '合法 selector 正常解析')
+
+  assert.deepStrictEqual(planThemeChange({ action: 'set', mode: 'dark', scope: 'apps', currentApps: 1, currentSystem: 1 }), { apps: 0 }, 'set dark + apps')
+  assert.deepStrictEqual(planThemeChange({ action: 'set', mode: 'light', scope: 'both', currentApps: 0, currentSystem: 0 }), { apps: 1, system: 1 }, 'set light + both')
+  assert.deepStrictEqual(planThemeChange({ action: 'toggle', mode: 'dark', scope: 'system', currentApps: 0, currentSystem: 0 }), { system: 1 }, 'toggle 按当前值翻转')
+  assert.deepStrictEqual(planThemeChange({ action: 'set', mode: 'dark', scope: 'unknown', currentApps: 1, currentSystem: 1 }), { apps: 0 }, '未知 scope 退回 apps')
+  console.log('✓ win.window.query / win.theme.mode：筛选、排序、限流、主题取值 纯函数均正确')
+
+  // 实机调用窗口枚举（只读）。PowerShell 不可用时明确报告跳过，不伪装通过。
+  const realQuery = await CAPABILITIES['win.window.query'](ctx('win.window.query', { limit: '5', selector: '' }))
+  if (realQuery.status === 'ok') {
+    const listed = JSON.parse(realQuery.value)
+    assert.ok(Array.isArray(listed), '窗口列表应为数组')
+    assert.ok(listed.length <= 5, 'limit 应生效')
+    console.log(`✓ win.window.query 实机：命中 ${listed.length} 个窗口${listed[0] ? `（例如 ${listed[0].process}）` : ''}`)
+  } else {
+    console.log(`· win.window.query 实机调用跳过：${realQuery.output.slice(0, 60)}`)
+  }
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

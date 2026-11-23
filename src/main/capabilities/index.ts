@@ -17,6 +17,8 @@ import * as cap11 from './win.http.request'
 import * as cap12 from './win.ocr.read'
 import * as cap13 from './win.open'
 import * as cap14 from './win.screen.capture'
+import * as cap15 from './win.theme.mode'
+import * as cap16 from './win.window.query'
 
 const MODULES = [
   cap0,
@@ -33,7 +35,9 @@ const MODULES = [
   cap11,
   cap12,
   cap13,
-  cap14
+  cap14,
+  cap15,
+  cap16
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(
