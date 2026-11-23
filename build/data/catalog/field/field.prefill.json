@@ -4,7 +4,7 @@
   "output": "param suggestion",
   "landing": "point",
   "autonomy": "A2",
-  "count": 5,
+  "count": 6,
   "instances": [
     {
       "id": "field.prefill.point-params@r1",
@@ -55,6 +55,16 @@
       "name": "prefill.search-query",
       "status": "active",
       "detail": "command palette · query"
+    },
+    {
+      "id": "field.prefill.landing-demo@r1",
+      "classId": "field.prefill",
+      "scope": "win.open",
+      "output": "target",
+      "rev": 1,
+      "name": "prefill.landing-demo",
+      "status": "active",
+      "detail": "{\"target\":\"win.open.i-open-github@r1\",\"param\":\"target\",\"source\":\"clipboard\",\"literal\":\"\"}"
     }
   ],
   "name": "prefill",

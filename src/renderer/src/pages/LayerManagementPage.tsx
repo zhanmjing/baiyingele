@@ -224,6 +224,19 @@ export function LayerManagementPage({
       onToast(`运行失败：${error instanceof Error ? error.message : '未知错误'}`)
     } finally { setRunningId(null) }
   }
+  async function undoLanding(token: string) {
+    if (!window.baiying?.undoFieldLanding) {
+      onToast('当前环境不支持撤销')
+      return
+    }
+    try {
+      const result = await window.baiying.undoFieldLanding(token)
+      onToast(result.ok ? result.message : `撤销失败：${result.message}`)
+    } catch (error) {
+      onToast(`撤销失败：${error instanceof Error ? error.message : '未知错误'}`)
+    }
+  }
+
   async function duplicate(classItem: LayerClass, instance: LayerInstance) {
     try {
       const copy = await onDuplicateInstance(layer.key, instance.id)
@@ -296,7 +309,7 @@ export function LayerManagementPage({
           ) : view === 'policy' ? (
             <FieldPolicyView classes={filtered} onToast={onToast} />
           ) : view === 'evidence' ? (
-            <FieldEvidenceView runs={runs.filter((run) => run.layer === 'field')} onToast={onToast} />
+            <FieldEvidenceView runs={runs.filter((run) => run.layer === 'field')} onToast={onToast} onUndo={undoLanding} />
           ) : view === 'cost' ? (
             <FieldCostView classes={filtered} />
           ) : view === 'composition' ? (
@@ -626,7 +639,7 @@ function FieldPolicyView({ classes, onToast }: { classes: LayerClass[]; onToast:
   )
 }
 
-function FieldEvidenceView({ runs, onToast }: { runs: RunRecord[]; onToast: (message: string) => void }) {
+function FieldEvidenceView({ runs, onToast, onUndo }: { runs: RunRecord[]; onToast: (message: string) => void; onUndo: (token: string) => void }) {
   return (
     <div className="field-evidence">
       <div className="field-evidence-head"><div><div className="panel-eyebrow">FIELD / EVIDENCE</div><h3>证据与引用</h3><p>每次场层运行留下的输出、置信度、时间与可撤销入口。</p></div><button className="btn ghost small" onClick={() => onToast('证据导出将在审计接口接入后启用')}>导出证据</button></div>
@@ -642,7 +655,12 @@ function FieldEvidenceView({ runs, onToast }: { runs: RunRecord[]; onToast: (mes
               <article className="field-evidence-card" key={run.id}>
                 <div className="field-evidence-icon"><Sparkles size={15} /></div>
                 <div className="field-evidence-main"><div><strong>{run.output}</strong><span className={`status-pill ${run.status}`}>{run.status === 'ok' ? '证据完整' : '需复核'}</span></div><code>{run.classId} · {run.instanceId}</code><div className="field-evidence-meta"><span>{run.elapsedMs}ms</span><span>confidence {confidence}</span>{tier && <span>{tier} 档{attempts > 1 ? ` · 重试 ${attempts - 1}` : ''}</span>}<span>{run.at}</span><span>evidence {run.id.slice(-8)}</span></div></div>
-                <button className="text-btn" onClick={() => onToast('证据详情面板待接入')}>查看 →</button>
+                <div className="field-evidence-actions">
+                  {typeof run.evidence?.undoToken === 'string' && (
+                    <button className="btn ghost small" onClick={() => onUndo(String(run.evidence?.undoToken))}>撤销</button>
+                  )}
+                  <button className="text-btn" onClick={() => onToast('证据详情面板待接入')}>查看 →</button>
+                </div>
               </article>
             )
           })}

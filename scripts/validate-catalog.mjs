@@ -85,6 +85,9 @@ for (const layer of LAYERS) {
     if (!PRIORITIES.has(item.priority)) hard.push(`${where} 非法 priority: ${item.priority}`)
     if (!STATUSES.has(item.status)) hard.push(`${where} 非法 status: ${item.status}`)
     if (!EFFECTS.test(item.effect ?? '')) hard.push(`${where} 非法 effect: ${item.effect}`)
+    if (layer === 'field' && !item.landing) {
+      hard.push(`${where} 没有 landing —— 设计规定没有落点的 FieldClass 不允许发布`)
+    }
     if (!Array.isArray(item.params)) hard.push(`${where} params 不是数组`)
     if (!Array.isArray(item.instances)) hard.push(`${where} instances 不是数组`)
 

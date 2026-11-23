@@ -4183,6 +4183,7 @@
       "family": "perceive",
       "priority": "P0",
       "effect": "A0",
+      "landing": "all",
       "status": "active",
       "description": "context snapshot → all · 自主度上限 A0",
       "params": [
@@ -4234,6 +4235,7 @@
       "family": "understand",
       "priority": "P1",
       "effect": "A2",
+      "landing": "point/surface/body",
       "status": "active",
       "description": "label → point/surface/body · 自主度上限 A2",
       "params": [
@@ -4295,15 +4297,40 @@
       "family": "perceive",
       "priority": "P1",
       "effect": "A2",
+      "landing": "point",
       "status": "active",
       "description": "param suggestion → point · 自主度上限 A2",
       "params": [
         {
-          "key": "detail",
-          "label": "配置摘要",
+          "key": "target",
+          "label": "target",
           "type": "text",
           "required": false,
-          "description": "实例配置摘要",
+          "description": "target",
+          "defaultValue": "win.open.i-open-github@r1"
+        },
+        {
+          "key": "param",
+          "label": "param",
+          "type": "text",
+          "required": false,
+          "description": "param",
+          "defaultValue": "target"
+        },
+        {
+          "key": "source",
+          "label": "source",
+          "type": "text",
+          "required": false,
+          "description": "source",
+          "defaultValue": "clipboard"
+        },
+        {
+          "key": "literal",
+          "label": "literal",
+          "type": "text",
+          "required": false,
+          "description": "literal",
           "defaultValue": ""
         }
       ],
@@ -4357,6 +4384,19 @@
           "params": {
             "detail": "command palette · query"
           }
+        },
+        {
+          "id": "field.prefill.landing-demo@r1",
+          "name": "prefill.landing-demo",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"target\":\"win.open.i-open-github@r1\",\"param\":\"target\",\"source\":\"clipboard\",\"literal\":\"\"}",
+          "params": {
+            "target": "win.open.i-open-github@r1",
+            "param": "target",
+            "source": "clipboard",
+            "literal": ""
+          }
         }
       ]
     },
@@ -4366,6 +4406,7 @@
       "family": "perceive",
       "priority": "P1",
       "effect": "A2",
+      "landing": "surface",
       "status": "active",
       "description": "ranking → surface · 自主度上限 A2",
       "params": [
@@ -4427,6 +4468,7 @@
       "family": "perceive",
       "priority": "P1",
       "effect": "A1",
+      "landing": "point/line/body",
       "status": "active",
       "description": "suggestion → point/line/body · 自主度上限 A1",
       "params": [
@@ -4478,6 +4520,7 @@
       "family": "perceive",
       "priority": "P0",
       "effect": "A0",
+      "landing": "line/body",
       "status": "active",
       "description": "signal → line/body · 自主度上限 A0",
       "params": [
@@ -4529,6 +4572,7 @@
       "family": "generate",
       "priority": "P1",
       "effect": "A1",
+      "landing": "point/line/surface/body",
       "status": "active",
       "description": "draft → point/line/surface/body · 自主度上限 A1",
       "params": [
@@ -4590,6 +4634,7 @@
       "family": "generate",
       "priority": "P1",
       "effect": "A1",
+      "landing": "line/body",
       "status": "active",
       "description": "draft → line/body · 自主度上限 A1",
       "params": [
@@ -4641,6 +4686,7 @@
       "family": "generate",
       "priority": "P1",
       "effect": "A1",
+      "landing": "line/body",
       "status": "active",
       "description": "plan → line/body · 自主度上限 A1",
       "params": [
@@ -4692,6 +4738,7 @@
       "family": "generate",
       "priority": "P1",
       "effect": "A1",
+      "landing": "point/line",
       "status": "active",
       "description": "text/dsl → point/line · 自主度上限 A1",
       "params": [
@@ -4743,6 +4790,7 @@
       "family": "generate",
       "priority": "P1",
       "effect": "A1",
+      "landing": "surface/body",
       "status": "active",
       "description": "summary → surface/body · 自主度上限 A1",
       "params": [
@@ -4794,6 +4842,7 @@
       "family": "evolve",
       "priority": "P1",
       "effect": "A1",
+      "landing": "line/body",
       "status": "active",
       "description": "diagnosis → line/body · 自主度上限 A1",
       "params": [
@@ -4855,6 +4904,7 @@
       "family": "evolve",
       "priority": "P1",
       "effect": "A1",
+      "landing": "line/body",
       "status": "active",
       "description": "patch → line/body · 自主度上限 A1",
       "params": [
@@ -4916,6 +4966,7 @@
       "family": "evolve",
       "priority": "P1",
       "effect": "A1",
+      "landing": "line/body",
       "status": "active",
       "description": "suggestion → line/body · 自主度上限 A1",
       "params": [
@@ -4967,6 +5018,7 @@
       "family": "evolve",
       "priority": "P1",
       "effect": "A2",
+      "landing": "point/surface",
       "status": "active",
       "description": "weights/thresholds → point/surface · 自主度上限 A2",
       "params": [
@@ -5018,6 +5070,7 @@
       "family": "evolve",
       "priority": "P1",
       "effect": "A2",
+      "landing": "point/surface",
       "status": "active",
       "description": "defaults/layout → point/surface · 自主度上限 A2",
       "params": [
@@ -5069,6 +5122,7 @@
       "family": "evolve",
       "priority": "P0",
       "effect": "A0",
+      "landing": "line/body",
       "status": "active",
       "description": "review → line/body · 自主度上限 A0",
       "params": [
@@ -5120,6 +5174,7 @@
       "family": "govern",
       "priority": "P1",
       "effect": "A2",
+      "landing": "all",
       "status": "active",
       "description": "route decision → all · 自主度上限 A2",
       "params": [
@@ -5171,6 +5226,7 @@
       "family": "govern",
       "priority": "P0",
       "effect": "A0",
+      "landing": "all",
       "status": "active",
       "description": "risk/decision → all · 自主度上限 A0",
       "params": [
@@ -5232,6 +5288,7 @@
       "family": "govern",
       "priority": "P0",
       "effect": "A0",
+      "landing": "all",
       "status": "active",
       "description": "question → all · 自主度上限 A0",
       "params": [
@@ -5283,6 +5340,7 @@
       "family": "govern",
       "priority": "P0",
       "effect": "A0",
+      "landing": "all",
       "status": "active",
       "description": "explanation → all · 自主度上限 A0",
       "params": [
@@ -5344,6 +5402,7 @@
       "family": "govern",
       "priority": "P0",
       "effect": "A0",
+      "landing": "line/body",
       "status": "active",
       "description": "preview/impact → line/body · 自主度上限 A0",
       "params": [
@@ -5395,6 +5454,7 @@
       "family": "govern",
       "priority": "P1",
       "effect": "A1",
+      "landing": "all",
       "status": "active",
       "description": "memory op → all · 自主度上限 A1",
       "params": [

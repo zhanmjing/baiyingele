@@ -41,6 +41,8 @@ export interface RunOutcome {
   value?: string
   /** 可解释性证据（场层要求 reason + evidence），会随运行记录持久化 */
   evidence?: Record<string, unknown>
+  /** 场层落点：由 fieldRuntime 按自主度决定要不要真写进去 */
+  landing?: import('../shared/fieldLanding').FieldLanding
 }
 
 /** 跨层/跨节点传入的执行上下文（线层给每个节点套用映射时用） */

@@ -80,6 +80,9 @@ require.cache[electronPath] = {
 const { LayerStore } = require('../.tmp/smoke/main/layerStore.js')
 const { createLineRunner, orderNodes, parseFlowArgs } = require('../.tmp/smoke/main/flowRuntime.js')
 const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
+const { decideLanding } = require('../.tmp/smoke/shared/fieldLanding.js')
+const { applyLanding } = require('../.tmp/smoke/main/fieldRuntime.js')
+const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -428,6 +431,88 @@ async function main() {
   clearTranslateEnv()
   await new Promise((resolve) => ocrServer.server.close(resolve))
   console.log('✓ win.ocr.read：未配置 / data URL / 本地图片 / 截图 / 缺图 / 空结果 都正确')
+
+  // ── 7h. 场层落点：自主度决策 / A2 落地 + 撤销 / prefill 端到端 ──
+  const TARGET_INSTANCE = 'win.open.i-open-github@r1'
+  const landing = { layer: 'point', target: 'param', instanceId: TARGET_INSTANCE, param: 'target', value: 'https://x.test' }
+
+  assert.strictEqual(decideLanding('A0', landing).action, 'draft', 'A0 只能出草稿')
+  assert.strictEqual(decideLanding('A1', landing).action, 'draft', 'A1 只能出草稿')
+  assert.strictEqual(decideLanding('A2', landing).action, 'apply', 'A2 可自动应用')
+  assert.strictEqual(decideLanding('A3', landing).action, 'refuse', 'A3 必须拒绝')
+  assert.strictEqual(decideLanding('A2', undefined).action, 'none', '没有落点时不做任何事')
+
+  const landingStore = new LayerStore(
+    path.join(workdir, 'landing-state.json'),
+    { key: 'point', classLabel: 'PointClass', classes: catalogs.point, outputs: {} },
+    () => ({ status: 'ok', output: 'x', elapsedMs: 0 })
+  )
+  const journal = new UndoJournal(path.join(workdir, 'undo.json'))
+  const originalTarget = landingStore.instance(TARGET_INSTANCE).params.target
+
+  const draft = await applyLanding({
+    decision: decideLanding('A1', landing),
+    landing,
+    pointStore: landingStore,
+    journal
+  })
+  assert.strictEqual(draft.applied, false, 'A1 不能真写')
+  assert.strictEqual(landingStore.instance(TARGET_INSTANCE).params.target, originalTarget, 'A1 下目标必须原样')
+
+  const applied = await applyLanding({
+    decision: decideLanding('A2', landing),
+    landing,
+    pointStore: landingStore,
+    journal
+  })
+  assert.strictEqual(applied.applied, true, `A2 应落地: ${applied.note}`)
+  assert.strictEqual(landingStore.instance(TARGET_INSTANCE).params.target, 'https://x.test', 'A2 应写入新值')
+  assert.ok(applied.undoToken, 'A2 必须给撤销令牌')
+
+  const entry = journal.take(applied.undoToken)
+  assert.ok(entry, '令牌应能取到')
+  landingStore.update(entry.instanceId, { params: { [entry.param]: entry.previous ?? '' } })
+  assert.strictEqual(landingStore.instance(TARGET_INSTANCE).params.target, originalTarget, '撤销应恢复原值')
+  assert.strictEqual(journal.take(applied.undoToken), undefined, '令牌必须一次性')
+
+  // prefill 端到端：剪贴板 → 建议 → A2 落地
+  fakeClipboard.text = 'https://example.com/from-clipboard'
+  const prefill = await CAPABILITIES['field.prefill']({
+    def: { key: 'field', classLabel: 'FieldClass', classes: [], outputs: {} },
+    instance: { classId: 'field.prefill', name: 'prefill.landing-demo', params: {}, description: 'win.open · target' },
+    pointClass: { effect: 'A2' },
+    params: { target: TARGET_INSTANCE, param: 'target', source: 'clipboard', literal: '' },
+    findInstance: () => undefined
+  })
+  assert.strictEqual(prefill.status, 'ok', `prefill 应成功: ${prefill.output}`)
+  assert.strictEqual(prefill.landing.instanceId, TARGET_INSTANCE)
+  assert.strictEqual(prefill.landing.value, 'https://example.com/from-clipboard')
+  assert.strictEqual(prefill.evidence.sourceType, 'clipboard')
+
+  const prefillLanded = await applyLanding({
+    decision: decideLanding('A2', prefill.landing),
+    landing: prefill.landing,
+    pointStore: landingStore,
+    journal
+  })
+  assert.strictEqual(prefillLanded.applied, true)
+  assert.strictEqual(
+    landingStore.instance(TARGET_INSTANCE).params.target,
+    'https://example.com/from-clipboard',
+    'prefill 的值应真的写进点实例'
+  )
+
+  const prefillNoTarget = await CAPABILITIES['field.prefill']({
+    def: { key: 'field', classLabel: 'FieldClass', classes: [], outputs: {} },
+    instance: { classId: 'field.prefill', name: 'x', params: {}, description: '' },
+    pointClass: { effect: 'A2' },
+    params: { target: '', param: '' },
+    findInstance: () => undefined
+  })
+  assert.strictEqual(prefillNoTarget.status, 'warn', '缺 target/param 必须 warn')
+
+  fakeClipboard.text = ''
+  console.log('✓ 场层落点：A0/A1 只出草稿、A2 落地可撤销、A3 拒绝、prefill 端到端 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

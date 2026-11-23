@@ -141,7 +141,8 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `clipboard.write` | `clipboard.writeText` + 回读校验；空文本拒绝，不清空用户剪贴板 |
 | `translate.text` | provider 链 **本地 → 网络 → API** 降级（免费优先），key 只读环境变量 |
 | `win.open` | `shell.openExternal` / `openPath`，带 app 时 `spawn`；`%VAR%` 自动展开 |
-| `field.classify` | 场层第一个真能力：按实例自带候选标签做模型分类，输出 `confidence` + `reason` 并写入运行证据 |
+| `field.classify` | 场层分类：按实例自带候选标签做模型分类，输出 `confidence` + `reason` 并写入运行证据 |
+| `field.prefill` | 参数预填：按实例配置的 `target`/`param` 从剪贴板取值，产出落点建议 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
@@ -160,6 +161,27 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `flow.screenshot-translate` | 抓屏 → OCR（视觉模型）→ 翻译 → 通知 |
 
 `npm run smoke` 会验证第一条的完整链路。
+
+## 场层落点（landing）
+
+设计规定：**FieldClass 必须声明落点，否则不允许发布**（`npm run validate` 会拦），
+并且自主度决定「建议能不能真的写进去」。
+
+| 自主度 | 行为 | 实现 |
+|---|---|---|
+| `A0` | 只给建议，不执行 | 产出落点建议，目标实例一个字节都不改 |
+| `A1` | 出草稿，等人工确认 | 同上，输出注明「未落地」 |
+| `A2` | 自动应用，**必须可撤销** | 写入目标实例参数 + 生成一次性撤销令牌 |
+| `A3` | 禁止自主执行 | 直接拒绝 |
+
+当前落点只实现了 `{ layer: 'point', target: 'param' }`（改点实例的一个参数）；
+其余落点（线的 `slotBinding`、面的 `order`、体的 `manifest`）会明确返回「暂不支持」，不假装成功。
+
+撤销令牌落在 `%APPDATA%\baiying-electron\field-undo.json`，一次性消费：
+场层「证据」视图里带 `undoToken` 的记录会出现「撤销」按钮，点了就把参数恢复回原值。
+
+> 能力本身**不碰目标实例**——`field.prefill` 只负责「建议什么值、落到哪」，
+> 真正的写入由 `src/main/fieldRuntime.ts` 按自主度执行，所以 A0/A1 下不可能被顺手写进去。
 
 ## 翻译 provider 配置
 

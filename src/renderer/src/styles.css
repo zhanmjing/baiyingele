@@ -2271,3 +2271,10 @@ a { color: inherit; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---------- 场层证据卡片右侧动作 ---------- */
+.field-evidence-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

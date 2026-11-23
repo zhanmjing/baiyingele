@@ -2,6 +2,7 @@
 export const IMPLEMENTED_CLASS_IDS = [
   'clipboard.write',
   'field.classify',
+  'field.prefill',
   'file.move',
   'file.read',
   'file.scan',
@@ -19,6 +20,7 @@ export const IMPLEMENTED_CLASS_IDS = [
 export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string> = {
   'clipboard.write': 'Electron clipboard.writeText（写后回读校验）',
   'field.classify': '按实例自带的候选标签做一次分类（模型调用，附 confidence 与 reason）',
+  'field.prefill': '参数预填：按实例配置的 target/param 从剪贴板取值，产出落点建议',
   'file.move': 'node:fs rename（EXDEV 回落 copy+unlink），overwrite=false 时不覆盖',
   'file.read': 'node:fs 读取，超过 maxBytes 截断；目录或缺失按 warn 处理',
   'file.scan': 'node:fs 递归扫描；limit 封顶，不可读目录跳过并计入说明',

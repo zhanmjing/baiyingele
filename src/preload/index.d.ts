@@ -8,6 +8,7 @@ declare global {
       getAppInfo: () => Promise<AppInfo>
       openDataDir: () => Promise<boolean>
       getRunHistory: (limit?: number) => Promise<RunHistoryItem[]>
+      undoFieldLanding: (token: string) => Promise<{ ok: boolean; message: string }>
     }
   }
 }

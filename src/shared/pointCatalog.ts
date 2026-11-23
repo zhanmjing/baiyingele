@@ -32,6 +32,8 @@ export interface PointClassSeed {
   effect: string
   status: 'active' | 'draft'
   description: string
+  /** 场层专用：这个 FieldClass 的落点（point / line / surface / body…）。设计上不允许为空 */
+  landing?: string
   params: PointParam[]
   instances: PointInstanceSeed[]
 }

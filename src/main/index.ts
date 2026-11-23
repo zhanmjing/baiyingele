@@ -5,6 +5,9 @@ import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 import { LAYER_DEFS } from './layerRegistry'
 import { runCapability } from './capabilities'
 import { createLineRunner } from './flowRuntime'
+import { applyLanding } from './fieldRuntime'
+import { UndoJournal } from './undoJournal'
+import { decideLanding } from '../shared/fieldLanding'
 import { lineProfiles } from '../shared/lineCatalog'
 import {
   LayerStore,
@@ -119,12 +122,46 @@ app.whenReady().then(() => {
   /** 点层 / 场层：有真实实现的类走 capabilities，其余回落到模拟 */
   const capabilityRunner: InstanceRunner = async (context) =>
     (await runCapability(context)) ?? mockRunner(context)
+  const undoJournal = new UndoJournal(join(dataDir, 'field-undo.json'))
+
+  /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */
+  const fieldRunner: InstanceRunner = async (context) => {
+    const outcome = (await runCapability(context)) ?? (await mockRunner(context))
+    if (!outcome.landing) return outcome
+
+    const decision = decideLanding(context.pointClass.effect, outcome.landing)
+    const landed = await applyLanding({
+      decision,
+      landing: outcome.landing,
+      pointStore: store('point'),
+      journal: undoJournal
+    })
+
+    return {
+      ...outcome,
+      output: `${outcome.output}｜${landed.note}`,
+      evidence: {
+        ...(outcome.evidence ?? {}),
+        landing: outcome.landing,
+        landingAction: decision.action,
+        landingNote: landed.note,
+        ...(landed.undoToken ? { undoToken: landed.undoToken } : {})
+      }
+    }
+  }
+
   /** 线层：解析数据流图，逐个节点调用点层，并把结果串起来 */
   const lineRunner = createLineRunner({ profiles: lineProfiles, pointStore: () => store('point') })
 
   for (const key of LAYER_KEYS) {
     const runner =
-      key === 'line' ? lineRunner : key === 'surface' || key === 'body' ? undefined : capabilityRunner
+      key === 'line'
+        ? lineRunner
+        : key === 'field'
+          ? fieldRunner
+          : key === 'surface' || key === 'body'
+            ? undefined
+            : capabilityRunner
     stores.set(key, new LayerStore(join(dataDir, `${key}-state.json`), LAYER_DEFS[key], runner))
   }
 
@@ -144,6 +181,17 @@ app.whenReady().then(() => {
     const result = await shell.openPath(dataDir)
     if (result) throw new Error(result)
     return true
+  })
+
+  ipcMain.handle('field:undo', (_event, token: string) => {
+    const entry = undoJournal.take(token)
+    if (!entry) return { ok: false, message: '撤销令牌不存在或已使用' }
+    const point = store('point')
+    if (!point.instance(entry.instanceId)) {
+      return { ok: false, message: `目标实例已不存在：${entry.instanceId}` }
+    }
+    point.update(entry.instanceId, { params: { [entry.param]: entry.previous ?? '' } })
+    return { ok: true, message: `已恢复 ${entry.instanceId}.${entry.param} = ${entry.previous ?? '(空)'}` }
   })
 
   ipcMain.handle('runs:history', (_event, limit = 100) => {

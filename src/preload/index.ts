@@ -57,6 +57,8 @@ const api = {
   openDataDir: (): Promise<boolean> => ipcRenderer.invoke('app:open-data-dir'),
   getRunHistory: (limit = 100): Promise<RunHistoryItem[]> =>
     ipcRenderer.invoke('runs:history', limit),
+  undoFieldLanding: (token: string): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('field:undo', token),
   ...layerApi
 }
 

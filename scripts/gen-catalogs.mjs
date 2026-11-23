@@ -126,32 +126,64 @@ function transformFlatLayer(source, { deriveInstanceId } = {}) {
   }))
 }
 
-/** 场层来自独立数据集，字段名不同（autonomy / output / landing） */
+/**
+ * 场层来自独立数据集，字段名不同（autonomy / output / landing）。
+ * 另外：场层实例的 detail 如果是 JSON，就按点层的方式解析成 typed params；
+ * 是纯文本时退回合成的 { detail } 参数（保证老数据输出不变）。
+ */
 function transformFieldLayer(source) {
-  return source.classes.map((item) => ({
-    id: item.id,
-    name: item.name ?? item.id.replace(/^field\./, ''),
-    family: item.family,
-    priority: item.priority,
-    effect: item.autonomy,
-    status: normalizeStatus(item.status),
-    description: item.summary ?? `${item.output} → ${item.landing} · 自主度上限 ${item.autonomy}`,
-    params: [{ ...DETAIL_PARAM }],
-    instances: item.instances.map((instance) => ({
-      id: instance.id ?? `${item.id}.${instance.name}@r${instance.rev}`,
-      name: instance.name,
-      rev: instance.rev,
-      status: normalizeStatus(instance.status),
-      description: instance.detail,
-      params: { detail: instance.detail }
-    }))
-  }))
+  return source.classes.map((item) => {
+    const instances = item.instances.map((instance) => {
+      const detail = parseDetail(instance.detail)
+      return {
+        id: instance.id ?? `${item.id}.${instance.name}@r${instance.rev}`,
+        name: instance.name,
+        rev: instance.rev,
+        status: normalizeStatus(instance.status),
+        description: instance.detail,
+        params: detail
+          ? Object.fromEntries(Object.entries(detail).map(([k, v]) => [k, paramValue(v)]))
+          : { detail: instance.detail }
+      }
+    })
+
+    const seen = new Map()
+    const types = new Map()
+    for (const raw of item.instances) {
+      const detail = parseDetail(raw.detail)
+      if (!detail) continue
+      for (const [key, value] of Object.entries(detail)) {
+        if (seen.has(key)) continue
+        seen.set(key, paramValue(value))
+        types.set(key, inferType(value))
+      }
+    }
+    const params = seen.size
+      ? [...seen].map(([key, value]) => ({
+          key,
+          label: key,
+          type: types.get(key),
+          required: false,
+          description: key,
+          defaultValue: value
+        }))
+      : [{ ...DETAIL_PARAM }]
+
+    return {
+      id: item.id,
+      name: item.name ?? item.id.replace(/^field\./, ''),
+      family: item.family,
+      priority: item.priority,
+      effect: item.autonomy,
+      landing: item.landing,
+      status: normalizeStatus(item.status),
+      description: item.summary ?? `${item.output} → ${item.landing} · 自主度上限 ${item.autonomy}`,
+      params,
+      instances
+    }
+  })
 }
 
-/**
- * 读一层的数据：优先用 build/data/catalog/<layer>/ 的一类一文件，
- * 找不到时回落到 build/data/legacy/ 的整包文件（兼容旧检出）。
- */
 export function readLayer(layer) {
   const dir = resolve(ROOT, 'build/data/catalog', layer)
   const indexPath = join(dir, '_index.json')
