@@ -26,6 +26,7 @@ import {
 import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
 import { bodyProfiles, type BodyProfile } from '../../../shared/bodyCatalog'
 import { hasRealImpl, IMPL_SUMMARY, type ImplementedClassId } from '../../../shared/implRegistry'
+import { gapSummary, isUnmet, topGaps } from '../../../shared/requirements'
 import type { InstanceDraft } from './instanceDraft'
 
 interface Props {
@@ -704,14 +705,38 @@ function BodyCompositionView({ classes, onClass }: { classes: LayerClass[]; onCl
               <div className="body-composition-parts">
                 {profile.composition.map((part) => {
                   const meta = layerMeta[part.layer]
-                  return <div className="body-part" key={`${part.layer}:${part.ref}`}><span className="body-part-layer" style={{ color: meta?.color, borderColor: `${meta?.color}33`, background: `${meta?.color}10` }}>{meta?.label}</span><div><strong>{part.ref}</strong><span>{part.role}</span></div><em>{part.required ? 'required' : 'optional'}</em></div>
+                  const unmet = isUnmet(part.layer, part.ref)
+                  return (
+                    <div className={`body-part${unmet ? ' unmet' : ''}`} key={`${part.layer}:${part.ref}`} title={unmet ? `未满足：缺少 ${part.layer}:${part.ref}` : undefined}>
+                      <span className="body-part-layer" style={{ color: meta?.color, borderColor: `${meta?.color}33`, background: `${meta?.color}10` }}>{meta?.label}</span>
+                      <div><strong>{part.ref}</strong><span>{part.role}</span></div>
+                      {unmet ? <em className="body-part-gap">缺</em> : <em>{part.required ? 'required' : 'optional'}</em>}
+                    </div>
+                  )
                 })}
               </div>
             </>
           ) : <div className="point-empty"><Boxes size={22} /><strong>没有组合定义</strong><span>这个体类还没有 composition profile。</span></div>}
         </div>
       </div>
-      <div className="body-composition-foot"><span>组合解析：{profile?.composition.length ?? 0} 个引用</span><span>必需：{profile?.composition.filter((part) => part.required).length ?? 0}</span><span>可选：{profile?.composition.filter((part) => !part.required).length ?? 0}</span></div>
+      <div className="body-composition-foot">
+        <span>组合解析：{profile?.composition.length ?? 0} 个引用</span>
+        <span>已满足：{profile?.composition.filter((part) => !isUnmet(part.layer, part.ref)).length ?? 0}</span>
+        <span>未满足：{profile?.composition.filter((part) => isUnmet(part.layer, part.ref)).length ?? 0}</span>
+        <span>全局缺口：{gapSummary().unmetClasses} 个能力 / {gapSummary().owners} 处引用</span>
+      </div>
+      <div className="body-gap-panel">
+        <div className="field-policy-title">缺口优先级（补哪个能力能解锁最多组合）</div>
+        <div className="body-gap-list">
+          {topGaps(5).map((gap) => (
+            <div className="body-gap-row" key={gap.id}>
+              <span className="body-gap-count">{gap.requiredBy.length} 处</span>
+              <code>{gap.capability}</code>
+              <span className="body-gap-owners">{[...new Set(gap.requiredBy.map((owner) => owner.owner))].slice(0, 3).join(' · ')}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

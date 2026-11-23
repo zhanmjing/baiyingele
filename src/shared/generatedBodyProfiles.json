@@ -81,15 +81,17 @@
       },
       {
         "layer": "point",
-        "ref": "ocr.text",
+        "ref": "win.ocr.read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "ocr.text"
       },
       {
         "layer": "point",
-        "ref": "ocr.table",
+        "ref": "win.ocr.read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "ocr.table"
       }
     ],
     "manifest": {
@@ -147,9 +149,10 @@
       },
       {
         "layer": "point",
-        "ref": "file.write.image",
+        "ref": "file.write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "file.write.image"
       }
     ],
     "manifest": {
@@ -433,9 +436,10 @@
       },
       {
         "layer": "point",
-        "ref": "clipboard.read",
+        "ref": "win.clipboard.get",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "clipboard.read"
       },
       {
         "layer": "point",
@@ -666,21 +670,24 @@
       },
       {
         "layer": "point",
-        "ref": "window.list",
+        "ref": "win.window.query",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "window.list"
       },
       {
         "layer": "point",
-        "ref": "window.move",
+        "ref": "win.window.control",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "window.move"
       },
       {
         "layer": "point",
-        "ref": "window.resize",
+        "ref": "win.window.control",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "window.resize"
       }
     ],
     "manifest": {
@@ -725,21 +732,24 @@
       },
       {
         "layer": "point",
-        "ref": "window.find",
+        "ref": "win.window.query",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "window.find"
       },
       {
         "layer": "point",
-        "ref": "window.pin",
+        "ref": "win.window.control",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "window.pin"
       },
       {
         "layer": "point",
-        "ref": "window.restore",
+        "ref": "win.window.control",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "window.restore"
       }
     ],
     "manifest": {
@@ -957,15 +967,17 @@
       },
       {
         "layer": "surface",
-        "ref": "surface.system-monitor",
+        "ref": "surface.dashboard",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "surface.system-monitor"
       },
       {
         "layer": "surface",
-        "ref": "surface.hud.system-status",
+        "ref": "surface.hud",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "surface.hud.system-status"
       },
       {
         "layer": "point",
@@ -1039,9 +1051,10 @@
       },
       {
         "layer": "point",
-        "ref": "net.reachable",
+        "ref": "win.http.request",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "net.reachable"
       }
     ],
     "manifest": {
@@ -1266,15 +1279,17 @@
       },
       {
         "layer": "surface",
-        "ref": "surface.site-launcher",
+        "ref": "surface.card-grid",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "surface.site-launcher"
       },
       {
         "layer": "surface",
-        "ref": "surface.settings.vpn",
+        "ref": "surface.form",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "surface.settings.vpn"
       },
       {
         "layer": "point",
@@ -1284,15 +1299,17 @@
       },
       {
         "layer": "point",
-        "ref": "net.reachable",
+        "ref": "win.http.request",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "net.reachable"
       },
       {
         "layer": "point",
-        "ref": "browser.open",
+        "ref": "win.open",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "browser.open"
       }
     ],
     "manifest": {
@@ -1332,9 +1349,10 @@
       },
       {
         "layer": "surface",
-        "ref": "surface.hud.translate",
+        "ref": "surface.hud",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "surface.hud.translate"
       },
       {
         "layer": "surface",
@@ -1344,15 +1362,17 @@
       },
       {
         "layer": "point",
-        "ref": "screen.capture",
+        "ref": "win.screen.capture",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "screen.capture"
       },
       {
         "layer": "point",
-        "ref": "ocr.text",
+        "ref": "win.ocr.read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "ocr.text"
       },
       {
         "layer": "point",
@@ -1539,9 +1559,10 @@
       },
       {
         "layer": "point",
-        "ref": "ocr.table",
+        "ref": "win.ocr.read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "rewrittenFrom": "ocr.table"
       },
       {
         "layer": "point",
@@ -1604,19 +1625,7 @@
       },
       {
         "layer": "point",
-        "ref": "body.activate",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
         "ref": "permission.check",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "surface.show",
         "role": "能力执行",
         "required": true
       }

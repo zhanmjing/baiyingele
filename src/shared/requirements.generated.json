@@ -1,0 +1,2285 @@
+{
+  "version": 1,
+  "generatedBy": "scripts/reconcile-refs.mjs",
+  "counts": {
+    "ok": 73,
+    "aliased": 0,
+    "kind-mismatch": 0,
+    "layer-mismatch": 0,
+    "missing": 168
+  },
+  "requirements": [
+    {
+      "id": "req:point.file.move",
+      "layer": "point",
+      "capability": "point:file.move",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch-rename",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "body.composition",
+          "owner": "body.file-organizer",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "body.composition",
+          "owner": "body.invoice-archive",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "line.node.pointClass",
+          "owner": "flow.invoice-archive/move",
+          "role": "to = $archiveDir",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.clipboard.write",
+      "layer": "point",
+      "capability": "point:clipboard.write",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.advanced-paste",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "body.composition",
+          "owner": "body.clipboard-history",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "body.composition",
+          "owner": "body.color-picker",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.open.terminal@r1.instance",
+      "layer": "point",
+      "capability": "point:open.terminal@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "terminal",
+          "role": "终端",
+          "required": true
+        },
+        {
+          "where": "dock.tile.target",
+          "owner": "dev-terminal",
+          "role": "终端",
+          "required": true
+        },
+        {
+          "where": "gesture.target",
+          "owner": "DR",
+          "role": "打开终端",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.scan",
+      "layer": "point",
+      "capability": "point:file.scan",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-organizer",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "body.composition",
+          "owner": "body.backup-sync",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-openai@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-openai@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "openai",
+          "role": "OpenAI",
+          "required": true
+        },
+        {
+          "where": "dock.tile.target",
+          "owner": "web-openai",
+          "role": "OpenAI",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.translate.text",
+      "layer": "point",
+      "capability": "point:translate.text",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screenshot-translate",
+          "role": "能力执行",
+          "required": true
+        },
+        {
+          "where": "line.node.pointClass",
+          "owner": "flow.screenshot-translate/translate",
+          "role": "$sourceLang → $targetLang",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.backup-folder",
+      "layer": "line",
+      "capability": "line:flow.backup-folder",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.backup-sync",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.clip-page",
+      "layer": "line",
+      "capability": "line:flow.clip-page",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.web-clipper",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.clipboard-history",
+      "layer": "line",
+      "capability": "line:flow.clipboard-history",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.clipboard-history",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.convert-media",
+      "layer": "line",
+      "capability": "line:flow.convert-media",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.media-converter",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.edit-env",
+      "layer": "line",
+      "capability": "line:flow.edit-env",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env-vars",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.edit-hosts",
+      "layer": "line",
+      "capability": "line:flow.edit-hosts",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts-editor",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.find-file-lock",
+      "layer": "line",
+      "capability": "line:flow.find-file-lock",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-locksmith",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.keep-awake",
+      "layer": "line",
+      "capability": "line:flow.keep-awake",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.awake",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.launch-target",
+      "layer": "line",
+      "capability": "line:flow.launch-target",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.quick-launch",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.layout-windows",
+      "layer": "line",
+      "capability": "line:flow.layout-windows",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.window-layout",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.measure-screen",
+      "layer": "line",
+      "capability": "line:flow.measure-screen",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screen-ruler",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.metric-stream",
+      "layer": "line",
+      "capability": "line:flow.metric-stream",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.system-monitor",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.ocr.recognize",
+      "layer": "line",
+      "capability": "line:flow.ocr.recognize",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ocr",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.organize-files",
+      "layer": "line",
+      "capability": "line:flow.organize-files",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-organizer",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.paste-transform",
+      "layer": "line",
+      "capability": "line:flow.paste-transform",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.advanced-paste",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.pdf-op",
+      "layer": "line",
+      "capability": "line:flow.pdf-op",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.pdf-toolkit",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.pick-color",
+      "layer": "line",
+      "capability": "line:flow.pick-color",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color-picker",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.pin-window",
+      "layer": "line",
+      "capability": "line:flow.pin-window",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.always-on-top",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.preview-file",
+      "layer": "line",
+      "capability": "line:flow.preview-file",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-preview",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.rename-files",
+      "layer": "line",
+      "capability": "line:flow.rename-files",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch-rename",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.resize-image",
+      "layer": "line",
+      "capability": "line:flow.resize-image",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image-resizer",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.suite.launch",
+      "layer": "line",
+      "capability": "line:flow.suite.launch",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.suite",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.summarize",
+      "layer": "line",
+      "capability": "line:flow.summarize",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting-notes",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:line.flow.transcribe",
+      "layer": "line",
+      "capability": "line:flow.transcribe",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting-notes",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.ai.rewrite",
+      "layer": "point",
+      "capability": "point:ai.rewrite",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ai-rewrite",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.ai.summarize",
+      "layer": "point",
+      "capability": "point:ai.summarize",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting-notes",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.audio.capture",
+      "layer": "point",
+      "capability": "point:audio.capture",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting-notes",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.browser.read",
+      "layer": "point",
+      "capability": "point:browser.read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.web-clipper",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.clipboard.watch",
+      "layer": "point",
+      "capability": "point:clipboard.watch",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.clipboard-history",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.color.convert",
+      "layer": "point",
+      "capability": "point:color.convert",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color-picker",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.env.read",
+      "layer": "point",
+      "capability": "point:env.read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env-vars",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.env.validate",
+      "layer": "point",
+      "capability": "point:env.validate",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env-vars",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.env.write",
+      "layer": "point",
+      "capability": "point:env.write",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env-vars",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.extract.invoice",
+      "layer": "point",
+      "capability": "point:extract.invoice",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "line.node.pointClass",
+          "owner": "flow.invoice-archive/extract",
+          "role": "$vendorRules",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.extract.vendor.instance",
+      "layer": "point",
+      "capability": "point:extract.vendor",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.invoice-archive/extract",
+          "role": "$vendorRules",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.classify",
+      "layer": "point",
+      "capability": "point:file.classify",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-organizer",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.copy",
+      "layer": "point",
+      "capability": "point:file.copy",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.backup-sync",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.handle",
+      "layer": "point",
+      "capability": "point:file.handle",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-locksmith",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.list",
+      "layer": "point",
+      "capability": "point:file.list",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch-rename",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.read",
+      "layer": "point",
+      "capability": "point:file.read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-preview",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.read.image",
+      "layer": "point",
+      "capability": "point:file.read.image",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image-resizer",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.watch",
+      "layer": "point",
+      "capability": "point:file.watch",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "line.node.pointClass",
+          "owner": "flow.invoice-archive/watch",
+          "role": "$watchDir",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.write@r1.instance",
+      "layer": "point",
+      "capability": "point:file.write@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-write",
+          "role": "写文件",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.file.zip@r1.instance",
+      "layer": "point",
+      "capability": "point:file.zip@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-zip",
+          "role": "压缩",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.flow.run.logs@r1.instance",
+      "layer": "point",
+      "capability": "point:flow.run.logs@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "dev-logs",
+          "role": "运行日志",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.hash.sha256@r1.instance",
+      "layer": "point",
+      "capability": "point:hash.sha256@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-hash",
+          "role": "哈希",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.hash.verify",
+      "layer": "point",
+      "capability": "point:hash.verify",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.backup-sync",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.hosts.read",
+      "layer": "point",
+      "capability": "point:hosts.read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts-editor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.hosts.validate",
+      "layer": "point",
+      "capability": "point:hosts.validate",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts-editor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.hosts.write",
+      "layer": "point",
+      "capability": "point:hosts.write",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts-editor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.html.toMarkdown",
+      "layer": "point",
+      "capability": "point:html.toMarkdown",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.web-clipper",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.image.preprocess",
+      "layer": "point",
+      "capability": "point:image.preprocess",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ocr",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.image.resize",
+      "layer": "point",
+      "capability": "point:image.resize",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image-resizer",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.input.clipboard@r1.instance",
+      "layer": "point",
+      "capability": "point:input.clipboard@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-clip",
+          "role": "剪贴板",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-bili@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-bili@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "web-bili",
+          "role": "Bilibili",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-gmail@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-gmail@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "web-gmail",
+          "role": "Gmail",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-maps@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-maps@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "web-maps",
+          "role": "Maps",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-reddit@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-reddit@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "web-reddit",
+          "role": "Reddit",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-so@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-so@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "web-so",
+          "role": "StackOverflow",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.inst.site-x@r1.instance",
+      "layer": "point",
+      "capability": "point:inst.site-x@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "web-x",
+          "role": "X",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.invoice.parse",
+      "layer": "point",
+      "capability": "point:invoice.parse",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.invoice-archive",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.json.format@r1.instance",
+      "layer": "point",
+      "capability": "point:json.format@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "dev-json",
+          "role": "JSON 格式化",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.launch.run",
+      "layer": "point",
+      "capability": "point:launch.run",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.quick-launch",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.launch.search",
+      "layer": "point",
+      "capability": "point:launch.search",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.quick-launch",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.measure.angle",
+      "layer": "point",
+      "capability": "point:measure.angle",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screen-ruler",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.measure.length",
+      "layer": "point",
+      "capability": "point:measure.length",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screen-ruler",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.media.probe",
+      "layer": "point",
+      "capability": "point:media.probe",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.media-converter",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.media.transcode",
+      "layer": "point",
+      "capability": "point:media.transcode",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.media-converter",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.move.archive.instance",
+      "layer": "point",
+      "capability": "point:move.archive",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.invoice-archive/move",
+          "role": "to = $archiveDir",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.notify.unmatched.instance",
+      "layer": "point",
+      "capability": "point:notify.unmatched",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.invoice-archive/notify",
+          "role": "$(else)",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.ocr.read@r1.instance",
+      "layer": "point",
+      "capability": "point:ocr.read@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-ocr",
+          "role": "OCR",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.ocr.zh.invoice.instance",
+      "layer": "point",
+      "capability": "point:ocr.zh.invoice",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.invoice-archive/ocr",
+          "role": "$ocrLang",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.ocr.zh.screen.instance",
+      "layer": "point",
+      "capability": "point:ocr.zh.screen",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.screenshot-translate/ocr",
+          "role": "$sourceLang",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.pdf.merge",
+      "layer": "point",
+      "capability": "point:pdf.merge",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.pdf-toolkit",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.pdf.read",
+      "layer": "point",
+      "capability": "point:pdf.read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.pdf-toolkit",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.pdf.write",
+      "layer": "point",
+      "capability": "point:pdf.write",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.pdf-toolkit",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.permission.check",
+      "layer": "point",
+      "capability": "point:permission.check",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.suite",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.power.keepAwake",
+      "layer": "point",
+      "capability": "point:power.keepAwake",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.awake",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.power.state",
+      "layer": "point",
+      "capability": "point:power.state",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.awake",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.process.kill",
+      "layer": "point",
+      "capability": "point:process.kill",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-locksmith",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.process.launch",
+      "layer": "point",
+      "capability": "point:process.launch",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.workspace",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.process.open",
+      "layer": "point",
+      "capability": "point:process.open",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-locksmith",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.rename.plan",
+      "layer": "point",
+      "capability": "point:rename.plan",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch-rename",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.render.image",
+      "layer": "point",
+      "capability": "point:render.image",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-preview",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.render.overlay",
+      "layer": "point",
+      "capability": "point:render.overlay",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "line.node.pointClass",
+          "owner": "flow.screenshot-translate/overlay",
+          "role": "if $overlay",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.render.text",
+      "layer": "point",
+      "capability": "point:render.text",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-preview",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.screen.color@r1.instance",
+      "layer": "point",
+      "capability": "point:screen.color@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-color",
+          "role": "取色",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.screen.pick",
+      "layer": "point",
+      "capability": "point:screen.pick",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color-picker",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.screen.region",
+      "layer": "point",
+      "capability": "point:screen.region",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screen-ruler",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.service.start",
+      "layer": "point",
+      "capability": "point:service.start",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.service-health",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.service.status",
+      "layer": "point",
+      "capability": "point:service.status",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.service-health",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.service.status@r1.instance",
+      "layer": "point",
+      "capability": "point:service.status@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-service",
+          "role": "服务状态",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.settings.open@r1.instance",
+      "layer": "point",
+      "capability": "point:settings.open@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "settings",
+          "role": "设置",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.speech.transcribe",
+      "layer": "point",
+      "capability": "point:speech.transcribe",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting-notes",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.store.query",
+      "layer": "point",
+      "capability": "point:store.query",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.clipboard-history",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.cpu.stats",
+      "layer": "point",
+      "capability": "point:sys.cpu.stats",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.system-monitor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.cpu.stats@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.cpu.stats@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-cpu",
+          "role": "CPU",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.disk.stats@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.disk.stats@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-disk",
+          "role": "磁盘",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.gpu.stats",
+      "layer": "point",
+      "capability": "point:sys.gpu.stats",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.system-monitor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.gpu.stats@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.gpu.stats@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-gpu",
+          "role": "GPU",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.memory.stats",
+      "layer": "point",
+      "capability": "point:sys.memory.stats",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.system-monitor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.memory.stats@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.memory.stats@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-mem",
+          "role": "内存",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.metrics.snapshot@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.metrics.snapshot@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sysmon",
+          "role": "系统监控",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.network.stats@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.network.stats@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-net",
+          "role": "网速",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.power.status@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.power.status@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-power",
+          "role": "电源",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.process.top@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.process.top@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-proc",
+          "role": "进程 Top",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.sensors.temp@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.sensors.temp@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-temp",
+          "role": "温度",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.sys.uptime@r1.instance",
+      "layer": "point",
+      "capability": "point:sys.uptime@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "sys-uptime",
+          "role": "开机时长",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.text.diff",
+      "layer": "point",
+      "capability": "point:text.diff",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ai-rewrite",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.text.read",
+      "layer": "point",
+      "capability": "point:text.read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ai-rewrite",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.text.regex@r1.instance",
+      "layer": "point",
+      "capability": "point:text.regex@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "dev-regex",
+          "role": "正则测试",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.text.transform",
+      "layer": "point",
+      "capability": "point:text.transform",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.advanced-paste",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.timer.start@r1.instance",
+      "layer": "point",
+      "capability": "point:timer.start@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-timer",
+          "role": "计时器",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.timer.wait",
+      "layer": "point",
+      "capability": "point:timer.wait",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.awake",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.trans.en2zh.instance",
+      "layer": "point",
+      "capability": "point:trans.en2zh",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.screenshot-translate/translate",
+          "role": "$sourceLang → $targetLang",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.translate.text@r1.instance",
+      "layer": "point",
+      "capability": "point:translate.text@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-translate",
+          "role": "翻译",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.usage.rank",
+      "layer": "point",
+      "capability": "point:usage.rank",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.quick-launch",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.validate.amount.instance",
+      "layer": "point",
+      "capability": "point:validate.amount",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.invoice-archive/validate",
+          "role": "rules = $vendorRules",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.validate.invoice",
+      "layer": "point",
+      "capability": "point:validate.invoice",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "line.node.pointClass",
+          "owner": "flow.invoice-archive/validate",
+          "role": "rules = $vendorRules",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.vpn.default.status@r1.instance",
+      "layer": "point",
+      "capability": "point:vpn.default.status@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "gesture.target",
+          "owner": "UD",
+          "role": "检测 VPN 状态",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.vpn.status",
+      "layer": "point",
+      "capability": "point:vpn.status",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.external-access",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.watch.inbox.instance",
+      "layer": "point",
+      "capability": "point:watch.inbox",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "line.node.pointInstance",
+          "owner": "flow.invoice-archive/watch",
+          "role": "$watchDir",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.window.layout",
+      "layer": "point",
+      "capability": "point:window.layout",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.workspace",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.workspace.restore",
+      "layer": "point",
+      "capability": "point:workspace.restore",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.workspace",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.awake-status",
+      "layer": "surface",
+      "capability": "surface:surface.awake-status",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.awake",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.backup-status",
+      "layer": "surface",
+      "capability": "surface:surface.backup-status",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.backup-sync",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.clipboard-list",
+      "layer": "surface",
+      "capability": "surface:surface.clipboard-list",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.clipboard-history",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.clipper-preview",
+      "layer": "surface",
+      "capability": "surface:surface.clipper-preview",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.web-clipper",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.color-inspector",
+      "layer": "surface",
+      "capability": "surface:surface.color-inspector",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color-picker",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.convert-dialog",
+      "layer": "surface",
+      "capability": "surface:surface.convert-dialog",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.media-converter",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.hud.ruler",
+      "layer": "surface",
+      "capability": "surface:surface.hud.ruler",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screen-ruler",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.key-value-editor",
+      "layer": "surface",
+      "capability": "surface:surface.key-value-editor",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env-vars",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.launch-dock",
+      "layer": "surface",
+      "capability": "surface:surface.launch-dock",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.quick-launch",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.layout-editor",
+      "layer": "surface",
+      "capability": "surface:surface.layout-editor",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.window-layout",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.lock-list",
+      "layer": "surface",
+      "capability": "surface:surface.lock-list",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-locksmith",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.notes",
+      "layer": "surface",
+      "capability": "surface:surface.notes",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting-notes",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.ocr-result",
+      "layer": "surface",
+      "capability": "surface:surface.ocr-result",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ocr",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.organize-preview",
+      "layer": "surface",
+      "capability": "surface:surface.organize-preview",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-organizer",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.paste-preview",
+      "layer": "surface",
+      "capability": "surface:surface.paste-preview",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.advanced-paste",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.pdf-workspace",
+      "layer": "surface",
+      "capability": "surface:surface.pdf-workspace",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.pdf-toolkit",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.pin-indicator",
+      "layer": "surface",
+      "capability": "surface:surface.pin-indicator",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.always-on-top",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.preview-window",
+      "layer": "surface",
+      "capability": "surface:surface.preview-window",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file-preview",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.prompt-preview",
+      "layer": "surface",
+      "capability": "surface:surface.prompt-preview",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ai-rewrite",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.quick-launch",
+      "layer": "surface",
+      "capability": "surface:surface.quick-launch",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.quick-launch",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.rename-dialog",
+      "layer": "surface",
+      "capability": "surface:surface.rename-dialog",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch-rename",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.resize-dialog",
+      "layer": "surface",
+      "capability": "surface:surface.resize-dialog",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image-resizer",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.service-dashboard",
+      "layer": "surface",
+      "capability": "surface:surface.service-dashboard",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.service-health",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.settings.invoice",
+      "layer": "surface",
+      "capability": "surface:surface.settings.invoice",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.invoice-archive",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.settings.suite",
+      "layer": "surface",
+      "capability": "surface:surface.settings.suite",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.suite",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.settings.translate",
+      "layer": "surface",
+      "capability": "surface:surface.settings.translate",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screenshot-translate",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.text-editor",
+      "layer": "surface",
+      "capability": "surface:surface.text-editor",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts-editor",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.workspace-launcher",
+      "layer": "surface",
+      "capability": "surface:surface.workspace-launcher",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.workspace",
+          "role": "界面承载",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

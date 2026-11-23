@@ -10,9 +10,10 @@
         "h": 82,
         "label": "截屏",
         "kind": "point",
-        "pointClass": "screen.capture",
-        "pointInstance": "cap.region",
-        "role": "region"
+        "pointClass": "win.screen.capture",
+        "pointInstance": "win.screen.capture.i-region@r1",
+        "role": "region",
+        "rewrittenFrom": "cap.region"
       },
       {
         "id": "ocr",
@@ -22,9 +23,10 @@
         "h": 82,
         "label": "OCR",
         "kind": "point",
-        "pointClass": "ocr.read",
+        "pointClass": "win.ocr.read",
         "pointInstance": "ocr.zh.screen",
-        "role": "$sourceLang"
+        "role": "$sourceLang",
+        "rewrittenFrom": "ocr.read"
       },
       {
         "id": "translate",
@@ -47,8 +49,9 @@
         "label": "浮层",
         "kind": "point",
         "pointClass": "render.overlay",
-        "pointInstance": "overlay.toast",
-        "role": "if $overlay"
+        "pointInstance": "notify.toast.i-system@r1",
+        "role": "if $overlay",
+        "rewrittenFrom": "overlay.toast"
       }
     ],
     "edges": [
@@ -103,9 +106,10 @@
         "h": 82,
         "label": "OCR",
         "kind": "point",
-        "pointClass": "ocr.read",
+        "pointClass": "win.ocr.read",
         "pointInstance": "ocr.zh.invoice",
-        "role": "$ocrLang"
+        "role": "$ocrLang",
+        "rewrittenFrom": "ocr.read"
       },
       {
         "id": "extract",
@@ -162,9 +166,10 @@
         "h": 82,
         "label": "未匹配通知",
         "kind": "point",
-        "pointClass": "notify.tray",
+        "pointClass": "notify.toast",
         "pointInstance": "notify.unmatched",
-        "role": "$(else)"
+        "role": "$(else)",
+        "rewrittenFrom": "notify.tray"
       }
     ],
     "edges": [
@@ -310,9 +315,10 @@
         "h": 82,
         "label": "可达性检查",
         "kind": "point",
-        "pointClass": "net.reachable",
-        "pointInstance": "net.reachable.github",
-        "role": "host = url.host"
+        "pointClass": "win.http.request",
+        "pointInstance": "win.http.request.i-http-github@r1",
+        "role": "host = url.host",
+        "rewrittenFrom": "net.reachable.github"
       },
       {
         "id": "open",
@@ -322,9 +328,10 @@
         "h": 82,
         "label": "打开 URL",
         "kind": "point",
-        "pointClass": "sys.open",
-        "pointInstance": "open.browser.github",
-        "role": "url, kind=url"
+        "pointClass": "win.open",
+        "pointInstance": "win.open.i-open-github@r1",
+        "role": "url, kind=url",
+        "rewrittenFrom": "open.browser.github"
       },
       {
         "id": "notify",
@@ -335,8 +342,9 @@
         "label": "通知",
         "kind": "point",
         "pointClass": "notify.toast",
-        "pointInstance": "notify.system",
-        "role": "success"
+        "pointInstance": "notify.toast.i-system@r1",
+        "role": "success",
+        "rewrittenFrom": "notify.system"
       }
     ],
     "edges": [

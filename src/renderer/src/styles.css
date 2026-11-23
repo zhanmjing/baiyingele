@@ -2220,3 +2220,54 @@ a { color: inherit; }
   background: rgba(148, 163, 184, 0.08);
   color: #94a3b8;
 }
+
+/* ---------- 体层组合：未满足依赖 ---------- */
+.body-part.unmet {
+  border-style: dashed;
+  border-color: rgba(251, 191, 36, 0.45);
+  background: rgba(251, 191, 36, 0.04);
+}
+
+.body-part-gap {
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 11px;
+}
+
+.body-gap-panel {
+  margin-top: 14px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  padding-top: 12px;
+}
+
+.body-gap-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.body-gap-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 1.4fr;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.body-gap-count {
+  color: #fbbf24;
+  font-variant-numeric: tabular-nums;
+}
+
+.body-gap-row code {
+  color: #e2e8f0;
+}
+
+.body-gap-owners {
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

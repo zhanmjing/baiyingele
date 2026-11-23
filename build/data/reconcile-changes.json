@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "appliedAt": "2026-11-23T18:16:10.545Z",
+  "changes": [
+    {
+      "where": "body.composition",
+      "owner": "body.ocr",
+      "from": "ocr.text",
+      "to": "win.ocr.read",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.ocr",
+      "from": "ocr.table",
+      "to": "win.ocr.read",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.image-resizer",
+      "from": "file.write.image",
+      "to": "file.write",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.advanced-paste",
+      "from": "clipboard.read",
+      "to": "win.clipboard.get",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.window-layout",
+      "from": "window.list",
+      "to": "win.window.query",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.window-layout",
+      "from": "window.move",
+      "to": "win.window.control",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.window-layout",
+      "from": "window.resize",
+      "to": "win.window.control",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.always-on-top",
+      "from": "window.find",
+      "to": "win.window.query",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.always-on-top",
+      "from": "window.pin",
+      "to": "win.window.control",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.always-on-top",
+      "from": "window.restore",
+      "to": "win.window.control",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.system-monitor",
+      "from": "surface.system-monitor",
+      "to": "surface.dashboard",
+      "reason": "kind-mismatch"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.system-monitor",
+      "from": "surface.hud.system-status",
+      "to": "surface.hud",
+      "reason": "kind-mismatch"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.service-health",
+      "from": "net.reachable",
+      "to": "win.http.request",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.external-access",
+      "from": "surface.site-launcher",
+      "to": "surface.card-grid",
+      "reason": "kind-mismatch"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.external-access",
+      "from": "surface.settings.vpn",
+      "to": "surface.form",
+      "reason": "kind-mismatch"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.external-access",
+      "from": "net.reachable",
+      "to": "win.http.request",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.external-access",
+      "from": "browser.open",
+      "to": "win.open",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.screenshot-translate",
+      "from": "surface.hud.translate",
+      "to": "surface.hud",
+      "reason": "kind-mismatch"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.screenshot-translate",
+      "from": "screen.capture",
+      "to": "win.screen.capture",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.screenshot-translate",
+      "from": "ocr.text",
+      "to": "win.ocr.read",
+      "reason": "aliased"
+    },
+    {
+      "where": "body.composition",
+      "owner": "body.invoice-archive",
+      "from": "ocr.table",
+      "to": "win.ocr.read",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointClass",
+      "owner": "flow.screenshot-translate/capture",
+      "from": "screen.capture",
+      "to": "win.screen.capture",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointInstance",
+      "owner": "flow.screenshot-translate/capture",
+      "from": "cap.region",
+      "to": "win.screen.capture.i-region@r1",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointClass",
+      "owner": "flow.screenshot-translate/ocr",
+      "from": "ocr.read",
+      "to": "win.ocr.read",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointInstance",
+      "owner": "flow.screenshot-translate/overlay",
+      "from": "overlay.toast",
+      "to": "notify.toast.i-system@r1",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointClass",
+      "owner": "flow.invoice-archive/ocr",
+      "from": "ocr.read",
+      "to": "win.ocr.read",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointClass",
+      "owner": "flow.invoice-archive/notify",
+      "from": "notify.tray",
+      "to": "notify.toast",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointClass",
+      "owner": "flow.open-external-site/check",
+      "from": "net.reachable",
+      "to": "win.http.request",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointInstance",
+      "owner": "flow.open-external-site/check",
+      "from": "net.reachable.github",
+      "to": "win.http.request.i-http-github@r1",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointClass",
+      "owner": "flow.open-external-site/open",
+      "from": "sys.open",
+      "to": "win.open",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointInstance",
+      "owner": "flow.open-external-site/open",
+      "from": "open.browser.github",
+      "to": "win.open.i-open-github@r1",
+      "reason": "aliased"
+    },
+    {
+      "where": "line.node.pointInstance",
+      "owner": "flow.open-external-site/notify",
+      "from": "notify.system",
+      "to": "notify.toast.i-system@r1",
+      "reason": "aliased"
+    }
+  ]
+}

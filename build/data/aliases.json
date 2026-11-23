@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "note": "命名漂移的映射表。key = 旧引用，value = 现有 id。reconcile-refs --apply 会按此改写引用并留下 rewrittenFrom 标记。",
+  "classes": {
+    "point": {
+      "screen.capture": "win.screen.capture",
+      "ocr.read": "win.ocr.read",
+      "ocr.text": "win.ocr.read",
+      "ocr.table": "win.ocr.read",
+      "clipboard.read": "win.clipboard.get",
+      "sys.open": "win.open",
+      "browser.open": "win.open",
+      "window.list": "win.window.query",
+      "window.find": "win.window.query",
+      "window.move": "win.window.control",
+      "window.resize": "win.window.control",
+      "window.pin": "win.window.control",
+      "window.restore": "win.window.control",
+      "file.write.image": "file.write",
+      "notify.tray": "notify.toast",
+      "net.reachable": "win.http.request"
+    },
+    "line": {},
+    "surface": {}
+  },
+  "instances": {
+    "cap.region": "win.screen.capture.i-region@r1",
+    "open.browser.github": "win.open.i-open-github@r1",
+    "net.reachable.github": "win.http.request.i-http-github@r1",
+    "notify.system": "notify.toast.i-system@r1",
+    "overlay.toast": "notify.toast.i-system@r1"
+  },
+  "review": [
+    { "from": "window.find", "to": "win.window.query", "risk": "设计上'查'与'定位并激活'可能是两个动作，需确认" },
+    { "from": "ocr.text / ocr.table", "to": "win.ocr.read", "risk": "OCR 的文本/表格输出可能应拆成不同 output，而不是同一类" },
+    { "from": "net.reachable", "to": "win.http.request", "risk": "可达性检查用 HEAD 请求实现，语义可接受但不等价" }
+  ]
+}

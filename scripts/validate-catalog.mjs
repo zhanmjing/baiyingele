@@ -11,9 +11,11 @@
  *   node scripts/validate-catalog.mjs --strict   # 软问题也让退出码为 1
  */
 import { createRequire } from 'node:module'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { diffAgainstRepo, generateFullCatalogs } from './gen-catalogs.mjs'
+import { ALIAS_PATH, collectRefs, groupRequirements, makeClassifier } from './reconcile-refs.mjs'
 
 const require = createRequire(import.meta.url)
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -34,8 +36,9 @@ const PARAM_TYPES = new Set(['text', 'number', 'bool', 'enum', 'file', 'folder',
 const SETTING_TYPES = new Set(['enum', 'number', 'bool', 'string', 'path', 'secret', 'text', 'json', 'any'])
 
 const hard = []
-const soft = new Map()
 const stats = {}
+const maxGapsArg = process.argv.find((arg) => arg.startsWith('--max-gaps='))
+const maxGaps = maxGapsArg ? Number(maxGapsArg.split('=')[1]) : Number.POSITIVE_INFINITY
 
 let consumedErrors = 0
 /** 打印本步状态：只统计本步新增的硬错误 */
@@ -43,11 +46,6 @@ function mark() {
   const delta = hard.length - consumedErrors
   consumedErrors = hard.length
   return delta ? `✗ ${delta}` : '✓'
-}
-
-function softAdd(kind, message) {
-  if (!soft.has(kind)) soft.set(kind, [])
-  soft.get(kind).push(message)
 }
 
 // ── 1. 目录生成一致性 ────────────────────────────────────────────
@@ -120,9 +118,10 @@ const flowIds = classIds.get('line') ?? new Set()
 const pointClassIds = classIds.get('point') ?? new Set()
 let profileCount = 0
 const executableFlows = []
+const orphanProfiles = []
 for (const [classId, profile] of Object.entries(lineProfiles)) {
   profileCount += 1
-  if (!flowIds.has(classId)) softAdd('图谱 → 无对应 FlowClass', classId)
+  if (!flowIds.has(classId)) orphanProfiles.push(classId)
   const nodeIds = new Set()
   for (const node of profile.nodes ?? []) {
     if (nodeIds.has(node.id)) hard.push(`${classId} 节点 id 重复: ${node.id}`)
@@ -130,11 +129,9 @@ for (const [classId, profile] of Object.entries(lineProfiles)) {
     if (node.kind === 'point') {
       if (!node.pointClass) hard.push(`${classId}.${node.id} 是 point 节点但没有 pointClass`)
       else if (!(classIds.get('point') ?? new Set()).has(node.pointClass)) {
-        softAdd('线层节点 → PointClass', `${classId}.${node.id} → ${node.pointClass}`)
+        // 跨层引用统一交给第 7 步的五态解析
       }
-      if (node.pointInstance && !instanceIds.has(node.pointInstance)) {
-        softAdd('线层节点 → PointInstance', `${classId}.${node.id} → ${node.pointInstance}`)
-      }
+
     }
   }
   const pointNodes = (profile.nodes ?? []).filter((node) => node.kind === 'point')
@@ -165,9 +162,7 @@ for (const [classId, profile] of Object.entries(bodyProfiles)) {
   for (const part of profile.composition ?? []) {
     compositionParts += 1
     if (!LAYERS.includes(part.layer)) hard.push(`${classId} 组合引用了非法层: ${part.layer}`)
-    else if (!(classIds.get(part.layer) ?? new Set()).has(part.ref)) {
-      softAdd('体层组合 → 目标类', `${classId} → ${part.layer}:${part.ref}`)
-    }
+
   }
 }
 console.log(`[4/7] 体层组合 / Manifest …… ${mark()} ${compositionParts} 个组合引用`)
@@ -176,17 +171,13 @@ console.log(`[4/7] 体层组合 / Manifest …… ${mark()} ${compositionParts} 
 const tabIds = new Set((surface.dockTabs ?? []).map((tab) => tab.id))
 for (const tile of surface.dockTiles ?? []) {
   if (tile.tab && !tabIds.has(tile.tab)) hard.push(`启动坞磁贴 ${tile.id} 指向不存在的 tab: ${tile.tab}`)
-  if (tile.target && !instanceIds.has(tile.target)) {
-    softAdd('启动坞 / 手势 → 实例', `${tile.id} → ${tile.target}`)
-  }
+
 }
 const gesturePatterns = new Set()
 for (const gesture of surface.gestures ?? []) {
   if (gesturePatterns.has(gesture.pattern)) hard.push(`手势模式重复: ${gesture.pattern}`)
   gesturePatterns.add(gesture.pattern)
-  if (gesture.target && !instanceIds.has(gesture.target)) {
-    softAdd('启动坞 / 手势 → 实例', `手势 ${gesture.pattern} → ${gesture.target}`)
-  }
+
 }
 console.log(`[5/7] 面层资源 …… ${mark()} ${(surface.panelClasses ?? []).length} PanelClass / ${(surface.dockTiles ?? []).length} Tile / ${(surface.gestures ?? []).length} 手势`)
 
@@ -208,16 +199,45 @@ for (const section of settings.sections ?? []) {
 stats.settings = settingCount
 console.log(`[6/7] 设置 …… ${mark()} ${(settings.sections ?? []).length} section / ${settingCount} 项`)
 
-// ── 7. 跨层引用（软）────────────────────────────────────────────
-const softTotal = [...soft.values()].reduce((sum, list) => sum + list.length, 0)
-console.log(`[7/7] 跨层引用 …… ${softTotal ? `⚠ ${softTotal} 处未解析` : '✓'}`)
-for (const [kind, list] of [...soft.entries()].sort((a, b) => b[1].length - a[1].length)) {
-  console.log(`      ${kind.padEnd(24)} ${String(list.length).padStart(3)}`)
-  for (const sample of list.slice(0, 3)) console.log(`        · ${sample}`)
-  if (list.length > 3) console.log(`        … 其余 ${list.length - 3} 条`)
+// ── 7. 跨层引用（五态解析）────────────────────────────────────
+const instanceClass = new Map()
+for (const layer of LAYERS) {
+  for (const item of catalogs[layer] ?? []) {
+    for (const instance of item.instances ?? []) instanceClass.set(instance.id, item.id)
+  }
+}
+const aliases = existsSync(ALIAS_PATH) ? JSON.parse(readFileSync(ALIAS_PATH, 'utf8')) : null
+const refs = collectRefs(lineProfiles, bodyProfiles, surface)
+const classify = makeClassifier({ classIds, instanceClass }, aliases)
+const classified = refs.map((ref) => ({ ...ref, ...classify(ref) }))
+
+const byStatus = { ok: 0, aliased: 0, 'kind-mismatch': 0, 'layer-mismatch': 0, missing: 0 }
+for (const item of classified) byStatus[item.status] += 1
+
+for (const item of classified) {
+  if (item.status === 'kind-mismatch') {
+    hard.push(`${item.owner}: ${item.ref} 是实例，这里需要类（建议改成 ${item.target}）`)
+  } else if (item.status === 'layer-mismatch') {
+    hard.push(`${item.owner}: ${item.ref} 属于 ${item.actualLayer} 层，不应出现在 ${item.expectedLayer} 层`)
+  } else if (item.status === 'aliased') {
+    hard.push(`${item.owner}: ${item.ref} 命中了别名但还没改写，请运行 npm run refs:apply`)
+  }
+}
+
+const requirements = groupRequirements(classified)
+const unmetClasses = requirements.filter((item) => item.type === 'class')
+const unmetInstances = requirements.filter((item) => item.type === 'instance')
+
+console.log(`[7/7] 跨层引用 …… ${mark()} ${refs.length} 条`)
+console.log(`      已满足 ${byStatus.ok} 条 ｜ 未满足需求 ${requirements.length} 条（${unmetClasses.length} 个类 + ${unmetInstances.length} 个实例）`)
+for (const requirement of unmetClasses.slice(0, 5)) {
+  console.log(`        · ${String(requirement.requiredBy.length).padStart(2)} 处 ${requirement.capability}`)
+}
+if (orphanProfiles.length) {
+  console.log(`      孤立图谱 ${orphanProfiles.length} 个：${orphanProfiles.join(', ')}`)
 }
 if (missingProfiles.length) {
-  console.log(`      另外 ${missingProfiles.length} 个 FlowClass 没有数据流图谱：${missingProfiles.join(', ')}`)
+  console.log(`      未建图谱的 FlowClass ${missingProfiles.length} 个`)
 }
 
 // ── 汇总 ───────────────────────────────────────────────────────
@@ -229,10 +249,8 @@ if (hard.length) {
   process.exit(1)
 }
 console.log('✓ 无硬错误')
-if (softTotal && strict) {
-  console.error(`✗ --strict：跨层引用有 ${softTotal} 处未解析`)
+if (requirements.length > maxGaps) {
+  console.error(`✗ 未满足需求 ${requirements.length} 条，超过上限 ${maxGaps}`)
   process.exit(1)
 }
-if (softTotal) {
-  console.log(`⚠ 跨层引用有 ${softTotal} 处未解析（加 --strict 可让此项阻塞构建）`)
-}
+console.log(`ℹ 未满足需求 ${requirements.length} 条属合法状态（蓝图依赖未实现），加 --max-gaps=N 可做数量棘轮`)
