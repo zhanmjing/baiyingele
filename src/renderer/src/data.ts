@@ -12,6 +12,7 @@ import { lineClassesSeed } from '../../shared/lineCatalog'
 import { surfaceClassesSeed } from '../../shared/surfaceCatalog'
 import { pointClassesSeed } from '../../shared/pointCatalog'
 import type { PointInstanceSeed, PointParam } from '../../shared/pointCatalog'
+import { hasRealImpl } from '../../shared/implRegistry'
 
 export type LayerKey = 'point' | 'line' | 'surface' | 'body' | 'field'
 
@@ -81,8 +82,8 @@ export const layers: Record<LayerKey, LayerMeta> = {
     accent: '#22d3ee',
     tagline: '原子能力',
     description: '带契约的最小可执行单元。一个点只做一件事，有输入、输出、副作用与权限。',
-    totalClasses: 13,
-    totalInstances: 32,
+    totalClasses: pointClassesSeed.length,
+    totalInstances: pointClassesSeed.reduce((sum, item) => sum + item.instances.length, 0),
     classes: pointClassesSeed.map((item) => ({
       ...item,
       instances: item.instances.map((instance) => ({ ...instance }))
@@ -96,8 +97,8 @@ export const layers: Record<LayerKey, LayerMeta> = {
     accent: '#a78bfa',
     tagline: '流程编排',
     description: '把点串成有方向、有状态、有错误处理的流程。线可以复用、嵌套、回放。',
-    totalClasses: 13,
-    totalInstances: 32,
+    totalClasses: lineClassesSeed.length,
+    totalInstances: lineClassesSeed.reduce((sum, item) => sum + item.instances.length, 0),
     classes: lineClassesSeed.map((item) => ({
       ...item,
       instances: item.instances.map((instance) => ({ ...instance }))
@@ -111,8 +112,8 @@ export const layers: Record<LayerKey, LayerMeta> = {
     accent: '#34d399',
     tagline: '界面承载',
     description: '用户看见和操作的界面：面板、命令面板、启动坞、设置页。面不拥有业务，只承载入口。',
-    totalClasses: 16,
-    totalInstances: 46,
+    totalClasses: surfaceClassesSeed.length,
+    totalInstances: surfaceClassesSeed.reduce((sum, item) => sum + item.instances.length, 0),
     classes: surfaceClassesSeed.map((item) => ({
       ...item,
       instances: item.instances.map((instance) => ({ ...instance }))
@@ -126,8 +127,8 @@ export const layers: Record<LayerKey, LayerMeta> = {
     accent: '#fbbf24',
     tagline: '产品蓝图',
     description: '把流程、界面、点组合成一个可安装、可配置、可演进的产品体。',
-    totalClasses: 29,
-    totalInstances: 82,
+    totalClasses: bodyClassesSeed.length,
+    totalInstances: bodyClassesSeed.reduce((sum, item) => sum + item.instances.length, 0),
     classes: bodyClassesSeed.map((item) => ({
       ...item,
       instances: item.instances.map((instance) => ({ ...instance }))
@@ -141,8 +142,8 @@ export const layers: Record<LayerKey, LayerMeta> = {
     accent: '#f472b6',
     tagline: '智能介质',
     description: '穿透点、线、面、体的智能能力。有落点、有自主度、有证据、有撤销。',
-    totalClasses: 23,
-    totalInstances: 78,
+    totalClasses: fieldClassesSeed.length,
+    totalInstances: fieldClassesSeed.reduce((sum, item) => sum + item.instances.length, 0),
     classes: fieldClassesSeed.map((item) => ({
       ...item,
       instances: item.instances.map((instance) => ({ ...instance }))
@@ -152,62 +153,15 @@ export const layers: Record<LayerKey, LayerMeta> = {
 
 export const layerOrder: LayerKey[] = ['point', 'line', 'surface', 'body', 'field']
 
-export const recentRuns: RunRecord[] = [
-  {
-    id: 'run-1842',
-    layer: 'point',
-    classId: 'window.find',
-    instanceId: 'i-find-vscode',
-    status: 'ok',
-    output: '已定位 Visual Studio Code',
-    elapsedMs: 42,
-    at: '刚刚'
-  },
-  {
-    id: 'run-1841',
-    layer: 'field',
-    classId: 'field.prefill',
-    instanceId: 'field.prefill.ocr-language',
-    status: 'ok',
-    output: 'ocr.language = zh · confidence 0.84',
-    elapsedMs: 118,
-    at: '2 分钟前'
-  },
-  {
-    id: 'run-1840',
-    layer: 'line',
-    classId: 'flow.open-external-site',
-    instanceId: 'inst.site-github',
-    status: 'ok',
-    output: 'GitHub 已打开',
-    elapsedMs: 1340,
-    at: '8 分钟前'
-  },
-  {
-    id: 'run-1839',
-    layer: 'point',
-    classId: 'screen.capture',
-    instanceId: 'i-capture-region',
-    status: 'warn',
-    output: '用户取消区域选择',
-    elapsedMs: 6000,
-    at: '12 分钟前'
-  },
-  {
-    id: 'run-1838',
-    layer: 'body',
-    classId: 'body.file-preview',
-    instanceId: 'pdf',
-    status: 'ok',
-    output: 'PDF 已加载 · 12 页',
-    elapsedMs: 220,
-    at: '18 分钟前'
-  }
-]
-
 export const totalCatalog = {
   classes: Object.values(layers).reduce((sum, layer) => sum + layer.totalClasses, 0),
   instances: Object.values(layers).reduce((sum, layer) => sum + layer.totalInstances, 0),
-  aiClasses: 29,
-  aiInstances: 124
+  /** 在 capabilities.ts 里登记了真实实现的类数量 */
+  realClasses: [
+    ...pointClassesSeed,
+    ...lineClassesSeed,
+    ...surfaceClassesSeed,
+    ...bodyClassesSeed,
+    ...fieldClassesSeed
+  ].filter((item) => hasRealImpl(item.id)).length
 }

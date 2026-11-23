@@ -29,12 +29,17 @@ interface Props {
   onNavigate: (section: 'dashboard' | LayerKey | 'runs' | 'settings') => void
 }
 
-const stats = [
-  { label: '功能类', value: totalCatalog.classes, hint: 'Point / Line / Surface / Body / Field', icon: Layers3, tone: 'cyan' },
-  { label: '实例', value: totalCatalog.instances, hint: '可配置、可归档、可绑定', icon: Zap, tone: 'violet' },
-  { label: 'AI 基座', value: totalCatalog.aiClasses, hint: `${totalCatalog.aiInstances} 个 AI 实例`, icon: Cpu, tone: 'pink' },
-  { label: '今日运行', value: 128, hint: '成功率 97.6%', icon: Activity, tone: 'green' }
-]
+function buildStats(runs: RunRecord[]) {
+  const total = runs.length
+  const ok = runs.filter((run) => run.status === 'ok').length
+  const successRate = total ? Math.round((ok / total) * 1000) / 10 : null
+  return [
+    { label: '功能类', value: totalCatalog.classes, hint: 'Point / Line / Surface / Body / Field', icon: Layers3, tone: 'cyan' },
+    { label: '实例', value: totalCatalog.instances, hint: '可配置、可归档、可绑定', icon: Zap, tone: 'violet' },
+    { label: '真实能力', value: totalCatalog.realClasses, hint: `共 ${totalCatalog.classes} 类，其余为模拟实现`, icon: Cpu, tone: 'pink' },
+    { label: '本会话运行', value: total, hint: successRate === null ? '还没有运行记录' : `成功率 ${successRate}%`, icon: Activity, tone: 'green' }
+  ]
+}
 
 const runLayerLabel: Record<LayerKey, string> = {
   point: '点',
@@ -45,6 +50,7 @@ const runLayerLabel: Record<LayerKey, string> = {
 }
 
 export function Dashboard({ appInfo, runs, onNavigate }: Props) {
+  const stats = buildStats(runs)
   return (
     <div className="page dashboard">
       <section className="hero-panel">
@@ -180,6 +186,13 @@ export function Dashboard({ appInfo, runs, onNavigate }: Props) {
             </div>
           </div>
           <div className="run-list">
+            {runs.length === 0 && (
+              <div className="point-empty">
+                <Play size={20} />
+                <strong>还没有真实运行</strong>
+                <span>去点层跑一个实例（例如 win.clipboard.get），这里会出现真实记录。</span>
+              </div>
+            )}
             {runs.slice(0, 6).map((run) => {
               const layer = layers[run.layer]
               return (
@@ -249,7 +262,7 @@ export function Dashboard({ appInfo, runs, onNavigate }: Props) {
           <div className="runtime-code">
             <span className="code-comment"># 启动开发环境</span>
             <br />
-            <span className="code-prompt">$</span> pnpm dev
+            <span className="code-prompt">$</span> npm run dev
           </div>
           <div className="quick-grid">
             <button className="quick-action" onClick={() => onNavigate('point')}>

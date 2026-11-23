@@ -34,14 +34,28 @@ export interface UpdateInstanceInput {
 
 export interface RunOutcome {
   status: PointRunRecord['status']
+  /** 人类可读摘要，写入运行历史 */
   output: string
   elapsedMs: number
+  /** 原始输出，供线层把上一个节点的结果传给下一个节点（不写入历史） */
+  value?: string
+}
+
+/** 跨层/跨节点传入的执行上下文（线层给每个节点套用映射时用） */
+export interface RunExtras {
+  input?: string
+  args?: Record<string, string>
+  params?: Record<string, string>
 }
 
 export interface RunContext {
   def: LayerDef
   instance: PointInstanceRecord
   pointClass: PointClassSeed
+  /** 生效参数：实例参数叠加本次映射后的结果 */
+  params: Record<string, string>
+  input?: string
+  args?: Record<string, string>
   /** 按实例 id 取同层内其他实例，供线层解析节点绑定用 */
   findInstance: (instanceId: string) => PointInstanceRecord | undefined
 }
@@ -59,7 +73,7 @@ function slug(value: string): string {
 }
 
 /** 默认 runner：保留旧的模拟行为，真实实现由 capabilities.ts 注入覆盖 */
-const mockRunner: InstanceRunner = ({ def, instance }) => ({
+export const mockRunner: InstanceRunner = ({ def, instance }) => ({
   status: 'ok',
   output: def.outputs[instance.classId] ?? `执行完成 · ${instance.name}`,
   elapsedMs: 38 + Math.floor(Math.random() * 240)
@@ -232,7 +246,15 @@ export class LayerStore {
     return copy
   }
 
-  async run(instanceId: string): Promise<PointRunRecord> {
+  async run(instanceId: string, extras: RunExtras = {}): Promise<PointRunRecord> {
+    return (await this.runDetailed(instanceId, extras)).record
+  }
+
+  /** 与 run 相同，但把原始输出 value 一并返回给调用方（线层要用它串联节点） */
+  async runDetailed(
+    instanceId: string,
+    extras: RunExtras = {}
+  ): Promise<{ record: PointRunRecord; outcome: RunOutcome }> {
     const instance = this.instance(instanceId)
     if (!instance) throw new Error(`实例不存在: ${instanceId}`)
     if (instance.status === 'archived') throw new Error(`实例已归档: ${instance.name}`)
@@ -244,6 +266,9 @@ export class LayerStore {
       def: this.def,
       instance,
       pointClass,
+      params: { ...instance.params, ...(extras.params ?? {}) },
+      input: extras.input,
+      args: extras.args,
       findInstance: (id) => this.instance(id)
     })
     const record: PointRunRecord = {
@@ -257,6 +282,6 @@ export class LayerStore {
     }
     this.state.runs = [record, ...this.state.runs].slice(0, 200)
     this.save()
-    return record
+    return { record, outcome }
   }
 }

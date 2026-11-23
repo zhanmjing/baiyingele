@@ -15,7 +15,6 @@ import type { RunHistoryItem } from '../../shared/runHistory'
 import {
   layers,
   layerOrder,
-  recentRuns,
   type LayerInstance,
   type LayerKey,
   type LayerMeta,
@@ -165,7 +164,7 @@ export default function App() {
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
   const [language, setLanguage] = useState<SettingsLanguage>(readLanguage)
   const [catalog, setCatalog] = useState<Catalog>(createCatalog)
-  const [runs, setRuns] = useState<RunRecord[]>(recentRuns)
+  const [runs, setRuns] = useState<RunRecord[]>([])
   const [history, setHistory] = useState<RunHistoryItem[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
 

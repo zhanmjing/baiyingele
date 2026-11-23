@@ -881,6 +881,158 @@
           }
         }
       ]
+    },
+    {
+      "id": "text.template",
+      "name": "套用模板",
+      "family": "transform",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "把上游输出的文本套进模板；纯函数，不碰外部世界。",
+      "params": [
+        {
+          "key": "template",
+          "label": "template",
+          "type": "text",
+          "required": false,
+          "description": "template",
+          "defaultValue": "```\n{{input}}\n```"
+        },
+        {
+          "key": "input",
+          "label": "input",
+          "type": "text",
+          "required": false,
+          "description": "input",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "text.template.i-markdown@r1",
+          "name": "Markdown 代码块",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"template\":\"```\\n{{input}}\\n```\",\"input\":\"\"}",
+          "params": {
+            "template": "```\n{{input}}\n```",
+            "input": ""
+          }
+        },
+        {
+          "id": "text.template.i-plain@r1",
+          "name": "纯文本",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"template\":\"{{input}}\",\"input\":\"\"}",
+          "params": {
+            "template": "{{input}}",
+            "input": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "file.write",
+      "name": "写文件",
+      "family": "file",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "把文本写入文件；append=true 追加。path 以 ~ 开头时按主目录展开。",
+      "params": [
+        {
+          "key": "path",
+          "label": "path",
+          "type": "text",
+          "required": false,
+          "description": "path",
+          "defaultValue": ""
+        },
+        {
+          "key": "append",
+          "label": "append",
+          "type": "bool",
+          "required": false,
+          "description": "append",
+          "defaultValue": "true"
+        },
+        {
+          "key": "text",
+          "label": "text",
+          "type": "text",
+          "required": false,
+          "description": "text",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "file.write.i-append@r1",
+          "name": "追加写入",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"path\":\"\",\"append\":true,\"text\":\"\"}",
+          "params": {
+            "path": "",
+            "append": "true",
+            "text": ""
+          }
+        },
+        {
+          "id": "file.write.i-overwrite@r1",
+          "name": "覆盖写入",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"path\":\"\",\"append\":false,\"text\":\"\"}",
+          "params": {
+            "path": "",
+            "append": "false",
+            "text": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "notify.toast",
+      "name": "系统通知",
+      "family": "notify",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "发送一条系统通知；不阻塞流程。",
+      "params": [
+        {
+          "key": "title",
+          "label": "title",
+          "type": "text",
+          "required": false,
+          "description": "title",
+          "defaultValue": "百应"
+        },
+        {
+          "key": "body",
+          "label": "body",
+          "type": "text",
+          "required": false,
+          "description": "body",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "notify.toast.i-system@r1",
+          "name": "系统通知",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"title\":\"百应\",\"body\":\"\"}",
+          "params": {
+            "title": "百应",
+            "body": ""
+          }
+        }
+      ]
     }
   ],
   "line": [

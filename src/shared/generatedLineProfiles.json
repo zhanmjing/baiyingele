@@ -216,45 +216,57 @@
         "h": 82,
         "label": "读剪贴板",
         "kind": "point",
-        "pointClass": "input.clipboard",
-        "pointInstance": "clip.text",
-        "role": "format = text"
+        "pointClass": "win.clipboard.get",
+        "pointInstance": "win.clipboard.get.i-clip-text@r1",
+        "role": "format = text",
+        "mapping": {}
       },
       {
         "id": "template",
-        "x": 270,
+        "x": 250,
         "y": 110,
         "w": 150,
         "h": 82,
-        "label": "模板",
+        "label": "套用模板",
         "kind": "point",
         "pointClass": "text.template",
-        "pointInstance": "template.markdown",
-        "role": "tpl = markdown"
+        "pointInstance": "text.template.i-markdown@r1",
+        "role": "template = markdown",
+        "mapping": {
+          "input": "$input"
+        }
       },
       {
         "id": "write",
-        "x": 510,
+        "x": 470,
         "y": 110,
         "w": 150,
         "h": 82,
         "label": "写文件",
         "kind": "point",
         "pointClass": "file.write",
-        "pointInstance": "write.append",
-        "role": "$path, append=$append"
+        "pointInstance": "file.write.i-append@r1",
+        "role": "$path, append=$append",
+        "mapping": {
+          "text": "$input",
+          "path": "$args.path",
+          "append": "$args.append"
+        }
       },
       {
         "id": "notify",
-        "x": 750,
+        "x": 690,
         "y": 110,
         "w": 140,
         "h": 82,
         "label": "通知",
         "kind": "point",
         "pointClass": "notify.toast",
-        "pointInstance": "notify.toast",
-        "role": "success"
+        "pointInstance": "notify.toast.i-system@r1",
+        "role": "success",
+        "mapping": {
+          "body": "$input"
+        }
       }
     ],
     "edges": [

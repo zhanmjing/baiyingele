@@ -21,6 +21,13 @@ export interface LineNode {
   pointInstance?: string
   gate?: string
   role?: string
+  /**
+   * 参数映射：目标参数名 -> 取值表达式
+   *   '$input'      上一个节点的原始输出
+   *   '$args.<key>' 流程实例参数（从 instance.description 的 key=value 解析）
+   *   其他字符串    字面量
+   */
+  mapping?: Record<string, string>
 }
 
 export interface LineEdge {

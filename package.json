@@ -11,9 +11,15 @@
     "build": "electron-vite build",
     "preview": "node scripts/run-electron-vite.mjs preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "validate": "node scripts/validate-catalog.mjs",
+    "validate:strict": "node scripts/validate-catalog.mjs --strict",
+    "data:gen": "node scripts/gen-catalogs.mjs --write",
+    "data:check": "node scripts/gen-catalogs.mjs",
+    "check": "npm run typecheck && npm run validate && npm run build",
     "package": "npm run build && electron-builder --win",
     "dev:raw": "electron-vite dev",
-    "start": "node scripts/start.mjs"
+    "start": "node scripts/start.mjs",
+    "smoke": "npx tsc src/main/layerStore.ts src/main/flowRuntime.ts --ignoreConfig --outDir .tmp/smoke --module node16 --moduleResolution node16 --target es2022 --skipLibCheck --types node --resolveJsonModule && node scripts/smoke-flow.cjs"
   },
   "dependencies": {
     "lucide-react": "^1.78.0",

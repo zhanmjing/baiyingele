@@ -3,7 +3,16 @@ import { join } from 'node:path'
 import type { RunHistoryItem } from '../shared/runHistory'
 import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 import { LAYER_DEFS } from './layerRegistry'
-import { LayerStore, type CreateInstanceInput, type UpdateInstanceInput } from './layerStore'
+import { runCapability } from './capabilities'
+import { createLineRunner } from './flowRuntime'
+import { lineProfiles } from '../shared/lineCatalog'
+import {
+  LayerStore,
+  mockRunner,
+  type CreateInstanceInput,
+  type InstanceRunner,
+  type UpdateInstanceInput
+} from './layerStore'
 
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL)
 
@@ -101,9 +110,20 @@ function registerLayerIpc(): void {
 }
 
 app.whenReady().then(() => {
+  // Windows 上 Electron Notification 需要 AppUserModelId 才会显示
+  app.setAppUserModelId('com.baiying.desktop')
+
   const dataDir = app.getPath('userData')
+
+  /** 点层：有真实实现的类走 capabilities，其余回落到模拟 */
+  const pointRunner: InstanceRunner = async (context) =>
+    (await runCapability(context)) ?? mockRunner(context)
+  /** 线层：解析数据流图，逐个节点调用点层，并把结果串起来 */
+  const lineRunner = createLineRunner({ profiles: lineProfiles, pointStore: () => store('point') })
+
   for (const key of LAYER_KEYS) {
-    stores.set(key, new LayerStore(join(dataDir, `${key}-state.json`), LAYER_DEFS[key]))
+    const runner = key === 'point' ? pointRunner : key === 'line' ? lineRunner : undefined
+    stores.set(key, new LayerStore(join(dataDir, `${key}-state.json`), LAYER_DEFS[key], runner))
   }
 
   ipcMain.handle('app:info', () => ({
