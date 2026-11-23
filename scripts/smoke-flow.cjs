@@ -86,7 +86,9 @@ const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
 const { selectWindows, parseSelector } = require('../.tmp/smoke/main/capabilities/win.window.query.js')
 const { planThemeChange } = require('../.tmp/smoke/main/capabilities/win.theme.mode.js')
 const { computeRect, resolveTarget } = require('../.tmp/smoke/main/capabilities/win.window.control.js')
-const { parseCombo, matchesCombo, registeredCombos } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
+const { parseCombo, matchesCombo, registeredCombos, stopHook } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
+const { TriggerStore } = require('../.tmp/smoke/main/triggerStore.js')
+const { TriggerService } = require('../.tmp/smoke/main/triggerService.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -622,6 +624,52 @@ async function main() {
 
   const badScope = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'F5', scope: 'window' }))
   assert.strictEqual(badScope.status, 'warn', '非 global 作用域必须 warn')
+
+  // ── 7l. 触发器服务：绑定 → 派发 → 目标真的跑了 ──────────────
+  const trigStore = new TriggerStore(path.join(workdir, 'triggers.json'))
+  const ptForTrigger = new LayerStore(
+    path.join(workdir, 'pt-trigger.json'),
+    { key: 'point', classLabel: 'PointClass', classes: catalogs.point, outputs: {} },
+    () => ({ status: 'ok', output: '触发执行了', elapsedMs: 1 })
+  )
+  const lnForTrigger = new LayerStore(
+    path.join(workdir, 'ln-trigger.json'),
+    { key: 'line', classLabel: 'FlowClass', classes: catalogs.line, outputs: {} },
+    () => ({ status: 'ok', output: '流程执行了', elapsedMs: 1 })
+  )
+  const triggerService = new TriggerService({
+    store: trigStore,
+    pointStore: () => ptForTrigger,
+    lineStore: () => lnForTrigger
+  })
+
+  const TRIGGER_TARGET = 'win.open.i-open-github@r1'
+  const added = triggerService.add({ combo: 'ctrl+alt+space', targetKind: 'point', targetId: TRIGGER_TARGET })
+  assert.strictEqual(added.ok, true, `绑定应成功: ${added.ok ? '' : added.message}`)
+  assert.strictEqual(added.binding.combo, 'Ctrl+Alt+Space', '组合键应规范化大小写')
+  assert.strictEqual(added.binding.id, `Ctrl+Alt+Space→${TRIGGER_TARGET}`, '绑定 id 应稳定')
+
+  const badCombo = triggerService.add({ combo: 'Ctrl', targetKind: 'point', targetId: TRIGGER_TARGET })
+  assert.strictEqual(badCombo.ok, false, '只有修饰键的组合应被拒绝')
+  const badTarget = triggerService.add({ combo: 'F5', targetKind: 'point', targetId: '不存在的实例' })
+  assert.strictEqual(badTarget.ok, false, '目标不存在应被拒绝')
+
+  const runsBefore = ptForTrigger.runs(100).length
+  const firedRecords = await triggerService.simulate('Ctrl+Alt+Space')
+  assert.strictEqual(firedRecords.length, 1, '应派发 1 条')
+  assert.strictEqual(firedRecords[0].status, 'ok')
+  assert.strictEqual(ptForTrigger.runs(100).length, runsBefore + 1, '目标实例必须真的跑了一次')
+  assert.strictEqual(trigStore.list()[0].fireCount, 1, '触发计数应 +1')
+
+  const notBound = await triggerService.simulate('F12')
+  assert.strictEqual(notBound[0].status, 'skipped', '没有绑定应 skipped')
+  assert.match(notBound[0].output, /没有匹配的绑定/)
+
+  assert.strictEqual(triggerService.remove(added.binding.id), true, '解绑应成功')
+  assert.strictEqual(triggerService.list().length, 0, '解绑后应为空')
+
+  stopHook()
+  console.log('✓ 触发器服务：绑定校验 / 派发执行 / 目标真跑 / 无绑定跳过 / 解绑 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

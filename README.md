@@ -227,6 +227,37 @@ win.key.trigger  keys=""                scope=global
 - uiohook-napi 1.5.5 在 **Node modules=137 与 Electron 45 modules=150 两套 ABI 下都能起停钩子**
 - 钩子必须能干净停止：`stopHook()` 会清空注册表并 `uIOhook.stop()`，冒烟测试每次都验证起停
 
+## 触发器服务（热键 → 实例）
+
+`win.key.trigger` 只负责「听见」；真正把它接到执行上的是 `src/main/triggerService.ts`：
+
+```text
+物理按键
+  → uiohook-napi 全局钩子
+  → parseCombo 命中（修饰键精确匹配）
+  → TriggerService.dispatch
+  → 查 trigger-bindings.json 里 enabled 的绑定
+  → 跑对应的 PointInstance / LineInstance
+  → 记录 FiringRecord（状态/输出/耗时）+ 绑定计数
+```
+
+绑定存在 `%APPDATA%\baiying-electron\trigger-bindings.json`，结构是
+`{ id, combo, targetKind: 'point'|'line', targetId, enabled, fireCount, lastFiredAt }`。
+
+**IPC：**
+
+| 通道 | 作用 |
+|---|---|
+| `trigger:list` | 返回绑定 + 最近触发记录 + 当前挂着的组合 + 注册失败原因 |
+| `trigger:add` | 新增绑定（会校验组合键可解析、目标实例存在） |
+| `trigger:remove` | 解绑 |
+| `trigger:simulate` | 不按键直接派发一次，走的是和真实按键**完全相同**的 dispatch 路径 |
+
+`trigger:simulate` 既是测试入口，也是将来「手动触发」按钮的底座。
+
+**还没做的：UI。** 目前只能通过 IPC 建绑定，界面上还没有入口——
+这是下一步，也是 `INPUT-TRIGGER-CLASSES.md` 里那张四层图最后缺的一块皮。
+
 ## 场层落点（landing）
 
 设计规定：**FieldClass 必须声明落点，否则不允许发布**（`npm run validate` 会拦），

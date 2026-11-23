@@ -104,6 +104,29 @@ let uiohookModule: { uIOhook: any; UiohookKey: Record<string, number> } | null =
 const registered = new Map<string, ParsedCombo>()
 const firings: TriggerFiring[] = []
 
+const firingListeners: ((combo: string) => void)[] = []
+
+/** 订阅「组合键被按下」事件；返回取消订阅函数 */
+export function onFiring(listener: (combo: string) => void): () => void {
+  firingListeners.push(listener)
+  return () => {
+    const index = firingListeners.indexOf(listener)
+    if (index >= 0) firingListeners.splice(index, 1)
+  }
+}
+
+/** 注册一个组合并确保钩子已启动；触发器服务用它批量挂绑定 */
+export function registerCombo(combo: ParsedCombo): { ok: boolean; reason?: string } {
+  const hook = ensureHook()
+  if (!hook.ok) return hook
+  registered.set(combo.label, combo)
+  return { ok: true }
+}
+
+export function unregisterCombo(label: string): boolean {
+  return registered.delete(label)
+}
+
 /** 读取最近触发记录（供 IPC / 后续触发器服务消费） */
 export function recentFirings(limit = 20): TriggerFiring[] {
   return firings.slice(0, Math.max(1, Math.min(limit, 100)))
@@ -138,6 +161,13 @@ function ensureHook(): { ok: boolean; reason?: string } {
         if (!matchesCombo(combo, event, mod.UiohookKey)) continue
         firings.unshift({ at: Date.now(), combo: label })
         if (firings.length > 50) firings.length = 50
+        for (const listener of firingListeners) {
+          try {
+            listener(label)
+          } catch {
+            // 订阅方出错不能影响钩子本身
+          }
+        }
       }
     })
 

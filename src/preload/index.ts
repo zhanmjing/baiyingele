@@ -59,10 +59,15 @@ const api = {
     ipcRenderer.invoke('runs:history', limit),
   undoFieldLanding: (token: string): Promise<{ ok: boolean; message: string }> =>
     ipcRenderer.invoke('field:undo', token),
-  getRecentTriggers: (
-    limit = 20
-  ): Promise<{ combos: string[]; firings: { at: number; combo: string }[] }> =>
-    ipcRenderer.invoke('trigger:recent', limit),
+  getTriggers: (): Promise<{
+    bindings: unknown[]
+    firings: unknown[]
+    combos: string[]
+    failures: string[]
+  }> => ipcRenderer.invoke('trigger:list'),
+  addTrigger: (input: unknown): Promise<unknown> => ipcRenderer.invoke('trigger:add', input),
+  removeTrigger: (id: string): Promise<boolean> => ipcRenderer.invoke('trigger:remove', id),
+  simulateTrigger: (combo: string): Promise<unknown[]> => ipcRenderer.invoke('trigger:simulate', combo),
   ...layerApi
 }
 

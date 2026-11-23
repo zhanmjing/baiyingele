@@ -9,9 +9,15 @@ declare global {
       openDataDir: () => Promise<boolean>
       getRunHistory: (limit?: number) => Promise<RunHistoryItem[]>
       undoFieldLanding: (token: string) => Promise<{ ok: boolean; message: string }>
-      getRecentTriggers: (
-        limit?: number
-      ) => Promise<{ combos: string[]; firings: { at: number; combo: string }[] }>
+      getTriggers: () => Promise<{
+        bindings: unknown[]
+        firings: unknown[]
+        combos: string[]
+        failures: string[]
+      }>
+      addTrigger: (input: unknown) => Promise<unknown>
+      removeTrigger: (id: string) => Promise<boolean>
+      simulateTrigger: (combo: string) => Promise<unknown[]>
     }
   }
 }

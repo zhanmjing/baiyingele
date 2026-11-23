@@ -8,7 +8,9 @@ import { createLineRunner } from './flowRuntime'
 import { applyLanding } from './fieldRuntime'
 import { UndoJournal } from './undoJournal'
 import { decideLanding } from '../shared/fieldLanding'
-import { recentFirings, registeredCombos } from './capabilities/win.key.trigger'
+import { registeredCombos } from './capabilities/win.key.trigger'
+import { TriggerStore } from './triggerStore'
+import { TriggerService } from './triggerService'
 import { lineProfiles } from '../shared/lineCatalog'
 import {
   LayerStore,
@@ -125,6 +127,13 @@ app.whenReady().then(() => {
     (await runCapability(context)) ?? mockRunner(context)
   const undoJournal = new UndoJournal(join(dataDir, 'field-undo.json'))
 
+  /** 触发器服务：钩子命中 → 查绑定 → 跑点/线实例 */
+  const triggerService = new TriggerService({
+    store: new TriggerStore(join(dataDir, 'trigger-bindings.json')),
+    pointStore: () => store('point'),
+    lineStore: () => store('line')
+  })
+
   /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */
   const fieldRunner: InstanceRunner = async (context) => {
     const outcome = (await runCapability(context)) ?? (await mockRunner(context))
@@ -184,10 +193,17 @@ app.whenReady().then(() => {
     return true
   })
 
-  ipcMain.handle('trigger:recent', (_event, limit = 20) => ({
+  const triggerStatus = triggerService.start()
+
+  ipcMain.handle('trigger:list', () => ({
+    bindings: triggerService.list(),
+    firings: triggerService.recent(30),
     combos: registeredCombos(),
-    firings: recentFirings(limit)
+    failures: triggerStatus.failures
   }))
+  ipcMain.handle('trigger:add', (_event, input) => triggerService.add(input))
+  ipcMain.handle('trigger:remove', (_event, id: string) => triggerService.remove(id))
+  ipcMain.handle('trigger:simulate', (_event, combo: string) => triggerService.simulate(combo))
 
   ipcMain.handle('field:undo', (_event, token: string) => {
     const entry = undoJournal.take(token)
