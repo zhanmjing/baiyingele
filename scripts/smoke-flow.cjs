@@ -22,7 +22,7 @@ const path = require('node:path')
 
 const { LayerStore } = require('../.tmp/smoke/main/layerStore.js')
 const { createLineRunner, orderNodes, parseFlowArgs } = require('../.tmp/smoke/main/flowRuntime.js')
-const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities.js')
+const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -151,6 +151,26 @@ async function main() {
   const noSource = await CAPABILITIES['file.move'](ctx('file.move', { from: path.join(workdir, 'ghost.txt'), to: moveDst }))
   assert.strictEqual(noSource.status, 'warn', '源不存在必须 warn')
   console.log('✓ file.move：成功 / 拒绝覆盖 / 强制覆盖 / 源缺失 四种路径都正确')
+
+  // ── 7b. 真实能力：file.scan ──────────────────────────────────
+  const scanRoot = path.join(workdir, 'scan')
+  fs.mkdirSync(path.join(scanRoot, 'sub'), { recursive: true })
+  fs.writeFileSync(path.join(scanRoot, 'a.txt'), 'a', 'utf8')
+  fs.writeFileSync(path.join(scanRoot, 'b.md'), 'b', 'utf8')
+  fs.writeFileSync(path.join(scanRoot, 'sub', 'c.txt'), 'c', 'utf8')
+
+  const scanned = await CAPABILITIES['file.scan'](ctx('file.scan', { root: scanRoot, pattern: '*.txt', depth: '2', limit: '200' }))
+  assert.strictEqual(scanned.status, 'ok', `file.scan 应成功: ${scanned.output}`)
+  const scannedFiles = JSON.parse(scanned.value).map((item) => path.basename(item)).sort()
+  assert.deepStrictEqual(scannedFiles, ['a.txt', 'c.txt'], `pattern/depth 过滤不对: ${scannedFiles.join(',')}`)
+
+  const limitedScan = await CAPABILITIES['file.scan'](ctx('file.scan', { root: scanRoot, pattern: '*', depth: '2', limit: '1' }))
+  assert.match(limitedScan.output, /已截断到 limit=1/, `limit 应生效: ${limitedScan.output}`)
+  assert.strictEqual(JSON.parse(limitedScan.value).length, 1, 'limit 必须限制结果数')
+
+  const scanMissing = await CAPABILITIES['file.scan'](ctx('file.scan', { root: path.join(workdir, 'ghost-dir') }))
+  assert.strictEqual(scanMissing.status, 'warn', '目录不存在必须 warn')
+  console.log('✓ file.scan：模式过滤 / limit 截断 / 目录缺失 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

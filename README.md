@@ -74,6 +74,9 @@ npm run package
 | `npm run typecheck` | 主进程 + 渲染层类型检查（约 0.5s） |
 | `npm run validate` | 目录结构 + 跨层引用校验（软问题只报告） |
 | `npm run validate:strict` | 跨层引用未解析也计为失败 |
+| `npm run impl:gen` | 从 `src/main/capabilities/` 生成能力索引与渲染层清单 |
+| `npm run impl:check` | 校验能力清单与目录一致（`check` 已包含） |
+| `npm run new:point -- <id> …` | 新建点能力脚手架（目录 + 索引 + 可选能力骨架） |
 | `npm run refs` | 跨层引用五态解析（只读） |
 | `npm run refs:apply` | 按 `aliases.json` 自动改写命名漂移的引用 |
 | `npm run refs:write` | 生成 `requirements.generated.json` |
@@ -96,12 +99,19 @@ build/data/legacy/                           旧整包数据（只作追溯，�
         └─ npm run refs:write  → src/shared/requirements.generated.json
 ```
 
-补一个能力的完整动作：
+补一个能力的完整动作（**一条命令**）：
 
-1. 在 `build/data/catalog/point/` 新建 `<domain>.<verb>.json`
-2. 把 id 加进同目录 `_index.json`
-3. `npm run data:gen && npm run refs && npm run validate`
-4. 如果要真实执行，再在 `src/shared/implRegistry.ts` 登记、并在 `src/main/capabilities.ts` 写实现
+```bash
+npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pattern,depth,limit --impl
+```
+
+它会生成 `build/data/catalog/point/file.scan.json`、登记 `_index.json`、可选生成
+`src/main/capabilities/file.scan.ts` 骨架，并自动跑 `data:gen`（+ `impl:gen`）。
+
+然后只需要：改目录里的参数默认值 → 写实现 → `npm run refs && npm run validate`。
+
+> 新增能力模块 = 在 `src/main/capabilities/` 放一个导出 `id` / `summary` / `run` 的文件 + `npm run impl:gen`。
+> 忘了跑 `impl:gen` 会被 `npm run validate` 拦住（能力清单与目录不一致）。
 
 **跨层引用的五种状态**（`npm run refs`）：
 
@@ -127,6 +137,7 @@ build/data/legacy/                           旧整包数据（只作追溯，�
 | `file.write` | `node:fs` 写入 / 追加，`~` 展开为主目录 |
 | `file.read` | `node:fs` 读取，超过 `maxBytes` 截断；目录/缺失按 warn 处理 |
 | `file.move` | `node:fs` rename（`EXDEV` 回落 copy+unlink），`overwrite=false` 时不覆盖 |
+| `file.scan` | `node:fs` 递归扫描，`limit` 封顶，不可读目录跳过并计入说明 |
 | `notify.toast` | Electron `Notification` |
 | `win.http.request` | `fetch` + 10s 超时，返回状态码与字节数 |
 | `win.screen.capture` | `desktopCapturer` 枚举屏幕源 |
@@ -146,7 +157,8 @@ baiyingELE/
 │  ├─ shared/                        五层共用契约（主进程与渲染层同源）
 │  │  ├─ layerKeys.ts                层名唯一清单（不含 JSON，preload 可安全引用）
 │  │  ├─ layerApi.ts                 五层 IPC 类型契约（映射类型生成方法名）
-│  │  ├─ implRegistry.ts             哪些类是真实实现、哪些是模拟
+│  │  ├─ implRegistry.ts             哪些类是真实实现（读生成物）
+│  │  ├─ implemented.generated.ts    【生成】真实能力 id + 摘要
 │  │  ├─ pointCatalog.ts / lineCatalog.ts / surfaceCatalog.ts
 │  │  ├─ bodyCatalog.ts / fieldCatalog.ts
 │  │  ├─ generatedFullCatalogs.json  五层完整目录（由 build/data 生成）
@@ -156,7 +168,9 @@ baiyingELE/
 │  │  ├─ index.ts            Electron 主进程、窗口、循环注册五层 IPC
 │  │  ├─ layerRegistry.ts    层表：类目录 + 输出摘要（新增一层改这里）
 │  │  ├─ layerStore.ts       泛型实例 / 运行记录存储（五层共用一份）
-│  │  ├─ capabilities.ts     6 个真实能力实现（剪贴板/模板/写文件/通知/HTTP/抓屏）
+│  │  ├─ capabilities/       一能力一文件（id / summary / run）
+│  │  │  ├─ index.ts         【生成】能力汇总 + runCapability
+│  │  │  └─ _shared.ts       能力公共契约与工具
 │  │  └─ flowRuntime.ts      线层执行器：按数据流图逐节点执行并聚合 FlowRun
 │  ├─ preload/index.ts       contextBridge 安全桥（方法按层名循环生成）
 │  └─ renderer/

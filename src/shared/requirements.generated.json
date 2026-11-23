@@ -2,11 +2,11 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 78,
+    "ok": 80,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 163
+    "missing": 161
   },
   "requirements": [
     {
@@ -57,26 +57,6 @@
           "where": "gesture.target",
           "owner": "DR",
           "role": "打开终端",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.scan",
-      "layer": "point",
-      "capability": "point:file.scan",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.file-organizer",
-          "role": "能力执行",
-          "required": true
-        },
-        {
-          "where": "body.composition",
-          "owner": "body.backup-sync",
-          "role": "能力执行",
           "required": true
         }
       ]

@@ -1,35 +1,15 @@
 /**
- * 真实实现登记表（渲染层与主进程共用，不能 import electron）。
+ * 真实实现登记表的读取层。
  *
- * 这里列出的 classId 在 src/main/capabilities.ts 里有真正的副作用实现；
- * 其余类跑的是 layerStore 的模拟 runner，UI 必须标成「模拟」，不能让用户误以为能用。
- * capabilities.ts 用 ImplementedClassId 作为 CAPABILITIES 的键类型，
- * 因此两边少了/多了实现都会在 typecheck 阶段报错。
+ * 数据本体在 implemented.generated.ts（由 scripts/gen-impl-manifest.mjs 从
+ * src/main/capabilities/ 生成），这里只做查询封装。
+ * 渲染层不能 import electron，所以能力模块的摘要必须以产物形式带过来。
  */
-export const IMPLEMENTED_CLASS_IDS = [
-  'win.clipboard.get',
-  'text.template',
-  'file.write',
-  'file.read',
-  'file.move',
-  'notify.toast',
-  'win.http.request',
-  'win.screen.capture'
-] as const
+import { IMPLEMENTED_CLASS_IDS, IMPL_SUMMARY } from './implemented.generated'
 
 export type ImplementedClassId = (typeof IMPLEMENTED_CLASS_IDS)[number]
 
-/** 便于在 Inspector 里说明"这个类真的在做什么" */
-export const IMPL_SUMMARY: Record<ImplementedClassId, string> = {
-  'win.clipboard.get': 'Electron clipboard.readText / readImage',
-  'text.template': '纯函数：把 {{input}} 替换为上游输出',
-  'file.write': 'node:fs writeFile / appendFile（~ 展开为主目录）',
-  'file.read': 'node:fs 读取，超过 maxBytes 截断；目录或缺失按 warn 处理',
-  'file.move': 'node:fs rename（EXDEV 回落 copy+unlink），overwrite=false 时不覆盖',
-  'notify.toast': 'Electron Notification',
-  'win.http.request': 'fetch + 10s 超时\n返回 HTTP 状态码与字节数',
-  'win.screen.capture': 'desktopCapturer 枚举屏幕源'
-}
+export { IMPL_SUMMARY }
 
 const IMPLEMENTED = new Set<string>(IMPLEMENTED_CLASS_IDS)
 

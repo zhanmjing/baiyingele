@@ -15,6 +15,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { auditCatalogDir, diffAgainstRepo, generateFullCatalogs } from './gen-catalogs.mjs'
+import { drift as implDrift } from './gen-impl-manifest.mjs'
 import { ALIAS_PATH, collectRefs, groupRequirements, makeClassifier } from './reconcile-refs.mjs'
 
 const require = createRequire(import.meta.url)

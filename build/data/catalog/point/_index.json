@@ -18,6 +18,7 @@
     "file.write",
     "file.move",
     "file.read",
-    "notify.toast"
+    "notify.toast",
+    "file.scan"
   ]
 }

@@ -1167,6 +1167,77 @@
           }
         }
       ]
+    },
+    {
+      "id": "file.scan",
+      "name": "扫描目录",
+      "family": "file",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "递归扫描目录；limit 封顶防止扫根目录卡死，权限不足的子目录跳过并计入说明。",
+      "params": [
+        {
+          "key": "root",
+          "label": "root",
+          "type": "text",
+          "required": false,
+          "description": "root",
+          "defaultValue": ""
+        },
+        {
+          "key": "pattern",
+          "label": "pattern",
+          "type": "text",
+          "required": false,
+          "description": "pattern",
+          "defaultValue": "*"
+        },
+        {
+          "key": "depth",
+          "label": "depth",
+          "type": "number",
+          "required": false,
+          "description": "depth",
+          "defaultValue": "3"
+        },
+        {
+          "key": "limit",
+          "label": "limit",
+          "type": "number",
+          "required": false,
+          "description": "limit",
+          "defaultValue": "200"
+        }
+      ],
+      "instances": [
+        {
+          "id": "file.scan.i-recursive@r1",
+          "name": "i-recursive",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"root\":\"\",\"pattern\":\"*\",\"depth\":3,\"limit\":200}",
+          "params": {
+            "root": "",
+            "pattern": "*",
+            "depth": "3",
+            "limit": "200"
+          }
+        },
+        {
+          "id": "file.scan.i-flat@r1",
+          "name": "i-flat",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"root\":\"\",\"pattern\":\"*\",\"depth\":1,\"limit\":200}",
+          "params": {
+            "root": "",
+            "pattern": "*",
+            "depth": "1",
+            "limit": "200"
+          }
+        }
+      ]
     }
   ],
   "line": [
