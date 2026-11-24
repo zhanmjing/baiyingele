@@ -746,23 +746,34 @@
         }
       },
       {
-        "id": "format",
+        "id": "loop",
         "x": 250,
         "y": 150,
         "w": 160,
         "h": 64,
-        "label": "整理清单",
+        "label": "逐项遍历",
+        "kind": "gate",
+        "gate": "foreach",
+        "role": "loop"
+      },
+      {
+        "id": "read",
+        "x": 440,
+        "y": 150,
+        "w": 160,
+        "h": 64,
+        "label": "读取一项",
         "kind": "point",
-        "pointClass": "text.template",
-        "pointInstance": "text.template.i-plain@r1",
+        "pointClass": "file.read",
+        "pointInstance": "file.read.i-preview@r1",
         "role": "transform",
         "mapping": {
-          "input": "$input"
+          "path": "$input"
         }
       },
       {
         "id": "notify",
-        "x": 440,
+        "x": 630,
         "y": 150,
         "w": 160,
         "h": 64,
@@ -772,21 +783,30 @@
         "pointInstance": "notify.toast.i-system@r1",
         "role": "notify",
         "mapping": {
-          "title": "批量归档",
-          "body": "$input"
+          "title": "批量处理",
+          "body": "扫描并逐项读取完成"
         }
       }
     ],
     "edges": [
       {
         "from": "scan",
-        "to": "format",
+        "to": "loop",
         "label": "File[]"
       },
       {
-        "from": "format",
+        "from": "loop",
+        "to": "read",
+        "label": "each"
+      },
+      {
+        "from": "read",
+        "to": "loop"
+      },
+      {
+        "from": "loop",
         "to": "notify",
-        "label": "Text"
+        "label": "done"
       }
     ]
   },

@@ -205,10 +205,10 @@ async function main() {
     )
     return { store, ran }
   }
-  const flowCtx = (classId, description = '') => ({
+  const flowCtx = (classId, description = '', input = '') => ({
     def: { key: 'line', classLabel: 'FlowClass', classes: [], outputs: {} },
     instance: { id: `inst.${classId}`, classId, description, params: {} },
-    input: '',
+    input,
     args: {},
     params: {},
     findInstance: () => undefined
@@ -238,26 +238,97 @@ async function main() {
     assert.strictEqual(outcome.evidence.warned, 1, 'warn 计数应为 1')
   }
 
-  // C. 未实现的 gate（foreach）必须让流程停下，而不是跳过继续
+  // C. 除了 if / if-status / foreach 之外的 gate 必须让流程停下，而不是跳过继续
   {
     const { store } = scripted({})
     const customProfiles = {
-      'test.foreach': {
-        classId: 'test.foreach',
+      'test.unknown-gate': {
+        classId: 'test.unknown-gate',
         nodes: [
-          { id: 'loop', label: '遍历', kind: 'gate', gate: 'foreach', x: 0, y: 0, w: 1, h: 1 },
+          { id: 'loop', label: '未知门', kind: 'gate', gate: 'while', x: 0, y: 0, w: 1, h: 1 },
           { id: 'after', label: '后续', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 1, y: 0, w: 1, h: 1 }
         ],
         edges: [{ from: 'loop', to: 'after' }]
       }
     }
     const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
-    const outcome = await runner(flowCtx('test.foreach'))
+    const outcome = await runner(flowCtx('test.unknown-gate'))
     assert.strictEqual(outcome.status, 'warn', '未实现 gate 必须 warn')
     assert.match(outcome.output, /尚未实现/, `应说明 gate 未实现: ${outcome.output}`)
-    const trace = outcome.evidence.nodes
-    assert.deepStrictEqual(trace.map((n) => n.id), ['loop'], 'gate 之后的下游绝不能执行')
-    assert.strictEqual(outcome.evidence.halted !== null, true, '必须给出 halted 原因')
+    assert.deepStrictEqual(outcome.evidence.nodes.map((n) => n.id), ['loop'], 'gate 之后的下游绝不能执行')
+    assert.notStrictEqual(outcome.evidence.halted, null, '必须给出 halted 原因')
+  }
+
+  // C2. foreach：按列表逐项跑循环体，跑完再跑 done 分支
+  const foreachProfile = {
+    classId: 'test.foreach',
+    nodes: [
+      { id: 'loop', label: '遍历', kind: 'gate', gate: 'foreach', x: 0, y: 0, w: 1, h: 1 },
+      { id: 'body', label: '处理一项', kind: 'point', pointClass: 'clipboard.write', pointInstance: 'clipboard.write.i-text@r1', x: 1, y: 0, w: 1, h: 1 },
+      { id: 'done', label: '收尾', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 2, y: 0, w: 1, h: 1 }
+    ],
+    edges: [
+      { from: 'loop', to: 'body', label: 'each' },
+      { from: 'body', to: 'loop' },
+      { from: 'loop', to: 'done', label: 'done' }
+    ]
+  }
+  {
+    const { store, ran } = scripted({})
+    const customProfiles = { ...profiles, 'test.foreach': foreachProfile }
+    const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('test.foreach', '', JSON.stringify(['a.txt', 'b.txt', 'c.txt'])))
+    const bodyRuns = ran.filter((id) => id === 'clipboard.write.i-text@r1').length
+    const doneRuns = ran.filter((id) => id === 'notify.toast.i-system@r1').length
+    assert.strictEqual(outcome.status, 'ok', `foreach 正常时应 ok: ${outcome.output}`)
+    assert.strictEqual(bodyRuns, 3, `循环体应跑 3 次，实际 ${bodyRuns}`)
+    assert.strictEqual(doneRuns, 1, `done 分支应跑 1 次，实际 ${doneRuns}`)
+    const loopNode = outcome.evidence.nodes.find((n) => n.id === 'loop')
+    assert.strictEqual(loopNode.status, 'ok')
+    assert.match(outcome.output, /遍历 3\/3 项/, `应报告遍历数量: ${outcome.output}`)
+  }
+
+  // C3. foreach 输入不是列表 → 停下，不猜
+  {
+    const { store } = scripted({})
+    const customProfiles = { ...profiles, 'test.foreach': foreachProfile }
+    const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('test.foreach', '', '这不是列表'))
+    assert.strictEqual(outcome.status, 'warn', '非列表输入必须 warn')
+    assert.match(outcome.output, /既不是 JSON 数组也不是多行列表/, `应说明原因: ${outcome.output}`)
+  }
+
+  // C4. foreach 超过迭代上限 → 停下，不静默截断
+  {
+    const { store } = scripted({})
+    const customProfiles = { ...profiles, 'test.foreach': foreachProfile }
+    const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const many = JSON.stringify(Array.from({ length: 101 }, (_, i) => `f${i}.txt`))
+    const outcome = await runner(flowCtx('test.foreach', '', many))
+    assert.strictEqual(outcome.status, 'warn')
+    assert.match(outcome.output, /超过上限/, `应说明超限: ${outcome.output}`)
+  }
+
+  // C5. foreach 缺少 each 出边 → 结构性错误，停下说清楚
+  {
+    const { store } = scripted({})
+    const broken = {
+      ...foreachProfile,
+      classId: 'test.foreach-broken',
+      edges: [{ from: 'loop', to: 'done', label: 'done' }]
+    }
+    const customProfiles = { ...profiles, 'test.foreach-broken': broken }
+    const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('test.foreach-broken', '', JSON.stringify(['x'])))
+    assert.strictEqual(outcome.status, 'warn')
+    assert.match(outcome.output, /缺少 each 出边/, `应指出结构问题: ${outcome.output}`)
+  }
+
+  // C6. entryNodes：foreach 的回边不算入度，gate 仍是入口
+  {
+    const { entryNodes } = require('../.tmp/smoke/main/flowRuntime.js')
+    const entries = entryNodes(foreachProfile).map((n) => n.id)
+    assert.deepStrictEqual(entries, ['loop'], `foreach 图的入口应只有 loop，实际 ${entries}`)
   }
 
   // D. 子流程：父流程里真的把子流程跑完，再继续后续节点

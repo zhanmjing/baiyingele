@@ -13,14 +13,14 @@
       "name": "invoice-company",
       "rev": 6,
       "status": "active",
-      "detail": "company；zh OCR"
+      "detail": "company；zh OCR；path=%USERPROFILE%\\Downloads；pattern=*.pdf"
     },
     {
       "id": "inst.invoice-personal@r2",
       "name": "invoice-personal",
       "rev": 2,
       "status": "active",
-      "detail": "personal；en OCR"
+      "detail": "personal；en OCR；path=%USERPROFILE%\\Documents；pattern=*.txt"
     }
   ]
 }

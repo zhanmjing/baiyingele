@@ -1878,9 +1878,9 @@
           "name": "invoice-company",
           "rev": 6,
           "status": "active",
-          "description": "company；zh OCR",
+          "description": "company；zh OCR；path=%USERPROFILE%\\Downloads；pattern=*.pdf",
           "params": {
-            "detail": "company；zh OCR"
+            "detail": "company；zh OCR；path=%USERPROFILE%\\Downloads；pattern=*.pdf"
           }
         },
         {
@@ -1888,9 +1888,9 @@
           "name": "invoice-personal",
           "rev": 2,
           "status": "active",
-          "description": "personal；en OCR",
+          "description": "personal；en OCR；path=%USERPROFILE%\\Documents；pattern=*.txt",
           "params": {
-            "detail": "personal；en OCR"
+            "detail": "personal；en OCR；path=%USERPROFILE%\\Documents；pattern=*.txt"
           }
         }
       ]
