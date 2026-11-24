@@ -150,10 +150,11 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.window.query` | **koffi 直调 user32** 枚举窗口（~0.35ms/次），koffi 不可用时自动回退 PowerShell |
 | `win.window.control` | koffi 控制窗口：focus / move / topmost / close；支持按 `hwnd` 精确指定 |
 | `win.key.send` | koffi **SendInput** 真实发送组合键（走系统输入队列，目标程序分辨不出真假） |
+| `win.audio.volume` | koffi 调 **CoreAudio COM**（`IAudioEndpointVolume`）精确控音量/静音，写完读回校验 |
 | `win.key.trigger` | **uiohook-napi** 全局热键监听（常驻钩子，不是一次性执行） |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
-其余 82 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 81 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
@@ -198,6 +199,51 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 
 仍为模拟、需要进一步能力的：`win.key.trigger`（全局键盘钩子，候选 `uiohook-napi`）、
 `win.window.control`、`win.audio.volume`、`win.display.brightness`、`win.key.send`、`ui.form`。
+
+### 音量为什么要走 COM
+
+调音量没有对应的 Win32 导出函数。三条路里：
+
+| 方案 | 能做什么 | 问题 |
+|---|---|---|
+| `SendInput` 发多媒体键 `VK_VOLUME_UP` | 只能步进/静音 | **设不了指定的 30%** |
+| `waveOutSetVolume` | 看起来能设 | Win7 之后基本不作用于主音量 |
+| **CoreAudio `IAudioEndpointVolume`（COM）** | 精确读写 + 静音 | 要自己调 COM |
+
+选了 COM，因为 `i-vol-30` 这个实例就是要「设成 30%」，步进做不到。
+
+**koffi 调 COM 的关键语义**（都是实测出来的，不是查文档猜的）：
+
+```js
+// 接口指针 → vtable：读该地址处存的指针
+const vtable = koffi.decode(对象地址, 'void *')
+// vtable 槽位 → 函数地址
+const fn = koffi.decode(vtable, 序号 * 8, 'void *')
+// 调函数指针（this 作为第一个参数自动补上）
+koffi.call(fn, 原型, 对象地址, ...真实参数)
+```
+
+`_com.ts` 把这套收敛成 `guid()` / `coInitialize()` / `createInstance()` / `callMethod()` 四个函数，
+**所有 C 签名只写在这一个文件里** —— 和 `_win32.ts` 同一条规矩。
+
+**验证结果（真机）：**
+
+```
+只读音量: 11% · 未静音
+set 42% → 音量 11% → 42%
+set 77% → 音量 30% → 77%
++5/-5   → 77% → 82% → 77%   （连跑 3 轮都一致）
+mute / unmute / toggle×2 → 全部 ok
+还原     → 10.8% → 11%      RESTORE_OK
+```
+
+### 真机跑出来的两个坑
+
+1. **`action: 'set'` 不能当"读数"用** —— 它真的会改音量。第一版验证脚本用 `set level=50` 想探当前值，
+   直接把用户音量从 10.8% 设成了 50%。所以补了一个**只读的 `get`** 动作（L0 语义，两个字段都是 null）。
+2. **Windows 会把音量对齐到硬件台阶（实测 2%）** —— `+5%` 从 42% 出发得到的是 46% 而不是 47%。
+   第一版用「读回值必须等于目标值」来校验，会误报失败。改成**按动作语义判定**：
+   `set` 要求误差 ≤1%，`up`/`down` 只要求方向对（到顶/到底则不要求变化），静音要求精确相等。
 
 ### 窗口控制踩到的两个坑
 

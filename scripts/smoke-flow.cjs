@@ -91,6 +91,8 @@ const { TriggerStore } = require('../.tmp/smoke/main/triggerStore.js')
 const { TriggerService } = require('../.tmp/smoke/main/triggerService.js')
 const gesture = require('../.tmp/smoke/shared/gestureRecognizer.js')
 const keysend = require('../.tmp/smoke/main/capabilities/win.key.send.js')
+const volmod = require('../.tmp/smoke/main/capabilities/win.audio.volume.js')
+const comm = require('../.tmp/smoke/main/capabilities/_com.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -870,6 +872,61 @@ async function main() {
     assert.match(realSend.output, /koffi|发送失败/, `非预期失败: ${realSend.output}`)
     console.log(`· win.key.send 实机跳过：${realSend.output.slice(0, 60)}`)
   }
+
+  // ── 7o. win.audio.volume：计划纯函数 / GUID / 只读读音量 ────────
+  const VOL_STATE = { level: 0.5, mute: false }
+  assert.deepStrictEqual(volmod.planVolumeChange('get', VOL_STATE, 5, 50), { level: null, mute: null }, 'get 不应改任何东西')
+  assert.deepStrictEqual(volmod.planVolumeChange('up', VOL_STATE, 5, 50), { level: 0.55, mute: null })
+  assert.deepStrictEqual(volmod.planVolumeChange('down', VOL_STATE, 5, 50), { level: 0.45, mute: null })
+  assert.deepStrictEqual(volmod.planVolumeChange('set', VOL_STATE, 5, 30), { level: 0.3, mute: null })
+  assert.deepStrictEqual(volmod.planVolumeChange('mute', VOL_STATE, 5, 50), { level: null, mute: true })
+  assert.deepStrictEqual(volmod.planVolumeChange('unmute', { level: 0.5, mute: true }, 5, 50), { level: null, mute: false })
+  assert.deepStrictEqual(volmod.planVolumeChange('toggle', VOL_STATE, 5, 50), { level: null, mute: true })
+  assert.deepStrictEqual(volmod.planVolumeChange('toggle', { level: 0.5, mute: true }, 5, 50), { level: null, mute: false })
+
+  // 边界钳制：到顶就是 1，到底就是 0
+  assert.strictEqual(volmod.planVolumeChange('up', { level: 0.98, mute: false }, 5, 50).level, 1)
+  assert.strictEqual(volmod.planVolumeChange('down', { level: 0.02, mute: false }, 5, 50).level, 0)
+  assert.strictEqual(volmod.planVolumeChange('set', VOL_STATE, 5, 150).level, 1, '超过 100% 应钳到 1')
+  assert.strictEqual(volmod.planVolumeChange('set', VOL_STATE, 5, -20).level, 0, '负数应钳到 0')
+  assert.strictEqual(volmod.planVolumeChange('explode', VOL_STATE, 5, 50), null, '未知动作应返回 null')
+
+  // GUID 解析：字节序是 COM 的老坑（前 3 段小端，后 8 字节原样）
+  const g = comm.guid('BCDE0395-E52F-467C-8E3D-C4579291692E')
+  assert.strictEqual(g.length, 16)
+  assert.strictEqual(g.readUInt32LE(0), 0xbcde0395, 'Data1 小端')
+  assert.strictEqual(g.readUInt16LE(4), 0xe52f, 'Data2 小端')
+  assert.strictEqual(g.readUInt16LE(6), 0x467c, 'Data3 小端')
+  assert.strictEqual(g[8], 0x8e, 'Data4 原样')
+  assert.deepStrictEqual(
+    comm.guid('{bcde0395-e52f-467c-8e3d-c4579291692e}'),
+    g,
+    '大小写和花括号不影响结果'
+  )
+  let guidThrew = false
+  try { comm.guid('不是GUID') } catch { guidThrew = true }
+  assert.strictEqual(guidThrew, true, '非法 GUID 应抛错')
+
+  const volumeRead = await CAPABILITIES['win.audio.volume'](ctx('win.audio.volume', { action: 'get' }))
+  if (volumeRead.status === 'ok') {
+    assert.strictEqual(volumeRead.evidence.backend, 'coreaudio')
+    const level = volumeRead.evidence.after.level
+    assert.ok(level >= 0 && level <= 1, `音量应在 0..1，得到 ${level}`)
+
+    // 写路径：设成「当前值」，能验证 SetMasterVolumeLevelScalar 通，且不产生净变化
+    const roundTrip = await CAPABILITIES['win.audio.volume'](
+      ctx('win.audio.volume', { action: 'set', level: String(Math.round(level * 100)) })
+    )
+    assert.strictEqual(roundTrip.status, 'ok', `回写当前值应成功: ${roundTrip.output}`)
+    assert.ok(Math.abs(roundTrip.evidence.after.level - level) < 0.011, '回写后音量应基本不变')
+    console.log('✓ win.audio.volume：计划纯函数 / GUID 解析 / CoreAudio 读写（零净变化）都正确')
+  } else {
+    assert.match(volumeRead.output, /koffi|音频端点/, `非预期失败: ${volumeRead.output}`)
+    console.log(`· win.audio.volume 实机跳过：${volumeRead.output.slice(0, 60)}`)
+  }
+
+  const badApp = await CAPABILITIES['win.audio.volume'](ctx('win.audio.volume', { action: 'up', app: 'chrome.exe' }))
+  assert.strictEqual(badApp.status, 'warn', '应用级音量应明确拒绝')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

@@ -12,16 +12,17 @@ import * as cap6 from './file.write'
 import * as cap7 from './notify.toast'
 import * as cap8 from './text.template'
 import * as cap9 from './translate.text'
-import * as cap10 from './win.clipboard.get'
-import * as cap11 from './win.http.request'
-import * as cap12 from './win.key.send'
-import * as cap13 from './win.key.trigger'
-import * as cap14 from './win.ocr.read'
-import * as cap15 from './win.open'
-import * as cap16 from './win.screen.capture'
-import * as cap17 from './win.theme.mode'
-import * as cap18 from './win.window.control'
-import * as cap19 from './win.window.query'
+import * as cap10 from './win.audio.volume'
+import * as cap11 from './win.clipboard.get'
+import * as cap12 from './win.http.request'
+import * as cap13 from './win.key.send'
+import * as cap14 from './win.key.trigger'
+import * as cap15 from './win.ocr.read'
+import * as cap16 from './win.open'
+import * as cap17 from './win.screen.capture'
+import * as cap18 from './win.theme.mode'
+import * as cap19 from './win.window.control'
+import * as cap20 from './win.window.query'
 
 const MODULES = [
   cap0,
@@ -43,7 +44,8 @@ const MODULES = [
   cap16,
   cap17,
   cap18,
-  cap19
+  cap19,
+  cap20
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(
