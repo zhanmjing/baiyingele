@@ -342,7 +342,7 @@ interface OpenPanelResult {
 
 > panel 作为面层一个功能类，不同的 panels 作为实例可以被应用
 
-### 9.1 为什么这个方案对：14 份一模一样的字段表
+### 8.1 为什么这个方案对：14 份一模一样的字段表
 
 实测 14 个 `panelClass` 的字段集：
 
@@ -357,7 +357,7 @@ interface OpenPanelResult {
 
 所以：**`surface.panel` 是类，那 14 个是实例。** 这和 `surface.form` 带 4 个实例是同一个结构。
 
-### 9.2 三种 kind，区别在「有没有状态」
+### 8.2 三种 kind，区别在「有没有状态」
 
 | kind | 有状态？ | 动词 | 产物 |
 |---|---|---|---|
@@ -374,7 +374,7 @@ interface OpenPanelResult {
 
 把这个区别抹平，就会重犯「给面层套 run」的错。
 
-### 9.3 模型
+### 8.3 模型
 
 ```ts
 type PanelClass = {
@@ -408,7 +408,7 @@ type PanelApplication = {
 
 迁移：**14 个 `panelClass` → 14 个 `surface.panel` 实例；37 个 sub-entry → 37 条 `applications`。**
 
-### 9.4 为什么「应用」放在实例上，而不是加第三层
+### 8.4 为什么「应用」放在实例上，而不是加第三层
 
 如果每条 application 都是独立实体，就变成 `class → instance → application` 三层，
 而点/线/体都只有两层。**把 `applications` 作为实例上的数组字段**，
@@ -417,31 +417,94 @@ type PanelApplication = {
 维护者说的「甚至多个页面」正好落在 `PanelApplication.pages: string[]` 上：
 一条 application 可以同时承载 `prompt-input` + `streaming-response`。
 
-### 9.5 必须先定的命名规则（否则 apply 会挂错东西）
+### 8.5 其他层是怎么做的：跨层约定对照
 
-实测 **46 个面层实例里 25 个 id 前缀与所属类不一致**：
+实测五层的实例约定：
 
-| 所属类 | 实例 id | 问题 |
+| 层 | 实例数 | id 前缀 = 类 id | 带 `@rN` 修订号 | 实例字段 |
+|---|---:|---:|---:|---|
+| point | 48 | **48（100%）** | 48（100%） | `description / id / name / params / rev / status` |
+| body | 82 | **82（100%）** | 82（100%） | 同上 |
+| field | 79 | **79（100%）** | 79（100%） | 同上 |
+| line | 32 | **0** | 32（100%） | 同上 |
+| **surface** | 46 | **21（46%）** | **0** | 同上 |
+
+三条可以确认的跨层事实：
+
+1. **五层实例字段完全相同**，而且**没有一层有 `classId` 字段** ——
+   归属靠「嵌套在哪个类下面」隐含，seed 里不需要重复写。
+2. **但运行时 `classId` 是一等字段**：`PointInstanceRecord extends PointInstanceSeed`
+   并追加了 `classId / params / createdAt / updatedAt`，由 store 在载入时按父数组补上。
+3. **`createInstance()` 生成 id 的规则是 `classId.slug@rN`**：
+
+```ts
+const base = `${pointClass.id}.${slug(name)}`
+let id = `${base}@r1`          // 重名则 base-2@r1、base-3@r1 …
+```
+
+也就是说**代码自己的约定就是 `classId.语义名@修订号`**。point / body / field 三层 100% 符合，
+line 自行改成了 `inst.xxx@rN`，**surface 最偏：一半不带类前缀，而且一个 `@rN` 都没有**。
+
+补充事实：**没有任何一处代码按实例 id 前缀拆归属**（唯一的 `split('.')` 用在 `classId` 上，
+取的是层名）。`LayerStore.instance(id)` 是精确 id 扫描。所以前缀不一致**不会造成功能故障**，
+但它让「人工编写跨层引用」这件事变得靠猜 —— 而 `body.composition` 和 `panel.content`
+恰恰都是人工编写的引用。
+
+### 8.6 线层的双层结构是最该照搬的
+
+```text
+LineClass    → lineProfiles[classId]     每类一张图
+LineInstance → $args + 节点 mapping       实例差异靠参数，不靠复制图
+```
+
+`lineProfiles`（13 个键）和 `bodyProfiles`（29 个键）都是**按 classId 存**，不是按实例存。
+
+这就是 Panel 该有的形状：
+
+| 线层 | 面层对应 |
+|---|---|
+| `LineClass` + 一张数据流图 | `surface.panel` + 一套 `regions / states / behaviors` |
+| `LineInstance` + `$args` | panel 实例 + `config` |
+| 图里 `pointClass`（类型约束）+ `pointInstance`（具体绑定） | panel 里 `pageClass`（约束）+ `pages`（绑定） |
+| `FlowInstance` 把槽位绑到 `PointInstanceRef` | `PanelApplication` 把区域绑到 page 实例 |
+
+**维护者说的「panel 作为功能类，不同 panels 作为实例可以被应用」，
+正是把 `FlowClass / FlowInstance` 这套双层结构搬到面层。** 不必发明新的层级。
+
+### 8.7 结论：surface 该向多数派收敛
+
+| 项 | 建议 | 依据 |
 |---|---|---|
-| `surface.form` | `surface.settings.vpn` | 用语义名 |
-| `surface.table` | `surface.run-history.table` | 看着像 `run-history` 的实例 |
-| `surface.notification` | `surface.notify.vpn` | 类名缩写 |
+| 实例 id 格式 | `classId.语义名@rN`，如 `surface.form.settings-vpn@r1` | point/body/field 三层 100% 如此，且是 `createInstance` 自己的规则 |
+| 归属判定 | 靠父数组 → 运行时 `classId`，**不靠前缀** | 五层都没有 seed 级 `classId`，但运行时都有 |
+| 修订号 | 必须带 `@rN` | point/body/field/line 四层 100% 带，只有 surface 没带 |
+| 语义可读性 | 保留在 id 的**后缀**里 | `surface.form.settings-vpn@r1` 一样能读懂「这是 settings 的 vpn 表单」 |
+
+所以 §8.5 原提的三种规则里，选 **(a) 严格 `classId.instance@rN`**，
+不是因为我偏好严格，而是因为**其余四层已经这么做了，surface 是唯一的例外**。
+
+### 8.8 面层实例 id 的实际偏差（证据）
+
+不想改 id 的话，至少要知道偏了多少。46 个面层实例里 **25 个前缀与所属类不一致**：
+
+| 所属类 | 实例 id | 偏差类型 |
+|---|---|---|
+| `surface.form` | `surface.settings.vpn` | 用语义名当爹 |
+| `surface.table` | `surface.run-history.table` | 看着像 `run-history` 的实例，实际是 table |
+| `surface.notification` | `surface.notify.vpn` | 类名被缩写了 |
 | `surface.metric-card` | `metric.cpu` | 连 `surface.` 前缀都没有 |
 
-现在凡**按 id 前缀猜归属**的代码都会猜错（`surface.run-history.table` 会被判给 `surface.run-history`）。
+按 §8.7 的结论（向 `classId.语义名@rN` 收敛），这 25 个要重命名。
 
-三种可选规则：
+**但重命名是有代价的**：`panel.content`、`body.composition`、`requirements.generated.json`
+里所有引用这些 id 的地方都得同步改。所以这件事应该和 §8 的 panel 迁移**一次性做完**，
+不要分两次动数据。
 
-| 规则 | 例子 | 评价 |
-|---|---|---|
-| (a) 严格 `class.instance` | `surface.form.settings-vpn` | 机器好解析，人看不懂这实例是干嘛的 |
-| **(b) 语义名 + 显式 `classId`** | `surface.settings.vpn` + `classId: surface.form` | **推荐**：人可读，归属靠字段不靠前缀 |
-| (c) 保持现状，全靠 `classId` 解析 | 同 (b) 但不改 id | 也行，但得先补 `classId` 字段 |
+如果暂时不想动 id，最小可行做法是：**在 seed 里给每个实例显式补 `classId` 字段**
+（运行时本来就有，只是 seed 靠嵌套隐含），让工具和人都能确定归属，
+id 以后再找机会统一。
 
-**推荐 (b)**：实例 id 是语义名（对人有意义），归属一律由 `classId` 字段决定。
-现在面层实例**根本没有 `classId` 字段**（靠外层数组隐含），这是 (c) 走不通的根因。
-
-### 9.6 迁移后的账
+### 8.9 迁移后的账
 
 | 项 | 现状 | 迁移后 |
 |---|---:|---:|
