@@ -16,6 +16,7 @@
     "surface.notification",
     "surface.tray_menu",
     "surface.hud",
-    "surface.metric_card"
+    "surface.metric_card",
+    "surface.panel"
   ]
 }

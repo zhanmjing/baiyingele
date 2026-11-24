@@ -1,7 +1,7 @@
 {
   "panelClasses": [
     {
-      "id": "panel.inspector",
+      "id": "surface.panel.inspector@r1",
       "name": "Inspector Panel",
       "icon": "◧",
       "group": "inspect",
@@ -37,6 +37,8 @@
         "Esc close",
         "keyboard resize"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "point",
@@ -103,11 +105,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.settings",
+      "id": "surface.panel.settings@r1",
       "name": "Settings Panel",
       "icon": "⚙",
       "group": "edit",
@@ -142,6 +143,8 @@
         "focus trap",
         "Esc close"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "app",
@@ -208,11 +211,10 @@
           "rev": 2,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.command",
+      "id": "surface.panel.command@r1",
       "name": "Command Panel",
       "icon": "⌘",
       "group": "ai",
@@ -247,6 +249,8 @@
         "role=listbox",
         "aria-activedescendant"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "global",
@@ -314,11 +318,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.run-history",
+      "id": "surface.panel.run_history@r1",
       "name": "Run History Panel",
       "icon": "◷",
       "group": "data",
@@ -354,6 +357,8 @@
         "keyboard rows",
         "aria-live"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "flow",
@@ -419,11 +424,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.artifact",
+      "id": "surface.panel.artifact@r1",
       "name": "Artifact Panel",
       "icon": "▤",
       "group": "edit",
@@ -461,6 +465,8 @@
         "keyboard resize",
         "live region"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "code",
@@ -530,11 +536,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.chat",
+      "id": "surface.panel.chat@r1",
       "name": "Copilot Chat Panel",
       "icon": "✦",
       "group": "ai",
@@ -576,6 +581,8 @@
         "live region",
         "focus management"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "support",
@@ -659,11 +666,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.approval",
+      "id": "surface.panel.approval@r1",
       "name": "Approval Panel",
       "icon": "⚠",
       "group": "ai",
@@ -700,6 +706,8 @@
         "focus trap",
         "aria-describedby"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "tool-call",
@@ -769,11 +777,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.notifications",
+      "id": "surface.panel.notifications@r1",
       "name": "Notification Panel",
       "icon": "◍",
       "group": "system",
@@ -806,6 +813,8 @@
         "role=log",
         "aria-live=polite"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "center",
@@ -872,11 +881,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.launcher",
+      "id": "surface.panel.launcher@r1",
       "name": "Launcher Panel",
       "icon": "⌘",
       "group": "system",
@@ -910,6 +918,8 @@
         "role=grid",
         "keyboard navigation"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "desktop",
@@ -955,11 +965,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.dashboard",
+      "id": "surface.panel.dashboard@r1",
       "name": "Dashboard Panel",
       "icon": "◫",
       "group": "data",
@@ -995,6 +1004,8 @@
         "data table semantics",
         "aria-live"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "system",
@@ -1060,11 +1071,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.diff",
+      "id": "surface.panel.diff@r1",
       "name": "Diff Panel",
       "icon": "≠",
       "group": "edit",
@@ -1100,6 +1110,8 @@
         "role=region",
         "keyboard navigation"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "flow-version",
@@ -1144,11 +1156,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.preview",
+      "id": "surface.panel.preview@r1",
       "name": "Preview Panel",
       "icon": "◉",
       "group": "edit",
@@ -1183,6 +1194,8 @@
         "role=region",
         "keyboard zoom"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "file",
@@ -1229,11 +1242,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.trace",
+      "id": "surface.panel.trace@r1",
       "name": "Tool Trace Panel",
       "icon": "⌁",
       "group": "inspect",
@@ -1268,6 +1280,8 @@
         "role=region",
         "aria-live=polite"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "agent",
@@ -1313,11 +1327,10 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     },
     {
-      "id": "panel.console",
+      "id": "surface.panel.console@r1",
       "name": "Console Panel",
       "icon": "▤",
       "group": "data",
@@ -1353,6 +1366,8 @@
         "role=log",
         "aria-live=polite"
       ],
+      "version": "1",
+      "status": "active",
       "instances": [
         {
           "label": "logs",
@@ -1399,80 +1414,76 @@
           "rev": 1,
           "status": "active"
         }
-      ],
-      "version": "1.0.0"
+      ]
     }
   ],
   "gestures": [
     {
       "pattern": "LDR",
       "name": "打开 GitHub",
+      "kind": "flow",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "github",
+        "rev": 1
+      },
+      "effect": "L2",
+      "desc": "确保 VPN → 可达性 → 打开 URL → 通知"
+    },
+    {
+      "pattern": "UD",
+      "name": "检测 VPN 状态",
+      "kind": "point",
+      "target": {
+        "layer": "point",
+        "name": "vpn",
+        "instance": "default_status",
+        "rev": null,
+        "dangling": true
+      },
+      "effect": "L0",
+      "desc": "读取进程/窗口/隧道状态，不做修改"
+    },
+    {
+      "pattern": "RL",
+      "name": "开发工作区",
+      "kind": "flow",
+      "target": {
+        "layer": "line",
+        "name": "open_workspace",
+        "instance": "dev",
+        "rev": 3
+      },
+      "effect": "L1",
+      "desc": "VS Code + 终端 + 双屏布局"
+    },
+    {
+      "pattern": "DR",
+      "name": "打开终端",
       "kind": "point",
       "target": {
         "layer": "point",
         "name": "open",
-        "instance": "github",
-        "rev": 1
+        "instance": "terminal",
+        "rev": null,
+        "dangling": true
       },
       "effect": "L1",
-      "desc": "手势 LDR → 用默认浏览器打开 GitHub",
-      "targetKind": "point"
-    },
-    {
-      "pattern": "UD",
-      "name": "列出可见窗口",
-      "kind": "point",
-      "target": {
-        "layer": "point",
-        "name": "window_query",
-        "instance": "list_windows",
-        "rev": 1
-      },
-      "effect": "L0",
-      "desc": "手势 UD → 枚举当前可见窗口",
-      "targetKind": "point"
-    },
-    {
-      "pattern": "RL",
-      "name": "当前前台窗口",
-      "kind": "point",
-      "target": {
-        "layer": "point",
-        "name": "window_query",
-        "instance": "foreground",
-        "rev": 1
-      },
-      "effect": "L0",
-      "desc": "手势 RL → 查询前台窗口",
-      "targetKind": "point"
-    },
-    {
-      "pattern": "DR",
-      "name": "取剪贴板文本",
-      "kind": "point",
-      "target": {
-        "layer": "point",
-        "name": "clipboard_get",
-        "instance": "clip_text",
-        "rev": 1
-      },
-      "effect": "L0",
-      "desc": "手势 DR → 读取剪贴板文本",
-      "targetKind": "point"
+      "desc": "打开默认终端"
     },
     {
       "pattern": "DLU",
-      "name": "窗口置顶切换",
-      "kind": "point",
+      "name": "确保 VPN",
+      "kind": "flow",
       "target": {
-        "layer": "point",
-        "name": "window_control",
-        "instance": "topmost",
-        "rev": 1
+        "layer": "line",
+        "name": "ensure_vpn",
+        "instance": "ask",
+        "rev": 2
       },
-      "effect": "L1",
-      "desc": "手势 DLU → 切换目标窗口置顶",
-      "targetKind": "point"
+      "effect": "L2",
+      "desc": "检测 → 启动/询问 → 等待 → 连接"
     }
   ],
   "dockTabs": [

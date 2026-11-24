@@ -2,40 +2,13 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 141,
+    "ok": 139,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 142
+    "missing": 144
   },
   "requirements": [
-    {
-      "id": "req.line.open_external_site.openai",
-      "type": "instance",
-      "ref": {
-        "layer": "line",
-        "name": "open_external_site",
-        "instance": "openai",
-        "rev": null,
-        "dangling": true
-      },
-      "layer": "line",
-      "capability": "line:line.open_external_site.openai",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "openai",
-          "role": "OpenAI",
-          "required": true
-        },
-        {
-          "where": "dock.tile.target",
-          "owner": "web-openai",
-          "role": "OpenAI",
-          "required": true
-        }
-      ]
-    },
     {
       "id": "req.point.open.terminal",
       "type": "instance",
@@ -59,6 +32,39 @@
           "where": "dock.tile.target",
           "owner": "dev-terminal",
           "role": "终端",
+          "required": true
+        },
+        {
+          "where": "gesture.target",
+          "owner": "DR",
+          "role": "打开终端",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.open_external_site.openai",
+      "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "openai",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.openai",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "openai",
+          "role": "OpenAI",
+          "required": true
+        },
+        {
+          "where": "dock.tile.target",
+          "owner": "web-openai",
+          "role": "OpenAI",
           "required": true
         }
       ]
@@ -2090,6 +2096,27 @@
           "where": "body.composition",
           "owner": "body.external_access",
           "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.point.vpn.default_status",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "vpn",
+        "instance": "default_status",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "point",
+      "capability": "point:point.vpn.default_status",
+      "requiredBy": [
+        {
+          "where": "gesture.target",
+          "owner": "UD",
+          "role": "检测 VPN 状态",
           "required": true
         }
       ]

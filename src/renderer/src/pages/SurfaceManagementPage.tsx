@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { refsToText, textToClassRefs, textToInstanceRefs } from '../../../shared/atomId'
 import {
   ArrowUpRight,
   CircleDot,
@@ -47,7 +48,7 @@ interface ResourceField { key: string; label: string; placeholder?: string; mult
 
 const resourceFields: Record<ResourceKind, ResourceField[]> = {
   'panel-class': [
-    { key: 'id', label: 'PanelClass ID', placeholder: 'panel.my-panel' },
+    { key: 'id', label: 'PanelClass ID', placeholder: 'surface.panel.my_panel@r1' },
     { key: 'name', label: '名称', placeholder: 'My Panel' },
     { key: 'icon', label: '图标', placeholder: '◧' },
     { key: 'group', label: 'Group', placeholder: 'inspect' },
@@ -155,7 +156,7 @@ function gestureTargetsFor(layer: LayerMeta, kind: 'point' | 'line'): GestureTar
 
 function parseHash(): { view: SurfaceView; id: string } {
   const [head, tail] = window.location.hash.replace(/^#/, '').split('/')
-  if (head.startsWith('panel.')) return { view: 'panels', id: decodeURIComponent(head) }
+  if (head.startsWith('surface.panel.') || head.startsWith('panel.')) return { view: 'panels', id: decodeURIComponent(head) }
   const view: SurfaceView = head === 'panels' || head === 'gestures' || head === 'hotkeys' || head === 'dock' ? head : 'surfaces'
   return { view, id: decodeURIComponent(tail ?? '') }
 }
@@ -218,7 +219,7 @@ export function SurfaceManagementPage({
   }, [layer.classes, query])
   const filteredPanelClasses = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return panelClasses.filter((item) => !q || [item.id, item.name, item.desc, item.group, item.content, ...item.instances.map((instance) => `${instance.label} ${instance.content}`)].join(' ').toLowerCase().includes(q))
+    return panelClasses.filter((item) => !q || [item.id, item.name, item.desc, item.group, JSON.stringify(item.content), ...item.instances.map((instance) => `${instance.label} ${JSON.stringify(instance.content)}`)].join(' ').toLowerCase().includes(q))
   }, [panelClasses, query])
 
   useEffect(() => {
@@ -365,7 +366,7 @@ export function SurfaceManagementPage({
     if (kind === 'panel-class') {
       const item = mode === 'edit' ? panelClasses.find((panel) => panel.id === id) : undefined
       form = item ? {
-        id: item.id, name: item.name, icon: item.icon, group: item.group, version: item.version, status: item.status ?? 'active', content: item.content, desc: item.desc,
+        id: item.id, name: item.name, icon: item.icon, group: item.group, version: item.version, status: item.status ?? 'active', content: refsToText(item.content), desc: item.desc,
         modes: item.modes.join(', '), regions: item.regions.join(', '), states: item.states.join(', '),
         behaviors: item.behaviors.join(', '), a11y: item.a11y.join(', ')
       } : { id: '', name: '', icon: '◧', group: 'custom', version: '1.0.0', status: 'active', content: 'surface.custom', desc: '', modes: 'right', regions: 'header, body, footer', states: 'ready', behaviors: 'resizable', a11y: '' }
@@ -373,9 +374,9 @@ export function SurfaceManagementPage({
       const owner = panelClasses.find((panel) => panel.id === parentId) ?? panelClass
       const item = mode === 'edit' ? owner?.instances.find((instance) => instance.label === id) : undefined
       form = item ? {
-        label: item.label, content: item.content, mode: item.mode, width: String(item.width),
+        label: item.label, content: refsToText(item.content), mode: item.mode, width: String(item.width),
         state: item.state, data: item.data, actions: item.actions.join(', ')
-      } : { label: '', content: owner?.content ?? '', mode: owner?.modes[0] ?? 'right', width: '380', state: 'ready', data: '', actions: '' }
+      } : { label: '', content: refsToText(owner?.content), mode: owner?.modes[0] ?? 'right', width: '380', state: 'ready', data: '', actions: '' }
     } else if (kind === 'gesture') {
       const item = mode === 'edit' ? gestureBindings.find((binding) => binding.pattern === id) : undefined
       form = item ? { pattern: item.pattern, name: item.name, kind: item.kind, target: item.target, effect: item.effect, desc: item.desc } : { pattern: '', name: '', kind: 'flow', target: '', effect: 'L1', desc: '' }
@@ -402,7 +403,7 @@ export function SurfaceManagementPage({
         id, name: value('name'), icon: value('icon') || '◧', group: value('group') || 'custom', desc: value('desc'),
         modes: splitResourceList(value('modes')), regions: splitResourceList(value('regions')),
         states: splitResourceList(value('states')), behaviors: splitResourceList(value('behaviors')),
-        a11y: splitResourceList(value('a11y')), content: value('content') || `surface.${id.replace(/^panel\./, '')}.content`,
+        a11y: splitResourceList(value('a11y')), content: textToClassRefs(value('content'), 'surface'),
         version: value('version') || '1.0.0', status: value('status') || 'active',
         instances: resourceEditor.mode === 'edit' ? panelClasses.find((panel) => panel.id === id)?.instances ?? [] : []
       }
@@ -415,7 +416,7 @@ export function SurfaceManagementPage({
       if (!value('label')) { onToast('PanelInstance label 不能为空'); return }
       if (resourceEditor.mode === 'create' && owner.instances.some((item) => item.label === value('label'))) { onToast('PanelInstance label 已存在'); return }
       const item: PanelInstance = {
-        label: value('label'), content: value('content'), mode: value('mode') || 'right', width: Number(value('width')) || 380,
+        label: value('label'), content: textToInstanceRefs(value('content'), 'surface'), mode: value('mode') || 'right', width: Number(value('width')) || 380,
         state: value('state') || 'ready', data: value('data'), actions: splitResourceList(value('actions')),
         rev: resourceEditor.mode === 'edit' ? (owner.instances.find((instance) => instance.label === resourceEditor.id)?.rev ?? 1) + 1 : 1,
         status: resourceEditor.mode === 'edit' ? (owner.instances.find((instance) => instance.label === resourceEditor.id)?.status ?? 'draft') : 'draft'
@@ -1064,7 +1065,7 @@ function panelContentFor(classItem: PanelClass, instance?: PanelInstance) {
   if (key === 'preview') return <div className="panel-wire-content"><div className="panel-wire-preview-box">PDF / Image / Video preview</div><div className="panel-wire-chips"><span>Zoom</span><span>Open external</span></div></div>
   if (key === 'trace') return <div className="panel-wire-content">{['tool: github.diff · 42 files · 120ms', 'tool: vpn.status · ok · 8ms', 'tool: file.preview · error · E_PERM'].map((item, index) => <div className="panel-wire-list-row" key={item}><i style={{ background: index === 2 ? '#ef4444' : '#22c55e' }} /><div><strong>{item.split(' · ')[0]}</strong><span>{item.split(' · ').slice(1).join(' · ')}</span></div><em>↻</em></div>)}</div>
   if (key === 'console') return <div className="panel-wire-content"><pre className="panel-wire-code">$ npm run dev{'\n'}<span className="add">ready in 820ms</span>{'\n'}$ npm test{'\n'}<span className="add">✓ 42 passing</span>{'\n'}<span className="del">✗ 1 failing</span>{'\n'}$ _</pre></div>
-  return <div className="panel-wire-content"><div className="panel-wire-box"><div className="panel-wire-title">Content</div><div className="panel-wire-row"><span>class</span><code>{classItem.id}</code></div><div className="panel-wire-row"><span>instance</span><code>{instance?.label ?? '—'}</code></div><div className="panel-wire-row"><span>state</span><code>{instance?.state ?? 'ready'}</code></div><div className="panel-wire-row"><span>content</span><code>{instance?.content ?? classItem.content}</code></div></div></div>
+  return <div className="panel-wire-content"><div className="panel-wire-box"><div className="panel-wire-title">Content</div><div className="panel-wire-row"><span>class</span><code>{classItem.id}</code></div><div className="panel-wire-row"><span>instance</span><code>{instance?.label ?? '—'}</code></div><div className="panel-wire-row"><span>state</span><code>{instance?.state ?? 'ready'}</code></div><div className="panel-wire-row"><span>content</span><code>{refsToText(instance?.content ?? classItem.content)}</code></div></div></div>
 }
 function PanelView({ classItem, instance, mode, width, viewState, anatomy, onModeChange, onWidthChange, onViewStateChange, onAnatomyChange, onSelectInstance, onToast }: {
   classItem?: PanelClass
@@ -1082,7 +1083,7 @@ function PanelView({ classItem, instance, mode, width, viewState, anatomy, onMod
 }) {
   if (!classItem) return <div className="point-empty"><PanelsTopLeft size={22} /><strong>没有面板类</strong></div>
   const previewContent = viewState === 'loading' ? <div className="panel-preview-skeleton">{[72, 90, 58, 82, 46].map((w, index) => <span key={index} style={{ width: `${w}%` }} />)}</div>
-    : viewState === 'empty' ? <div className="panel-preview-empty"><strong>No content</strong><span>{instance?.content || classItem.content} 还没有数据。可以运行上游流程或切换实例。</span><button className="btn small">Run upstream</button></div>
+    : viewState === 'empty' ? <div className="panel-preview-empty"><strong>No content</strong><span>{refsToText(instance?.content ?? classItem.content)} 还没有数据。可以运行上游流程或切换实例。</span><button className="btn small">Run upstream</button></div>
       : viewState === 'error' ? <div className="panel-preview-empty error"><strong>Panel failed to load</strong><span>内容返回错误。检查权限 / 网络 / 上游流程。</span><button className="btn small">Retry</button></div>
         : viewState === 'needsApproval' ? <div className="panel-preview-approval"><span className="line-kind-pill point">L2</span><span className="line-bind-state ph">irreversible · approval required</span><div><button className="btn small primary">Approve</button><button className="btn small">Deny</button></div></div>
           : viewState === 'streaming' ? <div className="panel-preview-stream"><div className="wire-msg me">帮我总结这个 PR 的风险。</div><div className="wire-msg">正在阅读 diff… tool: github.diff · 42 files</div><div className="wire-msg">发现 3 个风险点：权限检查缺失 / 错误分支未覆盖 / 缺少回归测试<span>▍</span></div></div>
@@ -1116,7 +1117,7 @@ function PanelView({ classItem, instance, mode, width, viewState, anatomy, onMod
       </div>
       <div className="panel-instance-list">
         <div className="surface-table-head"><span>PanelInstance</span><span>Mode</span><span>State</span><span>Rev</span></div>
-        {classItem.instances.map((item) => <button key={item.label} className={`panel-instance-row ${instance?.label === item.label ? 'active' : ''}`} onClick={() => onSelectInstance(item.label)}><div><strong>{item.label}</strong><code>{item.content}</code></div><span>{item.mode}</span><span className={`status-pill ${item.status}`}>{item.state}</span><em>r{item.rev}</em></button>)}
+        {classItem.instances.map((item) => <button key={item.label} className={`panel-instance-row ${instance?.label === item.label ? 'active' : ''}`} onClick={() => onSelectInstance(item.label)}><div><strong>{item.label}</strong><code>{refsToText(item.content)}</code></div><span>{item.mode}</span><span className={`status-pill ${item.status}`}>{item.state}</span><em>r{item.rev}</em></button>)}
       </div>
       <div className="panel-meta-strip">{classItem.states.map((state) => <span key={state}>{state}</span>)}{classItem.behaviors.map((behavior) => <span key={behavior}>{behavior}</span>)}</div>
     </div>

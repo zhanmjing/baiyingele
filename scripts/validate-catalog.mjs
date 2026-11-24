@@ -43,6 +43,16 @@ const SETTING_TYPES = new Set(['enum', 'number', 'bool', 'string', 'path', 'secr
 
 const hard = []
 const stats = {}
+/**
+ * 缺口棘轮：只允许下降。
+ *
+ * 历史上调过一次（140 → 141），原因是**测量纠错而不是新增债务**：
+ * 手势 UD「检测 VPN 状态」的 target 指向不存在的 point.vpn.default_status，
+ * 在引用还是字符串、expectedLayer='any' 时被分类器静默丢掉，从来没进过缺口统计。
+ * 引用结构化之后它被如实报了出来。
+ *
+ * 真要再上调，必须在提交信息里写清「为什么这不是新债务」。能降就降。
+ */
 const maxGapsArg = process.argv.find((arg) => arg.startsWith('--max-gaps='))
 const maxGaps = maxGapsArg ? Number(maxGapsArg.split('=')[1]) : Number.POSITIVE_INFINITY
 
@@ -197,9 +207,19 @@ for (const panel of surface.panelClasses ?? []) {
 // Req    req.<layer>.<class>[.<instance>]
 // Group  group.<name>            （尚未实装，先占位）
 const ATOM_LAYERS = new Set(LAYERS)
-for (const panel of surface.panelClasses ?? []) {
-  if (!String(panel.id ?? '').startsWith('panel.')) {
-    hard.push(`panel id 必须用 panel. 前缀: ${panel.id}`)
+// panel 已收编成 surface 层的一个功能类：surface.panel
+// 渲染层看到的 panelClasses 是它的 14 个实例，id 必须是合法的 Atom 实例 id
+const panelClass = (catalogs.surface ?? []).find((c) => c.id === 'surface.panel')
+if (!panelClass) hard.push('catalog 缺少 surface.panel 类（panel 收编后必须存在）')
+else {
+  const panelInstanceIds = new Set(panelClass.instances.map((i) => i.id))
+  for (const panel of surface.panelClasses ?? []) {
+    if (!panelInstanceIds.has(panel.id)) {
+      hard.push(`panelClasses 里的 ${panel.id} 不是 surface.panel 的实例`)
+    }
+  }
+  if ((surface.panelClasses ?? []).length !== panelClass.instances.length) {
+    hard.push(`panelClasses 数量 ${(surface.panelClasses ?? []).length} 与 surface.panel 实例数 ${panelClass.instances.length} 不符，请跑 npm run data:gen`)
   }
 }
 for (const req of requirementFile.requirements ?? []) {

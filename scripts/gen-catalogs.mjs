@@ -121,7 +121,9 @@ function transformFlatLayer(source, { deriveInstanceId } = {}) {
       rev: instance.rev,
       status: normalizeStatus(instance.status),
       description: instance.detail,
-      params: { detail: instance.detail }
+      // detail 若是 JSON 对象就解析成 typed params（面板类需要嵌套配置）；
+      // 纯文本时退回 { detail }，老数据输出不变。
+      params: parseDetail(instance.detail) ?? { detail: instance.detail }
     }))
   }))
 }

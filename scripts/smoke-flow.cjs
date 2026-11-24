@@ -993,14 +993,26 @@ async function main() {
 
   // 种子手势必须全部指向真实实例（否则首次启动迁移后是空的）
   const surfaceSeed = require('../src/renderer/src/generatedSurface.json')
+  const reqs = require('../src/shared/requirements.generated.json').requirements
+  let seedLive = 0
+  let seedDangling = 0
   for (const seed of surfaceSeed.gestures) {
     const kind = seed.targetKind ?? (seed.kind === 'flow' ? 'line' : 'point')
     const targetStore = kind === 'line' ? lnForTrigger : ptForTrigger
-    const seedTargetId = instanceIdOf(seed.target) ?? ''
-    assert.ok(seedTargetId, `种子手势 ${seed.pattern} 的目标不是合法实例引用: ${JSON.stringify(seed.target)}`)
+    const tg = seed.target
+    if (tg && typeof tg === 'object' && tg.dangling) {
+      // 悬空手势是合法状态（指向还没造的能力），但必须被记成需求，不能静默
+      seedDangling += 1
+      const tracked = reqs.some((r) => r.ref?.layer === tg.layer && r.ref?.name === tg.name && r.ref?.instance === tg.instance)
+      assert.ok(tracked, `种子手势 ${seed.pattern} 指向未实现能力却没有任何需求记录: ${JSON.stringify(tg)}`)
+      continue
+    }
+    const seedTargetId = instanceIdOf(tg) ?? ''
+    assert.ok(seedTargetId, `种子手势 ${seed.pattern} 的目标不是合法实例引用: ${JSON.stringify(tg)}`)
     assert.ok(targetStore.instance(seedTargetId), `种子手势 ${seed.pattern} 的目标不存在: ${seedTargetId}`)
+    seedLive += 1
   }
-  console.log(`  种子手势 ${surfaceSeed.gestures.length} 个，目标全部可解析`)
+  console.log(`  种子手势 ${surfaceSeed.gestures.length} 个：可执行 ${seedLive} · 悬空但有需求记录 ${seedDangling}`)
 
   // 手势去重：一个 pattern 只能有一个目标，改绑即覆盖
   assert.strictEqual(triggerService.add({ source: 'gesture', pattern: 'LDR', targetKind: 'point', targetId: TRIGGER_TARGET, name: '改绑' }).ok, true)

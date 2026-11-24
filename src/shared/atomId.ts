@@ -267,3 +267,66 @@ export function refBaseId(ref: AnyInstanceRef | null | undefined): string | null
   if (isExprRef(ref)) return null
   return danglingBaseId(ref as InstanceRef)
 }
+
+// ── 宽松解析：面向「人输入的文本」而不是「已规范化的 id」 ──────
+//
+// 编辑器、迁移脚本经常要把 `surface.inspector` / `inst.site-openai@r1`
+// 这类半规范文本变回结构化引用。解析不了的部分按位置拆，
+// 能拆出层就拆，拆不出就用 hint。这类结果一律可能悬空，调用方自己判断存在性。
+
+function splitLoose(text: string, hint?: AtomLayer): { layer: AtomLayer; rest: string[] } | null {
+  const parts = String(text ?? '').trim().replace(/@r\d+$/, '').split('.').filter(Boolean)
+  if (!parts.length) return null
+  if (ATOM_LAYERS.includes(parts[0] as AtomLayer)) {
+    return { layer: parts[0] as AtomLayer, rest: parts.slice(1) }
+  }
+  if (!hint) return null
+  return { layer: hint, rest: parts }
+}
+
+/** 宽松类引用：两段用 parseClassId，否则按位置拆 */
+export function parseLooseClassId(text: string, hint?: AtomLayer): ClassRef | null {
+  const strict = parseClassId(text)
+  if (strict) return strict
+  const split = splitLoose(text, hint)
+  if (!split || !split.rest.length) return null
+  return { layer: split.layer, name: flattenSegment(split.rest.join('_')) }
+}
+
+/** 宽松实例引用：三段用 parseInstanceId，否则第一段当类名、其余当实例名 */
+export function parseLooseInstanceId(text: string, hint?: AtomLayer): InstanceRef | null {
+  const strict = parseInstanceId(text)
+  if (strict) return strict
+  const m = /@r(\d+)$/.exec(String(text ?? '').trim())
+  const split = splitLoose(text, hint)
+  if (!split || split.rest.length < 2) return null
+  return {
+    layer: split.layer,
+    name: flattenSegment(split.rest[0]),
+    instance: flattenSegment(split.rest.slice(1).join('_')),
+    rev: m ? Number(m[1]) : 1
+  }
+}
+
+/** 把一组引用渲染成人在编辑器里能改的文本（`a + b`） */
+export function refsToText(refs: Array<AnyClassRef | AnyInstanceRef> | null | undefined): string {
+  return (refs ?? [])
+    .map((ref) => {
+      if (isExprRef(ref)) return ref.expr
+      if (isInstanceRef(ref)) return makeInstanceId(ref)
+      return classIdOf(ref) ?? ''
+    })
+    .filter(Boolean)
+    .join(' + ')
+}
+
+/** 把编辑器文本拆回引用数组 */
+export function textToClassRefs(text: string, hint?: AtomLayer): ClassRef[] {
+  return String(text ?? '').split('+').map((s) => s.trim()).filter(Boolean)
+    .map((s) => parseLooseClassId(s, hint)).filter((r): r is ClassRef => !!r)
+}
+
+export function textToInstanceRefs(text: string, hint?: AtomLayer): InstanceRef[] {
+  return String(text ?? '').split('+').map((s) => s.trim()).filter(Boolean)
+    .map((s) => parseLooseInstanceId(s, hint)).filter((r): r is InstanceRef => !!r)
+}

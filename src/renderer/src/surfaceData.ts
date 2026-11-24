@@ -1,8 +1,11 @@
 import raw from './generatedSurface.json'
 
+import type { ClassRef, InstanceRef } from '../../shared/atomId'
+
 export interface PanelInstance {
   label: string
-  content: string
+  /** 承载的页面实例（可多个） */
+  content: InstanceRef[]
   mode: string
   width: number
   state: string
@@ -20,7 +23,8 @@ export interface PanelClass {
   desc: string
   modes: string[]
   regions: string[]
-  content: string
+  /** 默认承载的页面类 */
+  content: ClassRef[]
   states: string[]
   behaviors: string[]
   a11y: string[]
