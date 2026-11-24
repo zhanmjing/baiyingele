@@ -2,11 +2,11 @@
   "version": 1,
   "generatedBy": "scripts/reconcile-refs.mjs",
   "counts": {
-    "ok": 92,
+    "ok": 141,
     "aliased": 0,
     "kind-mismatch": 0,
     "layer-mismatch": 0,
-    "missing": 149
+    "missing": 142
   },
   "requirements": [
     {
@@ -512,34 +512,6 @@
       ]
     },
     {
-      "id": "req:point.extract.invoice",
-      "layer": "point",
-      "capability": "point:extract.invoice",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "line.node.pointClass",
-          "owner": "flow.invoice-archive/extract",
-          "role": "$vendorRules",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.extract.vendor.instance",
-      "layer": "point",
-      "capability": "point:extract.vendor",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.invoice-archive/extract",
-          "role": "$vendorRules",
-          "required": true
-        }
-      ]
-    },
-    {
       "id": "req:point.file.classify",
       "layer": "point",
       "capability": "point:file.classify",
@@ -605,20 +577,6 @@
           "where": "body.composition",
           "owner": "body.image-resizer",
           "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.watch",
-      "layer": "point",
-      "capability": "point:file.watch",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "line.node.pointClass",
-          "owner": "flow.invoice-archive/watch",
-          "role": "$watchDir",
           "required": true
         }
       ]
@@ -1156,20 +1114,6 @@
       ]
     },
     {
-      "id": "req:point.render.overlay",
-      "layer": "point",
-      "capability": "point:render.overlay",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "line.node.pointClass",
-          "owner": "flow.screenshot-translate/overlay",
-          "role": "if $overlay",
-          "required": true
-        }
-      ]
-    },
-    {
       "id": "req:point.render.text",
       "layer": "point",
       "capability": "point:render.text",
@@ -1604,34 +1548,6 @@
       ]
     },
     {
-      "id": "req:point.validate.amount.instance",
-      "layer": "point",
-      "capability": "point:validate.amount",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.invoice-archive/validate",
-          "role": "rules = $vendorRules",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.validate.invoice",
-      "layer": "point",
-      "capability": "point:validate.invoice",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "line.node.pointClass",
-          "owner": "flow.invoice-archive/validate",
-          "role": "rules = $vendorRules",
-          "required": true
-        }
-      ]
-    },
-    {
       "id": "req:point.vpn.status",
       "layer": "point",
       "capability": "point:vpn.status",
@@ -1641,20 +1557,6 @@
           "where": "body.composition",
           "owner": "body.external-access",
           "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.watch.inbox.instance",
-      "layer": "point",
-      "capability": "point:watch.inbox",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "line.node.pointInstance",
-          "owner": "flow.invoice-archive/watch",
-          "role": "$watchDir",
           "required": true
         }
       ]

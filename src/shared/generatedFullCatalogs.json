@@ -1919,9 +1919,9 @@
           "name": "approval-publish",
           "rev": 1,
           "status": "active",
-          "description": "action=publish",
+          "description": "action=publish；target=inst.site-github@r1",
           "params": {
-            "detail": "action=publish"
+            "detail": "action=publish；target=inst.site-github@r1"
           }
         },
         {
@@ -1929,9 +1929,9 @@
           "name": "approval-delete",
           "rev": 1,
           "status": "active",
-          "description": "action=cleanup",
+          "description": "action=cleanup；target=inst.clipboard-daily@r2",
           "params": {
-            "detail": "action=cleanup"
+            "detail": "action=cleanup；target=inst.clipboard-daily@r2"
           }
         },
         {
@@ -1939,9 +1939,9 @@
           "name": "approval-deploy",
           "rev": 1,
           "status": "active",
-          "description": "action=deploy",
+          "description": "action=deploy；target=inst.ensure-service-docker@r1",
           "params": {
-            "detail": "action=deploy"
+            "detail": "action=deploy；target=inst.ensure-service-docker@r1"
           }
         }
       ]

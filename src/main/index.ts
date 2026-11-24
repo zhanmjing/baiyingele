@@ -184,7 +184,11 @@ app.whenReady().then(() => {
   }
 
   /** 线层：解析数据流图，逐个节点调用点层，并把结果串起来 */
-  const lineRunner = createLineRunner({ profiles: lineProfiles, pointStore: () => store('point') })
+  const lineRunner = createLineRunner({
+    profiles: lineProfiles,
+    pointStore: () => store('point'),
+    lineStore: () => store('line')
+  })
 
   for (const key of LAYER_KEYS) {
     const runner =

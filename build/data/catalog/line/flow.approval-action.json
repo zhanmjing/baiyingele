@@ -13,21 +13,21 @@
       "name": "approval-publish",
       "rev": 1,
       "status": "active",
-      "detail": "action=publish"
+      "detail": "action=publish；target=inst.site-github@r1"
     },
     {
       "id": "inst.approval-delete@r1",
       "name": "approval-delete",
       "rev": 1,
       "status": "active",
-      "detail": "action=cleanup"
+      "detail": "action=cleanup；target=inst.clipboard-daily@r2"
     },
     {
       "id": "inst.approval-deploy@r1",
       "name": "approval-deploy",
       "rev": 1,
       "status": "active",
-      "detail": "action=deploy"
+      "detail": "action=deploy；target=inst.ensure-service-docker@r1"
     }
   ]
 }

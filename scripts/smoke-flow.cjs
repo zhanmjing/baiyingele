@@ -174,6 +174,173 @@ async function main() {
   assert.strictEqual(reloaded.runs(5)[0].id, record.id, '运行记录没有持久化')
   console.log('✓ 运行记录已持久化并可重读')
 
+
+  // ── 5b. 线层引擎：分支路由 / 未实现 gate / 子流程 / 循环引用 ──────
+  const { evaluateIfGate, firedEdges } = require('../.tmp/smoke/main/flowRuntime.js')
+  const { hasRealImpl } = require('../.tmp/smoke/shared/implRegistry.js')
+
+  // if gate 只认明确值，含糊值必须拒绝（不能替用户猜）
+  for (const [input, expect] of [['true', true], ['1', true], ['yes', true], ['ok', true],
+    ['false', false], ['0', false], ['no', false], ['', false]]) {
+    const decided = evaluateIfGate(input)
+    assert.strictEqual(decided.ok, true, `evaluateIfGate(${input}) 应能判断`)
+    assert.strictEqual(decided.truthy, expect, `evaluateIfGate(${input}) 应为 ${expect}`)
+  }
+  assert.strictEqual(evaluateIfGate('maybe').ok, false, '含糊值必须拒绝')
+
+  const flowDir = path.join(workdir, 'flow-engine')
+  fs.mkdirSync(flowDir, { recursive: true })
+
+  // 脚本化点 store：按 classId 返回预设状态，并记录跑过哪些实例
+  const scripted = (statusByClass = {}) => {
+    const ran = []
+    const store = new LayerStore(
+      path.join(flowDir, `pt-${Math.random().toString(36).slice(2)}.json`),
+      { key: 'point', classLabel: 'PointClass', classes: catalogs.point, outputs: {} },
+      async (runCtx) => {
+        ran.push(runCtx.instance.id)
+        const status = statusByClass[runCtx.instance.classId] ?? 'ok'
+        return { status, output: `${runCtx.instance.classId}:${status}`, elapsedMs: 1 }
+      }
+    )
+    return { store, ran }
+  }
+  const flowCtx = (classId, description = '') => ({
+    def: { key: 'line', classLabel: 'FlowClass', classes: [], outputs: {} },
+    instance: { id: `inst.${classId}`, classId, description, params: {} },
+    input: '',
+    args: {},
+    params: {},
+    findInstance: () => undefined
+  })
+
+  // A. probe 成功 → 只走 ok 分支，warn 分支绝不能执行
+  {
+    const { store } = scripted({})
+    const runner = createLineRunner({ profiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('flow.ensure-vpn', 'url=https://example.com'))
+    const trace = outcome.evidence.nodes
+    assert.strictEqual(outcome.status, 'ok', `probe 正常时流程应 ok: ${outcome.output}`)
+    assert.deepStrictEqual(trace.map((n) => n.id), ['probe', 'guard', 'ready'], `只应执行 ok 分支: ${trace.map((n) => n.id)}`)
+    assert.strictEqual(trace.some((n) => n.id === 'manual'), false, 'warn 分支不应执行')
+    assert.deepStrictEqual(trace[1].fired, ['ready'], 'guard 只应激活 ready')
+  }
+
+  // B. probe 失败 → 走 warn 分支；且流程状态必须降到 warn（不能吞掉警告）
+  {
+    const { store } = scripted({ 'win.http.request': 'warn' })
+    const runner = createLineRunner({ profiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('flow.ensure-vpn', 'url=https://example.com'))
+    const trace = outcome.evidence.nodes
+    assert.deepStrictEqual(trace.map((n) => n.id), ['probe', 'guard', 'manual'], `只应执行 warn 分支: ${trace.map((n) => n.id)}`)
+    assert.strictEqual(trace.some((n) => n.id === 'ready'), false, 'ok 分支不应执行')
+    assert.strictEqual(outcome.status, 'warn', '中间节点 warn 时流程必须 warn，不能报 ok')
+    assert.strictEqual(outcome.evidence.warned, 1, 'warn 计数应为 1')
+  }
+
+  // C. 未实现的 gate（foreach）必须让流程停下，而不是跳过继续
+  {
+    const { store } = scripted({})
+    const customProfiles = {
+      'test.foreach': {
+        classId: 'test.foreach',
+        nodes: [
+          { id: 'loop', label: '遍历', kind: 'gate', gate: 'foreach', x: 0, y: 0, w: 1, h: 1 },
+          { id: 'after', label: '后续', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 1, y: 0, w: 1, h: 1 }
+        ],
+        edges: [{ from: 'loop', to: 'after' }]
+      }
+    }
+    const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('test.foreach'))
+    assert.strictEqual(outcome.status, 'warn', '未实现 gate 必须 warn')
+    assert.match(outcome.output, /尚未实现/, `应说明 gate 未实现: ${outcome.output}`)
+    const trace = outcome.evidence.nodes
+    assert.deepStrictEqual(trace.map((n) => n.id), ['loop'], 'gate 之后的下游绝不能执行')
+    assert.strictEqual(outcome.evidence.halted !== null, true, '必须给出 halted 原因')
+  }
+
+  // D. 子流程：父流程里真的把子流程跑完，再继续后续节点
+  {
+    const { store, ran } = scripted({})
+    const customProfiles = {
+      ...profiles,
+      'test.parent': {
+        classId: 'test.parent',
+        nodes: [
+          { id: 'sub', label: '子流程', kind: 'subflow', pointInstance: 'inst.ensure-vpn-ask@r2', x: 0, y: 0, w: 1, h: 1 },
+          { id: 'after', label: '后续', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 1, y: 0, w: 1, h: 1 }
+        ],
+        edges: [{ from: 'sub', to: 'after' }]
+      }
+    }
+    const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('test.parent'))
+    const trace = outcome.evidence.nodes
+    assert.deepStrictEqual(trace.map((n) => n.id), ['sub', 'after'], `子流程应执行: ${trace.map((n) => n.id)}`)
+    assert.strictEqual(trace[0].kind, 'subflow')
+    assert.match(outcome.output, /flow\.ensure-vpn/, '子流程输出应标明跑了哪个类')
+    assert.ok(ran.length >= 3, `子流程内部节点也要真跑，实际跑了 ${ran.length} 个`)
+  }
+
+  // E. 子流程自调用必须被循环引用挡住
+  {
+    const { store } = scripted({})
+    const loopProfiles = {
+      'flow.ensure-vpn': {
+        classId: 'flow.ensure-vpn',
+        nodes: [{ id: 'self', label: '自调用', kind: 'subflow', pointInstance: 'inst.ensure-vpn-ask@r2', x: 0, y: 0, w: 1, h: 1 }],
+        edges: []
+      }
+    }
+    const runner = createLineRunner({ profiles: loopProfiles, pointStore: () => store, lineStore: () => lineStore })
+    const outcome = await runner(flowCtx('flow.ensure-vpn'))
+    assert.strictEqual(outcome.status, 'warn', '循环引用必须 warn')
+    assert.match(outcome.output, /循环引用/, `应报循环引用: ${outcome.output}`)
+  }
+
+  // F. 图谱完整性：13 个 FlowClass 都要有图，每个节点绑定都要真实有效
+  const pointClassOfInstance = new Map(catalogs.point.flatMap((cls) => cls.instances.map((item) => [item.id, cls.id])))
+  const lineInstanceIds = new Set(catalogs.line.flatMap((cls) => cls.instances.map((item) => item.id)))
+  for (const cls of catalogs.line) {
+    assert.ok(profiles[cls.id], `FlowClass ${cls.id} 缺少数据流图谱`)
+  }
+  for (const [classId, profile] of Object.entries(profiles)) {
+    const nodeIds = new Set(profile.nodes.map((n) => n.id))
+    for (const edgeItem of profile.edges) {
+      assert.ok(nodeIds.has(edgeItem.from), `${classId} 的边起点不存在: ${edgeItem.from}`)
+      assert.ok(nodeIds.has(edgeItem.to), `${classId} 的边终点不存在: ${edgeItem.to}`)
+    }
+    for (const item of profile.nodes) {
+      if (item.kind === 'point') {
+        const boundClass = pointClassOfInstance.get(item.pointInstance)
+        assert.ok(boundClass, `${classId}/${item.id} 绑定了不存在的点实例 ${item.pointInstance}`)
+        assert.strictEqual(item.pointClass, boundClass, `${classId}/${item.id} 的 pointClass 与实际不符`)
+        assert.ok(hasRealImpl(boundClass), `${classId}/${item.id} 绑定的 ${boundClass} 没有真实实现`)
+      }
+      if (item.kind === 'subflow') {
+        const target = item.pointInstance ?? ''
+        if (target.startsWith('$args.')) {
+          // 参数化目标：每个实例都必须真的提供这个参数，且解析出来是存在的线实例
+          const argKey = target.slice('$args.'.length)
+          const classInstances = catalogs.line.find((c) => c.id === classId)?.instances ?? []
+          assert.ok(classInstances.length, `${classId} 没有实例，却用了参数化子流程目标`)
+          for (const inst of classInstances) {
+            const parsed = parseFlowArgs(inst.description ?? '')
+            assert.ok(parsed[argKey], `${classId}/${inst.id} 缺少子流程参数 ${argKey}`)
+            assert.ok(
+              lineInstanceIds.has(parsed[argKey]),
+              `${classId}/${inst.id} 的 ${argKey}=${parsed[argKey]} 不是存在的线实例`
+            )
+          }
+        } else {
+          assert.ok(lineInstanceIds.has(target), `${classId}/${item.id} 的子流程目标不存在 ${target}`)
+        }
+      }
+    }
+  }
+  console.log(`✓ 线层引擎：分支路由 / 未实现 gate 停下 / 子流程 / 循环引用 / ${Object.keys(profiles).length} 张图谱完整性 都正确`)
+
   // ── 6. 真实能力：file.read ───────────────────────────────────
   const ctx = (classId, params) => ({
     def: { key: 'point', classLabel: 'PointClass', classes: [], outputs: {} },

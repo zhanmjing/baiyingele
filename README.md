@@ -369,6 +369,71 @@ win.key.trigger  keys=""                scope=global
 - uiohook-napi 1.5.5 在 **Node modules=137 与 Electron 45 modules=150 两套 ABI 下都能起停钩子**
 - 钩子必须能干净停止：`stopHook()` 会清空注册表并 `uIOhook.stop()`，冒烟测试每次都验证起停
 
+## 线层执行引擎
+
+线层不是「把节点按顺序跑一遍」，而是**信号传播**：节点执行完，只把它自己激活的出边推给下游。
+
+### 修掉的那个真 bug
+
+早期实现按 edges 拓扑排序后把每个节点都跑一次，结果 `if` gate 的 true/false
+**两条分支都会执行** —— 一个本该拦住流程的 guard 变成了摆设。
+`flow.invoice-archive` 的「校验 → if 命中 → 移动归档 / 未匹配通知」里，
+匹配的和未匹配的通知会同时发出去。
+
+现在从入度为 0 的节点开始，只有**被激活的边**才会把下游节点放进队列。
+
+### 节点语义
+
+| 节点 | 行为 | 成功后激活的边 |
+|---|---|---|
+| `point` | 跑绑定的点实例 | 全部出边 |
+| `gate:if` | 判断**输入值**真假 | 只有 `true` 或 `false` 那条 |
+| `gate:if-status` | 判断**上游节点状态** | 只有 `ok` 或 `warn` 那条 |
+| `subflow` | 递归跑另一条线实例 | 全部出边（子流程成功时） |
+
+`if` gate 只接受明确的值（`true/false/1/0/yes/no/ok/fail/空`），
+含糊的值（比如 `maybe`）会让流程**停下并报错**，而不是替用户猜"非空即为真"。
+
+### 三条「宁可停下也不假装通过」的规则
+
+1. **未实现的 gate 必须让流程停**。`foreach` 需要 fan-out/fan-in 语义，还没实现，
+   遇到就 `halted`。guard 没执行就等于没通过，不能往下走。
+2. **任何节点 warn，整条流程就是 warn**。早先版本会把它算进"真实成功"，
+   中间节点的警告被整条流程的 `ok` 吞掉。
+3. **子流程失败 / 循环引用 / 超过 8 层**，父流程立刻停并记下原因。
+
+### 图谱覆盖
+
+13 个 FlowClass **全部有数据流图**，每个 `point` 节点都绑到**存在且已实现**的点实例
+（冒烟里有一条完整性断言守着：`pointClass` 必须和实际绑定的实例一致）。
+
+| 类 | 节点 | 说明 |
+|---|---:|---|
+| `flow.ensure-vpn` | 4 | 探网络 → 按状态分支 → 分别提示 |
+| `flow.ensure-app` | 3 | 列窗口 → 整理 → 通知 |
+| `flow.ensure-service` | 4 | 健康检查 → 分支提示 |
+| `flow.ensure-download` | 2 | 打开下载目录 → 通知 |
+| `flow.open-app` | 2 | 启动应用 → 通知 |
+| `flow.open-workspace` | 3 | 编辑器 + 目录 → 通知 |
+| `flow.open-external-site` | 4 | **子流程**(ensure-vpn) → 可达性 → 打开 → 通知 |
+| `flow.http-extract` | 3 | 请求 → 套模板 → 通知 |
+| `flow.ai-rewrite` | 3 | 改写 → 写剪贴板 → 通知 |
+| `flow.batch-archive` | 3 | 扫描 → 整理清单 → 通知 |
+| `flow.approval-action` | 4 | **人工确认**(ui.form) → 分支 → **子流程** |
+| `flow.clipboard-to-file` | 4 | 剪贴板 → 模板 → 写文件 → 通知 |
+| `flow.screenshot-translate` | 4 | 截屏 → OCR → 翻译 → 通知 |
+
+子流程目标支持 `$args.target`，所以同一个类能按实例参数跑不同子流程：
+
+```text
+flow.approval-action  action=publish；target=inst.site-github@r1
+  → ui.form 审批
+  → if-status 分支
+  → subflow: inst.site-github@r1（打开外部站点）
+```
+
+实测嵌套两层（审批 → 外部站点 → 确保 VPN）可以正常跑完并逐层回报。
+
 ## 触发器服务（输入 → 实例）
 
 `TriggerService` 是输入层的统一出口：**热键和手势共用同一条 dispatch**。
