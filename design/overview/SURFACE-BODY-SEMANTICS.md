@@ -471,17 +471,17 @@ LineInstance → $args + 节点 mapping       实例差异靠参数，不靠复�
 **维护者说的「panel 作为功能类，不同 panels 作为实例可以被应用」，
 正是把 `FlowClass / FlowInstance` 这套双层结构搬到面层。** 不必发明新的层级。
 
-### 8.7 结论：surface 该向多数派收敛
+### 8.7 结论：向既有约定收敛
 
-| 项 | 建议 | 依据 |
+| 项 | 结论 | 依据 |
 |---|---|---|
-| 实例 id 格式 | `classId.语义名@rN`，如 `surface.form.settings-vpn@r1` | point/body/field 三层 100% 如此，且是 `createInstance` 自己的规则 |
-| 归属判定 | 靠父数组 → 运行时 `classId`，**不靠前缀** | 五层都没有 seed 级 `classId`，但运行时都有 |
+| 归属判定 | 靠父数组 → 运行时 `classId`，**不靠 id 前缀** | 五层都没有 seed 级 `classId`，但运行时都有 |
 | 修订号 | 必须带 `@rN` | point/body/field/line 四层 100% 带，只有 surface 没带 |
-| 语义可读性 | 保留在 id 的**后缀**里 | `surface.form.settings-vpn@r1` 一样能读懂「这是 settings 的 vpn 表单」 |
+| id 格式 | **`层.类.实例@版本`（三段定长）**，见 §8.10 | body/field 已 100% 是这个形状，把它推广到全部五层 |
 
-所以 §8.5 原提的三种规则里，选 **(a) 严格 `classId.instance@rN`**，
-不是因为我偏好严格，而是因为**其余四层已经这么做了，surface 是唯一的例外**。
+§8.5 原提的三种规则（严格 `class.instance@rN` / 语义名+`classId` / 保持现状）
+在 §8.10 的三段定长方案面前都成了次优解 —— 那个方案既保留了语义可读性
+（`surface.form.settings_vpn@r1` 一眼读懂），又让解析不需要任何启发式。
 
 ### 8.8 面层实例 id 的实际偏差（证据）
 
@@ -516,90 +516,96 @@ id 以后再找机会统一。
 
 ---
 
-### 8.10 统一 id 方案：`层.类.实例@版本`
+### 8.10 统一 id 方案：`层.类.实例@版本`（三段定长）
 
 维护者提案：
 
-> 层id.类id.实例id@版本id（这样整个软件统一且可查？）
+> 层名.类名.实例名.@版本号（只有 3 个 `.`，中间的名可用 `_` 连接单词）
+> `surface.form.settings_vpn@r1`
 
-**这不是一个新提议，是把既有约定补完。** 实测符合度：
+这个方案比我上一版（`classId.语义名@rN` + 最长前缀匹配）**更彻底也更好**，理由：
 
-| 层 | 类 id 带层前缀 | 实例 id = `类id.xxx` | 带 `@rN` | 整体符合 |
-|---|:---:|:---:|:---:|:---:|
-| point | ✗ | ✓ | ✓ | ✗ |
-| line | ✗ | ✗ | ✓ | ✗ |
-| surface | ✓ | ✗ | ✗ | ✗ |
-| **body** | ✓ | ✓ | ✓ | **✓** |
-| **field** | ✓ | ✓ | ✓ | **✓** |
+- **三段定长 = 解析零成本**：`split('.')` 就够，不需要「用已知类表做最长前缀匹配」
+- **段内不许有点**：多词用 `_` 连接，歧义从根上消失
+- **层名是第一段**：拿层不用查表
 
-body 和 field **已经 100% 符合** `层.类.实例@版本`：
+#### 实测可行性（已验证，不是推测）
+
+| 检查项 | 结果 |
+|---|---|
+| 类名扁平化后**层内重名** | 五层全部 **0 个** |
+| 新实例 id **全局冲突** | 287 个全部唯一，**0 冲突** |
+| 维护者给的例子能否还原 | ✅ 完全命中 |
 
 ```
-body.file-preview.text@r1     = 层 body + 类 file-preview + 实例 text + 版本 1
-field.observe.desktop@r1      = 层 field + 类 observe + 实例 desktop + 版本 1
+面层实例 surface.settings.vpn（属于 surface.form）
+  → surface.form.settings_vpn@r1          ← 与提案例子一字不差
 ```
 
-每层只缺一件事：
+#### 真实样本前后对照
 
-| 层 | 缺什么 | 数量 |
-|---|---|---:|
-| point | 类 id 加层前缀（`win.key.send` → `point.win.key.send`） | 21 个类 |
-| line | 类 id 加层前缀 + 实例 id 对齐（`inst.x@rN` → `line.flow.x.y@rN`） | 13 + 32 |
-| surface | 实例 id 对齐类 + 补 `@rN` | 25 + 46 |
-| body / field | 不用动 | 0 |
+| 现在 | 统一后 |
+|---|---|
+| `win.key.send.i-copy@r1` | `point.win_key_send.copy@r1` |
+| `win.window.control.i-topmost@r1` | `point.win_window_control.topmost@r1` |
+| `win.ocr.read.i-ocr-auto@r1` | `point.win_ocr_read.ocr_auto@r1` |
+| `inst.clipboard-inbox@r3` | `line.flow_clipboard_to_file.clipboard_inbox@r3` |
+| `surface.settings.vpn` | `surface.form.settings_vpn@r1` |
+| `body.screenshot-translate.text@r1` | `body.screenshot_translate.text@r1` |
+| `field.simulate.dry-run@r1` | `field.simulate.dry_run@r1` |
 
-#### 三个技术前提（都已实测）
+#### 顺带清掉两类冗余
 
-1. **零前缀冲突**：五层内部的类 id 之间，没有任何一个是另一个的前缀。
-   所以「最长前缀匹配」解析是**确定无歧义**的。
-2. **扁平化也唯一**：即使把 `win.key.send` 压成 `win-key-send` 也不撞车 ——
-   但**不建议压**，因为 `win.` / `file.` / `ui.` 是主题分组，UI 的家族筛选依赖它。
-3. **代码会自动跟随**：`createInstance()` 生成规则就是
+三段定长之后，「第几段」本身就表明了类型，所以类型标记前缀是纯噪音：
+
+| 冗余前缀 | 出现次数 | 建议 |
+|---|---:|---|
+| line 实例的 `inst.` | 32 / 32 | **去掉** |
+| point 实例的 `i-` | 48 / 48 | **去掉** |
+
+去掉后 `point.win_key_send.copy@r1` 比 `point.win_key_send.i_copy@r1` 干净。
+
+#### 解析规则（最终形态）
 
 ```ts
-const base = `${pointClass.id}.${slug(name)}`
-let id = `${base}@r1`
-```
-
-所以**只要类 id 加上层前缀，新实例的 id 自动就是 `层.类.实例@rN`，代码零改动。**
-
-#### 解析规则
-
-```ts
-// 第一段 = 层（只有 5 个取值，天然无歧义）
-// 剩余部分 = 类 id + 实例名 + @版本，用「已知类表做最长前缀匹配」切开
-parseAtomId('point.win.key.send.i-copy@r1')
-// → { layer: 'point', classId: 'win.key.send', instance: 'i-copy', rev: 1 }
+function parseAtomId(id: string) {
+  const [layer, cls, instanceAndRev] = id.split('.')      // 恰好 3 段
+  const at = instanceAndRev.lastIndexOf('@r')
+  return {
+    layer,                                                // point | line | surface | body | field
+    classId: `${layer}.${cls}`,                           // 可直接拼回类 id
+    instance: instanceAndRev.slice(0, at),
+    rev: Number(instanceAndRev.slice(at + 2))
+  }
+}
 ```
 
 #### 迁移面（实测）
 
 | 项 | 数量 |
 |---|---:|
-| 类 id 要加层前缀 | **34**（point 21 + line 13） |
-| 实例 id 连带变 | **80**（point 48 + line 32） |
-| surface 实例 id 要改 | 25（对齐类）+ 46（补 rev） |
-| `lineProfiles` 引用 | 79 处（`pointClass` 39 + `pointInstance` 40） |
-| `bodyProfiles` composition 指向 point/line | 116 条 |
-| `requirements` 里 point/line 条目 | 112 条 |
-| surface / body / field 类 | **不受影响**（已有层前缀） |
+| 类 id 会变 | **64 / 102** |
+| 实例 id 会变 | **287 / 287**（全部） |
+| `lineProfiles` 引用 | 79（`pointClass` 39 + `pointInstance` 40） |
+| `bodyProfiles` composition | 154 |
+| `panel.content` 引用 | 51（14 类 + 37 实例） |
+| `requirements` | 140 |
+| `aliases.json` | 类别名 0 + review 4（影响很小） |
 
-#### 建议的迁移顺序
+**424 处引用要同步。** 其中：
 
-按「改动面 × 收益」排，从最干净的开始：
+- **生成的**（`requirements.generated.json`、`generatedFullCatalogs.json`）—— 改源后重跑
+- **手写的**（`lineProfiles` 79、`bodyProfiles` 154、`panel.content` 51）—— 必须手工同步
 
-| 步骤 | 动什么 | 参考要同步改 | 风险 |
-|---|---|---|---|
-| 1 | surface 实例 id 对齐 + 补 `@rN` | `panel.content` 37 条 | 低（都在一个 JSON 里） |
-| 2 | point 类 id 加前缀 | `lineProfiles` 39+40、`bodyProfiles` 部分、`requirements` 88 条 | 中 |
-| 3 | line 类 id 加前缀 + 实例对齐 | `bodyProfiles`、`requirements` 24 条 | 中 |
-| 4 | 全量回归 | 全部 | 高（必须一次跑通） |
+**漏一处不会报错，只会在运行时"找不到实例"。** 所以必须一次做完 + 全量回归。
 
-**关键提醒**：这些引用里有一半是**生成的**（`requirements.generated.json`、`generatedFullCatalogs.json`），
-改源数据后重新生成即可；但 `lineProfiles`、`bodyProfiles`、`panel.content`、
-`aliases.json` 是**手写源**，必须手工同步。**漏一个就是静默断链。**
+#### 一个不损失的确认
 
----
+`win.` / `file.` / `flow.` 这些**主题分组**会随扁平化从 id 里消失，但**不影响 UI**：
+家族筛选读的是 `family` 字段（`hotkey / window / file / network / …`），不是 id 前缀。
+
+唯一按 id 前缀取值的代码是 `field.simulate` 里的 `classId.split('.')[0]`，
+它取的是层名——**新方案下这个表达式依然是正确的**，甚至更正确。
 
 ## 9. 这个提案能带来什么
 
