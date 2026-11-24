@@ -93,6 +93,7 @@ const gesture = require('../.tmp/smoke/shared/gestureRecognizer.js')
 const keysend = require('../.tmp/smoke/main/capabilities/win.key.send.js')
 const volmod = require('../.tmp/smoke/main/capabilities/win.audio.volume.js')
 const comm = require('../.tmp/smoke/main/capabilities/_com.js')
+const bright = require('../.tmp/smoke/main/capabilities/win.display.brightness.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -927,6 +928,39 @@ async function main() {
 
   const badApp = await CAPABILITIES['win.audio.volume'](ctx('win.audio.volume', { action: 'up', app: 'chrome.exe' }))
   assert.strictEqual(badApp.status, 'warn', '应用级音量应明确拒绝')
+
+  // ── 7p. win.display.brightness：计划纯函数 + WMI 读写 ───────────
+  assert.strictEqual(bright.planBrightnessChange('get', 76, 10, 60), null, 'get 不改')
+  assert.strictEqual(bright.planBrightnessChange('set', 76, 10, 60), 60)
+  assert.strictEqual(bright.planBrightnessChange('up', 76, 10, 60), 86)
+  assert.strictEqual(bright.planBrightnessChange('down', 76, 10, 60), 66)
+  assert.strictEqual(bright.planBrightnessChange('set', 76, 10, 150), 100, '超上限钳到 100')
+  assert.strictEqual(bright.planBrightnessChange('set', 76, 10, -5), 0, '负数钳到 0')
+  assert.strictEqual(bright.planBrightnessChange('up', 96, 10, 60), 100, '到顶不越界')
+  assert.strictEqual(bright.planBrightnessChange('down', 4, 10, 60), 0, '到底不越界')
+  assert.strictEqual(bright.planBrightnessChange('explode', 76, 10, 60), null, '未知动作返回 null')
+
+  const brightRead = await CAPABILITIES['win.display.brightness'](ctx('win.display.brightness', { action: 'get' }))
+  if (brightRead.status === 'ok') {
+    assert.strictEqual(brightRead.evidence.backend, 'wmi')
+    const level = brightRead.evidence.level
+    assert.ok(level >= 0 && level <= 100, `亮度应在 0..100，得到 ${level}`)
+
+    // 写路径：设成当前值，验证 WmiSetBrightness 通，且屏幕亮度不变
+    const brightRound = await CAPABILITIES['win.display.brightness'](
+      ctx('win.display.brightness', { action: 'set', value: String(level) })
+    )
+    assert.strictEqual(brightRound.status, 'ok', `回写当前亮度应成功: ${brightRound.output}`)
+    assert.strictEqual(brightRound.evidence.after, level, '回写后亮度应不变')
+    console.log('✓ win.display.brightness：计划纯函数 / WMI 读写（零净变化）都正确')
+  } else {
+    assert.match(brightRead.output, /没有支持 WMI 亮度控制|无法解析|失败/, `非预期失败: ${brightRead.output}`)
+    console.log(`· win.display.brightness 实机跳过：${brightRead.output.slice(0, 60)}`)
+  }
+
+  const ext = await CAPABILITIES['win.display.brightness'](ctx('win.display.brightness', { action: 'set', value: '50', monitor: 'external' }))
+  assert.strictEqual(ext.status, 'warn', '外接屏应明确 warn')
+  assert.match(ext.output, /DDC\/CI|外接屏/)
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

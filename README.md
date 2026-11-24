@@ -151,10 +151,11 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.window.control` | koffi 控制窗口：focus / move / topmost / close；支持按 `hwnd` 精确指定 |
 | `win.key.send` | koffi **SendInput** 真实发送组合键（走系统输入队列，目标程序分辨不出真假） |
 | `win.audio.volume` | koffi 调 **CoreAudio COM**（`IAudioEndpointVolume`）精确控音量/静音，写完读回校验 |
+| `win.display.brightness` | **WMI**（`WmiSetBrightness`）控制内屏亮度，写完读回校验 |
 | `win.key.trigger` | **uiohook-napi** 全局热键监听（常驻钩子，不是一次性执行） |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
-其余 81 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
+其余 80 个类跑的是 `layerStore` 的模拟 runner，管理页会明确标为「模拟」。
 
 场层与点层共用同一套能力分发器（按 classId 唯一命中）；`field.classify` 的运行结果会带
 `evidence: { tier, labels, confidence, reason, attempts }`，场层「证据」视图直接读它，不再有硬编码的 0.84。
@@ -235,6 +236,36 @@ set 77% → 音量 30% → 77%
 +5/-5   → 77% → 82% → 77%   （连跑 3 轮都一致）
 mute / unmute / toggle×2 → 全部 ok
 还原     → 10.8% → 11%      RESTORE_OK
+```
+
+### 亮度为什么只用 WMI
+
+亮度有两条硬件路径，本机实测结果决定了实现范围：
+
+| 路径 | 适用 | 本机实测 |
+|---|---|---|
+| **WMI** `WmiMonitorBrightnessMethods` | 笔记本内屏 | ✅ `CurrentBrightness = 76`，能读写 |
+| **DDC/CI** `dxva2!GetMonitorBrightness` | 外接显示器 | ❌ 主显示器返回 `false` |
+
+所以内屏走 WMI（已验证），**外接屏如实说明未实现**，而不是塞一段跑不通的代码：
+
+```
+win.display.brightness  action=set  value=50  monitor=external
+→ warn: 暂不支持外接屏亮度：外接屏需要 DDC/CI（dxva2 的 GetMonitorBrightness）。
+        本机主显示器实测返回 false，这条路径没有可验证的硬件，所以没有实现。
+```
+
+**一个必须绕开的假成功**：`Invoke-CimMethod` 的 `ReturnValue` 在本机是**空的**（不是 0），
+所以「调用没报错」不等于「亮度变了」。实现里一律**写完等 250ms 再读回**，比对真实值。
+
+**真机结果：**
+
+```
+读取     → 76%
+set 55  → 76% → 55%
++10     → 55% → 65%
+-20     → 65% → 45%
+还原     → 76%    RESTORE_OK
 ```
 
 ### 真机跑出来的两个坑
