@@ -13,14 +13,14 @@
       "name": "invoice-company",
       "rev": 6,
       "status": "active",
-      "detail": "company；zh OCR；path=%USERPROFILE%\\Downloads；pattern=*.pdf"
+      "detail": "path=%USERPROFILE%\\Documents\\百应收件箱\\发票；pattern=*.pdf；target=%USERPROFILE%\\Documents\\百应归档\\发票"
     },
     {
       "id": "inst.invoice-personal@r2",
       "name": "invoice-personal",
       "rev": 2,
       "status": "active",
-      "detail": "personal；en OCR；path=%USERPROFILE%\\Documents；pattern=*.txt"
+      "detail": "path=%USERPROFILE%\\Documents\\百应收件箱\\个人；pattern=*.txt；target=%USERPROFILE%\\Documents\\百应归档\\个人"
     }
   ]
 }

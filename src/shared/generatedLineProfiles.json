@@ -757,18 +757,19 @@
         "role": "loop"
       },
       {
-        "id": "read",
+        "id": "move",
         "x": 440,
         "y": 150,
         "w": 160,
         "h": 64,
-        "label": "读取一项",
+        "label": "归档一项",
         "kind": "point",
-        "pointClass": "file.read",
-        "pointInstance": "file.read.i-preview@r1",
-        "role": "transform",
+        "pointClass": "file.move",
+        "pointInstance": "file.move.i-archive@r1",
+        "role": "move",
         "mapping": {
-          "path": "$input"
+          "from": "$input",
+          "toDir": "$args.target"
         }
       },
       {
@@ -777,14 +778,14 @@
         "y": 150,
         "w": 160,
         "h": 64,
-        "label": "清单通知",
+        "label": "归档完成",
         "kind": "point",
         "pointClass": "notify.toast",
         "pointInstance": "notify.toast.i-system@r1",
         "role": "notify",
         "mapping": {
-          "title": "批量处理",
-          "body": "扫描并逐项读取完成"
+          "title": "批量归档",
+          "body": "已逐项搬运到归档目录"
         }
       }
     ],
@@ -796,11 +797,11 @@
       },
       {
         "from": "loop",
-        "to": "read",
+        "to": "move",
         "label": "each"
       },
       {
-        "from": "read",
+        "from": "move",
         "to": "loop"
       },
       {

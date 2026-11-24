@@ -461,7 +461,32 @@ async function main() {
 
   const noSource = await CAPABILITIES['file.move'](ctx('file.move', { from: path.join(workdir, 'ghost.txt'), to: moveDst }))
   assert.strictEqual(noSource.status, 'warn', '源不存在必须 warn')
-  console.log('✓ file.move：成功 / 拒绝覆盖 / 强制覆盖 / 源缺失 四种路径都正确')
+
+  // toDir：搬进目录并保留原文件名（批量归档靠这个）
+  const archiveDir = path.join(workdir, 'archive-target')
+  const archiveSrc = path.join(workdir, 'to-archive.txt')
+  fs.writeFileSync(archiveSrc, 'ARCH', 'utf8')
+  const intoDir = await CAPABILITIES['file.move'](ctx('file.move', { from: archiveSrc, toDir: archiveDir, overwrite: 'false' }))
+  assert.strictEqual(intoDir.status, 'ok', `toDir 应成功: ${intoDir.output}`)
+  assert.strictEqual(fs.existsSync(path.join(archiveDir, 'to-archive.txt')), true, '文件名应保留在目标目录里')
+  assert.strictEqual(fs.existsSync(archiveSrc), false, '源应已移走')
+  assert.strictEqual(intoDir.evidence?.toDir, archiveDir)
+
+  // to 和 toDir 互斥
+  const bothTargets = await CAPABILITIES['file.move'](ctx('file.move', { from: moveDst, to: moveDst, toDir: archiveDir }))
+  assert.strictEqual(bothTargets.status, 'warn', 'to 和 toDir 同时给必须拒绝')
+  assert.match(bothTargets.output, /只能给一个/)
+
+  // 两个都不给
+  const noMoveTarget = await CAPABILITIES['file.move'](ctx('file.move', { from: moveDst }))
+  assert.strictEqual(noMoveTarget.status, 'warn', '缺目标必须拒绝')
+
+  // 源和目标相同 → 明确拒绝，不做无意义操作
+  const sameFile = await CAPABILITIES['file.move'](ctx('file.move', { from: moveDst, toDir: path.dirname(moveDst) }))
+  assert.strictEqual(sameFile.status, 'warn', '源目标相同必须拒绝')
+  assert.match(sameFile.output, /源和目标相同/)
+
+  console.log('✓ file.move：成功 / 拒绝覆盖 / 强制覆盖 / 源缺失 / toDir / 互斥 / 同源 七种路径都正确')
 
   // ── 7b. 真实能力：file.scan ──────────────────────────────────
   const scanRoot = path.join(workdir, 'scan')

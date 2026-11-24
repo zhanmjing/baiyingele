@@ -395,6 +395,19 @@ win.key.trigger  keys=""                scope=global
 `if` gate 只接受明确的值（`true/false/1/0/yes/no/ok/fail/空`），
 含糊的值（比如 `maybe`）会让流程**停下并报错**，而不是替用户猜"非空即为真"。
 
+### `file.move` 的 `toDir`
+
+批量归档要给「每一个文件」算目标路径，而流程里没有表达式能力。所以 `file.move`
+多了个 `toDir` 参数：**搬进目录、保留原文件名**，跟 `to`（完整目标路径，用于重命名）二选一。
+
+```text
+file.move  from=...\inbox\a.txt  toDir=...\archive      → ...\archive\a.txt
+file.move  from=...\a.txt        to=...\renamed.txt     → ...\renamed.txt
+```
+
+几个安全的拒绝：`to` 和 `toDir` 同时给、两个都不给、**源和目标解析后相同**（批量搬运时
+目标目录填成源目录会静默"什么都没做"，这类最需要拦住）。
+
 ### foreach 的图约定
 
 ```text
@@ -415,14 +428,18 @@ win.key.trigger  keys=""                scope=global
 **输入格式**：优先当 JSON 数组解析（`file.scan` 这类节点返回的就是），
 否则按换行切分；都不是就让流程停下，不猜。
 
-实测（真实文件系统）：
+实测（真实文件系统，`flow.batch-archive` 真的把文件搬走）：
 
 ```text
-扫描目录: 扫描 3 个文件 · alpha.txt, beta.txt, gamma.txt
+源目录: inbox\  a.txt, b.txt, c.txt, skip.pdf
+扫描目录: 扫描 3 个文件（pattern=*.txt，pdf 被忽略）
 逐项遍历: 遍历 3/3 项，然后进入 notify
-读取一项: 读取 ...\alpha.txt · 30 bytes
-读取一项: 读取 ...\beta.txt  · 29 bytes
-读取一项: 读取 ...\gamma.txt · 30 bytes
+归档一项: 已移动 ...\inbox\a.txt → ...\archive\a.txt    ← 循环体跑了 3 次
+归档一项: 已移动 ...\inbox\b.txt → ...\archive\b.txt
+归档一项: 已移动 ...\inbox\c.txt → ...\archive\c.txt
+
+源目录剩余: skip.pdf
+目标目录:   a.txt, b.txt, c.txt
 ```
 
 ### 三条「宁可停下也不假装通过」的规则
@@ -449,7 +466,7 @@ win.key.trigger  keys=""                scope=global
 | `flow.open-external-site` | 4 | **子流程**(ensure-vpn) → 可达性 → 打开 → 通知 |
 | `flow.http-extract` | 3 | 请求 → 套模板 → 通知 |
 | `flow.ai-rewrite` | 3 | 改写 → 写剪贴板 → 通知 |
-| `flow.batch-archive` | 4 | 扫描 → **foreach 逐项读取** → 通知 |
+| `flow.batch-archive` | 4 | 扫描 → **foreach 逐项搬运** → 通知 |
 | `flow.approval-action` | 4 | **人工确认**(ui.form) → 分支 → **子流程** |
 | `flow.clipboard-to-file` | 4 | 剪贴板 → 模板 → 写文件 → 通知 |
 | `flow.screenshot-translate` | 4 | 截屏 → OCR → 翻译 → 通知 |
