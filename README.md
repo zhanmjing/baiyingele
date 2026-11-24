@@ -685,21 +685,31 @@ rollback flow.batch-archive：全部节点都是 L0/L1，可通过 undo journal 
 
 ## 面层 / 体层：为什么是 0%
 
-面层 16 类、体层 29 类的 runner 在  里是 ，落到默认的
- —— 它**永远返回 ok**，耗时是随机数。所以这两层的「0 真实」不是没写完，
+面层 16 类、体层 29 类的 runner 在 `src/main/index.ts` 里是 `undefined`，落到默认的
+`mockRunner` —— 它**永远返回 ok**，耗时是随机数。所以这两层的「0 真实」不是没写完，
 是压根没有实现。
 
-更关键的是**语义没定**：把点/线那套  套到面/体上是模型错位。
+更关键的是**语义没定**：把点/线那套 `run() → RunOutput` 套到面/体上是模型错位。
 
-- **面**是渲染 + 发意图，不执行 → 应该是 
-- **体**是零件清单 + 装配说明，没有自己的执行逻辑 → 应该是 
+- **面**是渲染 + 发意图，不执行 → 应该是 `render()`
+- **体**是零件清单 + 装配说明，没有自己的执行逻辑 → 应该是 `assemble()`
 
-详细论证与落地路径见 [](design/overview/SURFACE-BODY-SEMANTICS.md)，
-那里有三个可以直接核对的数字：
+面层还有一类元素被漏掉了：**页面也是一种可复用模式**（不同实例可以共用同一个页面，
+一个实例也可以同时用多个页面）。所以 `SurfaceClass` 要分两种：
 
-- 体层  共 154 条引用，**109 条悬空（70%）**
-- **29 个体没有一个能装配起来**，最好的  也差 1 个零件
-- 这些悬空引用**已经被记成 140 条需求**里的 109 条，不是无人认领的债务
+| kind | 是什么 | 例子 | 现状 |
+|---|---|---|---|
+| `pattern` | 原子交互模式 | `form` / `table` / `canvas` / `hud` | 16 个已有 |
+| `page` | 由 pattern 组成的页面 | `settings-page` / `preview-window` / `ocr-result` | **35 个待建** |
+
+完整论证与落地路径见 [`design/overview/SURFACE-BODY-SEMANTICS.md`](design/overview/SURFACE-BODY-SEMANTICS.md)，
+那里有四个可以直接核对的数字：
+
+- 体层 `composition` 共 154 条引用，**109 条悬空（70%）**，它们对应 35 个待建面层类和 88 条点层需求
+- **29 个体没有一个能装配起来**，最好的 `body.external-access` 也差 1 个零件（中位缺 4）
+- 面层 16 个 pattern 只有 6 个被 Panel 使用，闲置的恰好是最容易做的 `table`/`form`/`card-grid`/`canvas`
+- Panel 的 `content` 该是数组不是字符串 —— 现有数据里 `"surface.prompt-input + surface.streaming-response"`
+  不是笔误，是有人用 `+` 表达「一个面板承载多个页面」
 
 ## 场层落点（landing）
 
