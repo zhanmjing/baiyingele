@@ -31,6 +31,7 @@ const lineProfiles = require(resolve(ROOT, 'src/shared/generatedLineProfiles.jso
 const bodyProfiles = require(resolve(ROOT, 'src/shared/generatedBodyProfiles.json'))
 const surface = require(resolve(ROOT, 'src/renderer/src/generatedSurface.json'))
 const settings = require(resolve(ROOT, 'src/renderer/src/generatedSettings.json'))
+const requirementFile = require(resolve(ROOT, 'src/shared/requirements.generated.json'))
 
 const LAYERS = ['point', 'line', 'surface', 'body', 'field']
 const PRIORITIES = new Set(['P0', 'P1', 'P2'])
@@ -188,6 +189,30 @@ for (const [classId, profile] of Object.entries(bodyProfiles)) {
 for (const panel of surface.panelClasses ?? []) {
   for (const ref of panel.content ?? []) checkRef(ref, `${panel.id}.content`)
   for (const inst of panel.instances ?? []) for (const ref of inst.content ?? []) checkRef(ref, `${panel.id}.${inst.label}.content`)
+}
+
+// ── 命名空间隔离：非 Atom 的 id 必须用保留前缀，不许和五层命名空间混用 ──
+// Atom   <layer>.<class>[.<instance>@rN]   layer ∈ 五层
+// Panel  panel.<name>
+// Req    req.<layer>.<class>[.<instance>]
+// Group  group.<name>            （尚未实装，先占位）
+const ATOM_LAYERS = new Set(LAYERS)
+for (const panel of surface.panelClasses ?? []) {
+  if (!String(panel.id ?? '').startsWith('panel.')) {
+    hard.push(`panel id 必须用 panel. 前缀: ${panel.id}`)
+  }
+}
+for (const req of requirementFile.requirements ?? []) {
+  if (!String(req.id ?? '').startsWith('req.')) hard.push(`需求 id 必须用 req. 前缀: ${req.id}`)
+  if (!ATOM_LAYERS.has(req.layer)) hard.push(`需求 ${req.id} 的层名非法: ${req.layer}`)
+  if (!req.ref || req.ref.layer !== req.layer) hard.push(`需求 ${req.id} 的 ref.layer 与 layer 字段不一致`)
+}
+for (const section of settings.sections ?? []) {
+  if (String(section.id ?? '').includes('.')) hard.push(`设置 section id 不该含点（它是裸 slug）: ${section.id}`)
+  if (ATOM_LAYERS.has(section.id)) {
+    // 允许，但记一笔：设置 section 和层同名，读代码时容易混
+    stats.sectionLayerCollision = (stats.sectionLayerCollision ?? 0) + 1
+  }
 }
 
 stats.classes = classTotal

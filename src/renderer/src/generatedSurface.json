@@ -1687,8 +1687,8 @@
       "hotkey": "",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_openai",
+        "name": "open_external_site",
+        "instance": "openai",
         "rev": null,
         "dangling": true
       },
@@ -2190,8 +2190,8 @@
       "hotkey": "4",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_openai",
+        "name": "open_external_site",
+        "instance": "openai",
         "rev": null,
         "dangling": true
       },
@@ -2207,8 +2207,8 @@
       "hotkey": "5",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_x",
+        "name": "open_external_site",
+        "instance": "x",
         "rev": null,
         "dangling": true
       },
@@ -2224,8 +2224,8 @@
       "hotkey": "6",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_so",
+        "name": "open_external_site",
+        "instance": "so",
         "rev": null,
         "dangling": true
       },
@@ -2241,8 +2241,8 @@
       "hotkey": "7",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_bili",
+        "name": "open_external_site",
+        "instance": "bili",
         "rev": null,
         "dangling": true
       },
@@ -2258,8 +2258,8 @@
       "hotkey": "8",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_reddit",
+        "name": "open_external_site",
+        "instance": "reddit",
         "rev": null,
         "dangling": true
       },
@@ -2275,8 +2275,8 @@
       "hotkey": "9",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_gmail",
+        "name": "open_external_site",
+        "instance": "gmail",
         "rev": null,
         "dangling": true
       },
@@ -2292,8 +2292,8 @@
       "hotkey": "0",
       "target": {
         "layer": "line",
-        "name": "inst",
-        "instance": "site_maps",
+        "name": "open_external_site",
+        "instance": "maps",
         "rev": null,
         "dangling": true
       },

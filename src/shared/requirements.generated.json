@@ -10,10 +10,17 @@
   },
   "requirements": [
     {
-      "id": "req:point.line.inst.site_openai.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_openai",
+      "id": "req.line.open_external_site.openai",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "openai",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.openai",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -30,10 +37,17 @@
       ]
     },
     {
-      "id": "req:point.point.open.terminal.instance",
+      "id": "req.point.open.terminal",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "open",
+        "instance": "terminal",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.open.terminal",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -50,10 +64,14 @@
       ]
     },
     {
-      "id": "req:line.line.backup_folder",
+      "id": "req.line.backup_folder",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "backup_folder"
+      },
       "layer": "line",
       "capability": "line:line.backup_folder",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -64,10 +82,14 @@
       ]
     },
     {
-      "id": "req:line.line.clip_page",
+      "id": "req.line.clip_page",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "clip_page"
+      },
       "layer": "line",
       "capability": "line:line.clip_page",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -78,10 +100,14 @@
       ]
     },
     {
-      "id": "req:line.line.clipboard_history",
+      "id": "req.line.clipboard_history",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "clipboard_history"
+      },
       "layer": "line",
       "capability": "line:line.clipboard_history",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -92,10 +118,14 @@
       ]
     },
     {
-      "id": "req:line.line.convert_media",
+      "id": "req.line.convert_media",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "convert_media"
+      },
       "layer": "line",
       "capability": "line:line.convert_media",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -106,10 +136,14 @@
       ]
     },
     {
-      "id": "req:line.line.edit_env",
+      "id": "req.line.edit_env",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "edit_env"
+      },
       "layer": "line",
       "capability": "line:line.edit_env",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -120,10 +154,14 @@
       ]
     },
     {
-      "id": "req:line.line.edit_hosts",
+      "id": "req.line.edit_hosts",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "edit_hosts"
+      },
       "layer": "line",
       "capability": "line:line.edit_hosts",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -134,10 +172,14 @@
       ]
     },
     {
-      "id": "req:line.line.find_file_lock",
+      "id": "req.line.find_file_lock",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "find_file_lock"
+      },
       "layer": "line",
       "capability": "line:line.find_file_lock",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -148,10 +190,14 @@
       ]
     },
     {
-      "id": "req:line.line.keep_awake",
+      "id": "req.line.keep_awake",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "keep_awake"
+      },
       "layer": "line",
       "capability": "line:line.keep_awake",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -162,10 +208,14 @@
       ]
     },
     {
-      "id": "req:line.line.launch_target",
+      "id": "req.line.launch_target",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "launch_target"
+      },
       "layer": "line",
       "capability": "line:line.launch_target",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -176,10 +226,14 @@
       ]
     },
     {
-      "id": "req:line.line.layout_windows",
+      "id": "req.line.layout_windows",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "layout_windows"
+      },
       "layer": "line",
       "capability": "line:line.layout_windows",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -190,10 +244,14 @@
       ]
     },
     {
-      "id": "req:line.line.measure_screen",
+      "id": "req.line.measure_screen",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "measure_screen"
+      },
       "layer": "line",
       "capability": "line:line.measure_screen",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -204,10 +262,14 @@
       ]
     },
     {
-      "id": "req:line.line.metric_stream",
+      "id": "req.line.metric_stream",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "metric_stream"
+      },
       "layer": "line",
       "capability": "line:line.metric_stream",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -218,10 +280,14 @@
       ]
     },
     {
-      "id": "req:line.line.ocr_recognize",
+      "id": "req.line.ocr_recognize",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "ocr_recognize"
+      },
       "layer": "line",
       "capability": "line:line.ocr_recognize",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -232,164 +298,17 @@
       ]
     },
     {
-      "id": "req:line.line.organize_files",
-      "layer": "line",
-      "capability": "line:line.organize_files",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.file_organizer",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.paste_transform",
-      "layer": "line",
-      "capability": "line:line.paste_transform",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.advanced_paste",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.pdf_op",
-      "layer": "line",
-      "capability": "line:line.pdf_op",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.pdf_toolkit",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.pick_color",
-      "layer": "line",
-      "capability": "line:line.pick_color",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.color_picker",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.pin_window",
-      "layer": "line",
-      "capability": "line:line.pin_window",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.always_on_top",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.preview_file",
-      "layer": "line",
-      "capability": "line:line.preview_file",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.file_preview",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.rename_files",
-      "layer": "line",
-      "capability": "line:line.rename_files",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.batch_rename",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.resize_image",
-      "layer": "line",
-      "capability": "line:line.resize_image",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.image_resizer",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.suite_launch",
-      "layer": "line",
-      "capability": "line:line.suite_launch",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.suite",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.summarize",
-      "layer": "line",
-      "capability": "line:line.summarize",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.meeting_notes",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:line.line.transcribe",
-      "layer": "line",
-      "capability": "line:line.transcribe",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.meeting_notes",
-          "role": "流程编排",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.line.inst.site_bili.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_bili",
+      "id": "req.line.open_external_site.bili",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "bili",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.bili",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -400,10 +319,17 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_gmail.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_gmail",
+      "id": "req.line.open_external_site.gmail",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "gmail",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.gmail",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -414,10 +340,17 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_maps.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_maps",
+      "id": "req.line.open_external_site.maps",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "maps",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.maps",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -428,10 +361,17 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_reddit.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_reddit",
+      "id": "req.line.open_external_site.reddit",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "reddit",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.reddit",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -442,10 +382,17 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_so.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_so",
+      "id": "req.line.open_external_site.so",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "so",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.so",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -456,10 +403,17 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_x.instance",
-      "layer": "point",
-      "capability": "point:line.inst.site_x",
+      "id": "req.line.open_external_site.x",
       "type": "instance",
+      "ref": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "x",
+        "rev": null,
+        "dangling": true
+      },
+      "layer": "line",
+      "capability": "line:line.open_external_site.x",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -470,10 +424,212 @@
       ]
     },
     {
-      "id": "req:point.point.ai_rewrite",
+      "id": "req.line.organize_files",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "organize_files"
+      },
+      "layer": "line",
+      "capability": "line:line.organize_files",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file_organizer",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.paste_transform",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "paste_transform"
+      },
+      "layer": "line",
+      "capability": "line:line.paste_transform",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.advanced_paste",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.pdf_op",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "pdf_op"
+      },
+      "layer": "line",
+      "capability": "line:line.pdf_op",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.pdf_toolkit",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.pick_color",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "pick_color"
+      },
+      "layer": "line",
+      "capability": "line:line.pick_color",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color_picker",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.pin_window",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "pin_window"
+      },
+      "layer": "line",
+      "capability": "line:line.pin_window",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.always_on_top",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.preview_file",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "preview_file"
+      },
+      "layer": "line",
+      "capability": "line:line.preview_file",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file_preview",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.rename_files",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "rename_files"
+      },
+      "layer": "line",
+      "capability": "line:line.rename_files",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch_rename",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.resize_image",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "resize_image"
+      },
+      "layer": "line",
+      "capability": "line:line.resize_image",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image_resizer",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.suite_launch",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "suite_launch"
+      },
+      "layer": "line",
+      "capability": "line:line.suite_launch",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.suite",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.summarize",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "summarize"
+      },
+      "layer": "line",
+      "capability": "line:line.summarize",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting_notes",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.line.transcribe",
+      "type": "class",
+      "ref": {
+        "layer": "line",
+        "name": "transcribe"
+      },
+      "layer": "line",
+      "capability": "line:line.transcribe",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting_notes",
+          "role": "流程编排",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req.point.ai_rewrite",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "ai_rewrite"
+      },
       "layer": "point",
       "capability": "point:point.ai_rewrite",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -484,10 +640,14 @@
       ]
     },
     {
-      "id": "req:point.point.ai_summarize",
+      "id": "req.point.ai_summarize",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "ai_summarize"
+      },
       "layer": "point",
       "capability": "point:point.ai_summarize",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -498,10 +658,14 @@
       ]
     },
     {
-      "id": "req:point.point.audio_capture",
+      "id": "req.point.audio_capture",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "audio_capture"
+      },
       "layer": "point",
       "capability": "point:point.audio_capture",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -512,10 +676,14 @@
       ]
     },
     {
-      "id": "req:point.point.browser_read",
+      "id": "req.point.browser_read",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "browser_read"
+      },
       "layer": "point",
       "capability": "point:point.browser_read",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -526,10 +694,14 @@
       ]
     },
     {
-      "id": "req:point.point.clipboard_watch",
+      "id": "req.point.clipboard_watch",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "clipboard_watch"
+      },
       "layer": "point",
       "capability": "point:point.clipboard_watch",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -540,10 +712,14 @@
       ]
     },
     {
-      "id": "req:point.point.color_convert",
+      "id": "req.point.color_convert",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "color_convert"
+      },
       "layer": "point",
       "capability": "point:point.color_convert",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -554,10 +730,14 @@
       ]
     },
     {
-      "id": "req:point.point.env_read",
+      "id": "req.point.env_read",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "env_read"
+      },
       "layer": "point",
       "capability": "point:point.env_read",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -568,10 +748,14 @@
       ]
     },
     {
-      "id": "req:point.point.env_validate",
+      "id": "req.point.env_validate",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "env_validate"
+      },
       "layer": "point",
       "capability": "point:point.env_validate",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -582,10 +766,14 @@
       ]
     },
     {
-      "id": "req:point.point.env_write",
+      "id": "req.point.env_write",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "env_write"
+      },
       "layer": "point",
       "capability": "point:point.env_write",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -596,10 +784,14 @@
       ]
     },
     {
-      "id": "req:point.point.file_classify",
+      "id": "req.point.file_classify",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "file_classify"
+      },
       "layer": "point",
       "capability": "point:point.file_classify",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -610,10 +802,14 @@
       ]
     },
     {
-      "id": "req:point.point.file_copy",
+      "id": "req.point.file_copy",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "file_copy"
+      },
       "layer": "point",
       "capability": "point:point.file_copy",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -624,10 +820,14 @@
       ]
     },
     {
-      "id": "req:point.point.file_handle",
+      "id": "req.point.file_handle",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "file_handle"
+      },
       "layer": "point",
       "capability": "point:point.file_handle",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -638,10 +838,14 @@
       ]
     },
     {
-      "id": "req:point.point.file_list",
+      "id": "req.point.file_list",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "file_list"
+      },
       "layer": "point",
       "capability": "point:point.file_list",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -652,10 +856,14 @@
       ]
     },
     {
-      "id": "req:point.point.file_read_image",
+      "id": "req.point.file_read_image",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "file_read_image"
+      },
       "layer": "point",
       "capability": "point:point.file_read_image",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -666,10 +874,17 @@
       ]
     },
     {
-      "id": "req:point.point.file.write.instance",
+      "id": "req.point.file.write",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "file",
+        "instance": "write",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.file.write",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -680,10 +895,17 @@
       ]
     },
     {
-      "id": "req:point.point.file.zip.instance",
+      "id": "req.point.file.zip",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "file",
+        "instance": "zip",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.file.zip",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -694,10 +916,17 @@
       ]
     },
     {
-      "id": "req:point.point.flow.run_logs.instance",
+      "id": "req.point.flow.run_logs",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "flow",
+        "instance": "run_logs",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.flow.run_logs",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -708,10 +937,14 @@
       ]
     },
     {
-      "id": "req:point.point.hash_verify",
+      "id": "req.point.hash_verify",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "hash_verify"
+      },
       "layer": "point",
       "capability": "point:point.hash_verify",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -722,10 +955,17 @@
       ]
     },
     {
-      "id": "req:point.point.hash.sha256.instance",
+      "id": "req.point.hash.sha256",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "hash",
+        "instance": "sha256",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.hash.sha256",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -736,10 +976,14 @@
       ]
     },
     {
-      "id": "req:point.point.hosts_read",
+      "id": "req.point.hosts_read",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "hosts_read"
+      },
       "layer": "point",
       "capability": "point:point.hosts_read",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -750,10 +994,14 @@
       ]
     },
     {
-      "id": "req:point.point.hosts_validate",
+      "id": "req.point.hosts_validate",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "hosts_validate"
+      },
       "layer": "point",
       "capability": "point:point.hosts_validate",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -764,10 +1012,14 @@
       ]
     },
     {
-      "id": "req:point.point.hosts_write",
+      "id": "req.point.hosts_write",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "hosts_write"
+      },
       "layer": "point",
       "capability": "point:point.hosts_write",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -778,10 +1030,14 @@
       ]
     },
     {
-      "id": "req:point.point.html_tomarkdown",
+      "id": "req.point.html_tomarkdown",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "html_tomarkdown"
+      },
       "layer": "point",
       "capability": "point:point.html_tomarkdown",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -792,10 +1048,14 @@
       ]
     },
     {
-      "id": "req:point.point.image_preprocess",
+      "id": "req.point.image_preprocess",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "image_preprocess"
+      },
       "layer": "point",
       "capability": "point:point.image_preprocess",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -806,10 +1066,14 @@
       ]
     },
     {
-      "id": "req:point.point.image_resize",
+      "id": "req.point.image_resize",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "image_resize"
+      },
       "layer": "point",
       "capability": "point:point.image_resize",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -820,10 +1084,17 @@
       ]
     },
     {
-      "id": "req:point.point.input.clipboard.instance",
+      "id": "req.point.input.clipboard",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "input",
+        "instance": "clipboard",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.input.clipboard",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -834,10 +1105,14 @@
       ]
     },
     {
-      "id": "req:point.point.invoice_parse",
+      "id": "req.point.invoice_parse",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "invoice_parse"
+      },
       "layer": "point",
       "capability": "point:point.invoice_parse",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -848,10 +1123,17 @@
       ]
     },
     {
-      "id": "req:point.point.json.format.instance",
+      "id": "req.point.json.format",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "json",
+        "instance": "format",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.json.format",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -862,10 +1144,14 @@
       ]
     },
     {
-      "id": "req:point.point.launch_run",
+      "id": "req.point.launch_run",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "launch_run"
+      },
       "layer": "point",
       "capability": "point:point.launch_run",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -876,10 +1162,14 @@
       ]
     },
     {
-      "id": "req:point.point.launch_search",
+      "id": "req.point.launch_search",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "launch_search"
+      },
       "layer": "point",
       "capability": "point:point.launch_search",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -890,10 +1180,14 @@
       ]
     },
     {
-      "id": "req:point.point.measure_angle",
+      "id": "req.point.measure_angle",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "measure_angle"
+      },
       "layer": "point",
       "capability": "point:point.measure_angle",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -904,10 +1198,14 @@
       ]
     },
     {
-      "id": "req:point.point.measure_length",
+      "id": "req.point.measure_length",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "measure_length"
+      },
       "layer": "point",
       "capability": "point:point.measure_length",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -918,10 +1216,14 @@
       ]
     },
     {
-      "id": "req:point.point.media_probe",
+      "id": "req.point.media_probe",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "media_probe"
+      },
       "layer": "point",
       "capability": "point:point.media_probe",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -932,10 +1234,14 @@
       ]
     },
     {
-      "id": "req:point.point.media_transcode",
+      "id": "req.point.media_transcode",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "media_transcode"
+      },
       "layer": "point",
       "capability": "point:point.media_transcode",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -946,10 +1252,17 @@
       ]
     },
     {
-      "id": "req:point.point.ocr.read.instance",
+      "id": "req.point.ocr.read",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "ocr",
+        "instance": "read",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.ocr.read",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -960,10 +1273,14 @@
       ]
     },
     {
-      "id": "req:point.point.pdf_merge",
+      "id": "req.point.pdf_merge",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "pdf_merge"
+      },
       "layer": "point",
       "capability": "point:point.pdf_merge",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -974,10 +1291,14 @@
       ]
     },
     {
-      "id": "req:point.point.pdf_read",
+      "id": "req.point.pdf_read",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "pdf_read"
+      },
       "layer": "point",
       "capability": "point:point.pdf_read",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -988,10 +1309,14 @@
       ]
     },
     {
-      "id": "req:point.point.pdf_write",
+      "id": "req.point.pdf_write",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "pdf_write"
+      },
       "layer": "point",
       "capability": "point:point.pdf_write",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1002,10 +1327,14 @@
       ]
     },
     {
-      "id": "req:point.point.permission_check",
+      "id": "req.point.permission_check",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "permission_check"
+      },
       "layer": "point",
       "capability": "point:point.permission_check",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1016,10 +1345,14 @@
       ]
     },
     {
-      "id": "req:point.point.power_keepawake",
+      "id": "req.point.power_keepawake",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "power_keepawake"
+      },
       "layer": "point",
       "capability": "point:point.power_keepawake",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1030,10 +1363,14 @@
       ]
     },
     {
-      "id": "req:point.point.power_state",
+      "id": "req.point.power_state",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "power_state"
+      },
       "layer": "point",
       "capability": "point:point.power_state",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1044,10 +1381,14 @@
       ]
     },
     {
-      "id": "req:point.point.process_kill",
+      "id": "req.point.process_kill",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "process_kill"
+      },
       "layer": "point",
       "capability": "point:point.process_kill",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1058,10 +1399,14 @@
       ]
     },
     {
-      "id": "req:point.point.process_launch",
+      "id": "req.point.process_launch",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "process_launch"
+      },
       "layer": "point",
       "capability": "point:point.process_launch",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1072,10 +1417,14 @@
       ]
     },
     {
-      "id": "req:point.point.process_open",
+      "id": "req.point.process_open",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "process_open"
+      },
       "layer": "point",
       "capability": "point:point.process_open",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1086,10 +1435,14 @@
       ]
     },
     {
-      "id": "req:point.point.rename_plan",
+      "id": "req.point.rename_plan",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "rename_plan"
+      },
       "layer": "point",
       "capability": "point:point.rename_plan",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1100,10 +1453,14 @@
       ]
     },
     {
-      "id": "req:point.point.render_image",
+      "id": "req.point.render_image",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "render_image"
+      },
       "layer": "point",
       "capability": "point:point.render_image",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1114,10 +1471,14 @@
       ]
     },
     {
-      "id": "req:point.point.render_text",
+      "id": "req.point.render_text",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "render_text"
+      },
       "layer": "point",
       "capability": "point:point.render_text",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1128,10 +1489,14 @@
       ]
     },
     {
-      "id": "req:point.point.screen_pick",
+      "id": "req.point.screen_pick",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "screen_pick"
+      },
       "layer": "point",
       "capability": "point:point.screen_pick",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1142,10 +1507,14 @@
       ]
     },
     {
-      "id": "req:point.point.screen_region",
+      "id": "req.point.screen_region",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "screen_region"
+      },
       "layer": "point",
       "capability": "point:point.screen_region",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1156,10 +1525,17 @@
       ]
     },
     {
-      "id": "req:point.point.screen.color.instance",
+      "id": "req.point.screen.color",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "screen",
+        "instance": "color",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.screen.color",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1170,10 +1546,14 @@
       ]
     },
     {
-      "id": "req:point.point.service_start",
+      "id": "req.point.service_start",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "service_start"
+      },
       "layer": "point",
       "capability": "point:point.service_start",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1184,10 +1564,14 @@
       ]
     },
     {
-      "id": "req:point.point.service_status",
+      "id": "req.point.service_status",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "service_status"
+      },
       "layer": "point",
       "capability": "point:point.service_status",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1198,10 +1582,17 @@
       ]
     },
     {
-      "id": "req:point.point.service.status.instance",
+      "id": "req.point.service.status",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "service",
+        "instance": "status",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.service.status",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1212,10 +1603,17 @@
       ]
     },
     {
-      "id": "req:point.point.settings.open.instance",
+      "id": "req.point.settings.open",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "settings",
+        "instance": "open",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.settings.open",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1226,10 +1624,14 @@
       ]
     },
     {
-      "id": "req:point.point.speech_transcribe",
+      "id": "req.point.speech_transcribe",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "speech_transcribe"
+      },
       "layer": "point",
       "capability": "point:point.speech_transcribe",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1240,10 +1642,14 @@
       ]
     },
     {
-      "id": "req:point.point.store_query",
+      "id": "req.point.store_query",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "store_query"
+      },
       "layer": "point",
       "capability": "point:point.store_query",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1254,10 +1660,14 @@
       ]
     },
     {
-      "id": "req:point.point.sys_cpu_stats",
+      "id": "req.point.sys_cpu_stats",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "sys_cpu_stats"
+      },
       "layer": "point",
       "capability": "point:point.sys_cpu_stats",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1268,10 +1678,14 @@
       ]
     },
     {
-      "id": "req:point.point.sys_gpu_stats",
+      "id": "req.point.sys_gpu_stats",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "sys_gpu_stats"
+      },
       "layer": "point",
       "capability": "point:point.sys_gpu_stats",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1282,10 +1696,14 @@
       ]
     },
     {
-      "id": "req:point.point.sys_memory_stats",
+      "id": "req.point.sys_memory_stats",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "sys_memory_stats"
+      },
       "layer": "point",
       "capability": "point:point.sys_memory_stats",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1296,10 +1714,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.cpu_stats.instance",
+      "id": "req.point.sys.cpu_stats",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "cpu_stats",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.cpu_stats",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1310,10 +1735,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.disk_stats.instance",
+      "id": "req.point.sys.disk_stats",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "disk_stats",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.disk_stats",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1324,10 +1756,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.gpu_stats.instance",
+      "id": "req.point.sys.gpu_stats",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "gpu_stats",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.gpu_stats",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1338,10 +1777,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.memory_stats.instance",
+      "id": "req.point.sys.memory_stats",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "memory_stats",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.memory_stats",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1352,10 +1798,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.metrics_snapshot.instance",
+      "id": "req.point.sys.metrics_snapshot",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "metrics_snapshot",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.metrics_snapshot",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1366,10 +1819,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.network_stats.instance",
+      "id": "req.point.sys.network_stats",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "network_stats",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.network_stats",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1380,10 +1840,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.power_status.instance",
+      "id": "req.point.sys.power_status",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "power_status",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.power_status",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1394,10 +1861,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.process_top.instance",
+      "id": "req.point.sys.process_top",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "process_top",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.process_top",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1408,10 +1882,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.sensors_temp.instance",
+      "id": "req.point.sys.sensors_temp",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "sensors_temp",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.sensors_temp",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1422,10 +1903,17 @@
       ]
     },
     {
-      "id": "req:point.point.sys.uptime.instance",
+      "id": "req.point.sys.uptime",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "uptime",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.sys.uptime",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1436,10 +1924,14 @@
       ]
     },
     {
-      "id": "req:point.point.text_diff",
+      "id": "req.point.text_diff",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "text_diff"
+      },
       "layer": "point",
       "capability": "point:point.text_diff",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1450,10 +1942,14 @@
       ]
     },
     {
-      "id": "req:point.point.text_read",
+      "id": "req.point.text_read",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "text_read"
+      },
       "layer": "point",
       "capability": "point:point.text_read",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1464,10 +1960,14 @@
       ]
     },
     {
-      "id": "req:point.point.text_transform",
+      "id": "req.point.text_transform",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "text_transform"
+      },
       "layer": "point",
       "capability": "point:point.text_transform",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1478,10 +1978,17 @@
       ]
     },
     {
-      "id": "req:point.point.text.regex.instance",
+      "id": "req.point.text.regex",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "text",
+        "instance": "regex",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.text.regex",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1492,10 +1999,14 @@
       ]
     },
     {
-      "id": "req:point.point.timer_wait",
+      "id": "req.point.timer_wait",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "timer_wait"
+      },
       "layer": "point",
       "capability": "point:point.timer_wait",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1506,10 +2017,17 @@
       ]
     },
     {
-      "id": "req:point.point.timer.start.instance",
+      "id": "req.point.timer.start",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "timer",
+        "instance": "start",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.timer.start",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1520,10 +2038,17 @@
       ]
     },
     {
-      "id": "req:point.point.translate.text.instance",
+      "id": "req.point.translate.text",
+      "type": "instance",
+      "ref": {
+        "layer": "point",
+        "name": "translate",
+        "instance": "text",
+        "rev": null,
+        "dangling": true
+      },
       "layer": "point",
       "capability": "point:point.translate.text",
-      "type": "instance",
       "requiredBy": [
         {
           "where": "dock.tile.target",
@@ -1534,10 +2059,14 @@
       ]
     },
     {
-      "id": "req:point.point.usage_rank",
+      "id": "req.point.usage_rank",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "usage_rank"
+      },
       "layer": "point",
       "capability": "point:point.usage_rank",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1548,10 +2077,14 @@
       ]
     },
     {
-      "id": "req:point.point.vpn_status",
+      "id": "req.point.vpn_status",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "vpn_status"
+      },
       "layer": "point",
       "capability": "point:point.vpn_status",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1562,10 +2095,14 @@
       ]
     },
     {
-      "id": "req:point.point.window_layout",
+      "id": "req.point.window_layout",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "window_layout"
+      },
       "layer": "point",
       "capability": "point:point.window_layout",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1576,10 +2113,14 @@
       ]
     },
     {
-      "id": "req:point.point.workspace_restore",
+      "id": "req.point.workspace_restore",
+      "type": "class",
+      "ref": {
+        "layer": "point",
+        "name": "workspace_restore"
+      },
       "layer": "point",
       "capability": "point:point.workspace_restore",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1590,10 +2131,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.awake_status",
+      "id": "req.surface.awake_status",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "awake_status"
+      },
       "layer": "surface",
       "capability": "surface:surface.awake_status",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1604,10 +2149,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.backup_status",
+      "id": "req.surface.backup_status",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "backup_status"
+      },
       "layer": "surface",
       "capability": "surface:surface.backup_status",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1618,10 +2167,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.clipboard_list",
+      "id": "req.surface.clipboard_list",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "clipboard_list"
+      },
       "layer": "surface",
       "capability": "surface:surface.clipboard_list",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1632,10 +2185,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.clipper_preview",
+      "id": "req.surface.clipper_preview",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "clipper_preview"
+      },
       "layer": "surface",
       "capability": "surface:surface.clipper_preview",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1646,10 +2203,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.color_inspector",
+      "id": "req.surface.color_inspector",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "color_inspector"
+      },
       "layer": "surface",
       "capability": "surface:surface.color_inspector",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1660,10 +2221,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.convert_dialog",
+      "id": "req.surface.convert_dialog",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "convert_dialog"
+      },
       "layer": "surface",
       "capability": "surface:surface.convert_dialog",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1674,10 +2239,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.hud_ruler",
+      "id": "req.surface.hud_ruler",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "hud_ruler"
+      },
       "layer": "surface",
       "capability": "surface:surface.hud_ruler",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1688,10 +2257,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.key_value_editor",
+      "id": "req.surface.key_value_editor",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "key_value_editor"
+      },
       "layer": "surface",
       "capability": "surface:surface.key_value_editor",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1702,10 +2275,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.launch_dock",
+      "id": "req.surface.launch_dock",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "launch_dock"
+      },
       "layer": "surface",
       "capability": "surface:surface.launch_dock",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1716,10 +2293,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.layout_editor",
+      "id": "req.surface.layout_editor",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "layout_editor"
+      },
       "layer": "surface",
       "capability": "surface:surface.layout_editor",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1730,10 +2311,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.lock_list",
+      "id": "req.surface.lock_list",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "lock_list"
+      },
       "layer": "surface",
       "capability": "surface:surface.lock_list",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1744,10 +2329,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.notes",
+      "id": "req.surface.notes",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "notes"
+      },
       "layer": "surface",
       "capability": "surface:surface.notes",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1758,10 +2347,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.ocr_result",
+      "id": "req.surface.ocr_result",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "ocr_result"
+      },
       "layer": "surface",
       "capability": "surface:surface.ocr_result",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1772,10 +2365,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.organize_preview",
+      "id": "req.surface.organize_preview",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "organize_preview"
+      },
       "layer": "surface",
       "capability": "surface:surface.organize_preview",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1786,10 +2383,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.paste_preview",
+      "id": "req.surface.paste_preview",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "paste_preview"
+      },
       "layer": "surface",
       "capability": "surface:surface.paste_preview",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1800,10 +2401,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.pdf_workspace",
+      "id": "req.surface.pdf_workspace",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "pdf_workspace"
+      },
       "layer": "surface",
       "capability": "surface:surface.pdf_workspace",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1814,10 +2419,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.pin_indicator",
+      "id": "req.surface.pin_indicator",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "pin_indicator"
+      },
       "layer": "surface",
       "capability": "surface:surface.pin_indicator",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1828,10 +2437,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.preview_window",
+      "id": "req.surface.preview_window",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "preview_window"
+      },
       "layer": "surface",
       "capability": "surface:surface.preview_window",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1842,10 +2455,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.prompt_preview",
+      "id": "req.surface.prompt_preview",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "prompt_preview"
+      },
       "layer": "surface",
       "capability": "surface:surface.prompt_preview",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1856,10 +2473,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.quick_launch",
+      "id": "req.surface.quick_launch",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "quick_launch"
+      },
       "layer": "surface",
       "capability": "surface:surface.quick_launch",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1870,10 +2491,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.rename_dialog",
+      "id": "req.surface.rename_dialog",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "rename_dialog"
+      },
       "layer": "surface",
       "capability": "surface:surface.rename_dialog",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1884,10 +2509,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.resize_dialog",
+      "id": "req.surface.resize_dialog",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "resize_dialog"
+      },
       "layer": "surface",
       "capability": "surface:surface.resize_dialog",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1898,10 +2527,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.service_dashboard",
+      "id": "req.surface.service_dashboard",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "service_dashboard"
+      },
       "layer": "surface",
       "capability": "surface:surface.service_dashboard",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1912,10 +2545,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.settings_invoice",
+      "id": "req.surface.settings_invoice",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "settings_invoice"
+      },
       "layer": "surface",
       "capability": "surface:surface.settings_invoice",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1926,10 +2563,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.settings_suite",
+      "id": "req.surface.settings_suite",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "settings_suite"
+      },
       "layer": "surface",
       "capability": "surface:surface.settings_suite",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1940,10 +2581,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.settings_translate",
+      "id": "req.surface.settings_translate",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "settings_translate"
+      },
       "layer": "surface",
       "capability": "surface:surface.settings_translate",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1954,10 +2599,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.text_editor",
+      "id": "req.surface.text_editor",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "text_editor"
+      },
       "layer": "surface",
       "capability": "surface:surface.text_editor",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
@@ -1968,10 +2617,14 @@
       ]
     },
     {
-      "id": "req:surface.surface.workspace_launcher",
+      "id": "req.surface.workspace_launcher",
+      "type": "class",
+      "ref": {
+        "layer": "surface",
+        "name": "workspace_launcher"
+      },
       "layer": "surface",
       "capability": "surface:surface.workspace_launcher",
-      "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",

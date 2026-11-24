@@ -370,3 +370,68 @@ JSON 导入在 TS 里是宽松类型：把 `pointClass` 从字符串改成对象
 但运行时立刻 `未绑定点实例 [object Object]`。
 
 真正兜底的是 **`validate` + `smoke`**。改数据形态时不能只看 typecheck。
+
+---
+
+## 9. 非 Atom 对象的 id：保留前缀
+
+不是所有东西都是 Atom。面板、需求、分组都不是五层里的东西，
+但它们也需要 id —— 规则是**各占一个保留前缀，永远不许和五层命名空间混用**。
+
+| 类别 | 格式 | 例子 | 是不是 Atom |
+|---|---|---|---|
+| Atom 类 | `<layer>.<class>` | `point.window_control` | ✅ |
+| Atom 实例 | `<layer>.<class>.<instance>@rN` | `point.window_control.topmost@r1` | ✅ |
+| 面板 | `panel.<name>` | `panel.inspector` | ❌ |
+| 需求 | `req.<layer>.<class>[.<instance>]` | `req.line.open_external_site.openai` | ❌ |
+| 分组（未实装） | `group.<name>` | `group.morning_routine` | ❌ |
+| 设置分节 | 裸 slug，不含点 | `general` / `point` | ❌ |
+
+**`parseAtomId` 必须拒绝所有非 Atom id** —— 因为第一段必须是五层之一，
+`panel` / `req` / `group` 天然不满足，所以这条隔离是自动成立的。
+校验里也加了断言：面板 id 必须以 `panel.` 开头，需求 id 必须以 `req.` 开头。
+
+### 9.1 需求记录已经结构化
+
+```json
+{
+  "id": "req.line.open_external_site.openai",
+  "type": "instance",
+  "ref": { "layer": "line", "name": "open_external_site",
+           "instance": "openai", "rev": null, "dangling": true },
+  "layer": "line",
+  "capability": "line:line.open_external_site.openai",
+  "requiredBy": [...]
+}
+```
+
+- `id` 不再编码类型（`type` 字段已经说明），从 `req:point.line.xxx.instance` 改成 `req.<layer>.<class>[.<instance>]`
+- `ref` 是结构化引用，形状与正常引用一致，只是 `rev=null + dangling`
+- `capability` 降级为**展示串**；判断逻辑一律用 `ref`
+
+### 9.2 修掉的一个真 bug
+
+需求生成器里实例分支硬编码了 `point:` 前缀：
+
+```js
+return { type: 'instance', capability: `point:${ref.ref}` }
+```
+
+结果 line 层的实例需求被标成 `point:line.xxx`。
+实测修前 140 条需求里 **31 条层名是错的**；修后按 `ref.layer` 统计：
+`line 31 / point 81 / surface 28`。
+
+### 9.3 另一处真 bug：manifest.id 没跟着迁移
+
+`bodyProfiles` 有 25/29 个 `manifest.id` 还是旧类 id（`body.file-preview`）——
+id 迁移只改了 `profile.classId` 和对象的键，漏了 manifest 内部那一份。
+
+### 9.4 dock target 的 `inst` 误判
+
+8 个外网站点的 target 原值是 `inst.site-openai@r1`，
+按位置拆三段时把类型标记 `inst` 当成了类名，变成 `{name:'inst', instance:'site_openai'}`。
+
+它们其实是 `line.open_external_site` 的新实例（站点名），
+已还原为 `{layer:'line', name:'open_external_site', instance:'openai', rev:null, dangling:true}`。
+
+**教训**：按位置拆分 id 时，必须先剥类型标记（`inst.` / `i-`），再拆段。

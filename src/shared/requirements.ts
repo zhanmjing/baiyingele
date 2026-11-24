@@ -14,12 +14,20 @@ export interface RequirementOwner {
   required: boolean
 }
 
+import type { AtomLayer, ClassRef, InstanceRef } from './atomId'
+
+/** 需求指向的东西还不存在，所以实例引用一律 rev=null + dangling */
+export type RequirementRef = ClassRef | (InstanceRef & { dangling: true })
+
 export interface Requirement {
+  /** `req.<layer>.<class>[.<instance>]` —— type 字段已经区分类和实例，id 不再重复编码 */
   id: string
-  layer: string
-  /** 'point:file.read' / 'line:flow.preview-file' */
-  capability: string
   type: 'class' | 'instance'
+  /** 结构化引用：目标不存在，但形状与正常引用一致 */
+  ref: RequirementRef
+  layer: AtomLayer
+  /** 展示用可读串 `<layer>:<refId>`；判断逻辑请用 ref */
+  capability: string
   requiredBy: RequirementOwner[]
 }
 

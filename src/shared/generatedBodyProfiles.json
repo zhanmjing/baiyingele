@@ -44,7 +44,7 @@
       }
     ],
     "manifest": {
-      "id": "body.file-preview",
+      "id": "body.file_preview",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.file-preview/index.html",
@@ -186,7 +186,7 @@
       }
     ],
     "manifest": {
-      "id": "body.image-resizer",
+      "id": "body.image_resizer",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.image-resizer/index.html",
@@ -263,7 +263,7 @@
       }
     ],
     "manifest": {
-      "id": "body.batch-rename",
+      "id": "body.batch_rename",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.batch-rename/index.html",
@@ -332,7 +332,7 @@
       }
     ],
     "manifest": {
-      "id": "body.pdf-toolkit",
+      "id": "body.pdf_toolkit",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.pdf-toolkit/index.html",
@@ -400,7 +400,7 @@
       }
     ],
     "manifest": {
-      "id": "body.media-converter",
+      "id": "body.media_converter",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.media-converter/index.html",
@@ -468,7 +468,7 @@
       }
     ],
     "manifest": {
-      "id": "body.file-organizer",
+      "id": "body.file_organizer",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.file-organizer/index.html",
@@ -537,7 +537,7 @@
       }
     ],
     "manifest": {
-      "id": "body.advanced-paste",
+      "id": "body.advanced_paste",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.advanced-paste/index.html",
@@ -606,7 +606,7 @@
       }
     ],
     "manifest": {
-      "id": "body.clipboard-history",
+      "id": "body.clipboard_history",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.clipboard-history/index.html",
@@ -674,7 +674,7 @@
       }
     ],
     "manifest": {
-      "id": "body.color-picker",
+      "id": "body.color_picker",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.color-picker/index.html",
@@ -743,7 +743,7 @@
       }
     ],
     "manifest": {
-      "id": "body.screen-ruler",
+      "id": "body.screen_ruler",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.screen-ruler/index.html",
@@ -813,7 +813,7 @@
       }
     ],
     "manifest": {
-      "id": "body.window-layout",
+      "id": "body.window_layout",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.window-layout/index.html",
@@ -885,7 +885,7 @@
       }
     ],
     "manifest": {
-      "id": "body.always-on-top",
+      "id": "body.always_on_top",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.always-on-top/index.html",
@@ -1096,7 +1096,7 @@
       }
     ],
     "manifest": {
-      "id": "body.quick-launch",
+      "id": "body.quick_launch",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.quick-launch/index.html",
@@ -1175,7 +1175,7 @@
       }
     ],
     "manifest": {
-      "id": "body.system-monitor",
+      "id": "body.system_monitor",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.system-monitor/index.html",
@@ -1244,7 +1244,7 @@
       }
     ],
     "manifest": {
-      "id": "body.service-health",
+      "id": "body.service_health",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.service-health/index.html",
@@ -1312,7 +1312,7 @@
       }
     ],
     "manifest": {
-      "id": "body.file-locksmith",
+      "id": "body.file_locksmith",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.file-locksmith/index.html",
@@ -1388,7 +1388,7 @@
       }
     ],
     "manifest": {
-      "id": "body.hosts-editor",
+      "id": "body.hosts_editor",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.hosts-editor/index.html",
@@ -1457,7 +1457,7 @@
       }
     ],
     "manifest": {
-      "id": "body.env-vars",
+      "id": "body.env_vars",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.env-vars/index.html",
@@ -1545,7 +1545,7 @@
       }
     ],
     "manifest": {
-      "id": "body.external-access",
+      "id": "body.external_access",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.external-access/index.html",
@@ -1626,7 +1626,7 @@
       }
     ],
     "manifest": {
-      "id": "body.screenshot-translate",
+      "id": "body.screenshot_translate",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.screenshot-translate/index.html",
@@ -1703,7 +1703,7 @@
       }
     ],
     "manifest": {
-      "id": "body.ai-rewrite",
+      "id": "body.ai_rewrite",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.ai-rewrite/index.html",
@@ -1780,7 +1780,7 @@
       }
     ],
     "manifest": {
-      "id": "body.meeting-notes",
+      "id": "body.meeting_notes",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.meeting-notes/index.html",
@@ -1858,7 +1858,7 @@
       }
     ],
     "manifest": {
-      "id": "body.invoice-archive",
+      "id": "body.invoice_archive",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.invoice-archive/index.html",
@@ -1988,7 +1988,7 @@
       }
     ],
     "manifest": {
-      "id": "body.web-clipper",
+      "id": "body.web_clipper",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.web-clipper/index.html",
@@ -2057,7 +2057,7 @@
       }
     ],
     "manifest": {
-      "id": "body.backup-sync",
+      "id": "body.backup_sync",
       "version": "1.0.0",
       "channel": "stable",
       "entry": "body://body.backup-sync/index.html",

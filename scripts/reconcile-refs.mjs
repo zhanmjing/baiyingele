@@ -153,7 +153,14 @@ function makeClassifier({ classIds, instanceClass }, aliases) {
       if (instanceClass.has(ref.ref)) return { status: 'ok' }
       const alias = instanceAliases[ref.ref]
       if (alias && instanceClass.has(alias)) return { status: 'aliased', target: alias }
-      return { status: 'missing', requirement: { type: 'instance', capability: `point:${ref.ref}` } }
+      // 实例需求必须用引用自己的层，不能再硬编码 point（line 实例会被标错）
+      return {
+        status: 'missing',
+        requirement: {
+          type: 'instance',
+          ref: splitInstanceRef(ref.ref, ref.expectedLayer)
+        }
+      }
     }
 
     if (classIds.get(ref.expectedLayer)?.has(ref.ref)) return { status: 'ok' }
@@ -163,7 +170,10 @@ function makeClassifier({ classIds, instanceClass }, aliases) {
       return { status: 'aliased', target: alias }
     }
     if (alias) {
-      return { status: 'missing', requirement: { type: 'class', capability: `${ref.expectedLayer}:${alias}`, badAlias: alias } }
+      return {
+        status: 'missing',
+        requirement: { type: 'class', ref: { layer: ref.expectedLayer, name: String(alias) }, badAlias: alias }
+      }
     }
 
     if (instanceClass.has(ref.ref)) {
@@ -175,21 +185,46 @@ function makeClassifier({ classIds, instanceClass }, aliases) {
       return { status: 'layer-mismatch', actualLayer: domainLayer }
     }
 
-    return { status: 'missing', requirement: { type: 'class', capability: `${ref.expectedLayer}:${ref.ref}` } }
+    return {
+      status: 'missing',
+      requirement: { type: 'class', ref: splitClassRef(ref.ref, ref.expectedLayer) }
+    }
   }
+}
+
+/** 实例 id 字符串 → 结构化引用（目标不存在，所以 rev=null + dangling） */
+function splitInstanceRef(raw, layerHint) {
+  const text = String(raw ?? '').replace(/@r\d+$/, '')
+  const parts = text.split('.').filter(Boolean)
+  const layer = ['point', 'line', 'surface', 'body', 'field'].includes(parts[0]) ? parts[0] : (layerHint ?? 'point')
+  const rest = ['point', 'line', 'surface', 'body', 'field'].includes(parts[0]) ? parts.slice(1) : parts
+  return { layer, name: rest[0] ?? 'unknown', instance: rest.slice(1).join('_') || 'default', rev: null, dangling: true }
+}
+
+/** 类 id 字符串 → 结构化类引用 */
+function splitClassRef(raw, layerHint) {
+  const parts = String(raw ?? '').split('.').filter(Boolean)
+  const layer = ['point', 'line', 'surface', 'body', 'field'].includes(parts[0]) ? parts[0] : (layerHint ?? 'point')
+  const rest = ['point', 'line', 'surface', 'body', 'field'].includes(parts[0]) ? parts.slice(1) : parts
+  return { layer, name: rest.join('_') || 'unknown' }
 }
 
 function groupRequirements(classified) {
   const groups = new Map()
   for (const item of classified) {
     if (item.status !== 'missing') continue
-    const key = `${item.requirement.capability}#${item.requirement.type}`
+    const r = item.requirement.ref
+    const refId = r.instance ? `${r.layer}.${r.name}.${r.instance}` : `${r.layer}.${r.name}`
+    const key = `${refId}#${item.requirement.type}`
     if (!groups.has(key)) {
       groups.set(key, {
-        id: `req:${item.requirement.capability.replace(':', '.')}${item.requirement.type === 'instance' ? '.instance' : ''}`,
-        layer: item.requirement.capability.split(':')[0],
-        capability: item.requirement.capability,
+        // 需求 id = req.<layer>.<class>[.<instance>]，type 字段已经区分类和实例，不再重复编码
+        id: `req.${refId}`,
         type: item.requirement.type,
+        ref: r,
+        layer: r.layer,
+        // capability 保留为可读展示串，但层名用引用自己的层
+        capability: `${r.layer}:${refId}`,
         requiredBy: []
       })
     }
