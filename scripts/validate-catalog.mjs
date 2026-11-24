@@ -165,8 +165,11 @@ for (const [classId, profile] of Object.entries(bodyProfiles)) {
   }
   for (const part of profile.composition ?? []) {
     compositionParts += 1
-    if (!LAYERS.includes(part.layer)) hard.push(`${classId} 组合引用了非法层: ${part.layer}`)
-
+    // 新形态 { class: { layer, name } }；兼容旧的 { layer, ref }
+    const ref = part.class ?? (part.layer && part.ref ? { layer: part.layer, name: part.ref } : null)
+    if (!ref) { hard.push(`${classId} 的组合项既没有 class 也没有 {layer, ref}`); continue }
+    if (!LAYERS.includes(ref.layer)) hard.push(`${classId} 组合引用了非法层: ${ref.layer}`)
+    if (!ref.name) hard.push(`${classId} 组合引用的类名为空`)
   }
 }
 console.log(`[4/7] 体层组合 / Manifest …… ${mark()} ${compositionParts} 个组合引用`)

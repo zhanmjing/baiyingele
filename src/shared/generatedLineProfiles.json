@@ -10,10 +10,18 @@
         "h": 82,
         "label": "截屏",
         "kind": "point",
-        "pointClass": "point.screen_capture",
-        "pointInstance": "point.screen_capture.region@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "screen_capture",
+          "instance": "region",
+          "rev": 1
+        },
         "role": "region",
-        "rewrittenFrom": "cap.region"
+        "rewrittenFrom": "cap.region",
+        "pointClass": {
+          "layer": "point",
+          "name": "screen_capture"
+        }
       },
       {
         "id": "ocr",
@@ -23,10 +31,18 @@
         "h": 82,
         "label": "OCR",
         "kind": "point",
-        "pointClass": "point.ocr_read",
-        "pointInstance": "point.ocr_read.auto@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "ocr_read",
+          "instance": "auto",
+          "rev": 1
+        },
         "role": "$sourceLang",
-        "rewrittenFrom": "ocr.zh.screen"
+        "rewrittenFrom": "ocr.zh.screen",
+        "pointClass": {
+          "layer": "point",
+          "name": "ocr_read"
+        }
       },
       {
         "id": "translate",
@@ -36,10 +52,18 @@
         "h": 82,
         "label": "翻译",
         "kind": "point",
-        "pointClass": "point.translate_text",
-        "pointInstance": "point.translate_text.en2zh@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "translate_text",
+          "instance": "en2zh",
+          "rev": 1
+        },
         "role": "$sourceLang → $targetLang",
-        "rewrittenFrom": "trans.en2zh"
+        "rewrittenFrom": "trans.en2zh",
+        "pointClass": {
+          "layer": "point",
+          "name": "translate_text"
+        }
       },
       {
         "id": "overlay",
@@ -49,10 +73,18 @@
         "h": 82,
         "label": "结果通知",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
-        "rewrittenFrom": "overlay.toast"
+        "rewrittenFrom": "overlay.toast",
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
+        }
       }
     ],
     "edges": [
@@ -84,10 +116,18 @@
         "h": 82,
         "label": "读剪贴板",
         "kind": "point",
-        "pointClass": "point.clipboard_get",
-        "pointInstance": "point.clipboard_get.clip_text@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "clipboard_get",
+          "instance": "clip_text",
+          "rev": 1
+        },
         "role": "format = text",
-        "mapping": {}
+        "mapping": {},
+        "pointClass": {
+          "layer": "point",
+          "name": "clipboard_get"
+        }
       },
       {
         "id": "template",
@@ -97,11 +137,19 @@
         "h": 82,
         "label": "套用模板",
         "kind": "point",
-        "pointClass": "point.text_template",
-        "pointInstance": "point.text_template.markdown@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "text_template",
+          "instance": "markdown",
+          "rev": 1
+        },
         "role": "template = markdown",
         "mapping": {
           "input": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "text_template"
         }
       },
       {
@@ -112,13 +160,21 @@
         "h": 82,
         "label": "写文件",
         "kind": "point",
-        "pointClass": "point.file_write",
-        "pointInstance": "point.file_write.append@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "file_write",
+          "instance": "append",
+          "rev": 1
+        },
         "role": "$path, append=$append",
         "mapping": {
           "text": "$input",
           "path": "$args.path",
           "append": "$args.append"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "file_write"
         }
       },
       {
@@ -129,11 +185,19 @@
         "h": 82,
         "label": "通知",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "success",
         "mapping": {
           "body": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -166,9 +230,17 @@
         "h": 82,
         "label": "VPN 保障",
         "kind": "subflow",
-        "pointClass": "line.ensure_vpn",
-        "pointInstance": "line.ensure_vpn.ask@r2",
-        "role": "vpnRequirement"
+        "pointInstance": {
+          "layer": "line",
+          "name": "ensure_vpn",
+          "instance": "ask",
+          "rev": 2
+        },
+        "role": "vpnRequirement",
+        "pointClass": {
+          "layer": "line",
+          "name": "ensure_vpn"
+        }
       },
       {
         "id": "check",
@@ -178,10 +250,18 @@
         "h": 82,
         "label": "可达性检查",
         "kind": "point",
-        "pointClass": "point.http_request",
-        "pointInstance": "point.http_request.github@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "http_request",
+          "instance": "github",
+          "rev": 1
+        },
         "role": "host = url.host",
-        "rewrittenFrom": "net.reachable.github"
+        "rewrittenFrom": "net.reachable.github",
+        "pointClass": {
+          "layer": "point",
+          "name": "http_request"
+        }
       },
       {
         "id": "open",
@@ -191,10 +271,18 @@
         "h": 82,
         "label": "打开 URL",
         "kind": "point",
-        "pointClass": "point.open",
-        "pointInstance": "point.open.github@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "open",
+          "instance": "github",
+          "rev": 1
+        },
         "role": "url, kind=url",
-        "rewrittenFrom": "open.browser.github"
+        "rewrittenFrom": "open.browser.github",
+        "pointClass": {
+          "layer": "point",
+          "name": "open"
+        }
       },
       {
         "id": "notify",
@@ -204,10 +292,18 @@
         "h": 82,
         "label": "通知",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "success",
-        "rewrittenFrom": "notify.system"
+        "rewrittenFrom": "notify.system",
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
+        }
       }
     ],
     "edges": [
@@ -239,11 +335,19 @@
         "h": 64,
         "label": "探测网络",
         "kind": "point",
-        "pointClass": "point.http_request",
-        "pointInstance": "point.http_request.github@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "http_request",
+          "instance": "github",
+          "rev": 1
+        },
         "role": "probe",
         "mapping": {
           "url": "$args.url"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "http_request"
         }
       },
       {
@@ -265,12 +369,20 @@
         "h": 64,
         "label": "已就绪提示",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "VPN 检查",
           "body": "网络可达，无需打开 VPN"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       },
       {
@@ -281,12 +393,20 @@
         "h": 64,
         "label": "请手动开启",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "VPN 检查",
           "body": "网络不可达，请手动打开 VPN 客户端"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -319,11 +439,19 @@
         "h": 64,
         "label": "列出窗口",
         "kind": "point",
-        "pointClass": "point.window_query",
-        "pointInstance": "point.window_query.list_windows@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "window_query",
+          "instance": "list_windows",
+          "rev": 1
+        },
         "role": "query",
         "mapping": {
           "selector": "$args.selector"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "window_query"
         }
       },
       {
@@ -334,11 +462,19 @@
         "h": 64,
         "label": "整理结果",
         "kind": "point",
-        "pointClass": "point.text_template",
-        "pointInstance": "point.text_template.plain@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "text_template",
+          "instance": "plain",
+          "rev": 1
+        },
         "role": "transform",
         "mapping": {
           "input": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "text_template"
         }
       },
       {
@@ -349,12 +485,20 @@
         "h": 64,
         "label": "结果通知",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "应用检查",
           "body": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -382,11 +526,19 @@
         "h": 64,
         "label": "健康检查",
         "kind": "point",
-        "pointClass": "point.http_request",
-        "pointInstance": "point.http_request.github@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "http_request",
+          "instance": "github",
+          "rev": 1
+        },
         "role": "probe",
         "mapping": {
           "url": "$args.url"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "http_request"
         }
       },
       {
@@ -408,12 +560,20 @@
         "h": 64,
         "label": "服务正常",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "服务检查",
           "body": "服务健康检查通过"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       },
       {
@@ -424,12 +584,20 @@
         "h": 64,
         "label": "服务异常",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "服务检查",
           "body": "服务健康检查失败，请检查服务是否启动"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -462,11 +630,19 @@
         "h": 64,
         "label": "打开下载目录",
         "kind": "point",
-        "pointClass": "point.open",
-        "pointInstance": "point.open.downloads@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "open",
+          "instance": "downloads",
+          "rev": 1
+        },
         "role": "open",
         "mapping": {
           "target": "$args.path"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "open"
         }
       },
       {
@@ -477,12 +653,20 @@
         "h": 64,
         "label": "已打开",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "下载",
           "body": "已打开下载目录"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -505,12 +689,20 @@
         "h": 64,
         "label": "启动应用",
         "kind": "point",
-        "pointClass": "point.open",
-        "pointInstance": "point.open.project@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "open",
+          "instance": "project",
+          "rev": 1
+        },
         "role": "open",
         "mapping": {
           "target": "$args.target",
           "app": "$args.app"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "open"
         }
       },
       {
@@ -521,12 +713,20 @@
         "h": 64,
         "label": "已启动",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "打开应用",
           "body": "$args.target"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -549,11 +749,19 @@
         "h": 64,
         "label": "打开编辑器",
         "kind": "point",
-        "pointClass": "point.open",
-        "pointInstance": "point.open.project@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "open",
+          "instance": "project",
+          "rev": 1
+        },
         "role": "open",
         "mapping": {
           "target": "$args.folder"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "open"
         }
       },
       {
@@ -564,9 +772,17 @@
         "h": 64,
         "label": "打开下载目录",
         "kind": "point",
-        "pointClass": "point.open",
-        "pointInstance": "point.open.downloads@r1",
-        "role": "open"
+        "pointInstance": {
+          "layer": "point",
+          "name": "open",
+          "instance": "downloads",
+          "rev": 1
+        },
+        "role": "open",
+        "pointClass": {
+          "layer": "point",
+          "name": "open"
+        }
       },
       {
         "id": "notify",
@@ -576,12 +792,20 @@
         "h": 64,
         "label": "工作区就绪",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "工作区",
           "body": "编辑器与目录已打开"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -609,12 +833,20 @@
         "h": 64,
         "label": "发送请求",
         "kind": "point",
-        "pointClass": "point.http_request",
-        "pointInstance": "point.http_request.github@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "http_request",
+          "instance": "github",
+          "rev": 1
+        },
         "role": "fetch",
         "mapping": {
           "url": "$args.url",
           "method": "$args.method"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "http_request"
         }
       },
       {
@@ -625,11 +857,19 @@
         "h": 64,
         "label": "套用模板",
         "kind": "point",
-        "pointClass": "point.text_template",
-        "pointInstance": "point.text_template.plain@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "text_template",
+          "instance": "plain",
+          "rev": 1
+        },
         "role": "transform",
         "mapping": {
           "input": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "text_template"
         }
       },
       {
@@ -640,12 +880,20 @@
         "h": 64,
         "label": "推送结果",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "HTTP 提取",
           "body": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -673,12 +921,20 @@
         "h": 64,
         "label": "改写文本",
         "kind": "point",
-        "pointClass": "point.translate_text",
-        "pointInstance": "point.translate_text.auto@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "translate_text",
+          "instance": "auto",
+          "rev": 1
+        },
         "role": "transform",
         "mapping": {
           "text": "$input",
           "target": "$args.target"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "translate_text"
         }
       },
       {
@@ -689,11 +945,19 @@
         "h": 64,
         "label": "写入剪贴板",
         "kind": "point",
-        "pointClass": "point.clipboard_write",
-        "pointInstance": "point.clipboard_write.text@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "clipboard_write",
+          "instance": "text",
+          "rev": 1
+        },
         "role": "output",
         "mapping": {
           "text": "$input"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "clipboard_write"
         }
       },
       {
@@ -704,12 +968,20 @@
         "h": 64,
         "label": "改写完成",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "AI 改写",
           "body": "改写结果已复制到剪贴板"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -737,12 +1009,20 @@
         "h": 64,
         "label": "扫描目录",
         "kind": "point",
-        "pointClass": "point.file_scan",
-        "pointInstance": "point.file_scan.recursive@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "file_scan",
+          "instance": "recursive",
+          "rev": 1
+        },
         "role": "scan",
         "mapping": {
           "root": "$args.path",
           "pattern": "$args.pattern"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "file_scan"
         }
       },
       {
@@ -764,12 +1044,20 @@
         "h": 64,
         "label": "归档一项",
         "kind": "point",
-        "pointClass": "point.file_move",
-        "pointInstance": "point.file_move.archive@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "file_move",
+          "instance": "archive",
+          "rev": 1
+        },
         "role": "move",
         "mapping": {
           "from": "$input",
           "toDir": "$args.target"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "file_move"
         }
       },
       {
@@ -780,12 +1068,20 @@
         "h": 64,
         "label": "归档完成",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "批量归档",
           "body": "已逐项搬运到归档目录"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],
@@ -822,11 +1118,19 @@
         "h": 64,
         "label": "人工确认",
         "kind": "point",
-        "pointClass": "point.ui_form",
-        "pointInstance": "point.ui_form.confirm@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "ui_form",
+          "instance": "confirm",
+          "rev": 1
+        },
         "role": "approval",
         "mapping": {
           "title": "$args.title"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "ui_form"
         }
       },
       {
@@ -848,7 +1152,9 @@
         "h": 64,
         "label": "执行子流程",
         "kind": "subflow",
-        "pointInstance": "$args.target",
+        "pointInstance": {
+          "expr": "$args.target"
+        },
         "role": "subflow"
       },
       {
@@ -859,12 +1165,20 @@
         "h": 64,
         "label": "已取消提示",
         "kind": "point",
-        "pointClass": "point.notify_toast",
-        "pointInstance": "point.notify_toast.system@r1",
+        "pointInstance": {
+          "layer": "point",
+          "name": "notify_toast",
+          "instance": "system",
+          "rev": 1
+        },
         "role": "notify",
         "mapping": {
           "title": "审批",
           "body": "审批被取消，未执行任何动作"
+        },
+        "pointClass": {
+          "layer": "point",
+          "name": "notify_toast"
         }
       }
     ],

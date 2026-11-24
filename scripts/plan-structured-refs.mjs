@@ -4,11 +4,12 @@
  * 目标：源文件里不再出现 id 字符串，只存 { layer, name, instance, rev }。
  * id 一律由 src/shared/atomId.ts 的 makeClassId / makeInstanceId 在运行时拼。
  *
- * 用法：node scripts/plan-structured-refs.mjs
+ * 用法：node scripts/plan-structured-refs.mjs          只读预演
+ *       node scripts/plan-structured-refs.mjs --write  写回源文件（会先备份）
  * 产出：.tmp/refs-structured-plan.json（全量改后结构）+ 控制台报告
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, rmSync } from 'node:fs'
+import { join, dirname } from 'node:path'
 import { classSegment, instanceSegment, makeClassId, makeInstanceId, parseInstanceId } from '../src/shared/atomId.ts'
 
 const ROOT = process.cwd()
@@ -34,7 +35,9 @@ function classRefOf(raw, hint) {
 function instanceRev(layer, classId, instanceId) {
   for (const cls of catalogs[layer] ?? []) {
     if (cls.id !== classId) continue
+    const base = String(instanceId).replace(/@r\d+$/, '')
     const hit = cls.instances.find((i) => i.id === instanceId)
+      ?? cls.instances.find((i) => String(i.id).replace(/@r\d+$/, '') === base)
     if (hit) return Number(hit.rev ?? 1) || 1
   }
   return null
@@ -67,7 +70,8 @@ function instanceRefOf(raw, hint) {
   // 旧格式：先按「实例 id 精确匹配」找归属（line 层是 inst.xxx，不带类前缀）
   for (const layer of LAYERS) {
     for (const cls of catalogs[layer] ?? []) {
-      if (cls.instances.some((i) => i.id === text)) {
+      const tb = text.replace(/@r\d+$/, '')
+      if (cls.instances.some((i) => i.id === text || String(i.id).replace(/@r\d+$/, '') === tb)) {
         const rev = instanceRev(layer, cls.id, text)
         return { layer, name: classSegment(layer, cls.id), instance: instanceSegment(layer, cls.id, text), rev: rev ?? null }
       }
@@ -121,8 +125,8 @@ for (const [classId, profile] of Object.entries(bodyProfiles)) {
     const ref = classRefOf(item.ref, item.layer)
     if (!ref) { unresolved.push({ where: 'body.composition', raw: item.ref, layer: item.layer }); return item }
     report.body.push({ from: item.ref, to: ref })
-    const { ref: _drop, ...rest } = item
-    return { ...rest, class: ref.name }
+    const { ref: _drop, layer: _layer, ...rest } = item
+    return { ...rest, class: ref }
   })
   bodyOut[classId] = { ...profile, composition }
 }
@@ -172,3 +176,28 @@ for (const kind of ['line', 'body', 'panel']) {
 }
 console.log()
 console.log('完整结构已写入 .tmp/refs-structured-plan.json')
+
+// ── 写盘 ──────────────────────────────────────────────────────
+if (process.argv.includes('--write')) {
+  const backupDir = join(ROOT, '.tmp/structured-backup')
+  rmSync(backupDir, { recursive: true, force: true })
+  mkdirSync(backupDir, { recursive: true })
+  const targets = [
+    ['src/shared/generatedLineProfiles.json', lineOut],
+    ['src/shared/generatedBodyProfiles.json', bodyOut],
+    ['src/renderer/src/generatedSurface.json', { ...surfaceUi, panelClasses: panelOut }],
+    ['build/data/.panel-data.json', { ...JSON.parse(readFileSync(join(ROOT, 'build/data/.panel-data.json'), 'utf8')), classes: panelOut }]
+  ]
+  for (const [rel, data] of targets) {
+    const src = join(ROOT, rel)
+    if (existsSync(src)) {
+      const dest = join(backupDir, rel)
+      mkdirSync(dirname(dest), { recursive: true })
+      copyFileSync(src, dest)
+    }
+    mkdirSync(dirname(src), { recursive: true })
+    writeFileSync(src, `${JSON.stringify(data, null, 2)}\n`, 'utf8')
+    console.log(`  写出 ${rel}`)
+  }
+  console.log(`\n已写盘 ${targets.length} 个文件，备份在 .tmp/structured-backup/`)
+}

@@ -3,34 +3,44 @@
     "classId": "body.file_preview",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.preview_file",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "preview_file"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.preview_window",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "preview_window"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.render_text",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "render_text"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.render_image",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "render_image"
+        }
       }
     ],
     "manifest": {
@@ -62,36 +72,46 @@
     "classId": "body.ocr",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.ocr_recognize",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "ocr_recognize"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.ocr_result",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "ocr_result"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.image_preprocess",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "ocr.text"
+        "class": {
+          "layer": "point",
+          "name": "image_preprocess"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "ocr.table"
+        "rewrittenFrom": "ocr.text",
+        "class": {
+          "layer": "point",
+          "name": "ocr_read"
+        }
+      },
+      {
+        "role": "能力执行",
+        "required": true,
+        "rewrittenFrom": "ocr.table",
+        "class": {
+          "layer": "point",
+          "name": "ocr_read"
+        }
       }
     ],
     "manifest": {
@@ -124,35 +144,45 @@
     "classId": "body.image_resizer",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.resize_image",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "resize_image"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.resize_dialog",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "resize_dialog"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_read_image",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "point.image_resize",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "point.file_write",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "file.write.image"
+        "class": {
+          "layer": "point",
+          "name": "file_read_image"
+        }
+      },
+      {
+        "role": "能力执行",
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "image_resize"
+        }
+      },
+      {
+        "role": "能力执行",
+        "required": true,
+        "rewrittenFrom": "file.write.image",
+        "class": {
+          "layer": "point",
+          "name": "file_write"
+        }
       }
     ],
     "manifest": {
@@ -184,40 +214,52 @@
     "classId": "body.batch_rename",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.rename_files",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "rename_files"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.rename_dialog",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "rename_dialog"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.diff",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "diff"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_list",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_list"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.rename_plan",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "rename_plan"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_move",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_move"
+        }
       }
     ],
     "manifest": {
@@ -249,34 +291,44 @@
     "classId": "body.pdf_toolkit",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.pdf_op",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "pdf_op"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.pdf_workspace",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "pdf_workspace"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.pdf_read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "pdf_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.pdf_merge",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "pdf_merge"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.pdf_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "pdf_write"
+        }
       }
     ],
     "manifest": {
@@ -307,34 +359,44 @@
     "classId": "body.media_converter",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.convert_media",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "convert_media"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.convert_dialog",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "convert_dialog"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.media_probe",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "media_probe"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.media_transcode",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "media_transcode"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_write"
+        }
       }
     ],
     "manifest": {
@@ -365,34 +427,44 @@
     "classId": "body.file_organizer",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.organize_files",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "organize_files"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.organize_preview",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "organize_preview"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_scan",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_scan"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_classify",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_classify"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_move",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_move"
+        }
       }
     ],
     "manifest": {
@@ -423,35 +495,45 @@
     "classId": "body.advanced_paste",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.paste_transform",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "paste_transform"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.paste_preview",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "paste_preview"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.clipboard_get",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "clipboard.read"
+        "rewrittenFrom": "clipboard.read",
+        "class": {
+          "layer": "point",
+          "name": "clipboard_get"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.text_transform",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "text_transform"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.clipboard_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "clipboard_write"
+        }
       }
     ],
     "manifest": {
@@ -483,34 +565,44 @@
     "classId": "body.clipboard_history",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.clipboard_history",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "clipboard_history"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.clipboard_list",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "clipboard_list"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.clipboard_watch",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "clipboard_watch"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.store_query",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "store_query"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.clipboard_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "clipboard_write"
+        }
       }
     ],
     "manifest": {
@@ -541,34 +633,44 @@
     "classId": "body.color_picker",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.pick_color",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "pick_color"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.color_inspector",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "color_inspector"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.screen_pick",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "screen_pick"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.color_convert",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "color_convert"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.clipboard_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "clipboard_write"
+        }
       }
     ],
     "manifest": {
@@ -600,34 +702,44 @@
     "classId": "body.screen_ruler",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.measure_screen",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "measure_screen"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.hud_ruler",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "hud_ruler"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.screen_region",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "screen_region"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.measure_length",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "measure_length"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.measure_angle",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "measure_angle"
+        }
       }
     ],
     "manifest": {
@@ -657,37 +769,47 @@
     "classId": "body.window_layout",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.layout_windows",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "layout_windows"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.layout_editor",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "layout_editor"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_query",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "window.list"
+        "rewrittenFrom": "window.list",
+        "class": {
+          "layer": "point",
+          "name": "window_query"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "window.move"
+        "rewrittenFrom": "window.move",
+        "class": {
+          "layer": "point",
+          "name": "window_control"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "window.resize"
+        "rewrittenFrom": "window.resize",
+        "class": {
+          "layer": "point",
+          "name": "window_control"
+        }
       }
     ],
     "manifest": {
@@ -719,37 +841,47 @@
     "classId": "body.always_on_top",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.pin_window",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "pin_window"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.pin_indicator",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "pin_indicator"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_query",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "window.find"
+        "rewrittenFrom": "window.find",
+        "class": {
+          "layer": "point",
+          "name": "window_query"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "window.pin"
+        "rewrittenFrom": "window.pin",
+        "class": {
+          "layer": "point",
+          "name": "window_control"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "window.restore"
+        "rewrittenFrom": "window.restore",
+        "class": {
+          "layer": "point",
+          "name": "window_control"
+        }
       }
     ],
     "manifest": {
@@ -780,34 +912,44 @@
     "classId": "body.awake",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.keep_awake",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "keep_awake"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.awake_status",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "awake_status"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.power_state",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "power_state"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.power_keepawake",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "power_keepawake"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.timer_wait",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "timer_wait"
+        }
       }
     ],
     "manifest": {
@@ -837,34 +979,44 @@
     "classId": "body.workspace",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.open_workspace",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "open_workspace"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.workspace_launcher",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "workspace_launcher"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.process_launch",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "process_launch"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.window_layout",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "window_layout"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.workspace_restore",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "workspace_restore"
+        }
       }
     ],
     "manifest": {
@@ -895,40 +1047,52 @@
     "classId": "body.quick_launch",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.launch_target",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "launch_target"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.launch_dock",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "launch_dock"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.quick_launch",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "quick_launch"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.launch_search",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "launch_search"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.launch_run",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "launch_run"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.usage_rank",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "usage_rank"
+        }
       }
     ],
     "manifest": {
@@ -960,42 +1124,54 @@
     "classId": "body.system_monitor",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.metric_stream",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "metric_stream"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.dashboard",
         "role": "界面承载",
         "required": true,
-        "rewrittenFrom": "surface.system-monitor"
+        "rewrittenFrom": "surface.system-monitor",
+        "class": {
+          "layer": "surface",
+          "name": "dashboard"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.hud",
         "role": "界面承载",
         "required": true,
-        "rewrittenFrom": "surface.hud.system-status"
+        "rewrittenFrom": "surface.hud.system-status",
+        "class": {
+          "layer": "surface",
+          "name": "hud"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.sys_cpu_stats",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "sys_cpu_stats"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.sys_gpu_stats",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "sys_gpu_stats"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.sys_memory_stats",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "sys_memory_stats"
+        }
       }
     ],
     "manifest": {
@@ -1026,35 +1202,45 @@
     "classId": "body.service_health",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.ensure_service",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "ensure_service"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.service_dashboard",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "service_dashboard"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.service_status",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "point.service_start",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "point.http_request",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "net.reachable"
+        "class": {
+          "layer": "point",
+          "name": "service_status"
+        }
+      },
+      {
+        "role": "能力执行",
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "service_start"
+        }
+      },
+      {
+        "role": "能力执行",
+        "required": true,
+        "rewrittenFrom": "net.reachable",
+        "class": {
+          "layer": "point",
+          "name": "http_request"
+        }
       }
     ],
     "manifest": {
@@ -1085,34 +1271,44 @@
     "classId": "body.file_locksmith",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.find_file_lock",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "find_file_lock"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.lock_list",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "lock_list"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_handle",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_handle"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.process_open",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "process_open"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.process_kill",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "process_kill"
+        }
       }
     ],
     "manifest": {
@@ -1143,40 +1339,52 @@
     "classId": "body.hosts_editor",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.edit_hosts",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "edit_hosts"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.text_editor",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "text_editor"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.diff",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "diff"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.hosts_read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "hosts_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.hosts_validate",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "hosts_validate"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.hosts_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "hosts_write"
+        }
       }
     ],
     "manifest": {
@@ -1208,34 +1416,44 @@
     "classId": "body.env_vars",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.edit_env",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "edit_env"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.key_value_editor",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "key_value_editor"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.env_read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "env_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.env_validate",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "env_validate"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.env_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "env_write"
+        }
       }
     ],
     "manifest": {
@@ -1266,50 +1484,64 @@
     "classId": "body.external_access",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.open_external_site",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "open_external_site"
+        }
       },
       {
-        "layer": "line",
-        "ref": "line.ensure_vpn",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "ensure_vpn"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.card_grid",
         "role": "界面承载",
         "required": true,
-        "rewrittenFrom": "surface.site-launcher"
+        "rewrittenFrom": "surface.site-launcher",
+        "class": {
+          "layer": "surface",
+          "name": "card_grid"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.form",
         "role": "界面承载",
         "required": true,
-        "rewrittenFrom": "surface.settings.vpn"
+        "rewrittenFrom": "surface.settings.vpn",
+        "class": {
+          "layer": "surface",
+          "name": "form"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.vpn_status",
-        "role": "能力执行",
-        "required": true
-      },
-      {
-        "layer": "point",
-        "ref": "point.http_request",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "net.reachable"
+        "class": {
+          "layer": "point",
+          "name": "vpn_status"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.open",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "browser.open"
+        "rewrittenFrom": "net.reachable",
+        "class": {
+          "layer": "point",
+          "name": "http_request"
+        }
+      },
+      {
+        "role": "能力执行",
+        "required": true,
+        "rewrittenFrom": "browser.open",
+        "class": {
+          "layer": "point",
+          "name": "open"
+        }
       }
     ],
     "manifest": {
@@ -1342,43 +1574,55 @@
     "classId": "body.screenshot_translate",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.screenshot_translate",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "screenshot_translate"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.hud",
         "role": "界面承载",
         "required": true,
-        "rewrittenFrom": "surface.hud.translate"
+        "rewrittenFrom": "surface.hud.translate",
+        "class": {
+          "layer": "surface",
+          "name": "hud"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.settings_translate",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "settings_translate"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.screen_capture",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "screen.capture"
+        "rewrittenFrom": "screen.capture",
+        "class": {
+          "layer": "point",
+          "name": "screen_capture"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "ocr.text"
+        "rewrittenFrom": "ocr.text",
+        "class": {
+          "layer": "point",
+          "name": "ocr_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.translate_text",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "translate_text"
+        }
       }
     ],
     "manifest": {
@@ -1410,40 +1654,52 @@
     "classId": "body.ai_rewrite",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.ai_rewrite",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "ai_rewrite"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.diff",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "diff"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.prompt_preview",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "prompt_preview"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.text_read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "text_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.ai_rewrite",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "ai_rewrite"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.text_diff",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "text_diff"
+        }
       }
     ],
     "manifest": {
@@ -1475,40 +1731,52 @@
     "classId": "body.meeting_notes",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.transcribe",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "transcribe"
+        }
       },
       {
-        "layer": "line",
-        "ref": "line.summarize",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "summarize"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.notes",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "notes"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.audio_capture",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "audio_capture"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.speech_transcribe",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "speech_transcribe"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.ai_summarize",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "ai_summarize"
+        }
       }
     ],
     "manifest": {
@@ -1540,41 +1808,53 @@
     "classId": "body.invoice_archive",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.batch_archive",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "batch_archive"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.table",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "table"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.settings_invoice",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "settings_invoice"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
-        "rewrittenFrom": "ocr.table"
+        "rewrittenFrom": "ocr.table",
+        "class": {
+          "layer": "point",
+          "name": "ocr_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.invoice_parse",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "invoice_parse"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_move",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_move"
+        }
       }
     ],
     "manifest": {
@@ -1606,28 +1886,36 @@
     "classId": "body.suite",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.suite_launch",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "suite_launch"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.card_grid",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "card_grid"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.settings_suite",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "settings_suite"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.permission_check",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "permission_check"
+        }
       }
     ],
     "manifest": {
@@ -1659,34 +1947,44 @@
     "classId": "body.web_clipper",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.clip_page",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "clip_page"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.clipper_preview",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "clipper_preview"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.browser_read",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "browser_read"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.html_tomarkdown",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "html_tomarkdown"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_write",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_write"
+        }
       }
     ],
     "manifest": {
@@ -1718,34 +2016,44 @@
     "classId": "body.backup_sync",
     "composition": [
       {
-        "layer": "line",
-        "ref": "line.backup_folder",
         "role": "流程编排",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "line",
+          "name": "backup_folder"
+        }
       },
       {
-        "layer": "surface",
-        "ref": "surface.backup_status",
         "role": "界面承载",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "surface",
+          "name": "backup_status"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_scan",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_scan"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.file_copy",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "file_copy"
+        }
       },
       {
-        "layer": "point",
-        "ref": "point.hash_verify",
         "role": "能力执行",
-        "required": true
+        "required": true,
+        "class": {
+          "layer": "point",
+          "name": "hash_verify"
+        }
       }
     ],
     "manifest": {

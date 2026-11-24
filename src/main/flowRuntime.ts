@@ -27,6 +27,7 @@
  *   2. 任何节点 warn，整条流程就是 warn（不能把中间警告吞成 ok）
  *   3. 子流程失败 / 循环引用 / 超层数 → 父流程立刻停
  */
+import { classIdOf, instanceIdOf, isExprRef } from '../shared/atomId'
 import { hasRealImpl } from '../shared/implRegistry'
 import type { LineNode, LineProfile } from '../shared/lineCatalog'
 import type { InstanceRunner, LayerStore, RunOutcome } from './layerStore'
@@ -342,8 +343,11 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
 
   // ── subflow ───────────────────────────────────────
   if (node.kind === 'subflow') {
-    const rawTarget = node.pointInstance ?? ''
-    const targetId = rawTarget.startsWith('$args.') ? (args[rawTarget.slice('$args.'.length)] ?? '') : rawTarget
+    const rawTarget = node.pointInstance
+    // pointInstance 现在是三种形态：结构化实例引用 / {expr:'$args.x'} / 旧字符串
+    const targetId = isExprRef(rawTarget)
+      ? (args[String(rawTarget.expr).replace(/^\$args\./, '')] ?? '')
+      : (instanceIdOf(rawTarget) ?? '')
     const lineStore = deps.lineStore?.()
     const target = targetId && lineStore ? lineStore.instance(targetId) : undefined
     const fail = (halt: string): NodeOutcome => {
@@ -399,7 +403,7 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
 
   // ── point ─────────────────────────────────────────
   const pointStore = deps.pointStore()
-  const boundId = node.pointInstance
+  const boundId = instanceIdOf(node.pointInstance)
   const bound = boundId ? pointStore.instance(boundId) : undefined
   if (!bound) {
     // 未绑定不算失败，但下游拿不到值，且必须显式记 skipped
@@ -408,7 +412,7 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
       result: {
         nodeId: node.id,
         label: node.label,
-        kind: `point:${node.pointClass ?? '?'}`,
+        kind: `point:${classIdOf(node.pointClass) ?? '?'}`,
         status: 'skipped',
         output: `未绑定点实例 ${boundId ?? '(空)'}`,
         real: false,

@@ -79,6 +79,7 @@ require.cache[electronPath] = {
 
 const { LayerStore } = require('../.tmp/smoke/main/layerStore.js')
 const { createLineRunner, orderNodes, parseFlowArgs } = require('../.tmp/smoke/main/flowRuntime.js')
+const { classIdOf, instanceIdOf, isExprRef } = require('../.tmp/smoke/shared/atomId.js')
 const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
 const { decideLanding } = require('../.tmp/smoke/shared/fieldLanding.js')
 const { applyLanding } = require('../.tmp/smoke/main/fieldRuntime.js')
@@ -384,13 +385,16 @@ async function main() {
     }
     for (const item of profile.nodes) {
       if (item.kind === 'point') {
-        const boundClass = pointClassOfInstance.get(item.pointInstance)
-        assert.ok(boundClass, `${classId}/${item.id} 绑定了不存在的点实例 ${item.pointInstance}`)
-        assert.strictEqual(item.pointClass, boundClass, `${classId}/${item.id} 的 pointClass 与实际不符`)
+        const boundId = instanceIdOf(item.pointInstance)
+        const boundClass = pointClassOfInstance.get(boundId)
+        assert.ok(boundClass, `${classId}/${item.id} 绑定了不存在的点实例 ${boundId ?? JSON.stringify(item.pointInstance)}`)
+        assert.strictEqual(classIdOf(item.pointClass), boundClass, `${classId}/${item.id} 的 pointClass 与实际不符`)
         assert.ok(hasRealImpl(boundClass), `${classId}/${item.id} 绑定的 ${boundClass} 没有真实实现`)
       }
       if (item.kind === 'subflow') {
-        const target = item.pointInstance ?? ''
+        const target = isExprRef(item.pointInstance)
+          ? String(item.pointInstance.expr)
+          : (instanceIdOf(item.pointInstance) ?? '')
         if (target.startsWith('$args.')) {
           // 参数化目标：每个实例都必须真的提供这个参数，且解析出来是存在的线实例
           const argKey = target.slice('$args.'.length)

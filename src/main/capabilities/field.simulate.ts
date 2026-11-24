@@ -1,6 +1,7 @@
 import { lineClassesSeed, lineProfiles } from '../../shared/lineCatalog'
 import { pointClassesSeed } from '../../shared/pointCatalog'
 import { parseFlowArgs } from '../flowRuntime'
+import { classIdOf, instanceIdOf, isExprRef } from '../../shared/atomId'
 import { assessRisk } from './field.guard'
 import { elapsed, type Capability } from './_shared'
 
@@ -176,8 +177,11 @@ export function analyzeFlow(
     }
 
     if (node.kind === 'subflow') {
-      const rawTarget = node.pointInstance ?? ''
-      const targetId = rawTarget.startsWith('$args.') ? (args[rawTarget.slice('$args.'.length)] ?? '') : rawTarget
+      const rawTarget = node.pointInstance
+      const exprText = isExprRef(rawTarget) ? String(rawTarget.expr) : null
+      const targetId = exprText
+        ? (args[exprText.replace(/^\$args\./, '')] ?? '')
+        : (instanceIdOf(rawTarget) ?? '')
       const target = targetId ? lineInstanceById(targetId) : null
       if (!target) {
         result.nodes.push({
@@ -210,7 +214,7 @@ export function analyzeFlow(
     }
 
     // point 节点
-    const boundId = node.pointInstance
+    const boundId = instanceIdOf(node.pointInstance)
     let instance: { params?: Record<string, string> } | undefined
     for (const cls of pointClassesSeed) {
       const found = cls.instances.find((item) => item.id === boundId)
@@ -219,14 +223,15 @@ export function analyzeFlow(
         break
       }
     }
-    const pointClass = node.pointClass ? pointClassById(node.pointClass) : undefined
+    const pointClassName = classIdOf(node.pointClass)
+    const pointClass = pointClassName ? pointClassById(pointClassName) : undefined
     const params = resolveMapping(instance?.params ?? {}, node.mapping, args)
 
     if (!instance || !pointClass) {
       result.nodes.push({
         id: node.id,
         label: node.label,
-        kind: `point:${node.pointClass ?? '?'}`,
+        kind: `point:${classIdOf(node.pointClass) ?? '?'}`,
         problem: `未绑定点实例 ${boundId || '(空)'}`,
         touch: { paths: [], windows: [] }
       })

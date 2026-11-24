@@ -14,6 +14,7 @@
  *   node scripts/reconcile-refs.mjs --write    同时写出 requirements.generated.json
  *   node scripts/reconcile-refs.mjs --apply    按 aliases.json 改写引用（会改文件）
  */
+import { classIdOf, instanceIdOf, isExprRef } from '../src/shared/atomId.ts'
 import { createRequire } from 'node:module'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -57,6 +58,10 @@ function buildIndex() {
   return { catalogs, classIds, instanceClass }
 }
 
+/** 兼容新的结构化形态与旧的 {layer, ref} 形态 */
+const classRefOf = (part) =>
+  part?.class ?? (part?.layer && part?.ref ? { layer: part.layer, name: part.ref } : null)
+
 /** 采集所有跨层引用，并记住它可以被改写的位置 */
 function collectRefs(lineProfiles, bodyProfiles, surface) {
   const refs = []
@@ -66,8 +71,8 @@ function collectRefs(lineProfiles, bodyProfiles, surface) {
       refs.push({
         where: 'body.composition',
         owner: ownerId,
-        expectedLayer: part.layer,
-        ref: part.ref,
+        expectedLayer: classRefOf(part)?.layer,
+        ref: classIdOf(classRefOf(part)),
         kind: 'class',
         required: part.required !== false,
         role: part.role,
@@ -83,8 +88,8 @@ function collectRefs(lineProfiles, bodyProfiles, surface) {
         refs.push({
           where: 'line.node.pointClass',
           owner: `${classId}/${node.id}`,
-          expectedLayer: 'point',
-          ref: node.pointClass,
+          expectedLayer: node.pointClass?.layer ?? 'point',
+          ref: classIdOf(node.pointClass),
           kind: 'class',
           required: true,
           role: node.role,
@@ -95,8 +100,8 @@ function collectRefs(lineProfiles, bodyProfiles, surface) {
         refs.push({
           where: 'line.node.pointInstance',
           owner: `${classId}/${node.id}`,
-          expectedLayer: 'point',
-          ref: node.pointInstance,
+          expectedLayer: node.pointInstance?.layer ?? 'point',
+          ref: instanceIdOf(node.pointInstance),
           kind: 'instance',
           required: true,
           role: node.role,

@@ -204,3 +204,45 @@ export function sameInstanceRef(a: InstanceRef, b: InstanceRef): boolean {
 export function sameClassRef(a: ClassRef, b: ClassRef): boolean {
   return a.layer === b.layer && a.name === b.name
 }
+
+// ── 兼容层：同时接受字符串与结构化 ────────────────────────────
+//
+// 迁移是分步的：数据先改结构化，代码逐个跟上。这层让两步之间不出现「改了一半读不到」。
+// **新代码一律写结构化，读的时候用这两个函数归一化。**
+
+/** 运行时表达式，不是静态引用 */
+export interface ExprRef {
+  expr: string
+}
+
+export type AnyClassRef = string | ClassRef
+export type AnyInstanceRef = string | InstanceRef | ExprRef
+
+export function isExprRef(value: unknown): value is ExprRef {
+  return !!value && typeof value === 'object' && typeof (value as ExprRef).expr === 'string'
+}
+
+export function isClassRef(value: unknown): value is ClassRef {
+  return !!value && typeof value === 'object' && typeof (value as ClassRef).layer === 'string' && typeof (value as ClassRef).name === 'string'
+}
+
+export function isInstanceRef(value: unknown): value is InstanceRef {
+  return isClassRef(value) && typeof (value as InstanceRef).instance === 'string' && typeof (value as InstanceRef).rev === 'number'
+}
+
+/** 归一化成类 id 字符串。结构化就拼，字符串就原样返回。 */
+export function classIdOf(ref: AnyClassRef | null | undefined): string | null {
+  if (!ref) return null
+  if (typeof ref === 'string') return ref || null
+  if (isClassRef(ref)) return makeClassId(ref)
+  return null
+}
+
+/** 归一化成实例 id 字符串。表达式返回 null（调用方自己按 expr 解析）。 */
+export function instanceIdOf(ref: AnyInstanceRef | null | undefined): string | null {
+  if (!ref) return null
+  if (typeof ref === 'string') return ref || null
+  if (isExprRef(ref)) return null
+  if (isInstanceRef(ref)) return makeInstanceId(ref)
+  return null
+}
