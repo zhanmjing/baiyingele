@@ -516,6 +516,91 @@ id 以后再找机会统一。
 
 ---
 
+### 8.10 统一 id 方案：`层.类.实例@版本`
+
+维护者提案：
+
+> 层id.类id.实例id@版本id（这样整个软件统一且可查？）
+
+**这不是一个新提议，是把既有约定补完。** 实测符合度：
+
+| 层 | 类 id 带层前缀 | 实例 id = `类id.xxx` | 带 `@rN` | 整体符合 |
+|---|:---:|:---:|:---:|:---:|
+| point | ✗ | ✓ | ✓ | ✗ |
+| line | ✗ | ✗ | ✓ | ✗ |
+| surface | ✓ | ✗ | ✗ | ✗ |
+| **body** | ✓ | ✓ | ✓ | **✓** |
+| **field** | ✓ | ✓ | ✓ | **✓** |
+
+body 和 field **已经 100% 符合** `层.类.实例@版本`：
+
+```
+body.file-preview.text@r1     = 层 body + 类 file-preview + 实例 text + 版本 1
+field.observe.desktop@r1      = 层 field + 类 observe + 实例 desktop + 版本 1
+```
+
+每层只缺一件事：
+
+| 层 | 缺什么 | 数量 |
+|---|---|---:|
+| point | 类 id 加层前缀（`win.key.send` → `point.win.key.send`） | 21 个类 |
+| line | 类 id 加层前缀 + 实例 id 对齐（`inst.x@rN` → `line.flow.x.y@rN`） | 13 + 32 |
+| surface | 实例 id 对齐类 + 补 `@rN` | 25 + 46 |
+| body / field | 不用动 | 0 |
+
+#### 三个技术前提（都已实测）
+
+1. **零前缀冲突**：五层内部的类 id 之间，没有任何一个是另一个的前缀。
+   所以「最长前缀匹配」解析是**确定无歧义**的。
+2. **扁平化也唯一**：即使把 `win.key.send` 压成 `win-key-send` 也不撞车 ——
+   但**不建议压**，因为 `win.` / `file.` / `ui.` 是主题分组，UI 的家族筛选依赖它。
+3. **代码会自动跟随**：`createInstance()` 生成规则就是
+
+```ts
+const base = `${pointClass.id}.${slug(name)}`
+let id = `${base}@r1`
+```
+
+所以**只要类 id 加上层前缀，新实例的 id 自动就是 `层.类.实例@rN`，代码零改动。**
+
+#### 解析规则
+
+```ts
+// 第一段 = 层（只有 5 个取值，天然无歧义）
+// 剩余部分 = 类 id + 实例名 + @版本，用「已知类表做最长前缀匹配」切开
+parseAtomId('point.win.key.send.i-copy@r1')
+// → { layer: 'point', classId: 'win.key.send', instance: 'i-copy', rev: 1 }
+```
+
+#### 迁移面（实测）
+
+| 项 | 数量 |
+|---|---:|
+| 类 id 要加层前缀 | **34**（point 21 + line 13） |
+| 实例 id 连带变 | **80**（point 48 + line 32） |
+| surface 实例 id 要改 | 25（对齐类）+ 46（补 rev） |
+| `lineProfiles` 引用 | 79 处（`pointClass` 39 + `pointInstance` 40） |
+| `bodyProfiles` composition 指向 point/line | 116 条 |
+| `requirements` 里 point/line 条目 | 112 条 |
+| surface / body / field 类 | **不受影响**（已有层前缀） |
+
+#### 建议的迁移顺序
+
+按「改动面 × 收益」排，从最干净的开始：
+
+| 步骤 | 动什么 | 参考要同步改 | 风险 |
+|---|---|---|---|
+| 1 | surface 实例 id 对齐 + 补 `@rN` | `panel.content` 37 条 | 低（都在一个 JSON 里） |
+| 2 | point 类 id 加前缀 | `lineProfiles` 39+40、`bodyProfiles` 部分、`requirements` 88 条 | 中 |
+| 3 | line 类 id 加前缀 + 实例对齐 | `bodyProfiles`、`requirements` 24 条 | 中 |
+| 4 | 全量回归 | 全部 | 高（必须一次跑通） |
+
+**关键提醒**：这些引用里有一半是**生成的**（`requirements.generated.json`、`generatedFullCatalogs.json`），
+改源数据后重新生成即可；但 `lineProfiles`、`bodyProfiles`、`panel.content`、
+`aliases.json` 是**手写源**，必须手工同步。**漏一个就是静默断链。**
+
+---
+
 ## 9. 这个提案能带来什么
 
 **不做这件事的现状**：面层 16 个类、体层 29 个类，各自有个"运行"按钮，
