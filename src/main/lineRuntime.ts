@@ -28,6 +28,7 @@
  *   3. 子流程失败 / 循环引用 / 超层数 → 父流程立刻停
  */
 import { stringParams } from '../shared/layerTypes'
+import { classifyCycles, topoOrder } from '../shared/graph'
 import { classIdOf, instanceIdOf, isExprRef } from '../shared/atomId'
 import { hasRealImpl } from '../shared/implRegistry'
 import type { LineNode, LineProfile } from '../shared/lineCatalog'
@@ -62,27 +63,11 @@ export function parseLineArgs(detail: string): Record<string, string> {
 
 /** 按 edges 拓扑排序（保留导出：图谱预览与测试仍会用） */
 export function orderNodes(profile: LineProfile): LineNode[] {
-  const byId = new Map(profile.nodes.map((node) => [node.id, node]))
-  const incoming = new Map(profile.nodes.map((node) => [node.id, 0]))
-  for (const edge of profile.edges) incoming.set(edge.to, (incoming.get(edge.to) ?? 0) + 1)
-
-  const queue = profile.nodes.filter((node) => (incoming.get(node.id) ?? 0) === 0).map((node) => node.id)
-  const ordered: LineNode[] = []
-  const seen = new Set<string>()
-
-  while (queue.length) {
-    const id = queue.shift()!
-    if (seen.has(id)) continue
-    seen.add(id)
-    const node = byId.get(id)
-    if (node) ordered.push(node)
-    for (const edge of profile.edges) {
-      if (edge.from === id && !seen.has(edge.to)) queue.push(edge.to)
-    }
-  }
-  for (const node of profile.nodes) if (!seen.has(node.id)) ordered.push(node)
-  return ordered
+  // 真拓扑排序：环里的节不会出现在 order 里（以前那个 BFS 会把它们兜底塞进去，
+  // 于是「带环的图」也会返回一个看起来完整的顺序，掩盖了问题）。
+  return topoOrder(profile.nodes, profile.edges).order
 }
+
 
 /** 套用节点 mapping：$input / $args.x / 字面量 */
 export function applyMapping(

@@ -161,23 +161,40 @@ export function critiqueFlow(profile: LineProfileLike, deps: CritiqueDeps): Crit
   for (const cycle of findCycles(nodes, edges)) {
     const body = cycle.slice(0, -1) // findCycles 首尾同节点，去掉尾巴
     const inCycle = new Set(body)
-    const loopGate = body.find((id) => {
+
+    /**
+     * 引擎支持的 gate 类型。这些节点的回边是**文档化的约定**，不是缺陷：
+     *   if / if-status  分支门，回边表示「重试同一段」
+     *   foreach         遍历门，约定就是 `foreach --each--> 循环体 --> foreach`，
+     *                   引擎按输入列表逐项迭代，且有迭代上限防死循环
+     * 所以带已知 gate 类型且有出口的环，审查**不报**。
+     */
+    const KNOWN_GATES = new Set(['if', 'if-status', 'foreach'])
+    const declaredGate = body.find((id) => {
       const node = nodeById.get(id)
       if (node?.kind !== 'gate') return false
-      // 这个 gate 有没有一条边通向环外（= 循环的出口）
+      if (!KNOWN_GATES.has(String(node.gate ?? ''))) return false
       return edges.some((edge) => edge.from === id && !inCycle.has(edge.to))
     })
 
-    if (loopGate) {
-      const exit = edges.filter((edge) => edge.from === loopGate && !inCycle.has(edge.to)).map((edge) => edge.to)
+    if (declaredGate) {
+      // 合法构造：静默通过。如果将来引擎去掉对某种 gate 的支持，这里必须跟着改。
+      continue
+    }
+
+    // 剩下两种都是真问题：gate 类型不认识，或者压根没有 gate
+    const unknownGate = body.find((id) => {
+      const node = nodeById.get(id)
+      return node?.kind === 'gate' && !KNOWN_GATES.has(String(node.gate ?? ''))
+    })
+    if (unknownGate) {
+      const node = nodeById.get(unknownGate)
       findings.push({
-        severity: 'warn',
-        code: 'loop-construct',
+        severity: 'error',
+        code: 'unknown-gate-cycle',
         where: cycle.join(' → '),
-        message:
-          `循环构造：gate ${loopGate} 的回边是「每个」，出口 ${exit.join('/')} 是「结束」。` +
-          `但执行器只排一遍序，循环体只会跑一次就走到出口。`,
-        hint: '要么给执行器加迭代支持，要么把批量操作下沉成一个点层能力'
+        message: `环上的 gate ${unknownGate} 类型是 ${JSON.stringify(node?.gate)}，引擎不认识，无法判断该迭代还是该报错`,
+        hint: '把 gate 改成 if / if-status / foreach 之一，或者拆掉回边'
       })
       continue
     }

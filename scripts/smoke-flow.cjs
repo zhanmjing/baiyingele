@@ -1700,9 +1700,8 @@ async function main() {
     nodes: [mkNode('scan', 'point', { pointClass: 'key_send' }), mkNode('loop', 'gate'), mkNode('move', 'point', { pointClass: 'key_send' }), mkNode('done', 'point', { pointClass: 'key_send' })],
     edges: [{ from: 'scan', to: 'loop' }, { from: 'loop', to: 'move' }, { from: 'move', to: 'loop' }, { from: 'loop', to: 'done' }]
   }, critDeps)
-  const critLoopFinding = critLoopOk.find((f) => f.code === 'loop-construct')
-  assert.ok(critLoopFinding, 'gate 带回边的循环构造必须单独识别')
-  assert.strictEqual(critLoopFinding.severity, 'warn', '循环构造是设计意图，不能报 error')
+  // 已知 gate（foreach）的回边是文档化约定 → 不该出现在审查结果里
+  assert.strictEqual(critLoopOk.filter((f) => f.code === 'loop-construct').length, 0, '合法 foreach 不该被报成缺陷')
 
   // 无出口的环 → error
   const critDeadCycle = critRt.critiqueFlow({
@@ -1723,9 +1722,17 @@ async function main() {
   const realIds = new Set(['point', 'line', 'surface', 'body', 'field'].flatMap((l) => (realCats2[l] ?? []).map((c) => c.id)))
   const implIds2 = new Set(require('../.tmp/smoke/shared/implemented.generated.js').IMPLEMENTED_CLASS_IDS)
   const realCritDeps = { profiles: realLp, bodyProfiles: {}, implementedClassIds: implIds2, hasClass: (l, n) => realIds.has(`${l}.${n}`) }
+  // foreach 是文档化的循环构造，回边合法 —— 13 张真实图应该全部干净
   const realFlagged = Object.entries(realLp).filter(([, p]) => critRt.critiqueFlow(p, realCritDeps).length > 0).map(([k]) => k)
-  assert.deepStrictEqual(realFlagged, ['line.batch_archive'], '真实 13 张图里只有 batch_archive 有问题')
-  console.log(`✓ field.critique：环 / 悬空边 / 未绑定 / 缺实现 / 循环构造 / body / permission 都正确 · 真实 13 张图 flag ${realFlagged.length} 张（${realFlagged[0]}）`)
+  assert.deepStrictEqual(realFlagged, [], `真实 13 张图不该有缺陷，实际 flag: ${realFlagged.join(',')}`)
+  // 但未知 gate 类型 + 回边必须报 error
+  const unknownGate = critRt.critiqueFlow({
+    classId: 'x',
+    nodes: [mkNode('g', 'gate', { gate: 'weird' }), mkNode('b', 'point', { pointClass: 'key_send' }), mkNode('end', 'point', { pointClass: 'key_send' })],
+    edges: [{ from: 'g', to: 'b' }, { from: 'b', to: 'g' }, { from: 'g', to: 'end' }]
+  }, critDeps)
+  assert.ok(unknownGate.some((f) => f.code === 'unknown-gate-cycle' && f.severity === 'error'), '未知 gate 的环必须报 error')
+  console.log(`✓ field.critique：环 / 悬空边 / 未绑定 / 缺实现 / 合法 foreach 不误报 / 未知 gate 报错 / body / permission 都正确 · 真实 13 张图全干净`)
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
