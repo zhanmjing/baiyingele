@@ -516,96 +516,133 @@ id 以后再找机会统一。
 
 ---
 
-### 8.10 统一 id 方案：`层.类.实例@版本`（三段定长）
+### 8.10 统一 id 方案：`层名.FAMILY_类名.实例名@rN`
 
 维护者提案：
 
-> 层名.类名.实例名.@版本号（只有 3 个 `.`，中间的名可用 `_` 连接单词）
-> `surface.form.settings_vpn@r1`
+> 主题名全大写来区分，如 `point.WIN_key_send@r1`、`point.HOTKEY_实例名@r1`
 
-这个方案比我上一版（`classId.语义名@rN` + 最长前缀匹配）**更彻底也更好**，理由：
+采纳，但**主题要取 `family`，不能取 `win` 这种命名空间**。原因是数据决定的：
 
-- **三段定长 = 解析零成本**：`split('.')` 就够，不需要「用已知类表做最长前缀匹配」
-- **段内不许有点**：多词用 `_` 连接，歧义从根上消失
-- **层名是第一段**：拿层不用查表
+#### 为什么主题只能是 family
 
-#### 实测可行性（已验证，不是推测）
+| 分组维度 | 覆盖率 | 说明 |
+|---|---|---|
+| `family` 字段 | **102 / 102（100%）** | 五层全有，取值全是单词，无分隔符 |
+| id 命名空间（`win.` / `file.`） | 只有点层有 | 其他四层的「命名空间」就是层名本身，没有第二层 |
 
-| 检查项 | 结果 |
+而且 `win` 和 `family` **不是一回事**：
+
+```
+win.key.send        → family = hotkey
+win.window.control  → family = window
+win.audio.volume    → family = settings
+win.ocr.read        → family = capture
+win.http.request    → family = network
+win.clipboard.get   → family = file
+win.open            → family = open
+```
+
+`win` 一个命名空间下横跨 **7 个 family**。所以 `WIN_` 分组对产品没有意义，
+`HOTKEY_` / `WINDOW_` 才有 —— 而后者正是 UI 家族筛选读的字段。
+
+#### 最终格式
+
+```
+层名.FAMILY_类名.实例名@rN
+```
+
+| 段 | 规则 |
 |---|---|
-| 类名扁平化后**层内重名** | 五层全部 **0 个** |
-| 新实例 id **全局冲突** | 287 个全部唯一，**0 冲突** |
-| 维护者给的例子能否还原 | ✅ 完全命中 |
+| 1 · 层名 | 小写：`point` / `line` / `surface` / `body` / `field` |
+| 2 · 类 | `FAMILY` 全大写 + `_` + 类名小写（`_` 连接） |
+| 3 · 实例 | 实例名小写，去掉 `inst.` / `i-` 类型标记（三段定长后它们已是噪音） |
+| 版本 | `@rN` |
+
+#### 命名空间的保留规则（这条规则是被一个真实撞车逼出来的）
+
+如果盲目去掉命名空间，会出现**类段撞车**：
 
 ```
-面层实例 surface.settings.vpn（属于 surface.form）
-  → surface.form.settings_vpn@r1          ← 与提案例子一字不差
+file.write       → FILE_write
+clipboard.write  → FILE_write      ← 撞了！两者 family 都是 file
 ```
 
-#### 真实样本前后对照
+全 id 恰好没撞，只是因为实例名不同（`text` vs `append`）—— 类段本身是重复的，
+这会让「按类段查实例」的查询全部失效。
+
+所以规则是：**命名空间只在「不冗余」时保留**
+
+```ts
+const drop = ns === 本层自己的命名空间   // flow / surface / body / field
+          || ns === layer               // 兜底
+          || ns === family              // file.write 的 file 就是 family，重复
+// 其余情况保留：clipboard.write → FILE_clipboard_write
+```
+
+#### 实测：五层零撞车
+
+| 层 | 类 | 唯一类段 | 撞车 |
+|---|---:|---:|---:|
+| point | 21 | 21 | **0** |
+| line | 13 | 13 | **0** |
+| surface | 16 | 16 | **0** |
+| body | 29 | 29 | **0** |
+| field | 23 | 23 | **0** |
+
+#### 真实前后对照
 
 | 现在 | 统一后 |
 |---|---|
-| `win.key.send.i-copy@r1` | `point.win_key_send.copy@r1` |
-| `win.window.control.i-topmost@r1` | `point.win_window_control.topmost@r1` |
-| `win.ocr.read.i-ocr-auto@r1` | `point.win_ocr_read.ocr_auto@r1` |
-| `inst.clipboard-inbox@r3` | `line.flow_clipboard_to_file.clipboard_inbox@r3` |
-| `surface.settings.vpn` | `surface.form.settings_vpn@r1` |
-| `body.screenshot-translate.text@r1` | `body.screenshot_translate.text@r1` |
-| `field.simulate.dry-run@r1` | `field.simulate.dry_run@r1` |
+| `win.key.send.i-copy@r1` | `point.HOTKEY_win_key_send.copy@r1` |
+| `win.window.control.i-topmost@r1` | `point.WINDOW_win_window_control.topmost@r1` |
+| `win.ocr.read.i-ocr-auto@r1` | `point.CAPTURE_win_ocr_read.ocr_auto@r1` |
+| `win.audio.volume.i-vol-up@r1` | `point.SETTINGS_win_audio_volume.vol_up@r1` |
+| `file.read.i-text@r1` | `point.FILE_read.text@r1` |
+| `clipboard.write.i-text@r1` | `point.FILE_clipboard_write.text@r1` |
+| `notify.toast.i-system@r1` | `point.NOTIFY_toast.system@r1` |
+| `inst.ensure-vpn-ask@r2` | `line.GUARD_ensure_vpn.ensure_vpn_ask@r2` |
+| `surface.settings.vpn` | `surface.INPUT_form.settings_vpn@r3` |
+| `body.file-preview.text@r1` | `body.CONTENT_file_preview.text@r1` |
+| `field.observe.run-history@r1` | `field.PERCEIVE_observe.run_history@r1` |
 
-#### 顺带清掉两类冗余
+点层 11 个 family 全部落地：`HOTKEY` / `WINDOW` / `OPEN` / `SETTINGS` / `CAPTURE` /
+`FILE` / `NETWORK` / `HUMAN` / `TRANSFORM` / `TEXT` / `NOTIFY`。
 
-三段定长之后，「第几段」本身就表明了类型，所以类型标记前缀是纯噪音：
+#### 一处要顺手规范的数据
 
-| 冗余前缀 | 出现次数 | 建议 |
-|---|---:|---|
-| line 实例的 `inst.` | 32 / 32 | **去掉** |
-| point 实例的 `i-` | 48 / 48 | **去掉** |
+`line` 层的 family 是**首字母大写**（`Action` / `Guard`），其他四层都是小写。
+应在数据里统一成 `action` / `guard`，大写只在 id 里出现。
 
-去掉后 `point.win_key_send.copy@r1` 比 `point.win_key_send.i_copy@r1` 干净。
-
-#### 解析规则（最终形态）
+#### 解析（零启发式）
 
 ```ts
 function parseAtomId(id: string) {
-  const [layer, cls, instanceAndRev] = id.split('.')      // 恰好 3 段
-  const at = instanceAndRev.lastIndexOf('@r')
+  const [layer, cls, tail] = id.split('.')          // 恰好 3 段
+  const at = tail.lastIndexOf('@r')
+  const theme = cls.slice(0, cls.indexOf('_'))      // HOTKEY / INPUT / CONTENT …
   return {
-    layer,                                                // point | line | surface | body | field
-    classId: `${layer}.${cls}`,                           // 可直接拼回类 id
-    instance: instanceAndRev.slice(0, at),
-    rev: Number(instanceAndRev.slice(at + 2))
+    layer,
+    theme,
+    instance: tail.slice(0, at),
+    rev: Number(tail.slice(at + 2))
   }
 }
 ```
 
-#### 迁移面（实测）
+#### 迁移面（与 §8.10 旧版一致，未因 family 加入而增加）
 
 | 项 | 数量 |
 |---|---:|
-| 类 id 会变 | **64 / 102** |
-| 实例 id 会变 | **287 / 287**（全部） |
-| `lineProfiles` 引用 | 79（`pointClass` 39 + `pointInstance` 40） |
+| 类 id 会变 | **102 / 102**（全部，因为都加了 FAMILY 前缀） |
+| 实例 id 会变 | **287 / 287** |
+| `lineProfiles` 引用 | 79 |
 | `bodyProfiles` composition | 154 |
-| `panel.content` 引用 | 51（14 类 + 37 实例） |
+| `panel.content` 引用 | 51 |
 | `requirements` | 140 |
-| `aliases.json` | 类别名 0 + review 4（影响很小） |
 
-**424 处引用要同步。** 其中：
-
-- **生成的**（`requirements.generated.json`、`generatedFullCatalogs.json`）—— 改源后重跑
-- **手写的**（`lineProfiles` 79、`bodyProfiles` 154、`panel.content` 51）—— 必须手工同步
-
-**漏一处不会报错，只会在运行时"找不到实例"。** 所以必须一次做完 + 全量回归。
-
-#### 一个不损失的确认
-
-`win.` / `file.` / `flow.` 这些**主题分组**会随扁平化从 id 里消失，但**不影响 UI**：
-家族筛选读的是 `family` 字段（`hotkey / window / file / network / …`），不是 id 前缀。
-
-唯一按 id 前缀取值的代码是 `field.simulate` 里的 `classId.split('.')[0]`，
-它取的是层名——**新方案下这个表达式依然是正确的**，甚至更正确。
+**424 处引用要同步。** 生成的重跑，手写的（`lineProfiles` / `bodyProfiles` / `panel.content`）
+必须手工同步 —— 漏一处不报错，只在运行时「找不到实例」。
 
 ## 9. 这个提案能带来什么
 
