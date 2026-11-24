@@ -516,114 +516,108 @@ id 以后再找机会统一。
 
 ---
 
-### 8.10 统一 id 方案：`层名.主题名.类名.实例名@rN`
+### 8.10 统一 id：`层名.类名.实例名@rN`
 
-维护者最终提案：
+维护者最终定调：
 
-> 层名.主题名.类名.实例名@版本号 —— 4 段，不再分大小写，主题名不用手写
+> 简化命名，只要不重名。整体的功能名可以在代码注释里说明就行。
 
-采纳。这比之前每一版都好，因为它同时解决三个问题：
+**id 不承载语义。** 想知道 `field.observe.desktop` 是干什么的，看实例的 `name` /
+`description` 字段，不要指望从 id 里读出来。
 
-| 问题 | 之前几版的毛病 | 4 段方案怎么解决 |
+id 只保证三件事：**唯一、可自动生成、引用稳定**。
+
+#### 格式
+
+```
+层名.类名.实例名@rN          ← 3 段定长，全小写，段内不许有点（多词用 _）
+```
+
+| 段 | 来源 | 规则 |
 |---|---|---|
-| 主题往哪放 | 塞进类名（`FILE_clipboard_write`），要写「保留/丢弃」规则 | **主题单独成段**，规则消失 |
-| 大小写 | `WIN_` 全大写，跨平台/URL/排序都有坑 | **全小写**，无大小写语义 |
-| 撞车 | `file.write` 和 `clipboard.write` 都变 `FILE_write` | 类名保留完整形式，天然区分 |
+| 层名 | 固定 5 个 | `point` / `line` / `surface` / `body` / `field` |
+| 类名 | 类 id | 剥掉本层自指命名空间（`flow.` / `surface.` / `body.` / `field.`）后扁平化 |
+| 实例名 | 实例 id | 剥掉类/层前缀和类型标记（`inst.` / `i-`）后扁平化 |
+| 版本 | 实例的 `rev` 字段 | `@rN` |
 
-#### 格式规则
+点层不剥 `win.` / `file.` / `ui.` —— 它们是跨类的真实主题，不是自指。
+
+#### 样例
 
 ```
-层名.主题名.类名.实例名@rN
- │     │     │     │    └─ 版本号，取自实例的 rev 字段
- │     │     │     └────── 实例名：小写，_ 连接，去掉 inst. / i- 类型标记
- │     │     └──────────── 类名：类 id 去掉本层命名空间后扁平化
- │     └────────────────── 主题名：= family 字段小写化（自动派生，不手写）
- └──────────────────────── 层名：point / line / surface / body / field
+win.key.send.i-copy@r1          → point.win_key_send.copy@r1
+inst.ensure-vpn-ask@r2          → line.ensure_vpn.ensure_vpn_ask@r2
+surface.settings.vpn            → surface.form.settings_vpn@r3
+body.file-preview.text@r1       → body.file_preview.text@r1
+field.observe.run-history@r1    → field.observe.run_history@r1
 ```
 
-**每个字词都是自动派生的，没有一个需要人手写。**
+平均长度 **29 字符**。
 
-#### 真实样例
+#### 已建的工具
 
-| 现在（手写） | 统一后（生成） |
+| 文件 | 作用 |
 |---|---|
-| `win.key.send.i-copy@r1` | `point.hotkey.win_key_send.copy@r1` |
-| `win.window.control.i-focus-notepad@r1` | `point.window.win_window_control.focus_notepad@r1` |
-| `win.audio.volume.i-vol-up@r1` | `point.settings.win_audio_volume.vol_up@r1` |
-| `clipboard.write.i-text@r1` | `point.file.clipboard_write.text@r1` |
-| `file.write.i-append@r1` | `point.file.file_write.append@r1` |
-| `inst.ensure-vpn-ask@r2` | `line.guard.ensure_vpn.ensure_vpn_ask@r2` |
-| `surface.settings.vpn` | `surface.input.form.settings_vpn@r3` |
-| `body.file-preview.text@r1` | `body.content.file_preview.text@r1` |
-| `field.observe.run-history@r1` | `field.perceive.observe.run_history@r1` |
+| `src/shared/atomId.ts` | **唯一真相**：`makeAtomId` / `parseAtomId` / `deriveAtomId` / `classSegment` / `instanceSegment` |
+| `scripts/plan-atom-ids.mjs` | 迁移预演，**只读不写盘**，产出全量「旧 → 新」对照到 `.tmp/atom-id-plan.json` |
 
-注意 `point.file.clipboard_write.text@r1` 和 `point.file.file_write.append@r1`
-是同一主题下两个不同的类 —— 4 段方案里它们天然不冲突。
-
-#### 实测（全部通过）
-
-| 检查 | 结果 |
-|---|---|
-| 类名扁平化后层内重名 | 五层全部 **0** |
-| 主题缺失（没有 family） | **0 / 102** |
-| 主题含分隔符（`.` `-` 空格） | **0** |
-| 全量 287 个 id 冲突 | **0** |
-
-#### 为什么必须自动生成（这不是洁癖，是已经发生的 bug）
-
-查了现有 287 个实例，**id 里的 `@rN` 与 `rev` 字段不一致的有 46 处 —— 全部在 surface 层**：
-
-```
-surface.form     id=surface.settings.vpn     id里无 @rN，rev字段=3
-surface.inspector id=surface.inspector.point  id里无 @rN，rev字段=4
-surface.table    id=surface.point-catalog    id里无 @rN，rev字段=5
-…共 46 处，正好是 surface 的全部实例
-```
-
-**手写的 id 已经在烂了。** 同一份数据里 `rev` 说 3、id 说 1（或没说），
-引用方到底该信哪个？现在的答案是「谁都不知道」。
-
-自动生成之后这件事不会发生，因为 id 是
-`(层, 主题, 类, 实例, 版本)` 的**纯函数**，版本变了 id 必然跟着变。
-
-#### 生成器设计（单点真相 + 校验闸门）
+解析零启发式 —— 3 段定长，`split('.')` 就够：
 
 ```ts
-// src/shared/atomId.ts —— 唯一真相
-export interface AtomParts {
-  layer: 'point' | 'line' | 'surface' | 'body' | 'field'
-  theme: string          // family 小写
-  className: string      // 已扁平化、已去本层命名空间
-  instance: string       // 已扁平化、已去类型标记
-  rev: number
-}
-
-export function makeAtomId(p: AtomParts): string   // 生成
-export function parseAtomId(id: string): AtomParts // 解析（4 段定长，零启发式）
+parseAtomId('surface.form.settings_vpn@r3')
+// → { layer:'surface', className:'form', instance:'settings_vpn', rev:3 }
 ```
 
-两条硬约束：
+#### 实测（`node scripts/plan-atom-ids.mjs`）
 
-1. **任何 manifest / catalog / seed 里的 id 字段都由生成器产出，不接受手写。**
-2. **校验闸门**：`npm run validate` 增加一项 ——
-   对每个实例重新算一遍 id，与存储值不一致就报错。
-   这样任何手改 id 都会在 CI 里当场挂掉，而不是在运行时变成「找不到实例」。
+| 项 | 结果 |
+|---|---:|
+| 类要改 | **64 / 102** |
+| 实例要改 | **237 / 287** |
+| 新 id 冲突 | **0** |
+| 其他问题 | **0** |
+| 顺手抓出的**版本漂移** | **46** |
+
+按层：
+
+| 层 | 类要改 | 实例要改 | 版本漂移 |
+|---|---:|---:|---:|
+| point | 21/21 | 48/48 | 0 |
+| line | 13/13 | 32/32 | 0 |
+| surface | 5/16 | 46/46 | **46** |
+| body | 25/29 | 70/82 | 0 |
+| field | 0/23 | 41/79 | 0 |
+
+#### 为什么必须自动生成（不是洁癖，是已经发生的 bug）
+
+**46 处版本漂移，全部在 surface，正好是它全部 46 个实例：**
+
+```
+surface.settings.vpn      id 里没有 @rN，rev 字段 = 3
+surface.inspector.point   id 里没有 @rN，rev 字段 = 4
+surface.point-catalog     id 里没有 @rN，rev 字段 = 5
+```
+
+同一份数据里 `rev` 说 3、id 说没版本，引用方该信谁？现在的答案是没人知道。
+
+自动生成之后不会发生，因为 id 是 `(层, 类, 实例, 版本)` 的纯函数。
+
+#### 两条硬约束
+
+1. **任何 catalog / seed / manifest 里的 id 都由生成器产出，不接受手写。**
+2. **校验闸门**：待加一项 —— 对每个实例重算 id，与存储值不一致就报错。
+   手改 id 会在 CI 当场挂掉，而不是在运行时变成「找不到实例」。
 
 #### 迁移面
 
-| 项 | 数量 |
-|---|---:|
-| 类 id 会变 | **102 / 102** |
-| 实例 id 会变 | **287 / 287** |
-| `lineProfiles` 引用 | 79 |
-| `bodyProfiles` composition | 154 |
-| `panel.content` 引用 | 51 |
-| `requirements` | 140 |
-| 顺手修掉的版本漂移 | **46**（surface 全部实例） |
+| 引用源 | 处数 | 类型 |
+|---|---:|---|
+| `lineProfiles`（`pointClass` + `pointInstance`） | 79 | **手写，必须同步** |
+| `bodyProfiles` composition | 154 | **手写，必须同步** |
+| `panel.content`（类级 14 + 实例级 37） | 51 | **手写，必须同步** |
+| `requirements` | 140 | 生成的，重跑即可 |
 
-**424 处引用要同步。** 其中 `requirements` / `generatedFullCatalogs` 是生成的重跑即可；
-`lineProfiles` / `bodyProfiles` / `panel.content` 是手写源，必须手工同步 ——
-所以这次迁移之后，这些引用也应该改成「存结构化字段」而不是「存 id 字符串」。
+**迁移之后这些引用应改成存结构化字段，不再存 id 字符串** —— 否则下次改名还会再烂一遍。
 
 ## 9. 这个提案能带来什么
 
