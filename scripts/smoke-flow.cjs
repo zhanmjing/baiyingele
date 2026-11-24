@@ -1662,6 +1662,71 @@ async function main() {
   // 取不到历史时必须报「取不到」，不能报「没发现问题」
   console.log('✓ field.rank / field.detect：排序确定性 / 重复序列 / 失败集中 / 无数据如实报 都正确')
 
+
+  // ── 7x. field.critique：结构审查（环 / 悬空边 / 循环构造）─────────
+  const critRt = require('../.tmp/smoke/main/capabilities/field.critique.js')
+  const critDeps = {
+    profiles: {},
+    bodyProfiles: {},
+    implementedClassIds: new Set(['point.key_send']),
+    hasClass: (l, n) => ['point.key_send', 'point.clipboard_get'].includes(`${l}.${n}`)
+  }
+  const mkNode = (id, kind, extra) => ({ id, kind, label: id, ...extra })
+
+  // 环检测
+  const cyc2 = critRt.findCycles([mkNode('a'), mkNode('b')], [{ from: 'a', to: 'b' }, { from: 'b', to: 'a' }])
+  assert.strictEqual(cyc2.length, 1, '两节点环必须被发现')
+  assert.ok(cyc2[0].includes('a') && cyc2[0].includes('b'))
+  // DAG 无环
+  assert.strictEqual(critRt.findCycles([mkNode('a'), mkNode('b')], [{ from: 'a', to: 'b' }]).length, 0)
+  // 自环
+  assert.strictEqual(critRt.findCycles([mkNode('a')], [{ from: 'a', to: 'a' }]).length, 1)
+
+  // 悬空边 —— orderNodes 会静默丢弃，审查必须报
+  const critDangling = critRt.critiqueFlow({ classId: 'x', nodes: [mkNode('a', 'point', { pointClass: 'key_send' })], edges: [{ from: 'a', to: 'ghost' }] }, critDeps)
+  assert.ok(critDangling.some((f) => f.code === 'dangling-edge' && f.severity === 'error'), '悬空边必须报 error')
+
+  // 未绑定能力的点节点
+  const critUnbound = critRt.critiqueFlow({ classId: 'x', nodes: [mkNode('a', 'point')], edges: [] }, critDeps)
+  assert.ok(critUnbound.some((f) => f.code === 'unbound-node'))
+
+  // 有类无实现 → warn
+  const critNoImpl = critRt.critiqueFlow({ classId: 'x', nodes: [mkNode('a', 'point', { pointClass: 'clipboard_get' })], edges: [] }, critDeps)
+  assert.ok(critNoImpl.some((f) => f.code === 'missing-impl' && f.severity === 'warn'))
+
+  // 循环构造（gate 有出口）→ warn 而不是 error
+  const critLoopOk = critRt.critiqueFlow({
+    classId: 'batch',
+    nodes: [mkNode('scan', 'point', { pointClass: 'key_send' }), mkNode('loop', 'gate'), mkNode('move', 'point', { pointClass: 'key_send' }), mkNode('done', 'point', { pointClass: 'key_send' })],
+    edges: [{ from: 'scan', to: 'loop' }, { from: 'loop', to: 'move' }, { from: 'move', to: 'loop' }, { from: 'loop', to: 'done' }]
+  }, critDeps)
+  const critLoopFinding = critLoopOk.find((f) => f.code === 'loop-construct')
+  assert.ok(critLoopFinding, 'gate 带回边的循环构造必须单独识别')
+  assert.strictEqual(critLoopFinding.severity, 'warn', '循环构造是设计意图，不能报 error')
+
+  // 无出口的环 → error
+  const critDeadCycle = critRt.critiqueFlow({
+    classId: 'dead',
+    nodes: [mkNode('a', 'point', { pointClass: 'key_send' }), mkNode('b', 'point', { pointClass: 'key_send' })],
+    edges: [{ from: 'a', to: 'b' }, { from: 'b', to: 'a' }]
+  }, critDeps)
+  assert.ok(critDeadCycle.some((f) => f.code === 'cycle' && f.severity === 'error'), '没有出口的环必须报 error')
+
+  // body / permission
+  const critBodyFind = critRt.critiqueBody({ composition: [{ class: { layer: 'line', name: 'ghost' }, role: '编排' }] }, critDeps)
+  assert.ok(critBodyFind.some((f) => f.code === 'missing-class'))
+  assert.ok(critRt.critiquePermission({ manifest: { permissions: ['all'] } }).some((f) => f.code === 'over-broad-permission'))
+
+  // 真实数据：13 张流程图，只有 batch_archive 的循环构造会被 flag
+  const realLp = require('../src/shared/generatedLineProfiles.json')
+  const realCats2 = require('../src/shared/generatedFullCatalogs.json')
+  const realIds = new Set(['point', 'line', 'surface', 'body', 'field'].flatMap((l) => (realCats2[l] ?? []).map((c) => c.id)))
+  const implIds2 = new Set(require('../.tmp/smoke/shared/implemented.generated.js').IMPLEMENTED_CLASS_IDS)
+  const realCritDeps = { profiles: realLp, bodyProfiles: {}, implementedClassIds: implIds2, hasClass: (l, n) => realIds.has(`${l}.${n}`) }
+  const realFlagged = Object.entries(realLp).filter(([, p]) => critRt.critiqueFlow(p, realCritDeps).length > 0).map(([k]) => k)
+  assert.deepStrictEqual(realFlagged, ['line.batch_archive'], '真实 13 张图里只有 batch_archive 有问题')
+  console.log(`✓ field.critique：环 / 悬空边 / 未绑定 / 缺实现 / 循环构造 / body / permission 都正确 · 真实 13 张图 flag ${realFlagged.length} 张（${realFlagged[0]}）`)
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

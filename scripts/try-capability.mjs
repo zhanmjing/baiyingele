@@ -192,6 +192,27 @@ const parsed = parseArgs(argv.slice(1))
 const catalogs = JSON.parse(readFileSync(join(ROOT, 'src/shared/generatedFullCatalogs.json'), 'utf8'))
 const ctx = buildContext(rawId, parsed, catalogs)
 
+/**
+ * 已知的注入点：有些能力需要一个"外部世界"（运行历史、图数据、已实现清单）。
+ * 真实 app 里由主进程注入；这里按同样的形状喂真实数据，保证试跑结果可信。
+ */
+const mod = loadModule(rawId)
+if (mod?.setCritiqueDeps) {
+  const lineProfiles = JSON.parse(readFileSync(join(ROOT, 'src/shared/generatedLineProfiles.json'), 'utf8'))
+  const bodyProfiles = JSON.parse(readFileSync(join(ROOT, 'src/shared/generatedBodyProfiles.json'), 'utf8'))
+  const impl = require_(join(OUT, 'shared/implemented.generated.js')).IMPLEMENTED_CLASS_IDS
+  const allIds = new Set(['point', 'line', 'surface', 'body', 'field'].flatMap((l) => (catalogs[l] ?? []).map((c) => c.id)))
+  mod.setCritiqueDeps({
+    profiles: lineProfiles,
+    bodyProfiles,
+    implementedClassIds: new Set(impl),
+    hasClass: (layer, name) => allIds.has(`${layer}.${name}`)
+  })
+}
+if (mod?.setRunHistorySource) {
+  // 没有真实运行历史时不要伪造 —— 让能力如实报「取不到」
+}
+
 const startedAt = Date.now()
 let outcome
 try {

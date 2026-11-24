@@ -2,6 +2,7 @@
 export const IMPLEMENTED_CLASS_IDS = [
   'point.clipboard_write',
   'field.classify',
+  'field.critique',
   'field.detect',
   'field.guard',
   'field.observe',
@@ -33,6 +34,7 @@ export const IMPLEMENTED_CLASS_IDS = [
 export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string> = {
   'point.clipboard_write': 'Electron clipboard.writeText（写后回读校验）',
   'field.classify': '按实例自带的候选标签做一次分类（模型调用，附 confidence 与 reason）',
+  'field.critique': '结构审查：流程图有没有环 / 悬空边 / 未绑定节点，体层零件齐不齐，权限有没有超范围',
   'field.detect': '从运行历史里找重复序列、异常、可自动化机会；纯规则，不调用模型',
   'field.guard': '确定性风控闸门：自主度上限、副作用等级、置信度、隐私脱敏，全部给得出理由',
   'field.observe': '上下文快照：前台进程/窗口/时间/空闲、剪贴板、运行历史；只读，绝不改动任何东西',
