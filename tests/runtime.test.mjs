@@ -232,3 +232,74 @@ test('field.route：evidence.kind 恒为 route，不被目标类型覆盖', asyn
   assert.strictEqual(out.evidence.kind, 'route', 'evidence.kind 必须是语义标记')
   assert.strictEqual(out.evidence.targetKind, 'local', '目标类型放在 targetKind')
 })
+
+// ── 场层：故障诊断 ────────────────────────────────────────────
+test('field.diagnose：按错误特征给出原因与修法，判断不了就说判断不了', () => {
+  const { diagnoseText } = load('main/capabilities/field.diagnose.js')
+
+  const enoent = diagnoseText("Error: ENOENT: no such file or directory, open 'a.txt'")
+  assert.match(enoent.cause, /路径或目标不存在/)
+  assert.ok(enoent.confidence >= 0.9)
+  assert.ok(enoent.fix.length > 10, '必须给出具体修法，不能只说「检查一下」')
+
+  assert.match(diagnoseText('connect ECONNREFUSED 127.0.0.1:7890').cause, /网络层不可达/)
+  assert.match(diagnoseText('EACCES: permission denied').cause, /权限不足/)
+  assert.match(diagnoseText('Unexpected token } in JSON').cause, /不是合法 JSON/)
+
+  // 误诊比不诊断更糟：认不出就返回 null
+  assert.strictEqual(diagnoseText('未知的错误 xyz'), null)
+  assert.strictEqual(diagnoseText(''), null)
+
+  // 多条同时命中时按置信度排序，并给出备选
+  const multi = diagnoseText('UIA automation timeout for control')
+  assert.ok(multi.confidence > 0)
+  assert.ok(Array.isArray(multi.alternatives) && multi.alternatives.length > 0, '多特征命中要给备选原因')
+})
+
+// ── 场层：历史挖掘 ────────────────────────────────────────────
+test('field.mine：结构相同的流程图能被分组（真实数据里 10/13 有同伴）', () => {
+  const { groupByShape, flowShape, coOccurrence } = load('main/capabilities/field.mine.js')
+
+  assert.strictEqual(flowShape({ nodes: [{ kind: 'point' }, { kind: 'gate' }], edges: [{}] }), 'point>gate|1')
+
+  const groups = groupByShape(lineProfiles)
+  assert.ok(groups.length > 0, '真实流程图里应该存在同骨架的组')
+  const grouped = groups.reduce((n, g) => n + g.ids.length, 0)
+  // 4 + 2 + 2 + 2 = 10（原本写成 9 是我自己算错，断言把它抓出来了）
+  assert.strictEqual(grouped, 10, `当前实测应有 10 张图能配对，实际 ${grouped}`)
+
+  // 共现：同一 5 分钟窗口里出现 2 次以上才算
+  const mk = (classId, at) => ({ id: `${classId}@${at}`, classId, status: 'ok', elapsedMs: 10, createdAt: at })
+  const pairs = coOccurrence([mk('point.a', 1), mk('point.b', 2), mk('point.a', 100000), mk('point.b', 100001)])
+  // 两个不同会话各出现一次 = 偶发，不算「总一起出现」
+  assert.strictEqual(pairs.length, 0, '跨会话的两次不该算共现')
+  // 同一会话里两次 → 1 个会话，仍不够；两个会话都有 → 才算
+  const twoSessions = [
+    { ...mk('point.a', 1) }, { ...mk('point.b', 2) },
+    { ...mk('point.a', 400000) }, { ...mk('point.b', 400001) }
+  ]
+  assert.strictEqual(coOccurrence(twoSessions)[0].pair.join('+'), 'point.a+point.b')
+  assert.strictEqual(coOccurrence(twoSessions)[0].count, 2, '两个会话 → count 2')
+})
+
+// ── 场层：建议下一步 ──────────────────────────────────────────
+test('field.recommend：先修失败，再固化重复，样本太少时明说不可靠', () => {
+  const { suggestNext } = load('main/capabilities/field.recommend.js')
+  const mk = (classId, status) => ({ id: `${classId}:${status}:${Math.random()}`, classId, status, elapsedMs: 10, createdAt: 0 })
+
+  assert.strictEqual(suggestNext([]), null, '没有历史就没有建议')
+
+  const withFailures = [mk('point.a', 'ok'), mk('point.b', 'warn'), mk('point.b', 'warn'), mk('point.b', 'warn')]
+  const diag = suggestNext(withFailures)
+  assert.strictEqual(diag.action, '诊断失败', '失败率高的优先修')
+  assert.strictEqual(diag.target, 'point.b')
+
+  const allOk = Array.from({ length: 6 }, () => mk('point.c', 'ok'))
+  assert.strictEqual(suggestNext(allOk).action, '封装成流程', '没问题时建议固化高频动作')
+
+  const tiny = [mk('point.d', 'ok')]
+  const weak = suggestNext(tiny)
+  assert.strictEqual(weak.action, '继续使用积累样本')
+  assert.match(weak.why, /样本太少/)
+  assert.ok(weak.confidence < 0.5, '样本不足时置信度必须低')
+})

@@ -6,32 +6,35 @@ import * as cap0 from './clipboard.write'
 import * as cap1 from './field.classify'
 import * as cap2 from './field.critique'
 import * as cap3 from './field.detect'
-import * as cap4 from './field.guard'
-import * as cap5 from './field.observe'
-import * as cap6 from './field.prefill'
-import * as cap7 from './field.rank'
-import * as cap8 from './field.route'
-import * as cap9 from './field.simulate'
-import * as cap10 from './file.move'
-import * as cap11 from './file.read'
-import * as cap12 from './file.scan'
-import * as cap13 from './file.write'
-import * as cap14 from './notify.toast'
-import * as cap15 from './text.template'
-import * as cap16 from './translate.text'
-import * as cap17 from './ui.form'
-import * as cap18 from './win.audio.volume'
-import * as cap19 from './win.clipboard.get'
-import * as cap20 from './win.display.brightness'
-import * as cap21 from './win.http.request'
-import * as cap22 from './win.key.send'
-import * as cap23 from './win.key.trigger'
-import * as cap24 from './win.ocr.read'
-import * as cap25 from './win.open'
-import * as cap26 from './win.screen.capture'
-import * as cap27 from './win.theme.mode'
-import * as cap28 from './win.window.control'
-import * as cap29 from './win.window.query'
+import * as cap4 from './field.diagnose'
+import * as cap5 from './field.guard'
+import * as cap6 from './field.mine'
+import * as cap7 from './field.observe'
+import * as cap8 from './field.prefill'
+import * as cap9 from './field.rank'
+import * as cap10 from './field.recommend'
+import * as cap11 from './field.route'
+import * as cap12 from './field.simulate'
+import * as cap13 from './file.move'
+import * as cap14 from './file.read'
+import * as cap15 from './file.scan'
+import * as cap16 from './file.write'
+import * as cap17 from './notify.toast'
+import * as cap18 from './text.template'
+import * as cap19 from './translate.text'
+import * as cap20 from './ui.form'
+import * as cap21 from './win.audio.volume'
+import * as cap22 from './win.clipboard.get'
+import * as cap23 from './win.display.brightness'
+import * as cap24 from './win.http.request'
+import * as cap25 from './win.key.send'
+import * as cap26 from './win.key.trigger'
+import * as cap27 from './win.ocr.read'
+import * as cap28 from './win.open'
+import * as cap29 from './win.screen.capture'
+import * as cap30 from './win.theme.mode'
+import * as cap31 from './win.window.control'
+import * as cap32 from './win.window.query'
 
 const MODULES = [
   cap0,
@@ -63,7 +66,10 @@ const MODULES = [
   cap26,
   cap27,
   cap28,
-  cap29
+  cap29,
+  cap30,
+  cap31,
+  cap32
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(
