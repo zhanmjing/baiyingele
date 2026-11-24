@@ -3,8 +3,25 @@
 > 状态：**部分实施**
 >
 > 已落地：§8 Panel 收编（`surface.panel` 类 + 14 实例 + 37 应用记录）
-> 未落地：§4.1 `runSurface` 的 render 语义、§4.2 `runBody` 的 assemble 语义、
->         §4.3 `RunResult.kind` 判别、§6 落地路径阶段 2-4
+> 已落地：§4.2 `runBody` 的 assemble 语义（`src/main/bodyRuntime.ts`）
+> 已落地：§4.3 `RunResult.kind` 判别（`RUN_KIND_OF`）
+> 未落地：§4.1 `runSurface` 的 render 语义、§6 落地路径阶段 2-4
+
+### bodyRuntime 实测结论（2026-11）
+
+`npm run smoke` 会跑一遍真实数据：
+
+```
+真实 29 个体齐备 0 个 · 最接近 body.window_layout（3/5）
+```
+
+注意这比早期估算的「6/7」更低 —— 因为装配检查同时查两件事：
+**类在目录里存在吗** + **它有真实实现吗**。早期只查了前者。
+
+⚠️ 计数口径说明：`IMPLEMENTED_CLASS_IDS` 的定义是「该层有一个 capability 文件」，
+而体层是**一个 runner 管 29 个类**（装配检查对所有体类是同一套逻辑），
+所以体层在「真实实现 N/29」这个指标里仍然显示 0/29，
+尽管它现在确实有真实而诚实的输出了。指标口径需要另行讨论。
 > 范围：`surface` / `body` 两层的「运行」到底意味着什么
 > 依据：对当前仓库代码与生成数据的实测，不引用未验证的假设
 > 修订：v2 —— 按维护者裁决「页面也是一种可复用模式」修正了 v1 的判断

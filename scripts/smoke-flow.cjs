@@ -1523,6 +1523,60 @@ async function main() {
   assert.strictEqual((await CAPABILITIES['field.simulate'](simCtx({ classId: 'line.batch_archive', args: '不是json' }))).status, 'warn')
   console.log('✓ field.simulate：接触面推断 / mapping / 最坏副作用 / 整图推演 / 子流程展开 / L2 判需确认 / 三模式 都正确')
 
+
+  // ── 7u. bodyRuntime：体层装配检查 ─────────────────────────────
+  const bodyRt = require('../.tmp/smoke/main/bodyRuntime.js')
+  const fakeDeps = {
+    profiles: {},
+    hasClass: (layer, name) => ['surface.form', 'line.ensure_vpn', 'point.key_send', 'point.ocr_read'].includes(`${layer}.${name}`),
+    implementedClassIds: new Set(['point.key_send', 'point.ocr_read', 'line.ensure_vpn', 'surface.form'])
+  }
+  const mkCtx = (classId) => ({ instance: { id: `${classId}.a@r1`, classId, name: 'a', rev: 1, status: 'active', description: '', params: {}, createdAt: 0, updatedAt: 0 }, def: {}, pointClass: {}, params: {}, findInstance: () => undefined })
+
+  const full = bodyRt.assessComposition(
+    { composition: [
+        { class: { layer: 'surface', name: 'form' }, role: '界面承载' },
+        { class: { layer: 'line', name: 'ensure_vpn' }, role: '流程编排' },
+        { class: { layer: 'point', name: 'key_send' }, role: '能力执行' }
+      ] },
+    fakeDeps
+  )
+  assert.strictEqual(full.readiness.total, 3)
+  assert.strictEqual(full.readiness.satisfied, 3)
+  assert.deepStrictEqual(full.assembly.surfaces, ['surface.form'])
+  assert.deepStrictEqual(full.assembly.points, ['point.key_send'])
+
+  const noImpl = bodyRt.assessComposition({ composition: [{ class: { layer: 'point', name: 'ocr_read' } }] }, { ...fakeDeps, implementedClassIds: new Set() })
+  assert.strictEqual(noImpl.readiness.missing[0].reason, 'no-impl')
+  assert.strictEqual(noImpl.assembly, undefined, '缺零件时不能给装配方案')
+  assert.deepStrictEqual(noImpl.blockedBy, ['req.point.ocr_read'])
+
+  const noClass = bodyRt.assessComposition({ composition: [{ class: { layer: 'line', name: 'preview_file' } }] }, fakeDeps)
+  assert.strictEqual(noClass.readiness.missing[0].reason, 'no-class')
+
+  const okRunner = bodyRt.createBodyRunner({ ...fakeDeps, profiles: { 'body.x': { composition: [{ class: { layer: 'point', name: 'key_send' } }] } } })
+  const okOut = okRunner(mkCtx('body.x'))
+  assert.strictEqual(okOut.status, 'ok')
+  assert.match(okOut.output, /装配完成/)
+  assert.strictEqual(okOut.evidence.kind, 'assemble')
+
+  const warnRunner = bodyRt.createBodyRunner({ ...fakeDeps, profiles: { 'body.y': { composition: [{ class: { layer: 'line', name: 'preview_file' } }] } } })
+  const warnOut = warnRunner(mkCtx('body.y'))
+  assert.strictEqual(warnOut.status, 'warn', '零件不齐必须 warn')
+  assert.match(warnOut.output, /装配未完成/)
+
+  assert.strictEqual(bodyRt.createBodyRunner({ ...fakeDeps, profiles: {} })(mkCtx('body.z')).status, 'warn')
+
+  const realProfiles = require('../src/shared/generatedBodyProfiles.json')
+  const implIds = new Set(require('../.tmp/smoke/shared/implemented.generated.js').IMPLEMENTED_CLASS_IDS)
+  const cats = require('../src/shared/generatedFullCatalogs.json')
+  const allIds = new Set(['point', 'line', 'surface', 'body', 'field'].flatMap((l) => (cats[l] ?? []).map((c) => c.id)))
+  const realDeps = { profiles: realProfiles, hasClass: (l, n) => allIds.has(`${l}.${n}`), implementedClassIds: implIds }
+  const readies = Object.entries(realProfiles).map(([id, p]) => ({ id, r: bodyRt.assessComposition(p, realDeps).readiness }))
+  const complete = readies.filter((x) => x.r.missing.length === 0).length
+  const best = readies.slice().sort((a, b) => a.r.missing.length - b.r.missing.length)[0]
+  console.log(`✓ bodyRuntime：装配检查正确 · 真实 29 个体齐备 ${complete} 个 · 最接近 ${best.id}（${best.r.satisfied}/${best.r.total}）`)
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

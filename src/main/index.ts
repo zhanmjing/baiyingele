@@ -3,6 +3,8 @@ import { join } from 'node:path'
 import type { RunHistoryItem } from '../shared/runHistory'
 import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 import { LAYER_DEFS } from './layerRegistry'
+import { IMPLEMENTED_CLASS_IDS } from '../shared/implemented.generated'
+import { createBodyRunner } from './bodyRuntime'
 import { RUN_KIND_OF } from '../shared/layerApi'
 import { runCapability } from './capabilities'
 import { createLineRunner } from './lineRuntime'
@@ -15,6 +17,7 @@ import { setRunHistorySource } from './capabilities/field.observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
 import { lineProfiles } from '../shared/lineCatalog'
+import { bodyProfiles } from '../shared/bodyCatalog'
 import {
   LayerStore,
   mockRunner,
@@ -196,15 +199,30 @@ app.whenReady().then(() => {
     lineStore: () => store('line')
   })
 
+  /**
+   * 体层：装配检查。体层没有自己的执行逻辑，只有零件清单（composition），
+   * 所以 runBody 回答的是「零件齐不齐、缺哪几个」，不启动任何子功能。
+   */
+  const bodyRunner = createBodyRunner({
+    profiles: bodyProfiles,
+    hasClass: (layer, name) => {
+      const def = LAYER_DEFS[layer as keyof typeof LAYER_DEFS]
+      return !!def?.classes.some((cls) => cls.id === `${layer}.${name}`)
+    },
+    implementedClassIds: new Set<string>(IMPLEMENTED_CLASS_IDS)
+  })
+
   for (const key of LAYER_KEYS) {
     const runner =
       key === 'line'
         ? lineRunner
         : key === 'field'
           ? fieldRunner
-          : key === 'surface' || key === 'body'
-            ? undefined
-            : pointRunner
+          : key === 'body'
+            ? bodyRunner
+            : key === 'surface'
+              ? undefined
+              : pointRunner
     stores.set(key, new LayerStore(join(dataDir, `${key}-state.json`), LAYER_DEFS[key], runner))
   }
 
