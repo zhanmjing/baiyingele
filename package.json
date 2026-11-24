@@ -26,7 +26,8 @@
     "check:full": "npm run check && npm run refs:write && npm run smoke",
     "package": "npm run build && electron-builder --win",
     "dev:raw": "electron-vite dev",
-    "start": "node scripts/start.mjs"
+    "start": "node scripts/start.mjs",
+    "try": "node scripts/try-capability.mjs"
   },
   "dependencies": {
     "koffi": "^3.3.8",
