@@ -20,6 +20,8 @@ declare global {
       simulateTrigger: (combo: string) => Promise<unknown[]>
       dispatchGesture: (points: { x: number; y: number; t?: number }[]) => Promise<unknown>
       onTriggerFired: (callback: (record: unknown) => void) => () => void
+      onFormRequest: (callback: (request: unknown) => void) => () => void
+      resolveForm: (requestId: string, answer: unknown) => Promise<{ ok: boolean; message: string }>
     }
   }
 }

@@ -70,6 +70,13 @@ const api = {
   simulateTrigger: (combo: string): Promise<unknown[]> => ipcRenderer.invoke('trigger:simulate', combo),
   dispatchGesture: (points: { x: number; y: number; t?: number }[]): Promise<unknown> =>
     ipcRenderer.invoke('trigger:gesture', points),
+  onFormRequest: (callback: (request: unknown) => void): (() => void) => {
+    const handler = (_event: unknown, request: unknown): void => callback(request)
+    ipcRenderer.on('ui:form:request', handler)
+    return () => ipcRenderer.removeListener('ui:form:request', handler)
+  },
+  resolveForm: (requestId: string, answer: unknown): Promise<{ ok: boolean; message: string }> =>
+    ipcRenderer.invoke('ui:form:resolve', requestId, answer),
   onTriggerFired: (callback: (record: unknown) => void): (() => void) => {
     const handler = (_event: unknown, record: unknown): void => callback(record)
     ipcRenderer.on('trigger:fired', handler)

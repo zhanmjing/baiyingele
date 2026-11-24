@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import type { SettingsLanguage } from './settingsI18n'
 import type { PointInstanceRecord, PointRunRecord } from '../../shared/pointCatalog'
 import type { RunHistoryItem } from '../../shared/runHistory'
+import { FormRequestDialog } from './components/FormRequestDialog'
 import {
   layers,
   layerOrder,
@@ -590,6 +591,8 @@ export default function App() {
           <button onClick={() => setToast(null)}><X size={13} /></button>
         </div>
       )}
+
+      <FormRequestDialog />
 
       {paletteOpen && (
         <div className="palette-overlay" onClick={() => setPaletteOpen(false)}>

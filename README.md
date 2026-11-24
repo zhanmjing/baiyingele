@@ -152,6 +152,7 @@ npm run new:point -- file.scan --name 扫描目录 --effect L0 --params root,pat
 | `win.key.send` | koffi **SendInput** 真实发送组合键（走系统输入队列，目标程序分辨不出真假） |
 | `win.audio.volume` | koffi 调 **CoreAudio COM**（`IAudioEndpointVolume`）精确控音量/静音，写完读回校验 |
 | `win.display.brightness` | **WMI**（`WmiSetBrightness`）控制内屏亮度，写完读回校验 |
+| `ui.form` | 向界面要用户输入并等待；取消/超时/顶替都返回明确状态 |
 | `win.key.trigger` | **uiohook-napi** 全局热键监听（常驻钩子，不是一次性执行） |
 | `win.theme.mode` | 读写 `HKCU\...\Themes\Personalize` 注册表，读回校验（L1 可逆） |
 
@@ -238,6 +239,37 @@ mute / unmute / toggle×2 → 全部 ok
 还原     → 10.8% → 11%      RESTORE_OK
 ```
 
+### `ui.form`：人机在环能力
+
+前 20 个点能力都是「调系统 API 拿结果」。`ui.form` 不是——它要**问用户**，然后等。
+
+```text
+点实例运行
+  → 主进程 requestForm(spec, timeoutMs)      ← 挂起，返回 Promise
+  → webContents.send('ui:form:request')      → 渲染层弹出模态
+  → 用户填写 → ipcRenderer.invoke('ui:form:resolve')
+  → 主进程二次校验 → Promise 兑现 → 点实例拿到结果
+```
+
+**四种答复，三种是失败：**
+
+| 答复 | 能力状态 | 输出 |
+|---|---|---|
+| `submitted` | `ok` | `表单「确认发布」已提交：备注=紧急 · 版本号=1.2.0` |
+| `cancelled` | `warn` | `表单「确认发布」已取消` |
+| `timeout` | `warn` | `表单「确认发布」超时未答复（120000ms）` |
+| `unavailable` | `warn` | `表单「…」无法显示：没有可用界面` |
+
+取消和超时**绝不能算成功** —— 否则上层流程会在用户什么都没确认的情况下继续跑。
+
+设计上的三个决定：
+
+1. **校验规则只写一份**（`src/shared/formSpec.ts`），渲染层提交前校验一次，主进程收到再校验一次。
+   不信任 IPC 传进来的值。
+2. **同时只允许一个表单**。新请求来了先把旧的判为 `superseded` 并结束，
+   避免弹窗排队把整条流程卡死。
+3. **能力模块不直接摸 BrowserWindow**，通过 `setFormSink()` 注入通道 —— 和触发器服务同样的解耦方式。
+
 ### 亮度为什么只用 WMI
 
 亮度有两条硬件路径，本机实测结果决定了实现范围：
@@ -276,7 +308,7 @@ set 55  → 76% → 55%
    第一版用「读回值必须等于目标值」来校验，会误报失败。改成**按动作语义判定**：
    `set` 要求误差 ≤1%，`up`/`down` 只要求方向对（到顶/到底则不要求变化），静音要求精确相等。
 
-### 窗口控制踩到的两个坑
+### 窗口控制踩到的三个坑
 
 1. **`SetForegroundWindow` 会被系统拒绝**：后台进程调用时 Windows 只让任务栏闪一下。正规做法是
    `AttachThreadInput` 把当前线程的输入队列临时挂到目标线程和前台线程上，调完立刻摘掉 —— 见 `focusWindow()`。

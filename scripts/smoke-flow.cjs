@@ -94,6 +94,8 @@ const keysend = require('../.tmp/smoke/main/capabilities/win.key.send.js')
 const volmod = require('../.tmp/smoke/main/capabilities/win.audio.volume.js')
 const comm = require('../.tmp/smoke/main/capabilities/_com.js')
 const bright = require('../.tmp/smoke/main/capabilities/win.display.brightness.js')
+const formSpec = require('../.tmp/smoke/shared/formSpec.js')
+const formMod = require('../.tmp/smoke/main/capabilities/ui.form.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -961,6 +963,106 @@ async function main() {
   const ext = await CAPABILITIES['win.display.brightness'](ctx('win.display.brightness', { action: 'set', value: '50', monitor: 'external' }))
   assert.strictEqual(ext.status, 'warn', '外接屏应明确 warn')
   assert.match(ext.output, /DDC\/CI|外接屏/)
+
+  // ── 7q. ui.form：规格解析 / 校验 / 请求-答复全流程 ──────────────
+  const parsedList = formSpec.parseFormSpec('确认发布', '备注, 版本号')
+  assert.strictEqual(parsedList.title, '确认发布')
+  assert.deepStrictEqual(parsedList.fields.map((f) => f.name), ['备注', '版本号'])
+  assert.strictEqual(parsedList.fields[0].type, 'text')
+  assert.strictEqual(parsedList.fields[0].required, false)
+
+  const typedList = formSpec.parseFormSpec('带类型', '备注; 数量:number，开关:boolean')
+  assert.deepStrictEqual(typedList.fields.map((f) => f.type), ['text', 'number', 'boolean'], '中英文分隔符 + 类型标注')
+
+  const fromSchema = formSpec.parseFormSpec('', '', JSON.stringify({
+    title: '发布确认',
+    description: '确认后才会推送到生产',
+    required: ['version'],
+    properties: {
+      version: { type: 'string', title: '版本号' },
+      note: { type: 'string', title: '备注' },
+      channel: { type: 'string', enum: ['stable', 'beta'] }
+    }
+  }))
+  assert.strictEqual(fromSchema.title, '发布确认')
+  assert.deepStrictEqual(fromSchema.fields.map((f) => f.name), ['version', 'note', 'channel'])
+  assert.strictEqual(fromSchema.fields[0].required, true, 'required 只标记列出的字段')
+  assert.strictEqual(fromSchema.fields[2].type, 'select', 'enum 应变成 select')
+  assert.deepStrictEqual(fromSchema.fields[2].options, ['stable', 'beta'])
+
+  assert.strictEqual(formSpec.parseFormSpec('t', ''), null, '没字段应拒绝')
+  assert.strictEqual(formSpec.parseFormSpec('t', '', '不是JSON'), null, 'schema 解析失败应拒绝')
+
+  const specForCheck = {
+    title: 't',
+    fields: [
+      { name: '版本号', label: '版本号', type: 'text', required: true },
+      { name: '数量', label: '数量', type: 'number', required: false }
+    ]
+  }
+  assert.deepStrictEqual(formSpec.validateFormValues(specForCheck, { 版本号: '1.0' }), [], '填了必填项应通过')
+  assert.strictEqual(formSpec.validateFormValues(specForCheck, {}).length, 1, '缺必填项应报错')
+  assert.match(formSpec.validateFormValues(specForCheck, { 版本号: '1.0', 数量: 'abc' })[0], /需要是数字/)
+  assert.strictEqual(formSpec.summarizeFormValues(specForCheck, { 版本号: '1.0', 数量: '' }), '版本号=1.0', '摘要跳过空值')
+
+  // 全流程：请求 → 校验 → 答复
+  const captured = []
+  formMod.setFormSink((request) => captured.push(request))
+
+  // 用带 required 的 schema，才能同时验到「主进程二次校验」的拒绝路径
+  const requiredSchema = JSON.stringify({
+    title: '确认发布',
+    required: ['版本号'],
+    properties: { 备注: { type: 'string' }, 版本号: { type: 'string' } }
+  })
+  const submitPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '确认发布', schema: requiredSchema, timeoutMs: '60000' }))
+  assert.strictEqual(captured.length, 1, 'sink 应收到 1 个请求')
+  assert.strictEqual(captured[0].spec.title, '确认发布')
+  const submitId = formMod.pendingFormId()
+  assert.ok(submitId, '应有挂起请求')
+  const badResolve = formMod.resolveForm(submitId, { kind: 'submitted', values: {} })
+  assert.strictEqual(badResolve.ok, false, '缺必填/空值应被主进程拒绝')
+  assert.strictEqual(formMod.pendingFormId(), submitId, '校验失败时请求应仍然挂起')
+  const goodResolve = formMod.resolveForm(submitId, { kind: 'submitted', values: { 备注: '紧急', 版本号: '1.2.0' } })
+  assert.strictEqual(goodResolve.ok, true, '提交应成功')
+  const submitResult = await submitPromise
+  assert.strictEqual(submitResult.status, 'ok')
+  assert.match(submitResult.output, /已提交/)
+  assert.match(submitResult.output, /备注=紧急/)
+  assert.strictEqual(JSON.parse(submitResult.value).版本号, '1.2.0')
+
+  // 取消 → 必须是 warn，不能假装成功
+  const cancelPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '取消测试', fields: '备注' }))
+  formMod.resolveForm(formMod.pendingFormId(), { kind: 'cancelled' })
+  const cancelResult = await cancelPromise
+  assert.strictEqual(cancelResult.status, 'warn', '取消必须是 warn')
+  assert.match(cancelResult.output, /已取消/)
+
+  // 超时 → 也是 warn
+  const timeoutPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '超时测试', fields: '备注' }))
+  formMod.resolveForm(formMod.pendingFormId(), { kind: 'timeout', reason: '测试模拟' })
+  const timeoutResult = await timeoutPromise
+  assert.strictEqual(timeoutResult.status, 'warn', '超时必须是 warn')
+  assert.match(timeoutResult.output, /超时/)
+
+  // 新请求顶替旧请求
+  const firstPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '第一个', fields: 'A' }))
+  const secondPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '第二个', fields: 'B' }))
+  const firstResult = await firstPromise
+  assert.strictEqual(firstResult.status, 'warn', '被顶替的请求也是 warn')
+  formMod.resolveForm(formMod.pendingFormId(), { kind: 'cancelled' })
+  await secondPromise
+
+  // 没有界面时的行为
+  formMod.setFormSink(null)
+  const noSink = await CAPABILITIES['ui.form'](ctx('ui.form', { title: '无界面', fields: 'A' }))
+  assert.strictEqual(noSink.status, 'warn')
+  assert.match(noSink.output, /无法显示/)
+
+  const emptyForm = await CAPABILITIES['ui.form'](ctx('ui.form', { title: '空', fields: '' }))
+  assert.strictEqual(emptyForm.status, 'warn', '空表单应拒绝')
+  assert.match(emptyForm.output, /没有字段/)
+  console.log('✓ ui.form：规格解析 / 校验 / 提交·取消·超时·顶替·无界面 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')

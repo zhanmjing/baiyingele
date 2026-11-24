@@ -9,6 +9,7 @@ import { applyLanding } from './fieldRuntime'
 import { UndoJournal } from './undoJournal'
 import { decideLanding } from '../shared/fieldLanding'
 import { registeredCombos } from './capabilities/win.key.trigger'
+import { resolveForm, setFormSink } from './capabilities/ui.form'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
 import { lineProfiles } from '../shared/lineCatalog'
@@ -217,6 +218,8 @@ app.whenReady().then(() => {
 
   const triggerStatus = triggerService.start()
 
+  ipcMain.handle('ui:form:resolve', (_event, requestId: string, answer) => resolveForm(requestId, answer))
+
   ipcMain.handle('trigger:list', () => ({
     bindings: triggerService.list(),
     firings: triggerService.recent(30),
@@ -254,6 +257,11 @@ app.whenReady().then(() => {
   registerLayerIpc()
 
   mainWindow = createWindow()
+
+  // 表单能力需要一个「把请求送到界面」的通道；能力模块自己不碰 BrowserWindow
+  setFormSink((request) => {
+    mainWindow?.webContents.send('ui:form:request', request)
+  })
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) mainWindow = createWindow()
