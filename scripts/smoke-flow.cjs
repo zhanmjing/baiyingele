@@ -1428,6 +1428,83 @@ async function main() {
     console.log('✓ field.observe：切面解析 / 历史统计 / 取不到就如实说 都正确')
   }
 
+
+  // ── 7t. field.simulate：静态推演（不执行任何东西）────────────────
+  const simulate = require('../.tmp/smoke/main/capabilities/field.simulate.js')
+
+  // 接触面推断
+  assert.deepStrictEqual(
+    simulate.inferTouchPoints('file.move', { from: 'a.txt', toDir: 'D:\\archive' }).paths,
+    ['a.txt', 'D:\\archive'],
+    'from / toDir 都应算路径'
+  )
+  assert.deepStrictEqual(simulate.inferTouchPoints('win.open', { kind: 'url', target: 'https://x' }).paths, [], 'URL 不是文件路径')
+  assert.deepStrictEqual(simulate.inferTouchPoints('win.open', { kind: 'folder', target: 'C:\\p' }).paths, ['C:\\p'])
+  assert.deepStrictEqual(
+    simulate.inferTouchPoints('win.window.control', { selector: '{"process":"notepad.exe","title":"x"}' }).windows,
+    ['进程~notepad.exe', '标题~x']
+  )
+
+  // mapping 解析：$input / $args / 字面量
+  assert.deepStrictEqual(
+    simulate.resolveMapping({ from: '' }, { from: '$input', toDir: '$args.target', note: 'lit' }, { target: 'D:\\a' }),
+    { from: '<上游输出>', toDir: 'D:\\a', note: 'lit' }
+  )
+  assert.strictEqual(simulate.resolveMapping({}, { from: '$args.missing' }, {}).from, '<缺少参数 missing>')
+
+  // 最坏副作用
+  assert.strictEqual(simulate.worstEffect([{ effect: 'L1' }, { effect: 'L2' }, { effect: 'L0' }]), 'L2')
+  assert.strictEqual(simulate.worstEffect([{ effect: 'L0' }]), 'L0')
+  assert.strictEqual(simulate.worstEffect([]), null)
+
+  // 整图推演
+  const archiveSim = simulate.analyzeFlow('flow.batch-archive', { path: 'D:\\inbox', pattern: '*.pdf', target: 'D:\\archive' })
+  assert.strictEqual(archiveSim.maxEffect, 'L1', `批量归档最坏应是 L1，得到 ${archiveSim.maxEffect}`)
+  assert.strictEqual(archiveSim.problems.length, 0, `不应有问题: ${archiveSim.problems.join(';')}`)
+  assert.deepStrictEqual(archiveSim.nodes.map((n) => n.id), ['scan', 'loop', 'move', 'notify'])
+  assert.ok(archiveSim.nodes.find((n) => n.id === 'scan').touch.paths[0].includes('inbox'), '扫描节点应报出收件箱路径')
+
+  // L2 类会被识别出来
+  const shotSim = simulate.analyzeFlow('flow.screenshot-translate', {})
+  assert.strictEqual(shotSim.maxEffect, 'L2', '截图翻译含 win.screen.capture(L2)')
+
+  // 子流程被展开
+  const siteSim = simulate.analyzeFlow('flow.open-external-site', { vpn: 'inst.ensure-vpn-ask@r2' })
+  assert.ok(siteSim.subflows.includes('flow.ensure-vpn'), `应展开子流程: ${siteSim.subflows}`)
+  assert.strictEqual(siteSim.branchCount >= 1, true, '子流程里的分支也要计入')
+
+  // 缺图 / 循环引用
+  assert.match(simulate.analyzeFlow('flow.nope', {}).problems[0], /没有数据流图谱/)
+  const loopSim = simulate.analyzeFlow('flow.ensure-vpn', {}, ['flow.ensure-vpn'])
+  assert.match(loopSim.problems[0], /循环引用/)
+
+  // 能力入口：三种模式
+  const simCtx = (params) => ({ ...ctx('field.simulate', params), instance: { classId: 'field.simulate', name: 's', description: '', params } })
+  const argsJson = JSON.stringify({ path: 'D:\\inbox', target: 'D:\\archive' })
+  const dryRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', mode: 'dry-run', args: argsJson }))
+  assert.strictEqual(dryRun.status, 'ok')
+  assert.match(dryRun.output, /dry-run flow\.batch-archive/)
+  assert.strictEqual(dryRun.evidence.maxEffect, 'L1')
+  assert.strictEqual(dryRun.evidence.verdict, 'allow', 'L1 应放行')
+
+  const impactRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', mode: 'impact', args: argsJson }))
+  assert.match(impactRun.output, /层 file/)
+  assert.ok(impactRun.evidence.impact.effects.L1 >= 1)
+
+  const rollbackRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', mode: 'rollback', args: argsJson }))
+  assert.match(rollbackRun.output, /可.*回滚/)
+  assert.strictEqual(rollbackRun.evidence.needsJournal, true, '全是 L0/L1 时可用 undo journal')
+
+  // 闸门联动：L2 流程必须判为需人工确认
+  const l2Run = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.screenshot-translate', mode: 'dry-run' }))
+  assert.strictEqual(l2Run.evidence.maxEffect, 'L2')
+  assert.strictEqual(l2Run.evidence.verdict, 'ask', 'L2 必须判需要确认，不能直接放行')
+
+  // 错误路径
+  assert.strictEqual((await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.nope' }))).status, 'warn')
+  assert.strictEqual((await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', args: '不是json' }))).status, 'warn')
+  console.log('✓ field.simulate：接触面推断 / mapping / 最坏副作用 / 整图推演 / 子流程展开 / L2 判需确认 / 三模式 都正确')
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

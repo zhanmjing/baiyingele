@@ -654,6 +654,35 @@ gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑
 
 只要有切面取不到，状态就是 `warn` —— **不完整的快照不能报成功**。
 
+### `field.simulate` —— 静态推演（不执行任何东西）
+
+回答一个问题：**这条流程如果跑起来，最坏会动什么？**
+
+```text
+dry-run flow.batch-archive：4 节点 · 路径 3 个 · 最坏 L1 级（闸门判断：可放行）
+dry-run flow.screenshot-translate：4 节点 · 最坏 L2 级（闸门判断：需人工确认）
+impact  flow.batch-archive：层 file/notify · 副作用分布 L0×1 L1×2
+rollback flow.batch-archive：全部节点都是 L0/L1，可通过 undo journal 回滚
+```
+
+**必须说清的限制：这是静态分析，不是模拟执行。**
+条件分支（`if` / `if-status`）在执行前无法判定真假，所以**两条分支都计入影响面** ——
+报的是**最坏情况**，不是预测。理由：宁可高估影响面，也不能漏报一个会删文件的节点。
+
+三个模式：
+
+| 模式 | 输出 |
+|---|---|
+| `dry-run` | 逐节点的接触面（路径 / 窗口）+ 最坏副作用 |
+| `impact` | 聚合：涉及哪些层、副作用分布、路径/窗口计数 |
+| `rollback` | 哪些节点是 L2/L3（不可完整回滚），哪些能靠 undo journal |
+
+**和闸门联动**：推演出的最坏副作用会直接喂给 `field.guard`，
+所以 `screenshot-translate`（含 `win.screen.capture` = L2）自动被判为「需人工确认」。
+
+接触面是从**参数名**推断的（`path`/`from`/`to`/`toDir`/`root`/`target`、`win.window.*` 的 `selector`），
+所以它是推断而不是保证 —— 输出里也是这么标的。
+
 ## 场层落点（landing）
 
 设计规定：**FieldClass 必须声明落点，否则不允许发布**（`npm run validate` 会拦），
