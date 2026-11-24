@@ -10,6 +10,7 @@
  *   node scripts/validate-catalog.mjs            # 软问题只报告，不阻塞
  *   node scripts/validate-catalog.mjs --strict   # 软问题也让退出码为 1
  */
+import { parseClassId, parseInstanceId, classSegment, makeInstanceId, isExprRef } from '../src/shared/atomId.ts'
 import { createRequire } from 'node:module'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -17,6 +18,9 @@ import { fileURLToPath } from 'node:url'
 import { auditCatalogDir, diffAgainstRepo, generateFullCatalogs } from './gen-catalogs.mjs'
 import { drift as implDrift } from './gen-impl-manifest.mjs'
 import { ALIAS_PATH, collectRefs, groupRequirements, makeClassifier } from './reconcile-refs.mjs'
+
+/** 合法段：小写字母数字下划线或中文，不许有点、空格、大写 */
+const FLAT_SEGMENT = /^[a-z0-9_\u4e00-\u9fa5]+$/
 
 const require = createRequire(import.meta.url)
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -79,6 +83,20 @@ for (const layer of LAYERS) {
     else if (classIds.get(layer).has(item.id)) hard.push(`${where} id 重复`)
     else classIds.get(layer).add(item.id)
 
+    // ── 统一 id 闸门：类 id 必须是 <layer>.<name>，且与所属层一致 ──
+    if (typeof item.id === 'string') {
+      const parsedClass = parseClassId(item.id)
+      if (!parsedClass) {
+        hard.push(`${where} 类 id 不是 <layer>.<name> 两段格式: ${item.id}`)
+      } else {
+        if (parsedClass.layer !== layer) hard.push(`${where} 类 id 的层名 ${parsedClass.layer} 与所在层 ${layer} 不符`)
+        if (!FLAT_SEGMENT.test(parsedClass.name)) hard.push(`${where} 类名段不合法（只能小写字母数字下划线）: ${parsedClass.name}`)
+        if (parsedClass.name !== classSegment(layer, `${layer}.${parsedClass.name}`)) {
+          hard.push(`${where} 类名段不是规范化形态: ${parsedClass.name}`)
+        }
+      }
+    }
+
     for (const field of ['name', 'family', 'description']) {
       if (!item[field]) hard.push(`${where} 缺少 ${field}`)
     }
@@ -109,13 +127,73 @@ for (const layer of LAYERS) {
       } else instanceIds.set(instance.id, where)
       if (!STATUSES.has(instance.status)) hard.push(`${where}.${instance.id} 非法 status: ${instance.status}`)
       if (typeof instance.rev !== 'number') hard.push(`${where}.${instance.id} rev 必须是数字`)
+
+      // ── 统一 id 闸门：实例 id 必须是 <layer>.<class>.<instance>@r<rev> ──
+      if (typeof instance.id === 'string' && typeof item.id === 'string') {
+        const parsedInstance = parseInstanceId(instance.id)
+        if (!parsedInstance) {
+          hard.push(`${where} 实例 id 不是三段 @rN 格式: ${instance.id}`)
+        } else {
+          if (parsedInstance.layer !== layer) hard.push(`${where} 实例 ${instance.id} 的层名与所在层不符`)
+          if (`${parsedInstance.layer}.${parsedInstance.name}` !== item.id) {
+            hard.push(`${where} 实例 ${instance.id} 不属于所属类 ${item.id}`)
+          }
+          if (!FLAT_SEGMENT.test(parsedInstance.instance)) {
+            hard.push(`${where} 实例名段不合法: ${parsedInstance.instance}`)
+          }
+          if (typeof instance.rev === 'number' && parsedInstance.rev !== instance.rev) {
+            hard.push(`${where} 实例 ${instance.id} 的 @r${parsedInstance.rev} 与 rev 字段 ${instance.rev} 不一致`)
+          }
+          // 反算：结构化身份拼回来的 id 必须等于存储值
+          const rebuilt = makeInstanceId({
+            layer: parsedInstance.layer,
+            name: parsedInstance.name,
+            instance: parsedInstance.instance,
+            rev: instance.rev ?? parsedInstance.rev
+          })
+          if (rebuilt !== instance.id) hard.push(`${where} 实例 id 无法由结构化身份反算复现: ${instance.id} ≠ ${rebuilt}`)
+        }
+      }
     }
   }
 }
+// ── 结构化引用闸门：所有跨层引用的 layer / name / instance 段都必须合法 ──
+let refTotal = 0
+let refBad = 0
+function checkRef(ref, where) {
+  if (!ref || typeof ref !== 'object') return
+  if (isExprRef(ref)) return
+  refTotal += 1
+  if (!LAYERS.includes(ref.layer)) { hard.push(`${where} 引用层非法: ${ref.layer}`); refBad += 1; return }
+  if (!FLAT_SEGMENT.test(ref.name ?? '')) { hard.push(`${where} 引用类名段非法: ${ref.name}`); refBad += 1 }
+  if (ref.instance !== undefined && !FLAT_SEGMENT.test(ref.instance)) {
+    hard.push(`${where} 引用实例名段非法: ${ref.instance}`); refBad += 1
+  }
+  if (ref.dangling === true) {
+    // 悬空引用是合法状态：目标还不存在（属于需求），版本必须是 null
+    if (ref.rev !== null) { hard.push(`${where} 悬空引用必须 rev=null`); refBad += 1 }
+  } else if (ref.rev !== undefined && (!Number.isInteger(ref.rev) || ref.rev < 1)) {
+    hard.push(`${where} 引用版本号非法: ${ref.rev}`); refBad += 1
+  }
+}
+for (const [classId, profile] of Object.entries(lineProfiles)) {
+  for (const node of profile.nodes ?? []) {
+    checkRef(node.pointClass, `${classId}/${node.id}.pointClass`)
+    checkRef(node.pointInstance, `${classId}/${node.id}.pointInstance`)
+  }
+}
+for (const [classId, profile] of Object.entries(bodyProfiles)) {
+  for (const part of profile.composition ?? []) checkRef(part.class, `${classId}.composition`)
+}
+for (const panel of surface.panelClasses ?? []) {
+  for (const ref of panel.content ?? []) checkRef(ref, `${panel.id}.content`)
+  for (const inst of panel.instances ?? []) for (const ref of inst.content ?? []) checkRef(ref, `${panel.id}.${inst.label}.content`)
+}
+
 stats.classes = classTotal
 stats.instances = instanceTotal
 stats.params = paramTotal
-console.log(`[2/7] 结构（类 / 实例 / 参数）…… ${mark()} ${classTotal} / ${instanceTotal} / ${paramTotal}`)
+console.log(`[2/7] 结构（类 / 实例 / 参数 / 引用）…… ${mark()} ${classTotal} / ${instanceTotal} / ${paramTotal} / ${refTotal}${refBad ? `（坏 ${refBad}）` : ''}`)
 
 // ── 3. 线层图谱 ─────────────────────────────────────────────────
 const flowIds = classIds.get('line') ?? new Set()
@@ -170,6 +248,7 @@ for (const [classId, profile] of Object.entries(bodyProfiles)) {
     if (!ref) { hard.push(`${classId} 的组合项既没有 class 也没有 {layer, ref}`); continue }
     if (!LAYERS.includes(ref.layer)) hard.push(`${classId} 组合引用了非法层: ${ref.layer}`)
     if (!ref.name) hard.push(`${classId} 组合引用的类名为空`)
+    else if (!FLAT_SEGMENT.test(ref.name)) hard.push(`${classId} 组合引用的类名段不合法: ${ref.name}`)
   }
 }
 console.log(`[4/7] 体层组合 / Manifest …… ${mark()} ${compositionParts} 个组合引用`)

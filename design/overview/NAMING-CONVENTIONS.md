@@ -316,3 +316,57 @@ parseInstanceId('line.ensure_vpn.ask@r2')                  // { layer, name, ins
 
 建议把前三个改名去掉 `generated`（或加 `hand` / `source`），
 否则迟早有人跑一遍 `data:gen` 然后以为它们更新了。
+
+---
+
+## 8. 校验闸门（已实装）
+
+`npm run validate` 的第 2 项检查现在同时守四件事：
+**类 id 格式 / 实例 id 格式 / 结构化引用 / 版本一致性**。
+
+### 8.1 检查项
+
+| 检查 | 触发条件 |
+|---|---|
+| 类 id 格式 | 不是 `<layer>.<name>` 两段 |
+| 类名段 | 含点、空格、大写，或不是 `classSegment` 的规范化结果 |
+| 实例 id 格式 | 不是 `<layer>.<class>.<instance>@r<rev>` 三段 |
+| 归属 | 实例 id 的 `<layer>.<class>` 与所属类 id 不符 |
+| 实例名段 | 含点、空格、大写 |
+| 版本一致 | `@rN` 与 `rev` 字段不一致 |
+| **反算复现** | 由结构化身份拼回的 id ≠ 存储的 id |
+| 引用层 | `layer` 不在五层之内 |
+| 引用段 | `name` / `instance` 含点、空格、大写 |
+| 悬空引用 | `dangling: true` 但 `rev !== null` |
+
+当前基线：**102 类 / 287 实例 / 147 参数 / 286 结构化引用，0 硬错误**。
+
+### 8.2 闸门确实会拦（已实测）
+
+故意注入四种坏 id，全部被抓：
+
+```
+实例 id 不是三段 @rN 格式: win.key.send.i-copy@r1
+实例名段不合法: Paste
+实例 point.key_send.cut@r9 的 @r9 与 rev 字段 1 不一致
+实例 id 无法由结构化身份反算复现: point.key_send.cut@r9 ≠ point.key_send.cut@r1
+实例 point.window_control.x@r1 不属于所属类 point.key_send
+```
+
+注入坏引用同样被抓：`引用层非法: LINE`、`引用类名段非法: bad name`。
+恢复后立即回零 —— 说明闸门不是「永远通过」。
+
+### 8.3 悬空引用是合法状态
+
+31 条悬空引用（`{ ..., rev: null, dangling: true }`）**不阻塞闸门**。
+它们代表「产品需要但还没造的能力」，已经记在 `requirements.generated.json` 里。
+闸门只保证：**悬空就得老实标 `dangling` 且 `rev` 必须为 null** —— 不许假装成正常引用。
+
+### 8.4 一个必须记住的限制
+
+**`typecheck` 抓不到数据形态变更。**
+
+JSON 导入在 TS 里是宽松类型：把 `pointClass` 从字符串改成对象后，`tsc` 报 0 错误，
+但运行时立刻 `未绑定点实例 [object Object]`。
+
+真正兜底的是 **`validate` + `smoke`**。改数据形态时不能只看 typecheck。
