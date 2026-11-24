@@ -1,6 +1,9 @@
 # 命名规范与不统一清单
 
-> 状态：**调研，未实施**
+> 状态：**已实施主体，剩 4 项待办**
+>
+> 已落地：三段 id、结构化引用、校验闸门、非 Atom 命名空间、面板收编
+> 待办：`flowRuntime.ts` 改名、`capabilityRunner` 改名、`layerApi` 泛型化、`RunResult.kind`
 > 触发：维护者提出「(point, runPoint, line, runFlow, surface, openPanel, body, assemble,
 > field, runField) 可以统一为 `run_层名`，全体查一下这种不统一的情况」
 > 所有数字均为实测
