@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { stringParams } from '../../../shared/layerTypes'
 import {
   ArrowUpRight,
   Archive,
@@ -49,7 +50,7 @@ function fallbackProfile(classItem: LayerClass): LineProfile {
   return {
     classId: classItem.id,
     nodes,
-    edges: nodes.slice(1).map((node) => ({ from: 'entry', to: node.id, label: 'FlowInstance' }))
+    edges: nodes.slice(1).map((node) => ({ from: 'entry', to: node.id, label: 'LineInstance' }))
   }
 }
 
@@ -112,7 +113,7 @@ export function LineManagementPage({
     setFormDescription(instance.description)
     setFormParams({
       ...Object.fromEntries(selectedClass.params.map((param) => [param.key, param.defaultValue ?? ''])),
-      ...(instance.params ?? {})
+      ...stringParams(instance.params)
     })
   }
   async function submitEditor() {
@@ -167,24 +168,24 @@ export function LineManagementPage({
   return (
     <div className="page line-manager">
       <header className="line-head">
-        <div><div className="eyebrow">LINE LAYER / MANAGEMENT</div><div className="line-title-row"><div className="line-title-icon"><GitBranch size={23} /></div><div><h1>线层管理</h1><p>FlowClass 定义数据流图，FlowInstance 绑定点层实现。线负责编排，不拥有点能力。</p></div></div></div>
+        <div><div className="eyebrow">LINE LAYER / MANAGEMENT</div><div className="line-title-row"><div className="line-title-icon"><GitBranch size={23} /></div><div><h1>线层管理</h1><p>LineClass 定义数据流图，LineInstance 绑定点层实现。线负责编排，不拥有点能力。</p></div></div></div>
         <div className="line-head-actions"><button className="btn ghost" onClick={openCreate}><Plus size={14} /> 新建实例</button><button className="btn primary" onClick={() => void runInstance()} disabled={!selectedInstance || running}><Play size={14} /> {running ? '运行中…' : '运行实例'}</button></div>
       </header>
 
       <div className="line-stat-grid">
-        <div className="point-stat"><span>FlowClass</span><strong>{layer.totalClasses}</strong><em>{layer.classes.length} loaded</em></div>
-        <div className="point-stat"><span>FlowInstance</span><strong>{allInstances}</strong><em>所有线层实例</em></div>
+        <div className="point-stat"><span>LineClass</span><strong>{layer.totalClasses}</strong><em>{layer.classes.length} loaded</em></div>
+        <div className="point-stat"><span>LineInstance</span><strong>{allInstances}</strong><em>所有线层实例</em></div>
         <div className="point-stat"><span>FlowNode</span><strong>{profile?.nodes.length ?? 0}</strong><em>{allNodes} across classes</em></div>
         <div className="point-stat"><span>绑定状态</span><strong>{linked}</strong><em>{placeholders} placeholders</em></div>
       </div>
 
       <div className="line-layout">
         <aside className="line-sidebar">
-          <div className="line-pane-head"><span>FlowClass · 线层类</span><em>{filteredClasses.length}</em></div>
+          <div className="line-pane-head"><span>LineClass · 线层类</span><em>{filteredClasses.length}</em></div>
           <div className="line-class-list">
             {filteredClasses.map((item) => <button key={item.id} className={`line-class-item ${selectedClass?.id === item.id ? 'active' : ''}`} onClick={() => selectClass(item)}><span className="line-class-icon">↝</span><div><strong>{item.name}</strong><code>{item.id}</code></div><em>{item.instances.length}</em></button>)}
           </div>
-          <div className="line-pane-head"><span>FlowInstance · 线层实例</span><em>{selectedClass?.instances.length ?? 0}</em></div>
+          <div className="line-pane-head"><span>LineInstance · 线层实例</span><em>{selectedClass?.instances.length ?? 0}</em></div>
           <div className="line-instance-list">
             {selectedClass?.instances.map((item) => <button key={item.id} className={`line-instance-item ${instanceId === item.id ? 'active' : ''}`} onClick={() => selectInstance(item)}><span className={`point-status-dot ${item.status}`} /><div><strong>{item.name}</strong><code>{item.id}</code></div><em>r{item.rev}</em></button>)}
             {!selectedClass?.instances.length && <div className="line-empty-small">暂无实例</div>}
@@ -193,8 +194,8 @@ export function LineManagementPage({
 
         <main className="line-main">
           <div className="line-graph-panel">
-            <div className="line-panel-head"><div><span className="panel-eyebrow">FLOW / GRAPH</span><strong>{selectedClass?.name ?? 'FlowClass'}</strong><em>{selectedClass?.id ?? ''}</em></div><div className="line-mode-tabs"><button className={mode === 'class' ? 'active' : ''} onClick={() => { setMode('class'); setNodeId('') }}>类定义</button><button className={mode === 'instance' ? 'active' : ''} onClick={() => setMode('instance')}>实例绑定</button></div></div>
-            {profile ? <FlowGraph profile={profile} mode={mode} instance={selectedInstance} selectedNodeId={nodeId} onSelectNode={setNodeId} /> : <div className="point-empty"><GitBranch size={22} /><strong>没有数据流图</strong><span>此 FlowClass 还没有 graph profile。</span></div>}
+            <div className="line-panel-head"><div><span className="panel-eyebrow">LINE / GRAPH</span><strong>{selectedClass?.name ?? 'LineClass'}</strong><em>{selectedClass?.id ?? ''}</em></div><div className="line-mode-tabs"><button className={mode === 'class' ? 'active' : ''} onClick={() => { setMode('class'); setNodeId('') }}>类定义</button><button className={mode === 'instance' ? 'active' : ''} onClick={() => setMode('instance')}>实例绑定</button></div></div>
+            {profile ? <FlowGraph profile={profile} mode={mode} instance={selectedInstance} selectedNodeId={nodeId} onSelectNode={setNodeId} /> : <div className="point-empty"><GitBranch size={22} /><strong>没有数据流图</strong><span>此 LineClass 还没有 graph profile。</span></div>}
             <div className="line-legend"><span><i className="impl" />点层已实现</span><span><i className="ph" />占位符</span><span><i className="gate" />gate</span><span><i className="sub" />subflow</span></div>
           </div>
           <BindingTable profile={profile} selectedNodeId={nodeId} onSelectNode={setNodeId} onNavigate={onNavigate} />
@@ -253,7 +254,7 @@ function FlowGraph({ profile, mode, instance, selectedNodeId, onSelectNode }: {
             <button key={node.id} className={`line-node ${node.kind} ${implemented ? 'impl' : isPoint ? 'placeholder' : ''} ${selectedNodeId === node.id ? 'selected' : ''}`} style={{ left: node.x, top: node.y, width: node.w, height: node.h }} onClick={() => onSelectNode(node.id)}>
               <span className="line-node-kind">{node.kind === 'point' ? 'POINT SLOT' : node.kind === 'gate' ? 'GATE' : 'SUBFLOW'}</span>
               <strong>{node.label}</strong>
-              <em>{node.pointClass || (node.kind === 'gate' ? `gate:${node.gate}` : 'FlowInstance')}</em>
+              <em>{node.pointClass || (node.kind === 'gate' ? `gate:${node.gate}` : 'LineInstance')}</em>
               <span className={`line-node-badge ${implemented ? 'ok' : isPoint ? 'ph' : node.kind}`}>{node.kind === 'gate' ? 'gate' : node.kind === 'subflow' ? 'subflow' : implemented ? '点层已实现' : '占位符'}</span>
               {mode === 'instance' && instance && <span className="line-node-pin">{node.pointInstance ? `${node.pointInstance} · bound` : 'unbound'}</span>}
             </button>
@@ -277,7 +278,7 @@ function BindingTable({ profile, selectedNodeId, onSelectNode, onNavigate }: {
         <table className="line-bind-table"><thead><tr><th>节点</th><th>Kind</th><th>PointClass</th><th>PointInstance</th><th>状态</th><th /></tr></thead><tbody>
           {profile?.nodes.map((node) => {
             const implemented = node.kind === 'point' && Boolean(node.pointInstance)
-            return <tr key={node.id} className={selectedNodeId === node.id ? 'on' : ''} onClick={() => onSelectNode(node.id)}><td><strong>{node.label}</strong><code>slot.{node.id}</code></td><td><span className={`line-kind-pill ${node.kind}`}>{node.kind}</span></td><td><code>{node.pointClass || (node.kind === 'gate' ? `gate:${node.gate}` : 'FlowInstance')}</code></td><td><code>{node.pointInstance || '—'}</code></td><td>{node.kind === 'point' ? <span className={`line-bind-state ${implemented ? 'ok' : 'ph'}`}>{implemented ? '已实现' : '占位符'}</span> : <span className="line-bind-state muted">—</span>}</td><td>{implemented && <button className="text-btn" onClick={(event) => { event.stopPropagation(); onNavigate('point') }}>打开点层 <ArrowUpRight size={10} /></button>}</td></tr>
+            return <tr key={node.id} className={selectedNodeId === node.id ? 'on' : ''} onClick={() => onSelectNode(node.id)}><td><strong>{node.label}</strong><code>slot.{node.id}</code></td><td><span className={`line-kind-pill ${node.kind}`}>{node.kind}</span></td><td><code>{node.pointClass || (node.kind === 'gate' ? `gate:${node.gate}` : 'LineInstance')}</code></td><td><code>{node.pointInstance || '—'}</code></td><td>{node.kind === 'point' ? <span className={`line-bind-state ${implemented ? 'ok' : 'ph'}`}>{implemented ? '已实现' : '占位符'}</span> : <span className="line-bind-state muted">—</span>}</td><td>{implemented && <button className="text-btn" onClick={(event) => { event.stopPropagation(); onNavigate('point') }}>打开点层 <ArrowUpRight size={10} /></button>}</td></tr>
           })}
         </tbody></table>
       </div>
@@ -296,7 +297,7 @@ function ClassInspector({ classItem, profile, onNew, instance, onSelectInstance 
   const linked = points.filter((node) => node.pointInstance).length
   return (
     <div className="line-inspector-body">
-      <div className="line-insp-kicker">FlowClass · 线层类</div>
+      <div className="line-insp-kicker">LineClass · 线层类</div>
       <div className="line-insp-title">{classItem.name}</div>
       <div className="line-insp-id">{classItem.id} · v1.0.0</div>
       <div className="line-insp-badges"><span className={`priority ${classItem.priority.toLowerCase()}`}>{classItem.priority}</span><span className={`effect ${classItem.effect.toLowerCase()}`}>{classItem.effect}</span><span>{classItem.family}</span></div>
@@ -304,7 +305,7 @@ function ClassInspector({ classItem, profile, onNew, instance, onSelectInstance 
       <div className="line-insp-section"><div className="field-policy-title">Graph</div><div className="line-insp-stats"><div><strong>{profile?.nodes.length ?? 0}</strong><span>nodes</span></div><div><strong>{profile?.edges.length ?? 0}</strong><span>edges</span></div><div><strong>{linked}</strong><span>linked</span></div><div><strong>{points.length - linked}</strong><span>placeholder</span></div></div></div>
       <div className="line-insp-section"><div className="field-policy-title">参数 Schema</div>{classItem.params.map((param) => <div className="line-insp-param" key={param.key}><span>{param.label}</span><code>{param.type}{param.required ? ' · required' : ''}</code></div>)}</div>
       <div className="line-insp-section"><div className="field-policy-title">实例 · {classItem.instances.length}</div>{classItem.instances.map((item) => <button className={`line-insp-instance ${instance?.id === item.id ? 'active' : ''}`} key={item.id} onClick={() => onSelectInstance(item)}><span className={`point-status-dot ${item.status}`} /><strong>{item.name}</strong><em>r{item.rev}</em></button>)}</div>
-      <button className="btn primary line-insp-new" onClick={onNew}><Plus size={13} /> 新建 FlowInstance</button>
+      <button className="btn primary line-insp-new" onClick={onNew}><Plus size={13} /> 新建 LineInstance</button>
     </div>
   )
 }
@@ -320,7 +321,7 @@ function InstanceInspector({ classItem, instance, lastRun, onRun, onEdit, onDupl
 }) {
   return (
     <div className="line-inspector-body">
-      <div className="line-insp-kicker">FlowInstance · 线层实例</div>
+      <div className="line-insp-kicker">LineInstance · 线层实例</div>
       <div className="line-insp-title">{instance.name}</div>
       <div className="line-insp-id">{instance.id} · r{instance.rev}</div>
       <div className="line-insp-badges"><span className={`status-pill ${instance.status}`}>{statusLabel[instance.status]}</span><span>{classItem?.name}</span></div>
@@ -344,13 +345,13 @@ function NodeInspector({ node, onBack, onNavigate, onToast }: {
       <button className="line-insp-back" onClick={onBack}><ChevronRight size={12} /> 返回</button>
       <div className="line-insp-kicker">FlowNode · {node.kind.toUpperCase()}</div>
       <div className="line-insp-title">{node.label}</div>
-      <div className="line-insp-id">slot.{node.id} · {node.pointClass || (node.kind === 'gate' ? `gate:${node.gate}` : 'FlowInstance')}</div>
+      <div className="line-insp-id">slot.{node.id} · {node.pointClass || (node.kind === 'gate' ? `gate:${node.gate}` : 'LineInstance')}</div>
       <div className="line-insp-badges"><span className={`line-kind-pill ${node.kind}`}>{node.kind}</span>{node.kind === 'point' && <span className={`line-bind-state ${implemented ? 'ok' : 'ph'}`}>{implemented ? '已实现' : '占位符'}</span>}</div>
       <p className="line-insp-desc">{node.role || '流程节点'}</p>
       {node.kind === 'point' && <div className="line-insp-section"><div className="field-policy-title">Point Binding</div><div className="line-node-binding"><div><span>PointClass</span><code>{node.pointClass || '—'}</code></div><div><span>PointInstance</span><code>{node.pointInstance || '—'}</code></div></div>{implemented ? <button className="btn primary line-insp-new" onClick={() => onNavigate('point')}><Link2 size={12} /> 打开点层实例 <ArrowUpRight size={11} /></button> : <div className="line-placeholder-note"><CircleDot size={12} /> 该点层实例尚未实现，线层先用占位符。点层实现后这里会出现跳转入口。</div>}</div>}
       {node.kind === 'gate' && <div className="line-insp-section"><div className="field-policy-title">Gate</div><div className="line-placeholder-note"><CircleDot size={12} /> 门节点由线层引擎执行，不绑定 PointInstance。</div></div>}
-      {node.kind === 'subflow' && <div className="line-insp-section"><div className="field-policy-title">Subflow</div><div className="line-placeholder-note"><CircleDot size={12} /> 该节点绑定的是子流程 FlowInstance，在 FlowInstance 中维护。</div></div>}
-      <button className="text-btn" onClick={() => onToast('节点编辑将在 FlowClass 编辑器接入后启用')}>编辑节点定义</button>
+      {node.kind === 'subflow' && <div className="line-insp-section"><div className="field-policy-title">Subflow</div><div className="line-placeholder-note"><CircleDot size={12} /> 该节点绑定的是子流程 LineInstance，在 LineInstance 中维护。</div></div>}
+      <button className="text-btn" onClick={() => onToast('节点编辑将在 LineClass 编辑器接入后启用')}>编辑节点定义</button>
     </div>
   )
 }

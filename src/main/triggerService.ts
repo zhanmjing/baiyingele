@@ -2,7 +2,7 @@
  * 触发器服务：把「输入被触发」接到「跑哪个实例」。
  *
  * 对应 design/overview/INPUT-TRIGGER-CLASSES.md：
- *   InputEvent → InputPattern(命中) → InputBinding(作用域/目标) → PointInstance / FlowInstance
+ *   InputEvent → InputPattern(命中) → InputBinding(作用域/目标) → PointInstance / LineInstance
  *
  * 两种 source 共用同一条 dispatch：
  *   hotkey  —— uiohook-napi 全局钩子，组合键**精确**匹配

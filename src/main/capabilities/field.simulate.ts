@@ -1,7 +1,8 @@
 import { lineClassesSeed, lineProfiles } from '../../shared/lineCatalog'
 import { pointClassesSeed } from '../../shared/pointCatalog'
-import { parseFlowArgs } from '../flowRuntime'
+import { parseLineArgs } from '../lineRuntime'
 import { classIdOf, instanceIdOf, isExprRef } from '../../shared/atomId'
+import { stringParams } from '../../shared/layerTypes'
 import { assessRisk } from './field.guard'
 import { elapsed, type Capability } from './_shared'
 
@@ -215,7 +216,7 @@ export function analyzeFlow(
 
     // point 节点
     const boundId = instanceIdOf(node.pointInstance)
-    let instance: { params?: Record<string, string> } | undefined
+    let instance: { params?: Record<string, unknown> } | undefined
     for (const cls of pointClassesSeed) {
       const found = cls.instances.find((item) => item.id === boundId)
       if (found) {
@@ -225,7 +226,7 @@ export function analyzeFlow(
     }
     const pointClassName = classIdOf(node.pointClass)
     const pointClass = pointClassName ? pointClassById(pointClassName) : undefined
-    const params = resolveMapping(instance?.params ?? {}, node.mapping, args)
+    const params = resolveMapping(stringParams(instance?.params), node.mapping, args)
 
     if (!instance || !pointClass) {
       result.nodes.push({
@@ -306,7 +307,7 @@ export const run: Capability = async (ctx) => {
   }
   // 也支持 'path=x；pattern=*.pdf' 这种写法
   if (!argsRaw && String(ctx.input ?? '').includes('=')) {
-    args = { ...parseFlowArgs(String(ctx.input ?? '')), ...args }
+    args = { ...parseLineArgs(String(ctx.input ?? '')), ...args }
   }
 
   if (!lineProfiles[classId]) {

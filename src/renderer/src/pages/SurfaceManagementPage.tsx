@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { stringParams } from '../../../shared/layerTypes'
 import { refsToText, textToClassRefs, textToInstanceRefs } from '../../../shared/atomId'
 import {
   ArrowUpRight,
@@ -310,7 +311,7 @@ export function SurfaceManagementPage({
     setFormDescription(instance.description)
     setFormParams({
       ...Object.fromEntries(surfaceClass.params.map((param) => [param.key, param.defaultValue ?? ''])),
-      ...(instance.params ?? {})
+      ...stringParams(instance.params)
     })
   }
   async function submitEditor() {
@@ -936,7 +937,7 @@ export function SurfaceManagementPage({
       {gestureEditor && (
         <div className="modal-overlay" onClick={() => setGestureEditor(null)}>
           <div className="modal point-editor gesture-binding-editor" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head"><div><div className="panel-eyebrow">GESTURE BINDING</div><h2>{gestureEditor.editPattern ? '编辑手势绑定' : '新建手势绑定'}</h2><p>选择真实 PointInstance 或 FlowInstance；保存后手势映射状态变为 mapped。</p></div><button className="icon-btn" onClick={() => setGestureEditor(null)}><X size={16} /></button></div>
+            <div className="modal-head"><div><div className="panel-eyebrow">GESTURE BINDING</div><h2>{gestureEditor.editPattern ? '编辑手势绑定' : '新建手势绑定'}</h2><p>选择真实 PointInstance 或 LineInstance；保存后手势映射状态变为 mapped。</p></div><button className="icon-btn" onClick={() => setGestureEditor(null)}><X size={16} /></button></div>
             <div className="modal-form">
               <div className="param-form-grid">
                 <label>Pattern<input value={gestureEditor.pattern} onChange={(event) => setGestureEditor((current) => current ? { ...current, pattern: event.target.value.toUpperCase() } : current)} /></label>
@@ -1155,7 +1156,7 @@ function GestureView({ gesture, bindings, target, targets, onOpenTarget, onSelec
   return (
     <div className="gesture-view">
       <div className="surface-hero"><span className="surface-hero-icon gesture">G</span><div><div className="panel-eyebrow">GESTUREBINDING · {target?.kind ?? (gesture.kind === 'point' ? 'point' : 'line')}</div><h2>{gesture.pattern} · {gesture.name}</h2><p>{gesture.desc}</p></div><div className="surface-hero-actions"><button className="btn ghost" onClick={() => onToast(`识别预览 · ${gesture.pattern} 匹配成功`)}>识别预览</button>{target && <button className="btn primary" onClick={() => onOpenTarget(target)}>打开目标 <ArrowUpRight size={11} /></button>}</div></div>
-      <div className="gesture-map-chain"><div className="gesture-map-node"><span>Gesture</span><strong>{gesture.pattern}</strong></div><i>→</i><div className={`gesture-map-node ${target?.kind ?? 'pending'}`}><span>Target Layer</span><strong>{target ? (target.kind === 'point' ? 'PointInstance' : 'FlowInstance') : '未映射'}</strong></div><i>→</i><div className="gesture-map-node target"><span>AtomRef</span><strong>{target?.label ?? gesture.target}</strong></div><em className={target ? 'mapped' : 'placeholder'}>{target ? 'mapped' : 'placeholder'}</em></div>
+      <div className="gesture-map-chain"><div className="gesture-map-node"><span>Gesture</span><strong>{gesture.pattern}</strong></div><i>→</i><div className={`gesture-map-node ${target?.kind ?? 'pending'}`}><span>Target Layer</span><strong>{target ? (target.kind === 'point' ? 'PointInstance' : 'LineInstance') : '未映射'}</strong></div><i>→</i><div className="gesture-map-node target"><span>AtomRef</span><strong>{target?.label ?? gesture.target}</strong></div><em className={target ? 'mapped' : 'placeholder'}>{target ? 'mapped' : 'placeholder'}</em></div>
       <div className="gesture-stage">
         <div className="gesture-pad"><svg viewBox="0 0 400 280" preserveAspectRatio="none"><polyline points={polyline} fill="none" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx={start[0]} cy={start[1]} r="5" fill="#22d3ee" /><circle cx={end[0]} cy={end[1]} r="5" fill="#fbbf24" /></svg><div className="gesture-pattern">{gesture.pattern}</div><span>Gesture Pad</span><em>fuzzy ≤1 segment</em></div>
         <div className="gesture-presets">{bindings.map((item) => <button key={item.pattern} className={item.pattern === gesture.pattern ? 'active' : ''} onClick={() => onSelectPattern(item)}>{item.pattern}</button>)}</div>

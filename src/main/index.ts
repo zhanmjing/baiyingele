@@ -3,8 +3,9 @@ import { join } from 'node:path'
 import type { RunHistoryItem } from '../shared/runHistory'
 import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 import { LAYER_DEFS } from './layerRegistry'
+import { RUN_KIND_OF } from '../shared/layerApi'
 import { runCapability } from './capabilities'
-import { createLineRunner } from './flowRuntime'
+import { createLineRunner } from './lineRuntime'
 import { applyLanding } from './fieldRuntime'
 import { UndoJournal } from './undoJournal'
 import { decideLanding } from '../shared/fieldLanding'
@@ -106,6 +107,10 @@ function registerLayerIpc(): void {
       const record = await store(key).run(payload.instanceId)
       return {
         ok: record.status === 'ok',
+        // 入口统一是 run<Layer>，语义靠这两个字段区分：
+        // surface 是 render、body 是 assemble，都不是 execute
+        layer: key,
+        kind: RUN_KIND_OF[key],
         runId: record.id,
         classId: record.classId,
         instanceId: record.instanceId,
@@ -144,7 +149,7 @@ app.whenReady().then(() => {
   const dataDir = app.getPath('userData')
 
   /** 点层 / 场层：有真实实现的类走 capabilities，其余回落到模拟 */
-  const capabilityRunner: InstanceRunner = async (context) =>
+  const pointRunner: InstanceRunner = async (context) =>
     (await runCapability(context)) ?? mockRunner(context)
   const undoJournal = new UndoJournal(join(dataDir, 'field-undo.json'))
 
@@ -199,7 +204,7 @@ app.whenReady().then(() => {
           ? fieldRunner
           : key === 'surface' || key === 'body'
             ? undefined
-            : capabilityRunner
+            : pointRunner
     stores.set(key, new LayerStore(join(dataDir, `${key}-state.json`), LAYER_DEFS[key], runner))
   }
 

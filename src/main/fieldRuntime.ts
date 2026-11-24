@@ -44,7 +44,7 @@ export async function applyLanding(params: {
   const undoToken = journal.record({
     instanceId: landing.instanceId,
     param: landing.param,
-    previous: previous ?? null,
+    previous: previous == null ? null : String(previous),
     next,
     classId: updated.classId
   })

@@ -13,7 +13,7 @@ import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 
 export interface LayerDef {
   key: LayerKey
-  /** 错误信息里用的类名：PointClass / FlowClass / ... */
+  /** 错误信息里用的类名：PointClass / LineClass / ... */
   classLabel: string
   classes: PointClassSeed[]
   /** 类 -> 人类可读的输出摘要；未命中的类走模拟输出 */

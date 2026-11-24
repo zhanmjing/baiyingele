@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
+import { stringParams } from '../../../shared/layerTypes'
 import {
   Archive,
   ChevronRight,
@@ -76,7 +77,7 @@ const statusLabel: Record<string, string> = {
 
 const layerLabels: Record<string, { classLabel: string; instanceLabel: string; runLabel: string; description: string }> = {
   point: { classLabel: 'PointClass', instanceLabel: 'PointInstance', runLabel: 'PointRun', description: '点类契约、实例配置、运行与资源加载。类定义能力，实例保存参数；设置页只管策略。' },
-  line: { classLabel: 'FlowClass', instanceLabel: 'FlowInstance', runLabel: 'FlowRun', description: '流程类、流程实例、步骤绑定与运行。线负责编排，不拥有点能力。' },
+  line: { classLabel: 'LineClass', instanceLabel: 'LineInstance', runLabel: 'LineRun', description: '流程类、流程实例、步骤绑定与运行。线负责编排，不拥有点能力。' },
   surface: { classLabel: 'SurfaceClass', instanceLabel: 'SurfaceInstance', runLabel: 'SurfaceRun', description: '界面类、界面实例与交互承载。面只负责呈现，不拥有业务。' },
   body: { classLabel: 'BodyClass', instanceLabel: 'BodyInstance', runLabel: 'BodyRun', description: '产品体类、体实例与可安装能力。体负责组合，不替代点/线/面。' },
   field: { classLabel: 'FieldClass', instanceLabel: 'FieldInstance', runLabel: 'FieldRun', description: '智能场能力与实例。' }
@@ -165,7 +166,7 @@ export function LayerManagementPage({
     setFormDescription(instance.description)
     setFormParams({
       ...Object.fromEntries(classItem.params.map((param) => [param.key, param.defaultValue ?? ''])),
-      ...(instance.params ?? {})
+      ...stringParams(instance.params)
     })
   }
   async function submitEditor() {

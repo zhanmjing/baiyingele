@@ -1,9 +1,10 @@
 # 命名规范与不统一清单
 
-> 状态：**已实施主体，剩 4 项待办**
+> 状态：**已全部实施**
 >
-> 已落地：三段 id、结构化引用、校验闸门、非 Atom 命名空间、面板收编
-> 待办：`flowRuntime.ts` 改名、`capabilityRunner` 改名、`layerApi` 泛型化、`RunResult.kind`
+> 已落地：三段 id、结构化引用、校验闸门、非 Atom 命名空间、面板收编、
+> `flowRuntime.ts`→`lineRuntime.ts`、`Flow*`→`Line*`、
+> `capabilityRunner`→`pointRunner`、`layerApi` 中立化、`RunResult.kind`
 > 触发：维护者提出「(point, runPoint, line, runFlow, surface, openPanel, body, assemble,
 > field, runField) 可以统一为 `run_层名`，全体查一下这种不统一的情况」
 > 所有数字均为实测
@@ -218,13 +219,13 @@ interface RunResult {
 
 | 优先级 | 改动 | 涉及 | 风险 |
 |---|---|---|---|
-| **P0** | 设计文档里的意图名对齐代码（去掉 `runFlow`/`openPanel`/`assemble`） | 3 份 md | 无 |
-| **P0** | `classLabel: 'FlowClass'` → `'LineClass'` | 1 行 | 无（UI 文案） |
-| **P1** | `Flow*` 类型 → `Line*`（`FlowDeps`、`FlowNodeResult`） | 2 个类型 + 引用 | 低 |
-| **P1** | `flowRuntime.ts` → `lineRuntime.ts`；`runFlow` → `runLineInstance` | 1 文件 + 引用 | 低 |
-| **P1** | `capabilityRunner` → `pointRunner` | 1 处 | 低 |
-| **P2** | `layerApi.ts` 泛型化，去掉 point 中心类型 | 1 文件 + 声明 | **中**（类型面广） |
-| **P2** | `RunResult` 加 `layer` + `kind` 字段 | 契约 + 5 层实现 | 中 |
+| ✅ P0 | 设计文档里的意图名对齐代码（去掉 `runFlow`/`openPanel`/`assemble`） | 3 份 md | 无 |
+| ✅ P0 | `classLabel: 'FlowClass'` → `'LineClass'` | 2 处（main + renderer 各一份） | 无 |
+| ✅ P1 | `Flow*` 类型 → `Line*`（`FlowDeps`、`FlowNodeResult`） | 33 处引用 | 低 |
+| ✅ P1 | `flowRuntime.ts` → `lineRuntime.ts`；`runFlow` → `runLineInstance` | 1 文件 + 6 处引用 | 低 |
+| ✅ P1 | `capabilityRunner` → `pointRunner` | 2 处 | 低 |
+| ✅ P2 | `layerApi.ts` 中立化，去掉 point 中心类型 | 新建 `layerTypes.ts`，pointCatalog 退成别名 | 中（`params` 放宽后连带修 7 处） |
+| ✅ P2 | `RunResult` 加 `layer` + `kind` 字段 | `RUN_KIND_OF` 映射 + main 赋值 | 中 |
 | **P3** | 实例 id 统一（随 3 段 id 迁移一起做） | 287 条 | 高（一次做完） |
 | **P3** | 能力文件名是否跟 id 走 | 21 个文件 | 低（但收益也低） |
 

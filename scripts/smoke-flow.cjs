@@ -13,7 +13,7 @@
  * 只替换掉 electron 相关副作用（剪贴板用固定文本、通知不弹窗），
  * 组合、映射、串流、记录、落盘全部走真实代码。
  *
- * 用法：npm run smoke（会先把 layerStore / flowRuntime 编译到 .tmp/smoke）
+ * 用法：npm run smoke（会先把 layerStore / lineRuntime 编译到 .tmp/smoke）
  */
 const assert = require('node:assert')
 const fs = require('node:fs')
@@ -78,7 +78,7 @@ require.cache[electronPath] = {
 }
 
 const { LayerStore } = require('../.tmp/smoke/main/layerStore.js')
-const { createLineRunner, orderNodes, parseFlowArgs } = require('../.tmp/smoke/main/flowRuntime.js')
+const { createLineRunner, orderNodes, parseLineArgs } = require('../.tmp/smoke/main/lineRuntime.js')
 const { classIdOf, instanceIdOf, isExprRef } = require('../.tmp/smoke/shared/atomId.js')
 const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
 const { decideLanding } = require('../.tmp/smoke/shared/fieldLanding.js')
@@ -140,10 +140,10 @@ const lineStore = new LayerStore(
 
 async function main() {
   // 1. 纯函数层
-  assert.deepStrictEqual(parseFlowArgs('path=inbox.md；append=true'), { path: 'inbox.md', append: 'true' })
+  assert.deepStrictEqual(parseLineArgs('path=inbox.md；append=true'), { path: 'inbox.md', append: 'true' })
   const order = orderNodes(profiles['line.clipboard_to_file']).map((node) => node.id)
   assert.deepStrictEqual(order, ['clip', 'template', 'write', 'notify'], `节点顺序错误: ${order.join('>')}`)
-  console.log('✓ parseFlowArgs / orderNodes')
+  console.log('✓ parseLineArgs / orderNodes')
 
   // 2. 端到端：跑一条真实流程
   const record = await lineStore.run('line.clipboard_to_file.inbox@r3')
@@ -177,7 +177,7 @@ async function main() {
 
 
   // ── 5b. 线层引擎：分支路由 / 未实现 gate / 子流程 / 循环引用 ──────
-  const { evaluateIfGate, firedEdges } = require('../.tmp/smoke/main/flowRuntime.js')
+  const { evaluateIfGate, firedEdges } = require('../.tmp/smoke/main/lineRuntime.js')
   const { hasRealImpl } = require('../.tmp/smoke/shared/implRegistry.js')
 
   // if gate 只认明确值，含糊值必须拒绝（不能替用户猜）
@@ -327,7 +327,7 @@ async function main() {
 
   // C6. entryNodes：foreach 的回边不算入度，gate 仍是入口
   {
-    const { entryNodes } = require('../.tmp/smoke/main/flowRuntime.js')
+    const { entryNodes } = require('../.tmp/smoke/main/lineRuntime.js')
     const entries = entryNodes(foreachProfile).map((n) => n.id)
     assert.deepStrictEqual(entries, ['loop'], `foreach 图的入口应只有 loop，实际 ${entries}`)
   }
@@ -401,7 +401,7 @@ async function main() {
           const classInstances = catalogs.line.find((c) => c.id === classId)?.instances ?? []
           assert.ok(classInstances.length, `${classId} 没有实例，却用了参数化子流程目标`)
           for (const inst of classInstances) {
-            const parsed = parseFlowArgs(inst.description ?? '')
+            const parsed = parseLineArgs(inst.description ?? '')
             assert.ok(parsed[argKey], `${classId}/${inst.id} 缺少子流程参数 ${argKey}`)
             assert.ok(
               lineInstanceIds.has(parsed[argKey]),

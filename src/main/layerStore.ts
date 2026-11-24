@@ -7,6 +7,7 @@
  *
  * 持久化格式保持 `{ version: 1, instances, runs }`，与旧 state 文件完全兼容。
  */
+import { stringParams } from '../shared/layerTypes'
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import type { PointClassSeed, PointInstanceRecord, PointRunRecord } from '../shared/pointCatalog'
@@ -289,7 +290,7 @@ export class LayerStore {
       def: this.def,
       instance,
       pointClass,
-      params: { ...instance.params, ...(extras.params ?? {}) },
+      params: { ...stringParams(instance.params), ...(extras.params ?? {}) },
       input: extras.input,
       args: extras.args,
       findInstance: (id) => this.instance(id)

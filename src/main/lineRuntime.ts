@@ -1,5 +1,5 @@
 /**
- * 线层执行器：把 FlowClass 的数据流图跑起来。
+ * 线层执行器：把 LineClass 的数据流图跑起来。
  *
  * 设计依据 ATOM-UNIFIED-MODEL：FlowRun 由若干 slotRun 组成，每个 slotRun
  * 对应一次真实的 PointRun。
@@ -27,12 +27,13 @@
  *   2. 任何节点 warn，整条流程就是 warn（不能把中间警告吞成 ok）
  *   3. 子流程失败 / 循环引用 / 超层数 → 父流程立刻停
  */
+import { stringParams } from '../shared/layerTypes'
 import { classIdOf, instanceIdOf, isExprRef } from '../shared/atomId'
 import { hasRealImpl } from '../shared/implRegistry'
 import type { LineNode, LineProfile } from '../shared/lineCatalog'
 import type { InstanceRunner, LayerStore, RunOutcome } from './layerStore'
 
-export interface FlowDeps {
+export interface LineDeps {
   profiles: Record<string, LineProfile>
   /** 延迟取点层 store，避免构造顺序耦合 */
   pointStore: () => LayerStore
@@ -48,7 +49,7 @@ const MAX_FOREACH_ITEMS = 100
 const MAX_BODY_STEPS = 200
 
 /** 解析流程实例参数：'path=inbox.md；append=true' -> { path, append } */
-export function parseFlowArgs(detail: string): Record<string, string> {
+export function parseLineArgs(detail: string): Record<string, string> {
   const out: Record<string, string> = {}
   for (const part of String(detail ?? '').split(/[；;]/)) {
     const index = part.indexOf('=')
@@ -217,7 +218,7 @@ export function entryNodes(profile: LineProfile): LineNode[] {
 
 export type NodeStatus = 'ok' | 'warn' | 'skipped' | 'failed'
 
-export interface FlowNodeResult {
+export interface LineNodeResult {
   nodeId: string
   label: string
   kind: string
@@ -238,7 +239,7 @@ interface Counters {
 }
 
 interface NodeOutcome {
-  result: FlowNodeResult
+  result: LineNodeResult
   value: string
   status: NodeStatus
   /** 要接着跑的 node id 列表 */
@@ -253,13 +254,13 @@ interface ExecContext {
   input: string
   prevStatus: NodeStatus | 'start'
   args: Record<string, string>
-  deps: FlowDeps
+  deps: LineDeps
   depth: number
   stack: string[]
   counters: Counters
   loopDepth: number
   /** 记录一个节点结果；由发起本次运行的一方提供，避免用模块级共享状态 */
-  record: (result: FlowNodeResult) => void
+  record: (result: LineNodeResult) => void
 }
 
 async function execNode(context: ExecContext): Promise<NodeOutcome> {
@@ -269,7 +270,7 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
       .filter((edge) => edge.from === node.id && (label === undefined || (edge.label ?? '').toLowerCase() === label))
       .map((edge) => edge.to)
 
-  const base = (overrides: Partial<NodeOutcome> & { result: FlowNodeResult }): NodeOutcome => ({
+  const base = (overrides: Partial<NodeOutcome> & { result: LineNodeResult }): NodeOutcome => ({
     value: input,
     status: overrides.result.status,
     next: [],
@@ -364,7 +365,7 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
       return fail(`子流程循环引用：${[...context.stack, target.classId].join(' → ')}（或超过 ${MAX_SUBFLOW_DEPTH} 层）`)
     }
 
-    const child = await runFlow({
+    const child = await runLineInstance({
       profile: childProfile,
       classId: target.classId,
       description: target.description ?? '',
@@ -426,7 +427,7 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
     const { record, outcome } = await pointStore.runDetailed(bound.id, {
       input,
       args,
-      params: applyMapping(bound.params, node.mapping, { input, args })
+      params: applyMapping(stringParams(bound.params), node.mapping, { input, args })
     })
     const value = outcome.value ?? record.output
     const status: NodeStatus = record.status === 'ok' ? 'ok' : record.status === 'warn' ? 'warn' : 'failed'
@@ -465,7 +466,7 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
 /** foreach：按输入列表逐项跑循环体，跑完激活 done 边 */
 async function runForEach(
   context: ExecContext,
-  base: (overrides: Partial<NodeOutcome> & { result: FlowNodeResult }) => NodeOutcome
+  base: (overrides: Partial<NodeOutcome> & { result: LineNodeResult }) => NodeOutcome
 ): Promise<NodeOutcome> {
   const { node, profile, input, args, deps, counters, loopDepth } = context
   const fail = (halt: string): NodeOutcome => {
@@ -547,19 +548,19 @@ async function runForEach(
   })
 }
 
-interface RunFlowOptions {
+interface RunLineOptions {
   profile: LineProfile
   classId: string
   description: string
   input: string
-  deps: FlowDeps
+  deps: LineDeps
   depth: number
   stack: string[]
 }
 
-interface RunFlowResult {
+interface RunLineResult {
   outcome: RunOutcome
-  trace: FlowNodeResult[]
+  trace: LineNodeResult[]
   real: number
   simulated: number
   skipped: number
@@ -568,14 +569,14 @@ interface RunFlowResult {
   halted: string | null
 }
 
-async function runFlow(options: RunFlowOptions): Promise<RunFlowResult> {
+async function runLineInstance(options: RunLineOptions): Promise<RunLineResult> {
   const { profile, description, deps, depth, stack } = options
   const startedAt = Date.now()
-  const args = parseFlowArgs(description)
+  const args = parseLineArgs(description)
   const counters: Counters = { real: 0, simulated: 0, skipped: 0, warned: 0, failed: 0 }
 
-  const collected: FlowNodeResult[] = []
-  const record = (result: FlowNodeResult): void => {
+  const collected: LineNodeResult[] = []
+  const record = (result: LineNodeResult): void => {
     collected.push(result)
   }
   let halted: string | null = null
@@ -667,7 +668,7 @@ async function runFlow(options: RunFlowOptions): Promise<RunFlowResult> {
   return { outcome, trace: orderedTrace, ...counters, halted }
 }
 
-export function createLineRunner(deps: FlowDeps): InstanceRunner {
+export function createLineRunner(deps: LineDeps): InstanceRunner {
   return async (ctx) => {
     const startedAt = Date.now()
     const profile = deps.profiles[ctx.instance.classId]
@@ -679,7 +680,7 @@ export function createLineRunner(deps: FlowDeps): InstanceRunner {
       }
     }
 
-    const result = await runFlow({
+    const result = await runLineInstance({
       profile,
       classId: ctx.instance.classId,
       description: ctx.instance.description ?? '',
