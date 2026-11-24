@@ -516,133 +516,114 @@ id 以后再找机会统一。
 
 ---
 
-### 8.10 统一 id 方案：`层名.FAMILY_类名.实例名@rN`
+### 8.10 统一 id 方案：`层名.主题名.类名.实例名@rN`
 
-维护者提案：
+维护者最终提案：
 
-> 主题名全大写来区分，如 `point.WIN_key_send@r1`、`point.HOTKEY_实例名@r1`
+> 层名.主题名.类名.实例名@版本号 —— 4 段，不再分大小写，主题名不用手写
 
-采纳，但**主题要取 `family`，不能取 `win` 这种命名空间**。原因是数据决定的：
+采纳。这比之前每一版都好，因为它同时解决三个问题：
 
-#### 为什么主题只能是 family
-
-| 分组维度 | 覆盖率 | 说明 |
+| 问题 | 之前几版的毛病 | 4 段方案怎么解决 |
 |---|---|---|
-| `family` 字段 | **102 / 102（100%）** | 五层全有，取值全是单词，无分隔符 |
-| id 命名空间（`win.` / `file.`） | 只有点层有 | 其他四层的「命名空间」就是层名本身，没有第二层 |
+| 主题往哪放 | 塞进类名（`FILE_clipboard_write`），要写「保留/丢弃」规则 | **主题单独成段**，规则消失 |
+| 大小写 | `WIN_` 全大写，跨平台/URL/排序都有坑 | **全小写**，无大小写语义 |
+| 撞车 | `file.write` 和 `clipboard.write` 都变 `FILE_write` | 类名保留完整形式，天然区分 |
 
-而且 `win` 和 `family` **不是一回事**：
-
-```
-win.key.send        → family = hotkey
-win.window.control  → family = window
-win.audio.volume    → family = settings
-win.ocr.read        → family = capture
-win.http.request    → family = network
-win.clipboard.get   → family = file
-win.open            → family = open
-```
-
-`win` 一个命名空间下横跨 **7 个 family**。所以 `WIN_` 分组对产品没有意义，
-`HOTKEY_` / `WINDOW_` 才有 —— 而后者正是 UI 家族筛选读的字段。
-
-#### 最终格式
+#### 格式规则
 
 ```
-层名.FAMILY_类名.实例名@rN
+层名.主题名.类名.实例名@rN
+ │     │     │     │    └─ 版本号，取自实例的 rev 字段
+ │     │     │     └────── 实例名：小写，_ 连接，去掉 inst. / i- 类型标记
+ │     │     └──────────── 类名：类 id 去掉本层命名空间后扁平化
+ │     └────────────────── 主题名：= family 字段小写化（自动派生，不手写）
+ └──────────────────────── 层名：point / line / surface / body / field
 ```
 
-| 段 | 规则 |
+**每个字词都是自动派生的，没有一个需要人手写。**
+
+#### 真实样例
+
+| 现在（手写） | 统一后（生成） |
 |---|---|
-| 1 · 层名 | 小写：`point` / `line` / `surface` / `body` / `field` |
-| 2 · 类 | `FAMILY` 全大写 + `_` + 类名小写（`_` 连接） |
-| 3 · 实例 | 实例名小写，去掉 `inst.` / `i-` 类型标记（三段定长后它们已是噪音） |
-| 版本 | `@rN` |
+| `win.key.send.i-copy@r1` | `point.hotkey.win_key_send.copy@r1` |
+| `win.window.control.i-focus-notepad@r1` | `point.window.win_window_control.focus_notepad@r1` |
+| `win.audio.volume.i-vol-up@r1` | `point.settings.win_audio_volume.vol_up@r1` |
+| `clipboard.write.i-text@r1` | `point.file.clipboard_write.text@r1` |
+| `file.write.i-append@r1` | `point.file.file_write.append@r1` |
+| `inst.ensure-vpn-ask@r2` | `line.guard.ensure_vpn.ensure_vpn_ask@r2` |
+| `surface.settings.vpn` | `surface.input.form.settings_vpn@r3` |
+| `body.file-preview.text@r1` | `body.content.file_preview.text@r1` |
+| `field.observe.run-history@r1` | `field.perceive.observe.run_history@r1` |
 
-#### 命名空间的保留规则（这条规则是被一个真实撞车逼出来的）
+注意 `point.file.clipboard_write.text@r1` 和 `point.file.file_write.append@r1`
+是同一主题下两个不同的类 —— 4 段方案里它们天然不冲突。
 
-如果盲目去掉命名空间，会出现**类段撞车**：
+#### 实测（全部通过）
+
+| 检查 | 结果 |
+|---|---|
+| 类名扁平化后层内重名 | 五层全部 **0** |
+| 主题缺失（没有 family） | **0 / 102** |
+| 主题含分隔符（`.` `-` 空格） | **0** |
+| 全量 287 个 id 冲突 | **0** |
+
+#### 为什么必须自动生成（这不是洁癖，是已经发生的 bug）
+
+查了现有 287 个实例，**id 里的 `@rN` 与 `rev` 字段不一致的有 46 处 —— 全部在 surface 层**：
 
 ```
-file.write       → FILE_write
-clipboard.write  → FILE_write      ← 撞了！两者 family 都是 file
+surface.form     id=surface.settings.vpn     id里无 @rN，rev字段=3
+surface.inspector id=surface.inspector.point  id里无 @rN，rev字段=4
+surface.table    id=surface.point-catalog    id里无 @rN，rev字段=5
+…共 46 处，正好是 surface 的全部实例
 ```
 
-全 id 恰好没撞，只是因为实例名不同（`text` vs `append`）—— 类段本身是重复的，
-这会让「按类段查实例」的查询全部失效。
+**手写的 id 已经在烂了。** 同一份数据里 `rev` 说 3、id 说 1（或没说），
+引用方到底该信哪个？现在的答案是「谁都不知道」。
 
-所以规则是：**命名空间只在「不冗余」时保留**
+自动生成之后这件事不会发生，因为 id 是
+`(层, 主题, 类, 实例, 版本)` 的**纯函数**，版本变了 id 必然跟着变。
+
+#### 生成器设计（单点真相 + 校验闸门）
 
 ```ts
-const drop = ns === 本层自己的命名空间   // flow / surface / body / field
-          || ns === layer               // 兜底
-          || ns === family              // file.write 的 file 就是 family，重复
-// 其余情况保留：clipboard.write → FILE_clipboard_write
-```
-
-#### 实测：五层零撞车
-
-| 层 | 类 | 唯一类段 | 撞车 |
-|---|---:|---:|---:|
-| point | 21 | 21 | **0** |
-| line | 13 | 13 | **0** |
-| surface | 16 | 16 | **0** |
-| body | 29 | 29 | **0** |
-| field | 23 | 23 | **0** |
-
-#### 真实前后对照
-
-| 现在 | 统一后 |
-|---|---|
-| `win.key.send.i-copy@r1` | `point.HOTKEY_win_key_send.copy@r1` |
-| `win.window.control.i-topmost@r1` | `point.WINDOW_win_window_control.topmost@r1` |
-| `win.ocr.read.i-ocr-auto@r1` | `point.CAPTURE_win_ocr_read.ocr_auto@r1` |
-| `win.audio.volume.i-vol-up@r1` | `point.SETTINGS_win_audio_volume.vol_up@r1` |
-| `file.read.i-text@r1` | `point.FILE_read.text@r1` |
-| `clipboard.write.i-text@r1` | `point.FILE_clipboard_write.text@r1` |
-| `notify.toast.i-system@r1` | `point.NOTIFY_toast.system@r1` |
-| `inst.ensure-vpn-ask@r2` | `line.GUARD_ensure_vpn.ensure_vpn_ask@r2` |
-| `surface.settings.vpn` | `surface.INPUT_form.settings_vpn@r3` |
-| `body.file-preview.text@r1` | `body.CONTENT_file_preview.text@r1` |
-| `field.observe.run-history@r1` | `field.PERCEIVE_observe.run_history@r1` |
-
-点层 11 个 family 全部落地：`HOTKEY` / `WINDOW` / `OPEN` / `SETTINGS` / `CAPTURE` /
-`FILE` / `NETWORK` / `HUMAN` / `TRANSFORM` / `TEXT` / `NOTIFY`。
-
-#### 一处要顺手规范的数据
-
-`line` 层的 family 是**首字母大写**（`Action` / `Guard`），其他四层都是小写。
-应在数据里统一成 `action` / `guard`，大写只在 id 里出现。
-
-#### 解析（零启发式）
-
-```ts
-function parseAtomId(id: string) {
-  const [layer, cls, tail] = id.split('.')          // 恰好 3 段
-  const at = tail.lastIndexOf('@r')
-  const theme = cls.slice(0, cls.indexOf('_'))      // HOTKEY / INPUT / CONTENT …
-  return {
-    layer,
-    theme,
-    instance: tail.slice(0, at),
-    rev: Number(tail.slice(at + 2))
-  }
+// src/shared/atomId.ts —— 唯一真相
+export interface AtomParts {
+  layer: 'point' | 'line' | 'surface' | 'body' | 'field'
+  theme: string          // family 小写
+  className: string      // 已扁平化、已去本层命名空间
+  instance: string       // 已扁平化、已去类型标记
+  rev: number
 }
+
+export function makeAtomId(p: AtomParts): string   // 生成
+export function parseAtomId(id: string): AtomParts // 解析（4 段定长，零启发式）
 ```
 
-#### 迁移面（与 §8.10 旧版一致，未因 family 加入而增加）
+两条硬约束：
+
+1. **任何 manifest / catalog / seed 里的 id 字段都由生成器产出，不接受手写。**
+2. **校验闸门**：`npm run validate` 增加一项 ——
+   对每个实例重新算一遍 id，与存储值不一致就报错。
+   这样任何手改 id 都会在 CI 里当场挂掉，而不是在运行时变成「找不到实例」。
+
+#### 迁移面
 
 | 项 | 数量 |
 |---|---:|
-| 类 id 会变 | **102 / 102**（全部，因为都加了 FAMILY 前缀） |
+| 类 id 会变 | **102 / 102** |
 | 实例 id 会变 | **287 / 287** |
 | `lineProfiles` 引用 | 79 |
 | `bodyProfiles` composition | 154 |
 | `panel.content` 引用 | 51 |
 | `requirements` | 140 |
+| 顺手修掉的版本漂移 | **46**（surface 全部实例） |
 
-**424 处引用要同步。** 生成的重跑，手写的（`lineProfiles` / `bodyProfiles` / `panel.content`）
-必须手工同步 —— 漏一处不报错，只在运行时「找不到实例」。
+**424 处引用要同步。** 其中 `requirements` / `generatedFullCatalogs` 是生成的重跑即可；
+`lineProfiles` / `bodyProfiles` / `panel.content` 是手写源，必须手工同步 ——
+所以这次迁移之后，这些引用也应该改成「存结构化字段」而不是「存 id 字符串」。
 
 ## 9. 这个提案能带来什么
 
