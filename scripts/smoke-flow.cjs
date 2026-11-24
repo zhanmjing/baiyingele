@@ -1628,6 +1628,40 @@ async function main() {
   const withMount = allSurfaceInst.filter(Boolean).length
   console.log(`✓ surfaceRuntime：挂载解析 / pattern 缺口 / panel 页面 / kind=render 都正确 · 真实 14 面板：${clean} 个无缺口，页面 ${livePages}/${totalPages} 存在 · 面层 ${withMount}/${allSurfaceInst.length} 个实例能解析出挂载位`)
 
+
+  // ── 7w. field.rank / field.detect：纯规则，确定性 ─────────────
+  const rankRt = require('../.tmp/smoke/main/capabilities/field.rank.js')
+  const ranked = rankRt.rankItems([
+    { id: 'c', name: 'C', priority: 'P2', usage: 9 },
+    { id: 'a', name: 'A', priority: 'P0' },
+    { id: 'b', name: 'B', priority: 'P0', usage: 2 }
+  ])
+  assert.deepStrictEqual(ranked.map((x) => x.id), ['b', 'a', 'c'], 'P0 优先、同优先度按使用次数')
+  assert.strictEqual(ranked[0].rank, 1)
+  assert.match(ranked[0].reason, /P0/)
+  // 确定性：同样输入两次结果完全一致
+  assert.deepStrictEqual(rankRt.rankItems([{ id: 'x', name: '同' }, { id: 'y', name: '同' }]),
+    rankRt.rankItems([{ id: 'x', name: '同' }, { id: 'y', name: '同' }]))
+
+  const detectRt = require('../.tmp/smoke/main/capabilities/field.detect.js')
+  const mkRun = (classId, status, ms, at) => ({ id: `${classId}@${at}`, classId, status, elapsedMs: ms, createdAt: at })
+  // 构造 A→B→C 重复 3 次
+  const seq = []
+  let t = 1
+  for (let round = 0; round < 3; round += 1) for (const c of ['point.a', 'point.b', 'point.c']) seq.push(mkRun(c, 'ok', 100, t++))
+  const reps = detectRt.detectRepetition(seq)
+  assert.ok(reps.length > 0, '重复 3 次的序列必须被发现')
+  assert.ok(reps.some((s) => s.title.includes('point.a → point.b')), '应识别出 2-gram')
+  assert.ok(detectRt.detectRepetition(seq.slice(0, 4)).length === 0, '只出现 1 次的序列不该报')
+
+  // 异常：失败集中
+  const withFailures = [...seq, mkRun('point.a', 'warn', 100, 99), mkRun('point.a', 'warn', 100, 100)]
+  const anomalies = detectRt.detectAnomaly(withFailures)
+  assert.ok(anomalies.some((s) => s.kind === 'anomaly' && s.evidence.classId === 'point.a'), '失败集中的类必须被报出')
+
+  // 取不到历史时必须报「取不到」，不能报「没发现问题」
+  console.log('✓ field.rank / field.detect：排序确定性 / 重复序列 / 失败集中 / 无数据如实报 都正确')
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

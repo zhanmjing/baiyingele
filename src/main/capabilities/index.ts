@@ -4,30 +4,32 @@ import type { RunContext, RunOutcome } from '../layerStore'
 import type { Capability } from './_shared'
 import * as cap0 from './clipboard.write'
 import * as cap1 from './field.classify'
-import * as cap2 from './field.guard'
-import * as cap3 from './field.observe'
-import * as cap4 from './field.prefill'
-import * as cap5 from './field.simulate'
-import * as cap6 from './file.move'
-import * as cap7 from './file.read'
-import * as cap8 from './file.scan'
-import * as cap9 from './file.write'
-import * as cap10 from './notify.toast'
-import * as cap11 from './text.template'
-import * as cap12 from './translate.text'
-import * as cap13 from './ui.form'
-import * as cap14 from './win.audio.volume'
-import * as cap15 from './win.clipboard.get'
-import * as cap16 from './win.display.brightness'
-import * as cap17 from './win.http.request'
-import * as cap18 from './win.key.send'
-import * as cap19 from './win.key.trigger'
-import * as cap20 from './win.ocr.read'
-import * as cap21 from './win.open'
-import * as cap22 from './win.screen.capture'
-import * as cap23 from './win.theme.mode'
-import * as cap24 from './win.window.control'
-import * as cap25 from './win.window.query'
+import * as cap2 from './field.detect'
+import * as cap3 from './field.guard'
+import * as cap4 from './field.observe'
+import * as cap5 from './field.prefill'
+import * as cap6 from './field.rank'
+import * as cap7 from './field.simulate'
+import * as cap8 from './file.move'
+import * as cap9 from './file.read'
+import * as cap10 from './file.scan'
+import * as cap11 from './file.write'
+import * as cap12 from './notify.toast'
+import * as cap13 from './text.template'
+import * as cap14 from './translate.text'
+import * as cap15 from './ui.form'
+import * as cap16 from './win.audio.volume'
+import * as cap17 from './win.clipboard.get'
+import * as cap18 from './win.display.brightness'
+import * as cap19 from './win.http.request'
+import * as cap20 from './win.key.send'
+import * as cap21 from './win.key.trigger'
+import * as cap22 from './win.ocr.read'
+import * as cap23 from './win.open'
+import * as cap24 from './win.screen.capture'
+import * as cap25 from './win.theme.mode'
+import * as cap26 from './win.window.control'
+import * as cap27 from './win.window.query'
 
 const MODULES = [
   cap0,
@@ -55,7 +57,9 @@ const MODULES = [
   cap22,
   cap23,
   cap24,
-  cap25
+  cap25,
+  cap26,
+  cap27
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(

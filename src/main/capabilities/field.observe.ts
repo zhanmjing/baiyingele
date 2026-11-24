@@ -32,6 +32,11 @@ export function setRunHistorySource(source: HistorySource | null): void {
   historySource = source
 }
 
+/** 读当前注入的运行历史；没注入就返回 null（调用方必须如实报「取不到」） */
+export function readRunHistory(): RunHistoryLike[] | null {
+  return historySource ? historySource() : null
+}
+
 /** 从实例描述里取要采集的切面：'global · a/b/c' → ['a','b','c'] */
 export function facetsOf(description: string): string[] {
   const parts = String(description ?? '').split('·')
