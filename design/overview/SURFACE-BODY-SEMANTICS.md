@@ -11,8 +11,8 @@
 
 | 层 | 现在的做法 | 问题 | 提议 |
 |---|---|---|---|
-| 面层 | `run()` 走 `mockRunner`，返回「执行完成」 | **范畴错误**：面是渲染与发意图，不是执行 | `render()` —— 产出渲染树 + 可用意图 |
-| 体层 | `run()` 走 `mockRunner`，返回「执行完成」 | 体自己没有执行逻辑，只有零件清单 | `assemble()` —— 零件齐备度检查 + 装配 |
+| 面层 | `runSurface` 走 `mockRunner`，返回「执行完成」 | **范畴错误**：面是渲染与发意图，不是执行 | `runSurface` 保留，`kind: render` —— 产出渲染树 + 可用意图 |
+| 体层 | `runBody` 走 `mockRunner`，返回「执行完成」 | 体自己没有执行逻辑，只有零件清单 | `runBody` 保留，`kind: assemble` —— 齐备度检查 + 装配 |
 | 面层模型 | 只有「交互模式」一种类 | 缺了「页面」这一类可复用元素 | `SurfaceClass.kind = 'pattern' \| 'page' \| 'panel'` |
 | Panel | 14 个平行定义的「类」 | 字段集完全相同，是同一个类被写了 14 遍 | `surface.panel` 一个类 + 14 个实例，见 §9 |
 | Panel | `content` 是单值字符串 | 承载不了多个页面 | `content: string[]` |
@@ -117,7 +117,7 @@ DockTile (48, 入口)
   └─→ PanelClass (14, 容器: chrome / mode / regions / states)
         └─ content 指向 → SurfacePage (页面)
               └─ composition → SurfacePattern (交互模式)
-                    └─→ 意图向上: runFlow / runPoint / saveSettings / approvalResult
+                    └─→ 意图向上: runLine / runPoint / saveSettings / approvalResult
 ```
 
 `panelClasses[0].content` 就是 `"surface.inspector"` ——
@@ -181,7 +181,7 @@ DockTile (48, 入口)
 
 ## 4. 三个语义判断
 
-### 4.1 面层：`run` → `render`
+### 4.1 面层：`runSurface`，但 `kind` 永远是 `render`
 
 设计文档 `SURFACE-LAYER-CLASSES.md` §1.3 已经写清楚：
 
@@ -190,6 +190,10 @@ DockTile (48, 入口)
 > - 面不直接修改业务状态。
 
 按这个定义，**面没有「执行」这个动作**。它只做两件事：读数据渲染、把用户操作变成意图。
+
+⚠️ 动词仍然叫 `runSurface` —— 因为 `src/preload/index.ts` 是**按层名循环生成**的
+（`run<Layer>`），新增一层不用改 preload。**统一的入口形状 + 分层的语义**，
+靠返回值里的 `kind: 'render'` 区分，而不是另起一个新动词。
 
 ```ts
 interface RenderResult {
@@ -212,12 +216,13 @@ render(page) = 对每个 composition 项 render(pattern) → 按 slot 拼装
 render(pattern) = 读 slots 声明的数据源 → 产出 RenderNode
 ```
 
-### 4.2 体层：`run` → `assemble`
+### 4.2 体层：`runBody`，但 `kind` 永远是 `assemble`
 
 体层没有自己的执行逻辑，只有 `composition`（要哪些零件）、`manifest`（版本/权限/资源）、
 `lifecycle`（装没装/要不要更新）。
 
 ```ts
+// runBody 的返回值，kind = 'assemble'
 interface AssembleResult {
   readiness: { total: number; satisfied: number; missing: MissingPart[] }
   assembly?: { surfaces: string[]; flows: string[]; points: string[] }

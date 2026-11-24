@@ -34,7 +34,7 @@ export const LAYER_DEFS: Record<LayerKey, LayerDef> = {
   },
   line: {
     key: 'line',
-    classLabel: 'FlowClass',
+    classLabel: 'LineClass',
     classes: lineClassesSeed,
     outputs: {
       'flow.open-external-site': '外部站点流程完成 · 已打开目标页面',

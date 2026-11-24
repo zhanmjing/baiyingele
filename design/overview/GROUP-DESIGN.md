@@ -329,15 +329,18 @@ GroupDef（查询）
              └→ 每行一个成员，发出类型化意图
 ```
 
-每个成员的「应用」动作按层不同：
+每个成员的「应用」动作按层不同（动词统一，语义靠 `kind` 区分）：
 
 | 成员层 | 点击后发出的意图 |
 |---|---|
 | point | `runPoint` |
-| line | `runFlow` |
-| surface | `openPanel` |
-| body | `assemble` |
+| line | `runLine` |
+| surface | `runSurface` |
+| body | `runBody` |
 | field | `runField` |
+
+（意图名以 `src/preload/index.ts` 为准 —— 它由 `LAYER_KEYS` 循环生成，
+所以永远是 `run<Layer>`。语义差异靠返回值的 `kind` 区分，见 NAMING-CONVENTIONS.md §4。）
 
 所以分组面板的行模型必须带 `intent`，不能只有「名字 + 图标」。
 
