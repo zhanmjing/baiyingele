@@ -13,7 +13,8 @@
 |---|---|---|---|
 | 面层 | `run()` 走 `mockRunner`，返回「执行完成」 | **范畴错误**：面是渲染与发意图，不是执行 | `render()` —— 产出渲染树 + 可用意图 |
 | 体层 | `run()` 走 `mockRunner`，返回「执行完成」 | 体自己没有执行逻辑，只有零件清单 | `assemble()` —— 零件齐备度检查 + 装配 |
-| 面层模型 | 只有「交互模式」一种类 | 缺了「页面」这一类可复用元素 | `SurfaceClass.kind = 'pattern' | 'page'` |
+| 面层模型 | 只有「交互模式」一种类 | 缺了「页面」这一类可复用元素 | `SurfaceClass.kind = 'pattern' \| 'page' \| 'panel'` |
+| Panel | 14 个平行定义的「类」 | 字段集完全相同，是同一个类被写了 14 遍 | `surface.panel` 一个类 + 14 个实例，见 §9 |
 | Panel | `content` 是单值字符串 | 承载不了多个页面 | `content: string[]` |
 
 一句话：**点层和线层是「执行」，面层是「呈现」，体层是「装配」。
@@ -44,13 +45,13 @@ v1 的判断是：`surface.settings-page`、`surface.preview-window` 这类名�
 
 ---
 
-## 2. 修正后的面层模型：两种可复用元素
+## 2. 修正后的面层模型：可复用元素分 kind
 
 ```ts
 type SurfaceClass = {
   id: string
   version: string
-  kind: 'pattern' | 'page'
+  kind: 'pattern' | 'page' | 'panel'   // panel 见 §8
   name: string
   family: 'input' | 'browse' | 'visualize' | 'communicate'
   // pattern 才有：直接渲染的区域与槽位
@@ -80,6 +81,8 @@ Body（产品，可复用）
 
 **每一层都是「可复用元素 + 组合关系」**，和点 → 线 → 体的模式完全一致。
 v1 把它看成「只有 pattern 一种」，所以才会把 page 误判成实例。
+
+面层实际有**三种** kind，第三种（`panel`）见 §9。
 
 ---
 
@@ -269,7 +272,7 @@ interface OpenPanelResult {
 ```diff
   type SurfaceClass = {
     id: string
-+   kind: 'pattern' | 'page'
++   kind: 'pattern' | 'page' | 'panel'   // panel 见 §8
     ...
   }
 ```
@@ -333,7 +336,124 @@ interface OpenPanelResult {
 
 ---
 
-## 8. 这个提案能带来什么
+## 8. Panel：面层的第三个功能类
+
+维护者提案：
+
+> panel 作为面层一个功能类，不同的 panels 作为实例可以被应用
+
+### 9.1 为什么这个方案对：14 份一模一样的字段表
+
+实测 14 个 `panelClass` 的字段集：
+
+```
+{'id','name','icon','group','desc','modes','regions','content',
+ 'states','behaviors','a11y','instances','version'}   ← 14 个类，13 个字段，一个不差
+```
+
+**差异全在取值，不在结构**。`modes` 都是 `{right, floating, modal, bottom, sheet}` 的子集，
+`states` 都是 `{ready, empty, error, loading, streaming, needsApproval, blocked}` 的子集。
+字段集完全一致 = 「同一个类被重复定义了 14 次」的指纹。
+
+所以：**`surface.panel` 是类，那 14 个是实例。** 这和 `surface.form` 带 4 个实例是同一个结构。
+
+### 9.2 三种 kind，区别在「有没有状态」
+
+| kind | 有状态？ | 动词 | 产物 |
+|---|---|---|---|
+| `pattern` | 无 | `render` | RenderNode |
+| `page` | 无 | `render` | RenderNode（递归组合 pattern） |
+| **`panel`** | **有** | **`apply`** | 挂载到 app shell 的一个区域 |
+| `body` | 有 | `assemble` | 齐备度 + 装配结果 |
+
+**这就是为什么只有 panel 需要 `apply` 这个动词**：
+
+- pattern / page 是**无状态渲染** —— 同一份数据永远渲染出同一个结果
+- panel 是**有状态挂载** —— 它占位（`mode` + `width`）、有可见性与生命周期、
+  能被同一个实例挂到多处（`panel.inspector` 同时挂在 `point` / `flow-slot` / `body-manifest` 三处）
+
+把这个区别抹平，就会重犯「给面层套 run」的错。
+
+### 9.3 模型
+
+```ts
+type PanelClass = {
+  kind: 'panel'
+  modes: PanelMode[]        // right | floating | modal | bottom | sheet
+  states: string[]          // ready | empty | error | loading | streaming | needsApproval | blocked
+  behaviors: string[]       // resizable | collapsible | pinnable
+  a11y: string[]
+  defaultPages: string[]    // 默认承载哪些 page
+}
+
+type PanelInstance = {
+  classId: 'surface.panel'
+  id: string                // surface.panel.inspector
+  rev: number
+  config: { modes: PanelMode[]; regions: string[]; states: string[]; behaviors: string[] }
+  /** 这个 panel 被应用在哪些地方 */
+  applications: PanelApplication[]
+}
+
+type PanelApplication = {
+  label: string             // point / flow-slot / body-manifest
+  pages: string[]           // 承载哪些 page 实例（可多个）
+  mode: PanelMode
+  width: number
+  state: string
+  data: unknown
+  actions: unknown
+}
+```
+
+迁移：**14 个 `panelClass` → 14 个 `surface.panel` 实例；37 个 sub-entry → 37 条 `applications`。**
+
+### 9.4 为什么「应用」放在实例上，而不是加第三层
+
+如果每条 application 都是独立实体，就变成 `class → instance → application` 三层，
+而点/线/体都只有两层。**把 `applications` 作为实例上的数组字段**，
+既表达了「同一个 panel 可被应用多次」，又不引入第三层。
+
+维护者说的「甚至多个页面」正好落在 `PanelApplication.pages: string[]` 上：
+一条 application 可以同时承载 `prompt-input` + `streaming-response`。
+
+### 9.5 必须先定的命名规则（否则 apply 会挂错东西）
+
+实测 **46 个面层实例里 25 个 id 前缀与所属类不一致**：
+
+| 所属类 | 实例 id | 问题 |
+|---|---|---|
+| `surface.form` | `surface.settings.vpn` | 用语义名 |
+| `surface.table` | `surface.run-history.table` | 看着像 `run-history` 的实例 |
+| `surface.notification` | `surface.notify.vpn` | 类名缩写 |
+| `surface.metric-card` | `metric.cpu` | 连 `surface.` 前缀都没有 |
+
+现在凡**按 id 前缀猜归属**的代码都会猜错（`surface.run-history.table` 会被判给 `surface.run-history`）。
+
+三种可选规则：
+
+| 规则 | 例子 | 评价 |
+|---|---|---|
+| (a) 严格 `class.instance` | `surface.form.settings-vpn` | 机器好解析，人看不懂这实例是干嘛的 |
+| **(b) 语义名 + 显式 `classId`** | `surface.settings.vpn` + `classId: surface.form` | **推荐**：人可读，归属靠字段不靠前缀 |
+| (c) 保持现状，全靠 `classId` 解析 | 同 (b) 但不改 id | 也行，但得先补 `classId` 字段 |
+
+**推荐 (b)**：实例 id 是语义名（对人有意义），归属一律由 `classId` 字段决定。
+现在面层实例**根本没有 `classId` 字段**（靠外层数组隐含），这是 (c) 走不通的根因。
+
+### 9.6 迁移后的账
+
+| 项 | 现状 | 迁移后 |
+|---|---:|---:|
+| 面层类 | 16 | 17（+`surface.panel`） |
+| `panel.*` 平行模型 | 14 个「类」 | **消除**，变成 14 个实例 |
+| `panel` 应用记录 | 37 个 sub-entry | 37 条 `applications` |
+| 待建 page/pattern 类 | 35 | 35（不变） |
+| 面层实例 | 46 | 46 + 14 = 60 |
+
+---
+
+## 9. 这个提案能带来什么
 
 **不做这件事的现状**：面层 16 个类、体层 29 个类，各自有个"运行"按钮，
 点了返回「执行完成」+ 随机耗时。用户看不出它们在干什么，因为**它们确实什么都没干**。
@@ -345,3 +465,5 @@ interface OpenPanelResult {
 - 两者都从「假装成功」变成「如实报缺口」
 
 这比把 45 个类标成"真实"有意义得多 —— 因为**诚实本身就是这个项目最贵的资产**。
+
+---
