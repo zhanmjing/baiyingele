@@ -303,3 +303,80 @@ test('field.recommend：先修失败，再固化重复，样本太少时明说�
   assert.match(weak.why, /样本太少/)
   assert.ok(weak.confidence < 0.5, '样本不足时置信度必须低')
 })
+
+// ── 场层：解释 ────────────────────────────────────────────────
+test('field.explain：把证据翻成人话，缺证据时明说缺什么', () => {
+  const { explainPointRun, explainSuggestion, explainFlowRun, explainPermission } = load('main/capabilities/field.explain.js')
+
+  const run = explainPointRun({ classId: 'point.file_read', status: 'warn', output: '只读到 0 字节', elapsedMs: 42 })
+  assert.match(run.headline, /只读到 0 字节/)
+  assert.ok(run.points.some((p) => p.includes('42 毫秒')))
+  assert.ok(run.points.some((p) => p.includes('warn 表示跑了但有缺口')), 'warn 必须解释清楚不是完全成功')
+
+  const sug = explainSuggestion({ suggestion: { action: '诊断失败', target: 'point.b', why: '失败 3 次', confidence: 0.85 } })
+  assert.match(sug.headline, /诊断失败/)
+  assert.match(sug.headline, /point\.b/)
+  assert.ok(sug.points.some((p) => p.includes('85%')))
+
+  const lowConf = explainSuggestion({ suggestion: { action: 'x', target: 'y', confidence: 0.3 } })
+  assert.ok(lowConf.points.some((p) => p.includes('置信度偏低')), '低置信度必须提醒')
+
+  const flow = explainFlowRun({ nodes: [{ id: 'a', status: 'ok' }, { id: 'b', status: 'warn', output: '超时' }], halted: 'b' })
+  assert.match(flow.headline, /共 2 个节点/)
+  assert.ok(flow.points.some((p) => p.includes('流程在 b 处停下')))
+
+  // 没有证据 → 明说缺什么，不编
+  assert.ok(explainSuggestion({}).missing.includes('suggestion'))
+  assert.ok(explainPermission({}).missing.includes('permission'))
+  assert.deepStrictEqual(explainFlowRun({}).missing, ['nodes'])
+  // 通配权限要直说不合适
+  assert.ok(explainPermission({ permission: 'filesystem:*', usedBy: 'ocr' }).points.some((p) => p.includes('通配权限')))
+})
+
+// ── 场层：提问 ────────────────────────────────────────────────
+test('field.ask：确认 / 澄清（维度与候选值不能错位）/ 多选', () => {
+  const { askConfirm, askClarify, askChoose } = load('main/capabilities/field.ask.js')
+
+  const confirm = askConfirm('归档 12 个文件', { target: 'D:\\archive', reversible: false })
+  assert.match(confirm.question, /归档 12 个文件/)
+  assert.ok(confirm.options.some((o) => o.consequence.includes('无法撤销')), '不可撤销必须写在选项上')
+  assert.ok(confirm.options.some((o) => o.value === 'no'), '必须有取消选项')
+  assert.strictEqual(askConfirm('x', { reversible: true }).options[0].consequence, '可以撤销')
+
+  // 维度是「哪个文档」，候选取值是文档名 —— 第一版这里错位成「用什么打开」
+  const clarify = askClarify('打开那个文档', '哪个文档', ['doc-a.md', 'doc-b.md'])
+  assert.match(clarify.question, /哪个文档/)
+  assert.deepStrictEqual(clarify.options.map((o) => o.value), ['doc-a.md', 'doc-b.md'], '选项必须是该维度的候选值')
+  assert.strictEqual(clarify.allowFreeText, false)
+  assert.strictEqual(askClarify('打开那个文档', '哪个文档', []).allowFreeText, true, '没有候选值时必须允许自由填')
+
+  const choose = askChoose('文件', Array.from({ length: 8 }, (_, i) => ({ id: `f${i}` })))
+  assert.match(choose.question, /匹配到 8 个/)
+  assert.strictEqual(choose.options.length, 5, '超过 5 个只列前 5 个')
+  assert.match(choose.why, /只列了前 5 个/)
+})
+
+// ── 场层：个性化 ──────────────────────────────────────────────
+test('field.personalize：样本不足不给建议，够样本才按频率推', () => {
+  const { suggestShortcut, suggestLayout, suggestDefaults } = load('main/capabilities/field.personalize.js')
+  const mk = (classId, params) => ({ id: `${classId}:${Math.random()}`, classId, status: 'ok', elapsedMs: 10, createdAt: 0, params })
+
+  assert.strictEqual(suggestShortcut([mk('point.a')]), null, '1 条记录就推快捷键是瞎猜')
+
+  const many = Array.from({ length: 8 }, () => mk('point.hot'))
+  const shortcut = suggestShortcut(many)
+  assert.strictEqual(shortcut.target, 'point.hot')
+  assert.match(shortcut.basis, /8 次/)
+  assert.match(shortcut.suggestedValue, /待分配/, '不编具体组合键 —— 冲突检查不是这个能力的职责')
+
+  const mixed = [...Array.from({ length: 6 }, () => mk('point.a')), ...Array.from({ length: 2 }, () => mk('line.b'))]
+  const layout = suggestLayout(mixed)
+  assert.match(layout.suggestedValue, /point 层放主区域/)
+  assert.match(layout.basis, /75%/)
+
+  // 参数要 >60% 一致才算默认值
+  const withParams = [...Array.from({ length: 7 }, () => mk('point.c', { mode: 'fast' })), mk('point.c', { mode: 'slow' })]
+  assert.match(suggestDefaults(withParams).suggestedValue, /mode=fast/)
+  const split = Array.from({ length: 8 }, (_, i) => mk('point.c', { mode: i % 2 ? 'a' : 'b' }))
+  assert.strictEqual(suggestDefaults(split), null, '参数五五开时不能当默认值')
+})
