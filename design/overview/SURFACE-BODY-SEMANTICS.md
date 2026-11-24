@@ -5,7 +5,22 @@
 > 已落地：§8 Panel 收编（`surface.panel` 类 + 14 实例 + 37 应用记录）
 > 已落地：§4.2 `runBody` 的 assemble 语义（`src/main/bodyRuntime.ts`）
 > 已落地：§4.3 `RunResult.kind` 判别（`RUN_KIND_OF`）
-> 未落地：§4.1 `runSurface` 的 render 语义、§6 落地路径阶段 2-4
+> 已落地：§4.1 `runSurface` 的 render 语义（`src/main/surfaceRuntime.ts`）
+> 未落地：§6 落地路径阶段 3-4（造 35 个待建 page/pattern、把 panel content 接到真实 page）
+
+### surfaceRuntime 实测结论（2026-11）
+
+`npm run smoke` 跑真实数据：
+
+```
+真实 14 面板：6 个无缺口，页面 6/15 存在 · 面层 43/60 个实例能解析出挂载位
+```
+
+**面层只声明了 `detail` 一个参数，没有 regions / slots 结构** —— 这是真实现状，
+`planRender` 会把它报成缺口（`slot: 'regions'`），而不是假装渲染成功。
+
+`detail` 尾部的词**不都是挂载位**：`· settings` 是设置分区、`· modal`/`· sidebar`/`· main`
+才是挂载位。`parseMount` 用白名单判定，见词就当挂载会误判。
 
 ### bodyRuntime 实测结论（2026-11）
 

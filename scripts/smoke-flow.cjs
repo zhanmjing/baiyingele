@@ -1577,6 +1577,57 @@ async function main() {
   const best = readies.slice().sort((a, b) => a.r.missing.length - b.r.missing.length)[0]
   console.log(`✓ bodyRuntime：装配检查正确 · 真实 29 个体齐备 ${complete} 个 · 最接近 ${best.id}（${best.r.satisfied}/${best.r.total}）`)
 
+
+  // ── 7v. surfaceRuntime：面层渲染 ──────────────────────────────
+  const surfRt = require('../.tmp/smoke/main/surfaceRuntime.js')
+  const surfDeps = {
+    hasClass: (layer, name) => ['surface.inspector', 'surface.form'].includes(`${layer}.${name}`),
+    declaredRegionKeys: () => ['detail']
+  }
+  // settings 是「设置分区」不是「挂载位」，必须返回 null —— 不能见词就当挂载
+  assert.strictEqual(surfRt.parseMount('默认 VPN / 自动打开 · settings'), null, 'settings 不是挂载位')
+  assert.strictEqual(surfRt.parseMount('使用率 / 温度 · main'), 'main')
+  assert.strictEqual(surfRt.parseMount('选模板 → 绑槽位 · modal'), 'modal')
+  assert.strictEqual(surfRt.parseMount('没有分隔符'), null)
+  assert.strictEqual(surfRt.parseMount(null), null)
+
+  const pat = surfRt.planRender('surface.form', 'surface.form.settings_vpn@r3', { detail: 'VPN 设置 · sidebar' }, surfDeps)
+  assert.strictEqual(pat.surfaceKind, 'pattern')
+  assert.strictEqual(pat.mount, 'sidebar')
+  assert.ok(pat.gaps.some((g) => g.slot === 'regions'), '只声明 detail 时必须报缺口')
+
+  const pan = surfRt.planRender('surface.panel', 'surface.panel.inspector@r1', {
+    detail: '属性检查器',
+    modes: ['right', 'floating'],
+    pages: [{ layer: 'surface', name: 'inspector' }, { layer: 'surface', name: 'nope' }],
+    applications: [{ label: 'point' }, { label: 'flow-slot' }]
+  }, surfDeps)
+  assert.strictEqual(pan.surfaceKind, 'panel')
+  assert.strictEqual(pan.blocks.length, 2)
+  assert.strictEqual(pan.blocks[0].exists, true)
+  assert.strictEqual(pan.blocks[1].exists, false)
+  assert.strictEqual(pan.gaps.length, 1)
+  assert.ok(pan.intents.includes('open:2 个应用'))
+  assert.strictEqual(pan.dataUsed.length, 2)
+
+  const surfCtx = (classId, params) => ({ instance: { id: `${classId}.a@r1`, classId, name: 'a', rev: 1, status: 'active', description: '', params, createdAt: 0, updatedAt: 0 }, def: {}, pointClass: {}, params: {}, findInstance: () => undefined })
+  const surfWarnOut = surfRt.createSurfaceRunner(surfDeps)(surfCtx('surface.panel', { pages: [{ layer: 'surface', name: 'nope' }] }))
+  assert.strictEqual(surfWarnOut.status, 'warn')
+  assert.match(surfWarnOut.output, /渲染 surface\.panel/)
+  assert.strictEqual(surfWarnOut.evidence.kind, 'render', 'runSurface 的 kind 必须是 render')
+
+  const realCats = require('../src/shared/generatedFullCatalogs.json')
+  const allClass = new Set(['point', 'line', 'surface', 'body', 'field'].flatMap((l) => (realCats[l] ?? []).map((c) => c.id)))
+  const surfRealDeps = { hasClass: (l, n) => allClass.has(`${l}.${n}`), declaredRegionKeys: () => ['detail'] }
+  const panelCls = realCats.surface.find((c) => c.id === 'surface.panel')
+  const plans = panelCls.instances.map((i) => surfRt.planRender('surface.panel', i.id, i.params, surfRealDeps))
+  const clean = plans.filter((p) => p.gaps.length === 0).length
+  const totalPages = plans.reduce((n, p) => n + p.blocks.length, 0)
+  const livePages = plans.reduce((n, p) => n + p.blocks.filter((b) => b.exists).length, 0)
+  const allSurfaceInst = realCats.surface.flatMap((c) => c.instances.map((i) => surfRt.parseMount(i.params?.detail)))
+  const withMount = allSurfaceInst.filter(Boolean).length
+  console.log(`✓ surfaceRuntime：挂载解析 / pattern 缺口 / panel 页面 / kind=render 都正确 · 真实 14 面板：${clean} 个无缺口，页面 ${livePages}/${totalPages} 存在 · 面层 ${withMount}/${allSurfaceInst.length} 个实例能解析出挂载位`)
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

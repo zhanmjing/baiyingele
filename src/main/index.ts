@@ -5,6 +5,7 @@ import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 import { LAYER_DEFS } from './layerRegistry'
 import { IMPLEMENTED_CLASS_IDS } from '../shared/implemented.generated'
 import { createBodyRunner } from './bodyRuntime'
+import { createSurfaceRunner } from './surfaceRuntime'
 import { RUN_KIND_OF } from '../shared/layerApi'
 import { runCapability } from './capabilities'
 import { createLineRunner } from './lineRuntime'
@@ -212,6 +213,21 @@ app.whenReady().then(() => {
     implementedClassIds: new Set<string>(IMPLEMENTED_CLASS_IDS)
   })
 
+  /**
+   * 面层：渲染。面层不执行、不产生副作用，runSurface 的产物是
+   * 「本该渲染成什么」的描述（kind: 'render'），不是执行结果。
+   */
+  const surfaceRunner = createSurfaceRunner({
+    hasClass: (layer, name) => {
+      const def = LAYER_DEFS[layer as keyof typeof LAYER_DEFS]
+      return !!def?.classes.some((cls) => cls.id === `${layer}.${name}`)
+    },
+    declaredRegionKeys: (classId) => {
+      const cls = LAYER_DEFS.surface.classes.find((item) => item.id === classId)
+      return (cls?.params ?? []).map((p) => p.key)
+    }
+  })
+
   for (const key of LAYER_KEYS) {
     const runner =
       key === 'line'
@@ -221,7 +237,7 @@ app.whenReady().then(() => {
           : key === 'body'
             ? bodyRunner
             : key === 'surface'
-              ? undefined
+              ? surfaceRunner
               : pointRunner
     stores.set(key, new LayerStore(join(dataDir, `${key}-state.json`), LAYER_DEFS[key], runner))
   }
