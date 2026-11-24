@@ -10,27 +10,28 @@ import * as cap4 from './field.guard'
 import * as cap5 from './field.observe'
 import * as cap6 from './field.prefill'
 import * as cap7 from './field.rank'
-import * as cap8 from './field.simulate'
-import * as cap9 from './file.move'
-import * as cap10 from './file.read'
-import * as cap11 from './file.scan'
-import * as cap12 from './file.write'
-import * as cap13 from './notify.toast'
-import * as cap14 from './text.template'
-import * as cap15 from './translate.text'
-import * as cap16 from './ui.form'
-import * as cap17 from './win.audio.volume'
-import * as cap18 from './win.clipboard.get'
-import * as cap19 from './win.display.brightness'
-import * as cap20 from './win.http.request'
-import * as cap21 from './win.key.send'
-import * as cap22 from './win.key.trigger'
-import * as cap23 from './win.ocr.read'
-import * as cap24 from './win.open'
-import * as cap25 from './win.screen.capture'
-import * as cap26 from './win.theme.mode'
-import * as cap27 from './win.window.control'
-import * as cap28 from './win.window.query'
+import * as cap8 from './field.route'
+import * as cap9 from './field.simulate'
+import * as cap10 from './file.move'
+import * as cap11 from './file.read'
+import * as cap12 from './file.scan'
+import * as cap13 from './file.write'
+import * as cap14 from './notify.toast'
+import * as cap15 from './text.template'
+import * as cap16 from './translate.text'
+import * as cap17 from './ui.form'
+import * as cap18 from './win.audio.volume'
+import * as cap19 from './win.clipboard.get'
+import * as cap20 from './win.display.brightness'
+import * as cap21 from './win.http.request'
+import * as cap22 from './win.key.send'
+import * as cap23 from './win.key.trigger'
+import * as cap24 from './win.ocr.read'
+import * as cap25 from './win.open'
+import * as cap26 from './win.screen.capture'
+import * as cap27 from './win.theme.mode'
+import * as cap28 from './win.window.control'
+import * as cap29 from './win.window.query'
 
 const MODULES = [
   cap0,
@@ -61,7 +62,8 @@ const MODULES = [
   cap25,
   cap26,
   cap27,
-  cap28
+  cap28,
+  cap29
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(

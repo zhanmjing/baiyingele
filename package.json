@@ -27,7 +27,10 @@
     "package": "npm run build && electron-builder --win",
     "dev:raw": "electron-vite dev",
     "start": "node scripts/start.mjs",
-    "try": "node scripts/try-capability.mjs"
+    "try": "node scripts/try-capability.mjs",
+    "test": "node scripts/test-only.mjs",
+    "test:watch": "node --test --watch tests/runtime.test.mjs",
+    "test:only": "node scripts/test-only.mjs"
   },
   "dependencies": {
     "koffi": "^3.3.8",
