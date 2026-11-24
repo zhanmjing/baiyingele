@@ -1327,6 +1327,107 @@ async function main() {
   assert.match(emptyForm.output, /没有字段/)
   console.log('✓ ui.form：规格解析 / 校验 / 提交·取消·超时·顶替·无界面 都正确')
 
+
+  // ── 7r. field.guard：确定性闸门 ────────────────────────────────
+  const guard = require('../.tmp/smoke/main/capabilities/field.guard.js')
+  const makeDraft = (over) => ({ effect: 'L1', autonomy: 'A1', confidence: null, approved: false, text: '', action: '', ...over })
+
+  // A3 是设计上禁止的，不看其他条件
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'L0', autonomy: 'A3' })).decision, 'deny', 'A3 必须拒绝')
+  assert.match(guard.assessRisk(makeDraft({ autonomy: 'A3' })).reasons[0], /禁止/)
+  // 副作用等级
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'L0' })).decision, 'allow')
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'L1' })).decision, 'allow')
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'L2' })).decision, 'ask', 'L2 必须人工确认，不能自动放行')
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'L3' })).decision, 'deny', 'L3 未批准必须拒绝')
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'L3', approved: true })).decision, 'ask', 'L3 已批准仍要二次确认')
+  assert.strictEqual(guard.assessRisk(makeDraft({ effect: 'LX' })).decision, 'deny', '未知等级按最保守处理')
+
+  // 权限闸门
+  assert.strictEqual(guard.assessPermission(makeDraft({ effect: 'L1' }), 'L1').decision, 'allow')
+  assert.strictEqual(guard.assessPermission(makeDraft({ effect: 'L2' }), 'L1').decision, 'ask')
+  assert.strictEqual(guard.assessPermission(makeDraft({ effect: 'L3' }), 'L3').decision, 'deny', 'L3 不在任何自动许可内')
+
+  // 置信度闸门
+  assert.strictEqual(guard.assessConfidence(0.9).decision, 'pass')
+  assert.strictEqual(guard.assessConfidence(0.6).decision, 'ask')
+  assert.strictEqual(guard.assessConfidence(0.3).decision, 'reject')
+  assert.strictEqual(guard.assessConfidence(null).decision, 'ask', '没有置信度按询问处理')
+
+  // 隐私脱敏
+  const leaked = '联系 zhang@example.com 或 13812345678，卡号 6222021234567890123，token Bearer abcdefghijklmnop'
+  const redacted = guard.redactText(leaked)
+  assert.ok(redacted.ok)
+  assert.ok(!redacted.text.includes('zhang@example.com'), '邮箱应被脱敏')
+  assert.ok(!redacted.text.includes('13812345678'), '手机号应被脱敏')
+  assert.ok(redacted.hits.includes('私钥块') === false)
+  const privateKey = guard.redactText('-----BEGIN RSA PRIVATE KEY-----\nMIIE\n-----END RSA PRIVATE KEY-----')
+  assert.ok(privateKey.hits.includes('私钥块'), '私钥必须被识别')
+  assert.strictEqual(guard.redactText('').ok, false, '空文本应拒绝')
+
+  // 描述 → 策略
+  assert.strictEqual(guard.policyOf('all drafts · L0–L3'), 'risk')
+  assert.strictEqual(guard.policyOf('all drafts · allow/deny/ask'), 'permission')
+  assert.strictEqual(guard.policyOf('all suggestions · pass/ask/reject'), 'confidence')
+  assert.strictEqual(guard.policyOf('context · redact/block'), 'privacy')
+
+  // 草稿解析
+  assert.strictEqual(guard.parseDraft('{"effect":"L2","autonomy":"A2"}').ok, true)
+  assert.strictEqual(guard.parseDraft('不是json').ok, false)
+  assert.strictEqual(guard.parseDraft('[1,2]').ok, false, 'JSON 数组不是草稿')
+
+  // 能力入口：拒绝是正常判断结果，不能记成执行失败
+  const guardRun = await CAPABILITIES['field.guard'](
+    ctx('field.guard', { policy: 'risk' })
+  )
+  assert.strictEqual(guardRun.status, 'warn', '没有草稿时应 warn')
+
+  const guardDeny = await CAPABILITIES['field.guard'](
+    { ...ctx('field.guard', { policy: 'risk' }), input: JSON.stringify({ effect: 'L3', autonomy: 'A2' }) }
+  )
+  assert.strictEqual(guardDeny.status, 'ok', '闸门给出拒绝是正常判断，不是执行失败')
+  assert.strictEqual(guardDeny.value, 'deny')
+  assert.match(guardDeny.output, /拒绝/)
+  console.log('✓ field.guard：A3 禁止 / L2 询问 / L3 批准 / 置信度三档 / 隐私脱敏 6 类 / 描述→策略 都正确')
+
+  // ── 7s. field.observe：切面解析与历史统计 ──────────────────────
+  const observe = require('../.tmp/smoke/main/capabilities/field.observe.js')
+  assert.deepStrictEqual(observe.facetsOf('global · 前台进程/窗口/时间/空闲'), ['前台进程', '窗口', '时间', '空闲'])
+  assert.deepStrictEqual(observe.facetsOf('run history · 最近运行/失败/耗时'), ['最近运行', '失败', '耗时'])
+  assert.deepStrictEqual(observe.facetsOf('没有分隔符'), [], '没有「·」就无法区分作用域和切面')
+
+  const historyRuns = [
+    { id: '1', classId: 'a', status: 'ok', elapsedMs: 100, createdAt: 1 },
+    { id: '2', classId: 'b', status: 'warn', elapsedMs: 200, createdAt: 2 },
+    { id: '3', classId: 'c', status: 'ok', elapsedMs: 900, createdAt: 3 }
+  ]
+  const stats = observe.summarizeHistory(historyRuns)
+  assert.strictEqual(stats.total, 3)
+  assert.strictEqual(stats.notOk, 1, 'warn 也算没成功')
+  assert.strictEqual(stats.p95Ms, 900)
+  assert.strictEqual(stats.slowest.classId, 'c')
+  assert.deepStrictEqual(observe.summarizeHistory([]), { total: 0, notOk: 0, p50Ms: 0, p95Ms: 0, slowest: null })
+
+  // 能力入口：没有切面声明要拒绝；历史源没注入时不能假装采到
+  observe.setRunHistorySource(null)
+  const noFacets = await CAPABILITIES['field.observe']({ ...ctx('field.observe', {}), instance: { classId: 'field.observe', name: 'o', description: '没有分隔符', params: {} } })
+  assert.strictEqual(noFacets.status, 'warn', '没有切面声明必须 warn')
+  assert.match(noFacets.output, /没有声明要观察的切面/)
+
+  const desktopSnapshot = await CAPABILITIES['field.observe']({
+    ...ctx('field.observe', {}),
+    instance: { classId: 'field.observe', name: 'o', description: 'global · 前台进程/窗口/时间/空闲', params: {} }
+  })
+  const parsedSnapshot = JSON.parse(desktopSnapshot.value)
+  assert.ok(parsedSnapshot.takenAt, '快照必须带时间戳')
+  if (desktopSnapshot.status === 'ok') {
+    assert.ok(parsedSnapshot.desktop?.process, '应采到前台进程')
+    console.log('✓ field.observe：切面解析 / 历史统计 / 实机快照（' + parsedSnapshot.desktop.process + '）都正确')
+  } else {
+    assert.match(desktopSnapshot.output, /取不到/, '取不到必须明说')
+    console.log('✓ field.observe：切面解析 / 历史统计 / 取不到就如实说 都正确')
+  }
+
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────
   const seedFile = path.join(workdir, 'seed-state.json')
   const fakeRunner = () => ({ status: 'ok', output: 'x', elapsedMs: 0 })

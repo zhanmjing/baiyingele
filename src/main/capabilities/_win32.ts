@@ -34,6 +34,8 @@ interface Bindings {
   GetWindowLongW: (hwnd: unknown, index: number) => number
   SendInput: (count: number, inputs: Buffer, size: number) => number
   GetAsyncKeyState: (vk: number) => number
+  GetLastInputInfo: (info: Buffer) => boolean
+  GetTickCount: () => number
   RECT: unknown
   EnumProc: unknown
   IsWindowVisible: (hwnd: unknown) => boolean
@@ -127,6 +129,8 @@ function ensure(): Bindings | null {
       GetWindowLongW: user32.func('long __stdcall GetWindowLongW(void *hWnd, int nIndex)'),
       SendInput: user32.func('uint32_t __stdcall SendInput(uint32_t cInputs, void *pInputs, int cbSize)'),
       GetAsyncKeyState: user32.func('short __stdcall GetAsyncKeyState(int vKey)'),
+      GetLastInputInfo: user32.func('bool __stdcall GetLastInputInfo(void *plii)'),
+      GetTickCount: kernel32.func('uint32_t __stdcall GetTickCount()'),
       RECT: koffi.struct('RECT', { left: 'long', top: 'long', right: 'long', bottom: 'long' })
     }
     return bindings
@@ -392,5 +396,43 @@ export function sendKeyEvents(events: KeyEventSpec[]): { ok: boolean; sent: numb
     return { ok: true, sent }
   } catch (error) {
     return { ok: false, sent: 0, reason: error instanceof Error ? error.message : String(error) }
+  }
+}
+
+// ── 空闲时长 ──────────────────────────────────────────────────
+
+/**
+ * 距上一次键鼠输入过去了多少毫秒。
+ * LASTINPUTINFO = { UINT cbSize; DWORD dwTime }（8 字节）。
+ * 返回 null 表示 koffi 不可用或调用失败。
+ */
+export function idleMilliseconds(): number | null {
+  const api = ensure()
+  if (!api) return null
+  try {
+    const info = Buffer.alloc(8)
+    info.writeUInt32LE(8, 0) // cbSize
+    if (!api.GetLastInputInfo(info)) return null
+    const lastInput = info.readUInt32LE(4)
+    // GetTickCount 是 32 位，会回绕；用无符号差避免负数
+    const elapsedMs = (Number(api.GetTickCount()) - lastInput) >>> 0
+    return elapsedMs
+  } catch {
+    return null
+  }
+}
+
+/** 当前前台窗口的进程名与标题（koffi 不可用时返回 null） */
+export function foregroundWindow(): { process: string; title: string } | null {
+  const api = ensure()
+  if (!api) return null
+  try {
+    const hwnd = api.GetForegroundWindow()
+    if (!hwnd) return null
+    const title = titleOf(api, hwnd)
+    const { process } = processOf(api, hwnd)
+    return { process, title }
+  } catch {
+    return null
   }
 }

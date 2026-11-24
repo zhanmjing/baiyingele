@@ -606,6 +606,54 @@ gesture  手绘轨迹 → 识别成方向串 ─┴→ dispatch → 查启用绑
 「已挂载 / 未挂载」这个区分是有意做的：写进 `trigger-bindings.json` 不等于钩子真的挂上了，
 比如 koffi 或 uiohook 加载失败时，绑定存在但按下去没反应。
 
+## 场层：哪些不依赖模型
+
+场层 23 个类里，**不是每个都需要 LLM**。已经实现的两个是纯逻辑的：
+
+### `field.guard` —— 确定性风控闸门
+
+闸门必须可预测，所以一行模型调用都没有。它执行的是设计铁律：
+
+| 条件 | 决策 | 理由 |
+|---|---|---|
+| 自主度 `A3` | **deny** | 设计上禁止，不看其他任何条件 |
+| `L3` 未批准 | **deny** | 不可逆，必须 `approved=true` |
+| `L3` 已批准 | **ask** | 仍要二次确认 |
+| `L2` | **ask** | 会产生改动，不能自动放行 |
+| `L0` / `L1` | **allow** | 可直接执行 |
+| 等级未知 | **deny** | 按最保守处理 |
+
+四种策略从实例描述里解析（和 `field.classify` 同一套约定）：
+
+```
+'all drafts · L0–L3'          → risk
+'all drafts · allow/deny/ask' → permission
+'all suggestions · pass/ask/reject' → confidence
+'context · redact/block'      → privacy
+```
+
+隐私策略是确定性正则脱敏，覆盖邮箱 / 手机号 / 身份证 / 银行卡 / 私钥块 / Bearer token 六类。
+**私钥命中时直接阻断**并把内容替换成占位符。
+
+⚠️ 闸门给出「拒绝」是**正常判断结果**，运行状态记 `ok` 而不是 `warn`——
+只有「无法判断」才算执行失败。
+
+### `field.observe` —— 只读上下文快照
+
+按实例描述里声明的切面采集，**取不到的切面要明说取不到**：
+
+| 切面 | 实现 |
+|---|---|
+| 前台进程 / 窗口 | koffi `GetForegroundWindow` + 进程名 + 标题 |
+| 时间 | ISO 时间戳 |
+| 空闲 | koffi `GetLastInputInfo`（毫秒） |
+| 剪贴板 | Electron `clipboard.readText()` |
+| 最近运行 / 失败 / 耗时 | 主进程注入的历史源（p50 / p95 / 最慢） |
+| 选中文本 | ❌ 需要 UI Automation（`ui.getText` 还没做），如实报「取不到」 |
+| 文件 | ❌ 剪贴板文件列表解析还没做，如实报「取不到」 |
+
+只要有切面取不到，状态就是 `warn` —— **不完整的快照不能报成功**。
+
 ## 场层落点（landing）
 
 设计规定：**FieldClass 必须声明落点，否则不允许发布**（`npm run validate` 会拦），

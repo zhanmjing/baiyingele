@@ -4,27 +4,29 @@ import type { RunContext, RunOutcome } from '../layerStore'
 import type { Capability } from './_shared'
 import * as cap0 from './clipboard.write'
 import * as cap1 from './field.classify'
-import * as cap2 from './field.prefill'
-import * as cap3 from './file.move'
-import * as cap4 from './file.read'
-import * as cap5 from './file.scan'
-import * as cap6 from './file.write'
-import * as cap7 from './notify.toast'
-import * as cap8 from './text.template'
-import * as cap9 from './translate.text'
-import * as cap10 from './ui.form'
-import * as cap11 from './win.audio.volume'
-import * as cap12 from './win.clipboard.get'
-import * as cap13 from './win.display.brightness'
-import * as cap14 from './win.http.request'
-import * as cap15 from './win.key.send'
-import * as cap16 from './win.key.trigger'
-import * as cap17 from './win.ocr.read'
-import * as cap18 from './win.open'
-import * as cap19 from './win.screen.capture'
-import * as cap20 from './win.theme.mode'
-import * as cap21 from './win.window.control'
-import * as cap22 from './win.window.query'
+import * as cap2 from './field.guard'
+import * as cap3 from './field.observe'
+import * as cap4 from './field.prefill'
+import * as cap5 from './file.move'
+import * as cap6 from './file.read'
+import * as cap7 from './file.scan'
+import * as cap8 from './file.write'
+import * as cap9 from './notify.toast'
+import * as cap10 from './text.template'
+import * as cap11 from './translate.text'
+import * as cap12 from './ui.form'
+import * as cap13 from './win.audio.volume'
+import * as cap14 from './win.clipboard.get'
+import * as cap15 from './win.display.brightness'
+import * as cap16 from './win.http.request'
+import * as cap17 from './win.key.send'
+import * as cap18 from './win.key.trigger'
+import * as cap19 from './win.ocr.read'
+import * as cap20 from './win.open'
+import * as cap21 from './win.screen.capture'
+import * as cap22 from './win.theme.mode'
+import * as cap23 from './win.window.control'
+import * as cap24 from './win.window.query'
 
 const MODULES = [
   cap0,
@@ -49,7 +51,9 @@ const MODULES = [
   cap19,
   cap20,
   cap21,
-  cap22
+  cap22,
+  cap23,
+  cap24
 ]
 
 export const CAPABILITIES: Record<string, Capability> = Object.fromEntries(

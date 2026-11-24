@@ -10,6 +10,7 @@ import { UndoJournal } from './undoJournal'
 import { decideLanding } from '../shared/fieldLanding'
 import { registeredCombos } from './capabilities/win.key.trigger'
 import { resolveForm, setFormSink } from './capabilities/ui.form'
+import { setRunHistorySource } from './capabilities/field.observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
 import { lineProfiles } from '../shared/lineCatalog'
@@ -261,6 +262,21 @@ app.whenReady().then(() => {
   registerLayerIpc()
 
   mainWindow = createWindow()
+
+  // 场层 observe 要读运行历史；能力模块自己不碰各个 store
+  setRunHistorySource(() =>
+    LAYER_KEYS.flatMap((key) =>
+      store(key)
+        .runs(200)
+        .map((run) => ({
+          id: run.id,
+          classId: run.classId,
+          status: run.status,
+          elapsedMs: run.elapsedMs,
+          createdAt: run.createdAt
+        }))
+    ).sort((a, b) => b.createdAt - a.createdAt)
+  )
 
   // 表单能力需要一个「把请求送到界面」的通道；能力模块自己不碰 BrowserWindow
   setFormSink((request) => {

@@ -2,6 +2,8 @@
 export const IMPLEMENTED_CLASS_IDS = [
   'clipboard.write',
   'field.classify',
+  'field.guard',
+  'field.observe',
   'field.prefill',
   'file.move',
   'file.read',
@@ -28,6 +30,8 @@ export const IMPLEMENTED_CLASS_IDS = [
 export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string> = {
   'clipboard.write': 'Electron clipboard.writeText（写后回读校验）',
   'field.classify': '按实例自带的候选标签做一次分类（模型调用，附 confidence 与 reason）',
+  'field.guard': '确定性风控闸门：自主度上限、副作用等级、置信度、隐私脱敏，全部给得出理由',
+  'field.observe': '上下文快照：前台进程/窗口/时间/空闲、剪贴板、运行历史；只读，绝不改动任何东西',
   'field.prefill': '参数预填：按实例配置的 target/param 从剪贴板取值，产出落点建议',
   'file.move': 'node:fs rename（EXDEV 回落 copy+unlink）；支持 to 指定文件名或 toDir 搬进目录',
   'file.read': 'node:fs 读取，超过 maxBytes 截断；目录或缺失按 warn 处理',
