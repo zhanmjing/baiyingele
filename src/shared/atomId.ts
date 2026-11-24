@@ -141,3 +141,66 @@ export function isAtomId(id: string): boolean {
 export function layerOf(id: string): AtomLayer | null {
   return parseAtomId(id)?.layer ?? null
 }
+
+// ── 结构化引用 ────────────────────────────────────────────────
+//
+// 跨层引用**不存 id 字符串，存结构化字段**。理由：
+//   - id 格式改一次（我们已经改了一次），所有存字符串的地方都要全文重写
+//   - 结构化字段里 `layer` / `name` / `rev` 各自独立，改名只动一个字段
+//   - 拼装和校验都走本文件的函数，不会出现「两份数据对不上」的漂移
+//
+// 现有 287 个实例里有 46 个 id 的版本号和 `rev` 字段对不上（全在 surface），
+// 就是「同一个事实存了两份」的后果。
+
+/** 类引用：稳定，指向一个类。`name` 是类名段，不含层、不含点。 */
+export interface ClassRef {
+  layer: AtomLayer
+  /** 类名段，如 `win_key_send`（不是 `point.win_key_send`） */
+  name: string
+}
+
+/** 实例引用：钉住版本。 */
+export interface InstanceRef extends ClassRef {
+  /** 实例名段，如 `copy` */
+  instance: string
+  rev: number
+}
+
+/** 拼类 id：`{layer:'point', name:'win_key_send'}` → `point.win_key_send` */
+export function makeClassId(ref: ClassRef): string {
+  if (!ATOM_LAYERS.includes(ref.layer)) throw new Error(`未知层名：${ref.layer}`)
+  if (!ref.name) throw new Error('类名不能为空')
+  if (ref.name.includes('.')) throw new Error(`类名不能含点：${ref.name}`)
+  return `${ref.layer}.${ref.name}`
+}
+
+/** 拆类 id。层名必须是 5 个之一，否则返回 null。 */
+export function parseClassId(id: string): ClassRef | null {
+  const parts = String(id ?? '').split('.')
+  if (parts.length !== 2) return null
+  const [layer, name] = parts
+  if (!ATOM_LAYERS.includes(layer as AtomLayer) || !name) return null
+  return { layer: layer as AtomLayer, name }
+}
+
+/** 拼实例 id：`{layer, name, instance, rev}` → `point.win_key_send.copy@r1` */
+export function makeInstanceId(ref: InstanceRef): string {
+  return makeAtomId({ layer: ref.layer, className: ref.name, instance: ref.instance, rev: ref.rev })
+}
+
+/** 拆实例 id → InstanceRef（`AtomParts` 的结构与它一致，这里只做改名） */
+export function parseInstanceId(id: string): InstanceRef | null {
+  const parts = parseAtomId(id)
+  if (!parts) return null
+  return { layer: parts.layer, name: parts.className, instance: parts.instance, rev: parts.rev }
+}
+
+/** 两个引用是否指向同一版本 */
+export function sameInstanceRef(a: InstanceRef, b: InstanceRef): boolean {
+  return a.layer === b.layer && a.name === b.name && a.instance === b.instance && a.rev === b.rev
+}
+
+/** 两个引用是否同一个类（忽略版本） */
+export function sameClassRef(a: ClassRef, b: ClassRef): boolean {
+  return a.layer === b.layer && a.name === b.name
+}

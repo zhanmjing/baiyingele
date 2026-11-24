@@ -239,3 +239,80 @@ interface RunResult {
 | 五层用同一个 `RunResult` 语义 | surface 的 `run` 不产生副作用、body 的 `run` 只是装配检查，混为一谈会误导用户 |
 | 一次性重命名 287 个实例 id 之外的任何东西 | id 迁移已经要动 424 处引用，不要再叠加重命名 |
 | 保留 `capabilityRunner` 这个名字 | 它是五层里唯一的例外，没有保留价值 |
+
+---
+
+## 7. 跨层引用一律存结构化字段
+
+**源数据里不存 id 字符串。** id 由 `src/shared/atomId.ts` 在运行时拼。
+
+### 7.1 三种引用形态
+
+```ts
+/** 类引用：稳定，指向一个类 */
+interface ClassRef { layer: AtomLayer; name: string }
+
+/** 实例引用：钉住版本 */
+interface InstanceRef extends ClassRef { instance: string; rev: number }
+
+/** 运行时表达式：不是静态引用，执行时才解析 */
+interface ExprRef { expr: string }
+```
+
+拼装与解析都在 `atomId.ts`：
+
+```ts
+makeClassId({ layer:'point', name:'win_key_send' })        // point.win_key_send
+makeInstanceId({ layer:'surface', name:'inspector',
+                 instance:'point', rev:4 })                // surface.inspector.point@r4
+parseClassId('surface.inspector')                          // { layer, name }
+parseInstanceId('line.ensure_vpn.ask@r2')                  // { layer, name, instance, rev }
+```
+
+### 7.2 为什么不用字符串
+
+现有 287 个实例里 **46 个 id 的版本号和 `rev` 字段对不上**（全在 surface）——
+这就是「同一个事实存了两份」的直接后果。结构化之后，版本只有一个来源。
+
+而且 id 格式已经改过一次（`win.key.send.i-copy@r1` → `point.key_send.copy@r1`），
+如果引用存的是字符串，每次改格式都要全文重写；存结构化字段只需重拼。
+
+### 7.3 三种特殊情况
+
+| 情况 | 表示 | 例子 |
+|---|---|---|
+| 运行时才确定的引用 | `{ expr: '$args.target' }` | 子流程目标由参数决定 |
+| 目标还不存在（需求） | `{ ..., rev: null, dangling: true }` | `surface.inspector.flow_slot` |
+| 一个位置承载多个 | 数组 | `panel.chat` 同时显示 `prompt_input` + `streaming_response` |
+
+**`dangling: true` 是刻意的**：让缺口留在数据里、能被校验器点名，
+而不是转成 `null` 静默消失。
+
+### 7.4 转换预演（已跑通）
+
+`node scripts/plan-structured-refs.mjs` —— 只读，产出 `.tmp/refs-structured-plan.json`。
+
+| 来源 | 引用数 |
+|---|---:|
+| `generatedLineProfiles.json`（`pointClass` + `pointInstance`） | 79 |
+| `generatedBodyProfiles.json`（composition） | 154 |
+| `generatedSurface.json`（panel `content`） | 54 |
+| **合计** | **287** |
+| 其中悬空 | **32** |
+| 未能转换 | **0** |
+
+### 7.5 顺带发现：三个文件名在撒谎
+
+`generatedLineProfiles.json` / `generatedBodyProfiles.json` / `generatedSurface.json`
+**名字里都有 generated，但都不是生成的**——它们是没有生成器的手写源。
+
+真正被生成的只有：
+
+| 文件 | 生成器 |
+|---|---|
+| `src/shared/generatedFullCatalogs.json` | `scripts/gen-catalogs.mjs` |
+| `src/shared/requirements.generated.json` | `scripts/reconcile-refs.mjs --write` |
+| `src/shared/implemented.generated.ts` | `scripts/gen-impl-manifest.mjs` |
+
+建议把前三个改名去掉 `generated`（或加 `hand` / `source`），
+否则迟早有人跑一遍 `data:gen` 然后以为它们更新了。
