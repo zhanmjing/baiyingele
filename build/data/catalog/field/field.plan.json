@@ -7,7 +7,7 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.plan.single-app@r1",
+      "id": "field.plan.single_app@r1",
       "classId": "field.plan",
       "scope": "task",
       "output": "app-specific plan",
@@ -17,7 +17,7 @@
       "detail": "task · app-specific plan"
     },
     {
-      "id": "field.plan.cross-app@r1",
+      "id": "field.plan.cross_app@r1",
       "classId": "field.plan",
       "scope": "task",
       "output": "multi-app plan",

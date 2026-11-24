@@ -1,7 +1,7 @@
 import { open, stat } from 'node:fs/promises'
 import { elapsed, errorMessage, expandPath, type Capability } from './_shared'
 
-export const id = 'file.read'
+export const id = 'point.file_read'
 export const summary = 'node:fs 读取，超过 maxBytes 截断；目录或缺失按 warn 处理'
 
 /** L0 · 读文件 */

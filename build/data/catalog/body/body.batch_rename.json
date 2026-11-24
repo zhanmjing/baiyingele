@@ -1,0 +1,40 @@
+{
+  "id": "body.batch_rename",
+  "name": "批量重命名",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "批量重命名：预览、冲突检测、撤销。",
+  "instances": [
+    {
+      "name": "regex",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=regex · dryRun=true",
+      "id": "body.batch_rename.regex@r1"
+    },
+    {
+      "name": "sequence",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=sequence · start=1",
+      "id": "body.batch_rename.sequence@r1"
+    },
+    {
+      "name": "date-prefix",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=date · format=YYYY-MM-DD",
+      "id": "body.batch_rename.date_prefix@r1"
+    },
+    {
+      "name": "extension-normalize",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=extension · .jpeg→.jpg",
+      "id": "body.batch_rename.extension_normalize@r1"
+    }
+  ]
+}

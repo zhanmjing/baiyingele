@@ -1,7 +1,7 @@
 import { Notification } from 'electron'
 import { elapsed, type Capability } from './_shared'
 
-export const id = 'notify.toast'
+export const id = 'point.notify_toast'
 export const summary = 'Electron Notification'
 
 /** L1 · 系统通知 */

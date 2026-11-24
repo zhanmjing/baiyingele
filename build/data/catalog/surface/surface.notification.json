@@ -9,28 +9,28 @@
   "summary": "Toast / Tray / Banner；显示结果与下一步。",
   "instances": [
     {
-      "id": "surface.notify.vpn",
+      "id": "surface.notification.vpn@r3",
       "name": "VPN 通知",
       "rev": 3,
       "status": "active",
       "detail": "GuardResult → 下一步 · toast"
     },
     {
-      "id": "surface.notify.run",
+      "id": "surface.notification.run@r2",
       "name": "运行通知",
       "rev": 2,
       "status": "active",
       "detail": "成功/失败/耗时 · toast"
     },
     {
-      "id": "surface.notify.download",
+      "id": "surface.notification.download@r1",
       "name": "下载通知",
       "rev": 1,
       "status": "active",
       "detail": "下载/校验结果 · tray"
     },
     {
-      "id": "surface.notify.system-threshold",
+      "id": "surface.notification.system_threshold@r1",
       "name": "系统阈值告警",
       "rev": 1,
       "status": "active",

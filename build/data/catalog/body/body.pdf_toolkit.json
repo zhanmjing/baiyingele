@@ -1,0 +1,40 @@
+{
+  "id": "body.pdf_toolkit",
+  "name": "PDF 工具",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "PDF 合并、拆分、压缩、旋转。",
+  "instances": [
+    {
+      "name": "merge",
+      "rev": 1,
+      "status": "active",
+      "detail": "op=merge · sort=name",
+      "id": "body.pdf_toolkit.merge@r1"
+    },
+    {
+      "name": "split",
+      "rev": 1,
+      "status": "active",
+      "detail": "op=split · range=1-3",
+      "id": "body.pdf_toolkit.split@r1"
+    },
+    {
+      "name": "compress",
+      "rev": 1,
+      "status": "active",
+      "detail": "op=compress · quality=ebook",
+      "id": "body.pdf_toolkit.compress@r1"
+    },
+    {
+      "name": "rotate",
+      "rev": 1,
+      "status": "active",
+      "detail": "op=rotate · angle=90",
+      "id": "body.pdf_toolkit.rotate@r1"
+    }
+  ]
+}

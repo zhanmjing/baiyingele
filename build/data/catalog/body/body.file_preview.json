@@ -1,0 +1,54 @@
+{
+  "id": "body.file_preview",
+  "name": "文件预览",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "任意文件预览：文本、图片、PDF、视频、音频统一窗口。",
+  "instances": [
+    {
+      "name": "text",
+      "rev": 1,
+      "status": "active",
+      "detail": "renderer=text · UTF-8",
+      "id": "body.file_preview.text@r1"
+    },
+    {
+      "name": "markdown",
+      "rev": 1,
+      "status": "active",
+      "detail": "renderer=markdown · sanitize=true",
+      "id": "body.file_preview.markdown@r1"
+    },
+    {
+      "name": "image",
+      "rev": 1,
+      "status": "active",
+      "detail": "renderer=image · fit=contain",
+      "id": "body.file_preview.image@r1"
+    },
+    {
+      "name": "pdf",
+      "rev": 1,
+      "status": "active",
+      "detail": "renderer=pdf · page=1 · zoom=fit",
+      "id": "body.file_preview.pdf@r1"
+    },
+    {
+      "name": "video",
+      "rev": 1,
+      "status": "active",
+      "detail": "renderer=video · stream=true",
+      "id": "body.file_preview.video@r1"
+    },
+    {
+      "name": "audio",
+      "rev": 1,
+      "status": "active",
+      "detail": "renderer=audio · waveform=true",
+      "id": "body.file_preview.audio@r1"
+    }
+  ]
+}

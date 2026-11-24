@@ -1,0 +1,33 @@
+{
+  "id": "body.file_organizer",
+  "name": "文件整理",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "按类型/日期整理下载、截图与重复文件。",
+  "instances": [
+    {
+      "name": "downloads",
+      "rev": 1,
+      "status": "active",
+      "detail": "rule=type-date · dryRun=true",
+      "id": "body.file_organizer.downloads@r1"
+    },
+    {
+      "name": "screenshots",
+      "rev": 1,
+      "status": "active",
+      "detail": "rule=screenshot · month=true",
+      "id": "body.file_organizer.screenshots@r1"
+    },
+    {
+      "name": "duplicates",
+      "rev": 1,
+      "status": "active",
+      "detail": "rule=hash · action=report",
+      "id": "body.file_organizer.duplicates@r1"
+    }
+  ]
+}

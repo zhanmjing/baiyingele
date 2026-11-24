@@ -30,7 +30,7 @@ export const ATOM_LAYERS: readonly AtomLayer[] = ['point', 'line', 'surface', 'b
  * 每层「自指」的命名空间前缀，拼 id 时剥掉 —— 它已经体现在第 1 段了。
  *
  * 点层是 null：`win.` / `file.` / `ui.` 是真实主题（跨类），不是自指，要保留，
- * 否则 `win.window.control` 和 `window.control` 无从区分。
+ * 否则 `point.window_control` 和 `window.control` 无从区分。
  */
 const OWN_NAMESPACE: Record<AtomLayer, string | null> = {
   point: null,

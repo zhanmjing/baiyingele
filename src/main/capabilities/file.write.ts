@@ -3,7 +3,7 @@ import { appendFile, mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { elapsed, expandPath, type Capability } from './_shared'
 
-export const id = 'file.write'
+export const id = 'point.file_write'
 export const summary = 'node:fs writeFile / appendFile（~ 展开为主目录）'
 
 /** L1 · 写文件 */

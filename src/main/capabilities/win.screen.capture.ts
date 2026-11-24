@@ -1,7 +1,7 @@
 import { desktopCapturer } from 'electron'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.screen.capture'
+export const id = 'point.screen_capture'
 export const summary = 'desktopCapturer 枚举屏幕源'
 
 /** L0 · 抓屏（枚举屏幕源，不保存文件） */

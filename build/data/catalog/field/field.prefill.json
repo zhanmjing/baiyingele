@@ -7,7 +7,7 @@
   "count": 6,
   "instances": [
     {
-      "id": "field.prefill.point-params@r1",
+      "id": "field.prefill.point_params@r1",
       "classId": "field.prefill",
       "scope": "point instances",
       "output": "参数默认值",
@@ -17,17 +17,17 @@
       "detail": "point instances · 参数默认值"
     },
     {
-      "id": "field.prefill.vpn-profile@r1",
+      "id": "field.prefill.vpn_profile@r1",
       "classId": "field.prefill",
       "scope": "body.external-access",
       "output": "vpn.profile",
       "rev": 1,
       "name": "prefill.vpn-profile",
       "status": "active",
-      "detail": "body.external-access · vpn.profile"
+      "detail": "body.external_access · vpn.profile"
     },
     {
-      "id": "field.prefill.ocr-language@r1",
+      "id": "field.prefill.ocr_language@r1",
       "classId": "field.prefill",
       "scope": "body.ocr.text",
       "output": "ocr.language",
@@ -37,17 +37,17 @@
       "detail": "body.ocr.text · ocr.language"
     },
     {
-      "id": "field.prefill.rename-pattern@r1",
+      "id": "field.prefill.rename_pattern@r1",
       "classId": "field.prefill",
       "scope": "body.batch-rename.regex",
       "output": "rename.pattern",
       "rev": 1,
       "name": "prefill.rename-pattern",
       "status": "active",
-      "detail": "body.batch-rename.regex · rename.pattern"
+      "detail": "body.batch_rename.regex · rename.pattern"
     },
     {
-      "id": "field.prefill.search-query@r1",
+      "id": "field.prefill.search_query@r1",
       "classId": "field.prefill",
       "scope": "command palette",
       "output": "query",
@@ -57,14 +57,14 @@
       "detail": "command palette · query"
     },
     {
-      "id": "field.prefill.landing-demo@r1",
+      "id": "field.prefill.landing_demo@r1",
       "classId": "field.prefill",
       "scope": "win.open",
       "output": "target",
       "rev": 1,
       "name": "prefill.landing-demo",
       "status": "active",
-      "detail": "{\"target\":\"win.open.i-open-github@r1\",\"param\":\"target\",\"source\":\"clipboard\",\"literal\":\"\"}"
+      "detail": "{\"target\":\"point.open.github@r1\",\"param\":\"target\",\"source\":\"clipboard\",\"literal\":\"\"}"
     }
   ],
   "name": "prefill",

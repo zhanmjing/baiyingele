@@ -1,0 +1,33 @@
+{
+  "id": "body.web_clipper",
+  "name": "网页剪藏",
+  "group": "web",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P2",
+  "summary": "选中内容/整页 → Markdown。",
+  "instances": [
+    {
+      "name": "selection",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=selection · frontmatter=true",
+      "id": "body.web_clipper.selection@r1"
+    },
+    {
+      "name": "page",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=page · assets=true",
+      "id": "body.web_clipper.page@r1"
+    },
+    {
+      "name": "readability",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=readability · images=local",
+      "id": "body.web_clipper.readability@r1"
+    }
+  ]
+}

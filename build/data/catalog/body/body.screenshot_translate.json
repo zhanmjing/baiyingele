@@ -1,0 +1,26 @@
+{
+  "id": "body.screenshot_translate",
+  "name": "截图翻译",
+  "group": "ai",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "截屏 → OCR → 翻译 → 浮层显示。",
+  "instances": [
+    {
+      "name": "en-zh",
+      "rev": 4,
+      "status": "active",
+      "detail": "from=en · to=zh · overlay=true",
+      "id": "body.screenshot_translate.en_zh@r4"
+    },
+    {
+      "name": "ja-zh",
+      "rev": 2,
+      "status": "active",
+      "detail": "from=ja · to=zh · overlay=false",
+      "id": "body.screenshot_translate.ja_zh@r2"
+    }
+  ]
+}

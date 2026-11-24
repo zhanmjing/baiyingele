@@ -9,28 +9,28 @@
   "summary": "schema 驱动的表单；设置、参数、创建/编辑。",
   "instances": [
     {
-      "id": "surface.settings.vpn",
+      "id": "surface.form.settings_vpn@r3",
       "name": "VPN 设置",
       "rev": 3,
       "status": "active",
       "detail": "默认 VPN / 自动打开 / 自动连接 / 超时 · settings"
     },
     {
-      "id": "surface.settings.general",
+      "id": "surface.form.settings_general@r2",
       "name": "通用设置",
       "rev": 2,
       "status": "active",
       "detail": "主题 / 语言 / 启动行为 · settings"
     },
     {
-      "id": "surface.point-params",
+      "id": "surface.form.point_params@r1",
       "name": "点实例参数",
       "rev": 1,
       "status": "active",
       "detail": "编辑 PointInstance 的参数与 revision · sidebar"
     },
     {
-      "id": "surface.settings.system-monitor",
+      "id": "surface.form.settings_system_monitor@r2",
       "name": "系统监控设置",
       "rev": 2,
       "status": "active",

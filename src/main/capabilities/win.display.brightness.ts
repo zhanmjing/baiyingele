@@ -1,7 +1,7 @@
 import { isWindows, runPowerShell } from './_powershell'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.display.brightness'
+export const id = 'point.display_brightness'
 export const summary = 'WMI 控制内屏亮度（WmiSetBrightness），写完读回校验；外接屏需 DDC/CI'
 
 export type BrightnessAction = 'get' | 'set' | 'up' | 'down'

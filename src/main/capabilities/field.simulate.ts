@@ -73,7 +73,7 @@ function lineInstanceById(instanceId: string) {
  * 纯函数：模型参数 → 接触面。
  *
  * 只看参数名，不看语义 —— 所以它是**推断**而不是保证。
- * 比如 file.move 的 from/to/toDir 都是路径，win.window.* 的 selector 是窗口条件。
+ * 比如 file.move 的 from/to/toDir 都是路径，window 系类的 selector 是窗口条件。
  */
 export function inferTouchPoints(classId: string, params: Record<string, string>): TouchPoints {
   const paths: string[] = []
@@ -85,14 +85,14 @@ export function inferTouchPoints(classId: string, params: Record<string, string>
 
     if (PATH_PARAMS.includes(key)) {
       // win.open 的 target 只有在 kind 不是 url 时才是路径
-      if (key === 'target' && classId === 'win.open') {
+      if (key === 'target' && classId === 'point.open') {
         const kind = String(params.kind ?? '').toLowerCase()
         if (kind === 'url') continue
       }
       paths.push(value)
     }
 
-    if (key === 'selector' && classId.startsWith('win.window.')) {
+    if (key === 'selector' && /window/.test(classId)) {
       try {
         const parsed = JSON.parse(value) as { process?: unknown; title?: unknown; hwnd?: unknown }
         if (parsed.process) windows.push(`进程~${String(parsed.process)}`)
@@ -250,22 +250,29 @@ export function analyzeFlow(
 
 /** 纯函数：把推演结果变成「哪些层/哪些能力会动」的汇总 */
 export function summarizeImpact(result: SimResult): {
+  /** 真实层名（point / line / surface / body / field） */
   layers: string[]
+  /** 涉及的具体类 id，比层名更能说明这个流程在动什么 */
+  classes: string[]
   effects: Record<string, number>
   pathCount: number
   windowCount: number
 } {
   const layers = new Set<string>()
+  const classes = new Set<string>()
   const effects: Record<string, number> = {}
   let pathCount = 0
   let windowCount = 0
   for (const node of result.nodes) {
-    if (node.classId) layers.add(node.classId.split('.')[0])
+    if (node.classId) {
+      layers.add(node.classId.split('.')[0])
+      classes.add(node.classId)
+    }
     if (node.effect) effects[node.effect] = (effects[node.effect] ?? 0) + 1
     pathCount += node.touch.paths.length
     windowCount += node.touch.windows.length
   }
-  return { layers: [...layers].sort(), effects, pathCount, windowCount }
+  return { layers: [...layers].sort(), classes: [...classes].sort(), effects, pathCount, windowCount }
 }
 
 /** A0 · 静态推演 */
@@ -344,7 +351,7 @@ export const run: Capability = async (ctx) => {
 
   const detail =
     mode === 'impact'
-      ? `层 ${impact.layers.join('/') || '无'} · 副作用分布 ${Object.entries(impact.effects).map(([k, v]) => `${k}×${v}`).join(' ') || '无'}`
+      ? `层 ${impact.layers.join('/') || '无'} · 类 ${impact.classes.join('/') || '无'} · 副作用分布 ${Object.entries(impact.effects).map(([k, v]) => `${k}×${v}`).join(' ') || '无'}`
       : `路径 ${pathList.length} 个 · 窗口 ${windowList.length} 个`
 
   return {

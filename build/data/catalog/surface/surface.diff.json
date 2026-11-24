@@ -9,14 +9,14 @@
   "summary": "版本/实例差异；FlowClass 版本、SurfaceInstance revision。",
   "instances": [
     {
-      "id": "surface.diff.flow-version",
+      "id": "surface.diff.flow_version@r1",
       "name": "流程版本 diff",
       "rev": 1,
       "status": "active",
       "detail": "FlowClass v1 vs v2 · main"
     },
     {
-      "id": "surface.diff.instance-revision",
+      "id": "surface.diff.instance_revision@r1",
       "name": "实例 revision diff",
       "rev": 1,
       "status": "active",

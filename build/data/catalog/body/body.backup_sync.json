@@ -1,0 +1,26 @@
+{
+  "id": "body.backup_sync",
+  "name": "备份同步",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P2",
+  "summary": "文件夹快照、每日增量、校验。",
+  "instances": [
+    {
+      "name": "folder",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=snapshot · verify=true",
+      "id": "body.backup_sync.folder@r1"
+    },
+    {
+      "name": "daily",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=incremental · retention=30d",
+      "id": "body.backup_sync.daily@r1"
+    }
+  ]
+}

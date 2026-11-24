@@ -1,7 +1,7 @@
 import { clipboard } from 'electron'
 import { elapsed, type Capability } from './_shared'
 
-export const id = 'win.clipboard.get'
+export const id = 'point.clipboard_get'
 export const summary = 'Electron clipboard.readText / read'
 
 /**

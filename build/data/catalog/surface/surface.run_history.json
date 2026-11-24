@@ -1,0 +1,26 @@
+{
+  "id": "surface.run_history",
+  "name": "运行历史",
+  "group": "visualize",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "运行历史、节点 trace、变量快照、回放。",
+  "instances": [
+    {
+      "id": "surface.run_history.flow@r3",
+      "name": "流程运行历史",
+      "rev": 3,
+      "status": "active",
+      "detail": "FlowRun + PointRun trace · main"
+    },
+    {
+      "id": "surface.run_history.vpn@r2",
+      "name": "VPN 运行历史",
+      "rev": 2,
+      "status": "active",
+      "detail": "GuardResult / 子 FlowRun · main"
+    }
+  ]
+}

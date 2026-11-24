@@ -1,0 +1,33 @@
+{
+  "id": "point.audio_volume",
+  "name": "控制系统音量",
+  "group": "settings",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "主音量与静音控制；action 参数覆盖 up/down/set/mute/toggle。应用音量放 P1。",
+  "instances": [
+    {
+      "id": "point.audio_volume.vol_up@r1",
+      "name": "音量 +5",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"action\":\"up\",\"step\":5,\"level\":50,\"app\":\"\"}"
+    },
+    {
+      "id": "point.audio_volume.vol_toggle@r1",
+      "name": "静音切换",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"action\":\"toggle\",\"step\":5,\"level\":50,\"app\":\"\"}"
+    },
+    {
+      "id": "point.audio_volume.vol_30@r1",
+      "name": "设 30%",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"action\":\"set\",\"step\":5,\"level\":30,\"app\":\"\"}"
+    }
+  ]
+}

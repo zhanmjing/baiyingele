@@ -1,6 +1,6 @@
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.key.trigger'
+export const id = 'point.key_trigger'
 export const summary = 'uiohook-napi 全局热键监听（起钩子后常驻，不同于一次性能力）'
 
 export interface ParsedCombo {

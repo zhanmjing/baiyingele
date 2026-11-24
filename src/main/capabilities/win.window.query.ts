@@ -2,7 +2,7 @@ import { enumWindows, win32Available, win32LoadError } from './_win32'
 import { isWindows, runPowerShell } from './_powershell'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.window.query'
+export const id = 'point.window_query'
 export const summary = 'koffi 直调 user32 枚举窗口（微秒级）；koffi 不可用时回退 PowerShell'
 
 export interface WindowInfo {

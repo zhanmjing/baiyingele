@@ -1,0 +1,26 @@
+{
+  "id": "point.text_template",
+  "name": "套用模板",
+  "group": "transform",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "把上游输出的文本套进模板；纯函数，不碰外部世界。",
+  "instances": [
+    {
+      "id": "point.text_template.markdown@r1",
+      "name": "Markdown 代码块",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"template\":\"```\\n{{input}}\\n```\",\"input\":\"\"}"
+    },
+    {
+      "id": "point.text_template.plain@r1",
+      "name": "纯文本",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"template\":\"{{input}}\",\"input\":\"\"}"
+    }
+  ]
+}

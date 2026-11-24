@@ -9,21 +9,21 @@
   "summary": "确认、审批、危险操作；模态。",
   "instances": [
     {
-      "id": "surface.dialog.vpn-approval",
+      "id": "surface.dialog.vpn_approval@r2",
       "name": "VPN 审批",
       "rev": 2,
       "status": "active",
       "detail": "打开 VPN / 我已手动打开 / 取消 · modal"
     },
     {
-      "id": "surface.dialog.delete-confirm",
+      "id": "surface.dialog.delete_confirm@r1",
       "name": "删除确认",
       "rev": 1,
       "status": "active",
       "detail": "危险操作确认 · modal"
     },
     {
-      "id": "surface.dialog.deploy-approval",
+      "id": "surface.dialog.deploy_approval@r1",
       "name": "部署审批",
       "rev": 1,
       "status": "active",

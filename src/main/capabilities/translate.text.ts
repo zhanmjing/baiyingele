@@ -1,7 +1,7 @@
 import { chatOnce, describeTierConfig, resolveTiers } from './_llm'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'translate.text'
+export const id = 'point.translate_text'
 export const summary = '翻译文本；provider 链 本地 → 网络 → API 降级，key 走环境变量'
 
 const TARGET_LABEL: Record<string, string> = {

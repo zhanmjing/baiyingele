@@ -1,0 +1,33 @@
+{
+  "id": "body.window_layout",
+  "name": "窗口布局",
+  "group": "window",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "把窗口摆成开发/会议/超宽布局。",
+  "instances": [
+    {
+      "name": "dev",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=dev · monitor=main",
+      "id": "body.window_layout.dev@r1"
+    },
+    {
+      "name": "meeting",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=meeting · monitor=main",
+      "id": "body.window_layout.meeting@r1"
+    },
+    {
+      "name": "ultrawide",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=ultrawide · gap=8",
+      "id": "body.window_layout.ultrawide@r1"
+    }
+  ]
+}

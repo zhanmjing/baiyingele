@@ -7,7 +7,7 @@
   "count": 4,
   "instances": [
     {
-      "id": "field.diagnose.flow-failure@r1",
+      "id": "field.diagnose.flow_failure@r1",
       "classId": "field.diagnose",
       "scope": "flow run",
       "output": "cause + fix",
@@ -17,7 +17,7 @@
       "detail": "flow run · cause + fix"
     },
     {
-      "id": "field.diagnose.uia-timeout@r1",
+      "id": "field.diagnose.uia_timeout@r1",
       "classId": "field.diagnose",
       "scope": "UIA step",
       "output": "selector/timing fix",
@@ -27,7 +27,7 @@
       "detail": "UIA step · selector/timing fix"
     },
     {
-      "id": "field.diagnose.vpn-unreachable@r1",
+      "id": "field.diagnose.vpn_unreachable@r1",
       "classId": "field.diagnose",
       "scope": "external access",
       "output": "network/VPN cause",
@@ -37,7 +37,7 @@
       "detail": "external access · network/VPN cause"
     },
     {
-      "id": "field.diagnose.ocr-low-confidence@r1",
+      "id": "field.diagnose.ocr_low_confidence@r1",
       "classId": "field.diagnose",
       "scope": "body.ocr",
       "output": "preprocess/mode fix",

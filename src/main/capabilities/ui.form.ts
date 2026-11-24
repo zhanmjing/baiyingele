@@ -7,7 +7,7 @@ import {
 } from '../../shared/formSpec'
 import { elapsed, type Capability } from './_shared'
 
-export const id = 'ui.form'
+export const id = 'point.ui_form'
 export const summary = '向界面要用户输入并等待答复；取消/超时都返回明确状态，绝不当成成功'
 
 export interface FormRequest {

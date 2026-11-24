@@ -26,10 +26,10 @@ export const LAYER_DEFS: Record<LayerKey, LayerDef> = {
     classLabel: 'PointClass',
     classes: pointClassesSeed,
     outputs: {
-      'win.key.send': '已发送组合键',
-      'win.clipboard.get': '已读取剪贴板',
-      'win.http.request': 'HTTP 请求完成',
-      'win.screen.capture': '已捕获屏幕源'
+      'point.key_send': '已发送组合键',
+      'point.clipboard_get': '已读取剪贴板',
+      'point.http_request': 'HTTP 请求完成',
+      'point.screen_capture': '已捕获屏幕源'
     }
   },
   line: {
@@ -37,7 +37,7 @@ export const LAYER_DEFS: Record<LayerKey, LayerDef> = {
     classLabel: 'LineClass',
     classes: lineClassesSeed,
     outputs: {
-      'flow.open-external-site': '外部站点流程完成 · 已打开目标页面',
+      'line.open_external_site': '外部站点流程完成 · 已打开目标页面',
       'flow.file-rename': '批量重命名完成 · 12 个文件',
       'flow.daily-report': '日报已生成 · daily-report.md'
     }
@@ -47,7 +47,7 @@ export const LAYER_DEFS: Record<LayerKey, LayerDef> = {
     classLabel: 'SurfaceClass',
     classes: surfaceClassesSeed,
     outputs: {
-      'surface.command-palette': '命令面板已唤起 · 全局搜索就绪',
+      'surface.command_palette': '命令面板已唤起 · 全局搜索就绪',
       'surface.launch-dock': '启动坞已展开 · 5 个标签',
       'surface.settings': '设置页已打开 · 98 项设置'
     }
@@ -57,9 +57,9 @@ export const LAYER_DEFS: Record<LayerKey, LayerDef> = {
     classLabel: 'BodyClass',
     classes: bodyClassesSeed,
     outputs: {
-      'body.file-preview': '文件预览已加载 · 3 个文件',
+      'body.file_preview': '文件预览已加载 · 3 个文件',
       'body.ocr': 'OCR 识别完成 · confidence 0.91',
-      'body.batch-rename': '批量重命名预览完成 · 12 个文件'
+      'body.batch_rename': '批量重命名预览完成 · 12 个文件'
     }
   },
   field: {

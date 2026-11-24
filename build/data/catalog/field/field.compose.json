@@ -7,7 +7,7 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.compose.flow-from-points@r1",
+      "id": "field.compose.flow_from_points@r1",
       "classId": "field.compose",
       "scope": "line editor",
       "output": "flow composition draft",
@@ -17,7 +17,7 @@
       "detail": "line editor · flow composition draft"
     },
     {
-      "id": "field.compose.surface-from-data@r1",
+      "id": "field.compose.surface_from_data@r1",
       "classId": "field.compose",
       "scope": "surface editor",
       "output": "surface binding draft",
@@ -27,7 +27,7 @@
       "detail": "surface editor · surface binding draft"
     },
     {
-      "id": "field.compose.body-from-flows@r1",
+      "id": "field.compose.body_from_flows@r1",
       "classId": "field.compose",
       "scope": "body editor",
       "output": "body composition draft",

@@ -1,0 +1,19 @@
+{
+  "id": "point.notify_toast",
+  "name": "系统通知",
+  "group": "notify",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "发送一条系统通知；不阻塞流程。",
+  "instances": [
+    {
+      "id": "point.notify_toast.system@r1",
+      "name": "系统通知",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"title\":\"百应\",\"body\":\"\"}"
+    }
+  ]
+}

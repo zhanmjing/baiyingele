@@ -17,17 +17,17 @@
       "detail": "command palette · action/flow/body/question"
     },
     {
-      "id": "field.classify.file-type@r1",
+      "id": "field.classify.file_type@r1",
       "classId": "field.classify",
       "scope": "body.file-preview",
       "output": "text/image/pdf/video/audio",
       "rev": 1,
       "name": "classify.file-type",
       "status": "active",
-      "detail": "body.file-preview · text/image/pdf/video/audio"
+      "detail": "body.file_preview · text/image/pdf/video/audio"
     },
     {
-      "id": "field.classify.ocr-mode@r1",
+      "id": "field.classify.ocr_mode@r1",
       "classId": "field.classify",
       "scope": "body.ocr",
       "output": "text/math/qr/table",
@@ -37,7 +37,7 @@
       "detail": "body.ocr · text/math/qr/table"
     },
     {
-      "id": "field.classify.error-kind@r1",
+      "id": "field.classify.error_kind@r1",
       "classId": "field.classify",
       "scope": "flow runtime",
       "output": "uia/network/permission/param",

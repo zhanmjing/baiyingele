@@ -9,21 +9,21 @@
   "summary": "表格浏览、排序、筛选、批量操作。",
   "instances": [
     {
-      "id": "surface.point-catalog",
+      "id": "surface.table.point_catalog@r5",
       "name": "点目录",
       "rev": 5,
       "status": "active",
       "detail": "38 个点类 / 实例列表 · main"
     },
     {
-      "id": "surface.flow-instances",
+      "id": "surface.table.flow_instances@r3",
       "name": "线实例列表",
       "rev": 3,
       "status": "active",
       "detail": "FlowInstance 目录 · main"
     },
     {
-      "id": "surface.run-history.table",
+      "id": "surface.table.run_history_table@r2",
       "name": "运行列表",
       "rev": 2,
       "status": "active",

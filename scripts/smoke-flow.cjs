@@ -106,20 +106,20 @@ const CLIP_TEXT = 'Hello from clipboard'
 
 const pointRunner = ({ instance, params, input }) => {
   switch (instance.classId) {
-    case 'win.clipboard.get':
+    case 'point.clipboard_get':
       return { status: 'ok', output: `剪贴板文本 · ${CLIP_TEXT.length} 字符`, value: CLIP_TEXT, elapsedMs: 1 }
-    case 'text.template': {
+    case 'point.text_template': {
       const rendered = String(params.template).split('{{input}}').join(input ?? '')
       return { status: 'ok', output: `模板已套用 · ${rendered.length} 字符`, value: rendered, elapsedMs: 1 }
     }
-    case 'file.write': {
+    case 'point.file_write': {
       const target = String(params.path)
       fs.mkdirSync(path.dirname(target), { recursive: true })
       if (String(params.append) === 'true') fs.appendFileSync(target, String(params.text ?? input ?? ''))
       else fs.writeFileSync(target, String(params.text ?? input ?? ''))
       return { status: 'ok', output: `已写入 ${target}`, value: target, elapsedMs: 1 }
     }
-    case 'notify.toast':
+    case 'point.notify_toast':
       return { status: 'ok', output: `已发送系统通知 · ${String(input ?? '').length} 字符`, value: String(input ?? ''), elapsedMs: 1 }
     default:
       return null
@@ -140,12 +140,12 @@ const lineStore = new LayerStore(
 async function main() {
   // 1. 纯函数层
   assert.deepStrictEqual(parseFlowArgs('path=inbox.md；append=true'), { path: 'inbox.md', append: 'true' })
-  const order = orderNodes(profiles['flow.clipboard-to-file']).map((node) => node.id)
+  const order = orderNodes(profiles['line.clipboard_to_file']).map((node) => node.id)
   assert.deepStrictEqual(order, ['clip', 'template', 'write', 'notify'], `节点顺序错误: ${order.join('>')}`)
   console.log('✓ parseFlowArgs / orderNodes')
 
   // 2. 端到端：跑一条真实流程
-  const record = await lineStore.run('inst.clipboard-inbox@r3')
+  const record = await lineStore.run('line.clipboard_to_file.inbox@r3')
   assert.strictEqual(record.status, 'ok', `FlowRun 失败: ${record.output}`)
   assert.match(record.output, /4 节点 · 真实 4 模拟 0 跳过 0 失败 0/, `节点统计异常: ${record.output}`)
   console.log('✓ FlowRun ok:', record.output.slice(0, 120), '…')
@@ -155,7 +155,7 @@ async function main() {
   assert.strictEqual(pointRuns.length, 4, `PointRun 数量应为 4，实际 ${pointRuns.length}`)
   assert.deepStrictEqual(
     pointRuns.map((run) => run.classId).reverse(),
-    ['win.clipboard.get', 'text.template', 'file.write', 'notify.toast']
+    ['point.clipboard_get', 'point.text_template', 'point.file_write', 'point.notify_toast']
   )
   console.log('✓ 4 条 PointRun:', pointRuns.map((run) => run.classId).reverse().join(' → '))
 
@@ -218,7 +218,7 @@ async function main() {
   {
     const { store } = scripted({})
     const runner = createLineRunner({ profiles, pointStore: () => store, lineStore: () => lineStore })
-    const outcome = await runner(flowCtx('flow.ensure-vpn', 'url=https://example.com'))
+    const outcome = await runner(flowCtx('line.ensure_vpn', 'url=https://example.com'))
     const trace = outcome.evidence.nodes
     assert.strictEqual(outcome.status, 'ok', `probe 正常时流程应 ok: ${outcome.output}`)
     assert.deepStrictEqual(trace.map((n) => n.id), ['probe', 'guard', 'ready'], `只应执行 ok 分支: ${trace.map((n) => n.id)}`)
@@ -228,9 +228,9 @@ async function main() {
 
   // B. probe 失败 → 走 warn 分支；且流程状态必须降到 warn（不能吞掉警告）
   {
-    const { store } = scripted({ 'win.http.request': 'warn' })
+    const { store } = scripted({ 'point.http_request': 'warn' })
     const runner = createLineRunner({ profiles, pointStore: () => store, lineStore: () => lineStore })
-    const outcome = await runner(flowCtx('flow.ensure-vpn', 'url=https://example.com'))
+    const outcome = await runner(flowCtx('line.ensure_vpn', 'url=https://example.com'))
     const trace = outcome.evidence.nodes
     assert.deepStrictEqual(trace.map((n) => n.id), ['probe', 'guard', 'manual'], `只应执行 warn 分支: ${trace.map((n) => n.id)}`)
     assert.strictEqual(trace.some((n) => n.id === 'ready'), false, 'ok 分支不应执行')
@@ -246,7 +246,7 @@ async function main() {
         classId: 'test.unknown-gate',
         nodes: [
           { id: 'loop', label: '未知门', kind: 'gate', gate: 'while', x: 0, y: 0, w: 1, h: 1 },
-          { id: 'after', label: '后续', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 1, y: 0, w: 1, h: 1 }
+          { id: 'after', label: '后续', kind: 'point', pointClass: 'point.notify_toast', pointInstance: 'point.notify_toast.system@r1', x: 1, y: 0, w: 1, h: 1 }
         ],
         edges: [{ from: 'loop', to: 'after' }]
       }
@@ -264,8 +264,8 @@ async function main() {
     classId: 'test.foreach',
     nodes: [
       { id: 'loop', label: '遍历', kind: 'gate', gate: 'foreach', x: 0, y: 0, w: 1, h: 1 },
-      { id: 'body', label: '处理一项', kind: 'point', pointClass: 'clipboard.write', pointInstance: 'clipboard.write.i-text@r1', x: 1, y: 0, w: 1, h: 1 },
-      { id: 'done', label: '收尾', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 2, y: 0, w: 1, h: 1 }
+      { id: 'body', label: '处理一项', kind: 'point', pointClass: 'point.clipboard_write', pointInstance: 'point.clipboard_write.text@r1', x: 1, y: 0, w: 1, h: 1 },
+      { id: 'done', label: '收尾', kind: 'point', pointClass: 'point.notify_toast', pointInstance: 'point.notify_toast.system@r1', x: 2, y: 0, w: 1, h: 1 }
     ],
     edges: [
       { from: 'loop', to: 'body', label: 'each' },
@@ -278,8 +278,8 @@ async function main() {
     const customProfiles = { ...profiles, 'test.foreach': foreachProfile }
     const runner = createLineRunner({ profiles: customProfiles, pointStore: () => store, lineStore: () => lineStore })
     const outcome = await runner(flowCtx('test.foreach', '', JSON.stringify(['a.txt', 'b.txt', 'c.txt'])))
-    const bodyRuns = ran.filter((id) => id === 'clipboard.write.i-text@r1').length
-    const doneRuns = ran.filter((id) => id === 'notify.toast.i-system@r1').length
+    const bodyRuns = ran.filter((id) => id === 'point.clipboard_write.text@r1').length
+    const doneRuns = ran.filter((id) => id === 'point.notify_toast.system@r1').length
     assert.strictEqual(outcome.status, 'ok', `foreach 正常时应 ok: ${outcome.output}`)
     assert.strictEqual(bodyRuns, 3, `循环体应跑 3 次，实际 ${bodyRuns}`)
     assert.strictEqual(doneRuns, 1, `done 分支应跑 1 次，实际 ${doneRuns}`)
@@ -339,8 +339,8 @@ async function main() {
       'test.parent': {
         classId: 'test.parent',
         nodes: [
-          { id: 'sub', label: '子流程', kind: 'subflow', pointInstance: 'inst.ensure-vpn-ask@r2', x: 0, y: 0, w: 1, h: 1 },
-          { id: 'after', label: '后续', kind: 'point', pointClass: 'notify.toast', pointInstance: 'notify.toast.i-system@r1', x: 1, y: 0, w: 1, h: 1 }
+          { id: 'sub', label: '子流程', kind: 'subflow', pointInstance: 'line.ensure_vpn.ask@r2', x: 0, y: 0, w: 1, h: 1 },
+          { id: 'after', label: '后续', kind: 'point', pointClass: 'point.notify_toast', pointInstance: 'point.notify_toast.system@r1', x: 1, y: 0, w: 1, h: 1 }
         ],
         edges: [{ from: 'sub', to: 'after' }]
       }
@@ -350,7 +350,7 @@ async function main() {
     const trace = outcome.evidence.nodes
     assert.deepStrictEqual(trace.map((n) => n.id), ['sub', 'after'], `子流程应执行: ${trace.map((n) => n.id)}`)
     assert.strictEqual(trace[0].kind, 'subflow')
-    assert.match(outcome.output, /flow\.ensure-vpn/, '子流程输出应标明跑了哪个类')
+    assert.match(outcome.output, /line\.ensure_vpn/, '子流程输出应标明跑了哪个类')
     assert.ok(ran.length >= 3, `子流程内部节点也要真跑，实际跑了 ${ran.length} 个`)
   }
 
@@ -358,14 +358,14 @@ async function main() {
   {
     const { store } = scripted({})
     const loopProfiles = {
-      'flow.ensure-vpn': {
-        classId: 'flow.ensure-vpn',
-        nodes: [{ id: 'self', label: '自调用', kind: 'subflow', pointInstance: 'inst.ensure-vpn-ask@r2', x: 0, y: 0, w: 1, h: 1 }],
+      'line.ensure_vpn': {
+        classId: 'line.ensure_vpn',
+        nodes: [{ id: 'self', label: '自调用', kind: 'subflow', pointInstance: 'line.ensure_vpn.ask@r2', x: 0, y: 0, w: 1, h: 1 }],
         edges: []
       }
     }
     const runner = createLineRunner({ profiles: loopProfiles, pointStore: () => store, lineStore: () => lineStore })
-    const outcome = await runner(flowCtx('flow.ensure-vpn'))
+    const outcome = await runner(flowCtx('line.ensure_vpn'))
     assert.strictEqual(outcome.status, 'warn', '循环引用必须 warn')
     assert.match(outcome.output, /循环引用/, `应报循环引用: ${outcome.output}`)
   }
@@ -424,17 +424,17 @@ async function main() {
   const readTarget = path.join(workdir, 'read-me.txt')
   fs.writeFileSync(readTarget, '第一行内容\n第二行内容\n', 'utf8')
 
-  const readOk = await CAPABILITIES['file.read'](ctx('file.read', { path: readTarget, encoding: 'utf-8', maxBytes: '4096' }))
+  const readOk = await CAPABILITIES['point.file_read'](ctx('point.file_read', { path: readTarget, encoding: 'utf-8', maxBytes: '4096' }))
   assert.strictEqual(readOk.status, 'ok', `file.read 应成功: ${readOk.output}`)
   assert.match(readOk.value, /第一行内容/, 'file.read 应返回原始文本')
 
-  const readCut = await CAPABILITIES['file.read'](ctx('file.read', { path: readTarget, maxBytes: '3' }))
+  const readCut = await CAPABILITIES['point.file_read'](ctx('point.file_read', { path: readTarget, maxBytes: '3' }))
   assert.match(readCut.output, /已截断/, `maxBytes 应生效: ${readCut.output}`)
 
-  const readMissing = await CAPABILITIES['file.read'](ctx('file.read', { path: path.join(workdir, 'nope.txt') }))
+  const readMissing = await CAPABILITIES['point.file_read'](ctx('point.file_read', { path: path.join(workdir, 'nope.txt') }))
   assert.strictEqual(readMissing.status, 'warn', '不存在的路径必须返回 warn')
 
-  const readDir = await CAPABILITIES['file.read'](ctx('file.read', { path: workdir }))
+  const readDir = await CAPABILITIES['point.file_read'](ctx('point.file_read', { path: workdir }))
   assert.strictEqual(readDir.status, 'warn', '目录必须返回 warn')
   console.log('✓ file.read：成功 / 截断 / 缺失 / 目录 四种路径都正确')
 
@@ -443,46 +443,46 @@ async function main() {
   const moveDst = path.join(workdir, 'nested', 'move-dst.txt')
   fs.writeFileSync(moveSrc, 'A', 'utf8')
 
-  const moved = await CAPABILITIES['file.move'](ctx('file.move', { from: moveSrc, to: moveDst, overwrite: 'false' }))
+  const moved = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: moveSrc, to: moveDst, overwrite: 'false' }))
   assert.strictEqual(moved.status, 'ok', `file.move 应成功: ${moved.output}`)
   assert.strictEqual(fs.existsSync(moveSrc), false, '源文件应已移走')
   assert.strictEqual(fs.readFileSync(moveDst, 'utf8'), 'A', '目标文件内容应正确')
 
   fs.writeFileSync(moveSrc, 'A2', 'utf8')
   fs.writeFileSync(moveDst, 'KEEP', 'utf8')
-  const blocked = await CAPABILITIES['file.move'](ctx('file.move', { from: moveSrc, to: moveDst, overwrite: 'false' }))
+  const blocked = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: moveSrc, to: moveDst, overwrite: 'false' }))
   assert.strictEqual(blocked.status, 'warn', 'overwrite=false 且目标存在必须 warn')
   assert.strictEqual(fs.readFileSync(moveDst, 'utf8'), 'KEEP', '目标文件不能被改动')
   assert.strictEqual(fs.existsSync(moveSrc), true, '源文件必须还在')
 
-  const forced = await CAPABILITIES['file.move'](ctx('file.move', { from: moveSrc, to: moveDst, overwrite: 'true' }))
+  const forced = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: moveSrc, to: moveDst, overwrite: 'true' }))
   assert.strictEqual(forced.status, 'ok', `overwrite=true 应成功: ${forced.output}`)
   assert.strictEqual(fs.readFileSync(moveDst, 'utf8'), 'A2', '覆盖后内容应为源内容')
 
-  const noSource = await CAPABILITIES['file.move'](ctx('file.move', { from: path.join(workdir, 'ghost.txt'), to: moveDst }))
+  const noSource = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: path.join(workdir, 'ghost.txt'), to: moveDst }))
   assert.strictEqual(noSource.status, 'warn', '源不存在必须 warn')
 
   // toDir：搬进目录并保留原文件名（批量归档靠这个）
   const archiveDir = path.join(workdir, 'archive-target')
   const archiveSrc = path.join(workdir, 'to-archive.txt')
   fs.writeFileSync(archiveSrc, 'ARCH', 'utf8')
-  const intoDir = await CAPABILITIES['file.move'](ctx('file.move', { from: archiveSrc, toDir: archiveDir, overwrite: 'false' }))
+  const intoDir = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: archiveSrc, toDir: archiveDir, overwrite: 'false' }))
   assert.strictEqual(intoDir.status, 'ok', `toDir 应成功: ${intoDir.output}`)
   assert.strictEqual(fs.existsSync(path.join(archiveDir, 'to-archive.txt')), true, '文件名应保留在目标目录里')
   assert.strictEqual(fs.existsSync(archiveSrc), false, '源应已移走')
   assert.strictEqual(intoDir.evidence?.toDir, archiveDir)
 
   // to 和 toDir 互斥
-  const bothTargets = await CAPABILITIES['file.move'](ctx('file.move', { from: moveDst, to: moveDst, toDir: archiveDir }))
+  const bothTargets = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: moveDst, to: moveDst, toDir: archiveDir }))
   assert.strictEqual(bothTargets.status, 'warn', 'to 和 toDir 同时给必须拒绝')
   assert.match(bothTargets.output, /只能给一个/)
 
   // 两个都不给
-  const noMoveTarget = await CAPABILITIES['file.move'](ctx('file.move', { from: moveDst }))
+  const noMoveTarget = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: moveDst }))
   assert.strictEqual(noMoveTarget.status, 'warn', '缺目标必须拒绝')
 
   // 源和目标相同 → 明确拒绝，不做无意义操作
-  const sameFile = await CAPABILITIES['file.move'](ctx('file.move', { from: moveDst, toDir: path.dirname(moveDst) }))
+  const sameFile = await CAPABILITIES['point.file_move'](ctx('point.file_move', { from: moveDst, toDir: path.dirname(moveDst) }))
   assert.strictEqual(sameFile.status, 'warn', '源目标相同必须拒绝')
   assert.match(sameFile.output, /源和目标相同/)
 
@@ -495,37 +495,37 @@ async function main() {
   fs.writeFileSync(path.join(scanRoot, 'b.md'), 'b', 'utf8')
   fs.writeFileSync(path.join(scanRoot, 'sub', 'c.txt'), 'c', 'utf8')
 
-  const scanned = await CAPABILITIES['file.scan'](ctx('file.scan', { root: scanRoot, pattern: '*.txt', depth: '2', limit: '200' }))
+  const scanned = await CAPABILITIES['point.file_scan'](ctx('point.file_scan', { root: scanRoot, pattern: '*.txt', depth: '2', limit: '200' }))
   assert.strictEqual(scanned.status, 'ok', `file.scan 应成功: ${scanned.output}`)
   const scannedFiles = JSON.parse(scanned.value).map((item) => path.basename(item)).sort()
   assert.deepStrictEqual(scannedFiles, ['a.txt', 'c.txt'], `pattern/depth 过滤不对: ${scannedFiles.join(',')}`)
 
-  const limitedScan = await CAPABILITIES['file.scan'](ctx('file.scan', { root: scanRoot, pattern: '*', depth: '2', limit: '1' }))
+  const limitedScan = await CAPABILITIES['point.file_scan'](ctx('point.file_scan', { root: scanRoot, pattern: '*', depth: '2', limit: '1' }))
   assert.match(limitedScan.output, /已截断到 limit=1/, `limit 应生效: ${limitedScan.output}`)
   assert.strictEqual(JSON.parse(limitedScan.value).length, 1, 'limit 必须限制结果数')
 
-  const scanMissing = await CAPABILITIES['file.scan'](ctx('file.scan', { root: path.join(workdir, 'ghost-dir') }))
+  const scanMissing = await CAPABILITIES['point.file_scan'](ctx('point.file_scan', { root: path.join(workdir, 'ghost-dir') }))
   assert.strictEqual(scanMissing.status, 'warn', '目录不存在必须 warn')
   console.log('✓ file.scan：模式过滤 / limit 截断 / 目录缺失 都正确')
 
   // ── 7c. 真实能力：clipboard.write ↔ win.clipboard.get 往返 ──
   fakeClipboard.text = ''
 
-  const emptyWrite = await CAPABILITIES['clipboard.write'](ctx('clipboard.write', { text: '' }))
+  const emptyWrite = await CAPABILITIES['point.clipboard_write'](ctx('point.clipboard_write', { text: '' }))
   assert.strictEqual(emptyWrite.status, 'warn', '空文本必须 warn')
   assert.strictEqual(fakeClipboard.text, '', '空文本不能改动剪贴板')
 
   const CLIPBOARD_TEXT = '你好，剪贴板'
-  const clipWritten = await CAPABILITIES['clipboard.write'](ctx('clipboard.write', { text: CLIPBOARD_TEXT }))
+  const clipWritten = await CAPABILITIES['point.clipboard_write'](ctx('point.clipboard_write', { text: CLIPBOARD_TEXT }))
   assert.strictEqual(clipWritten.status, 'ok', `写剪贴板应成功: ${clipWritten.output}`)
   assert.strictEqual(fakeClipboard.text, CLIPBOARD_TEXT, '剪贴板内容应被写入')
 
-  const clipReadBack = await CAPABILITIES['win.clipboard.get'](ctx('win.clipboard.get', { format: 'text' }))
+  const clipReadBack = await CAPABILITIES['point.clipboard_get'](ctx('point.clipboard_get', { format: 'text' }))
   assert.strictEqual(clipReadBack.status, 'ok', `读剪贴板应成功: ${clipReadBack.output}`)
   assert.strictEqual(clipReadBack.value, CLIPBOARD_TEXT, '写进去的内容必须能原样读回')
 
   fakeClipboard.text = ''
-  const emptyRead = await CAPABILITIES['win.clipboard.get'](ctx('win.clipboard.get', { format: 'text' }))
+  const emptyRead = await CAPABILITIES['point.clipboard_get'](ctx('point.clipboard_get', { format: 'text' }))
   assert.strictEqual(emptyRead.status, 'warn', '空剪贴板必须 warn')
   console.log('✓ clipboard.write ↔ win.clipboard.get：写入 / 回读 / 空值保护 都正确')
 
@@ -560,25 +560,25 @@ async function main() {
   const deadUrl = 'http://127.0.0.1:9/v1'
 
   clearTranslateEnv()
-  const noProvider = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello' }))
+  const noProvider = await CAPABILITIES['point.translate_text'](ctx('point.translate_text', { text: 'hello' }))
   assert.strictEqual(noProvider.status, 'warn', '没配 provider 必须 warn')
   assert.match(noProvider.output, /未配置翻译 provider/, `文案不对: ${noProvider.output}`)
 
   process.env.BAIYING_TRANSLATE_LOCAL_URL = live.url
-  const viaLocal = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello', target: 'zh' }))
+  const viaLocal = await CAPABILITIES['point.translate_text'](ctx('point.translate_text', { text: 'hello', target: 'zh' }))
   assert.strictEqual(viaLocal.status, 'ok', `本地档应成功: ${viaLocal.output}`)
   assert.strictEqual(viaLocal.value, TRANSLATED, '译文应原样透传')
   assert.match(viaLocal.output, /local 档/, `应标注命中 local: ${viaLocal.output}`)
 
   process.env.BAIYING_TRANSLATE_LOCAL_URL = deadUrl
   process.env.BAIYING_TRANSLATE_NETWORK_URL = live.url
-  const viaNetwork = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello' }))
+  const viaNetwork = await CAPABILITIES['point.translate_text'](ctx('point.translate_text', { text: 'hello' }))
   assert.strictEqual(viaNetwork.status, 'ok', `本地挂掉应降级到网络档: ${viaNetwork.output}`)
   assert.match(viaNetwork.output, /network 档/)
   assert.match(viaNetwork.output, /前面 1 档失败/, '应说明前面有档位失败')
 
   process.env.BAIYING_TRANSLATE_NETWORK_URL = deadUrl
-  const allDead = await CAPABILITIES['translate.text'](ctx('translate.text', { text: 'hello' }))
+  const allDead = await CAPABILITIES['point.translate_text'](ctx('point.translate_text', { text: 'hello' }))
   assert.strictEqual(allDead.status, 'warn', '全挂必须 warn')
   assert.match(allDead.output, /所有 provider 都失败/, `应带上每档原因: ${allDead.output}`)
 
@@ -590,19 +590,19 @@ async function main() {
   shellCalls.length = 0
   process.env.USERPROFILE = 'C:\\Users\\smoke'
 
-  const openUrl = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'url', target: 'https://github.com' }))
+  const openUrl = await CAPABILITIES['point.open'](ctx('point.open', { kind: 'url', target: 'https://github.com' }))
   assert.strictEqual(openUrl.status, 'ok', `打开 URL 应成功: ${openUrl.output}`)
   assert.deepStrictEqual(shellCalls.at(-1), ['openExternal', 'https://github.com'], '应走 openExternal')
 
-  const badUrl = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'url', target: 'file:///etc/passwd' }))
+  const badUrl = await CAPABILITIES['point.open'](ctx('point.open', { kind: 'url', target: 'file:///etc/passwd' }))
   assert.strictEqual(badUrl.status, 'warn', '非 http(s) 必须 warn')
   assert.strictEqual(shellCalls.length, 1, '非法 URL 不能触达 shell')
 
-  const openFolder = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'folder', target: '%USERPROFILE%\\Downloads' }))
+  const openFolder = await CAPABILITIES['point.open'](ctx('point.open', { kind: 'folder', target: '%USERPROFILE%\\Downloads' }))
   assert.strictEqual(openFolder.status, 'ok', `打开文件夹应成功: ${openFolder.output}`)
   assert.deepStrictEqual(shellCalls.at(-1), ['openPath', 'C:\\Users\\smoke\\Downloads'], '%VAR% 应被展开')
 
-  const noTarget = await CAPABILITIES['win.open'](ctx('win.open', { kind: 'folder', target: '' }))
+  const noTarget = await CAPABILITIES['point.open'](ctx('point.open', { kind: 'folder', target: '' }))
   assert.strictEqual(noTarget.status, 'warn', '缺 target 必须 warn')
   console.log('✓ win.open：URL / 非法协议拦截 / %VAR% 展开 / 缺参数 都正确')
 
@@ -671,14 +671,14 @@ async function main() {
   const SMALL_PNG = `data:image/png;base64,${Buffer.from('fake-png-bytes').toString('base64')}`
 
   clearTranslateEnv()
-  const ocrNoProvider = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: SMALL_PNG }))
+  const ocrNoProvider = await CAPABILITIES['point.ocr_read'](ctx('point.ocr_read', { image: SMALL_PNG }))
   assert.strictEqual(ocrNoProvider.status, 'warn', '没配 provider 必须 warn')
   assert.match(ocrNoProvider.output, /未配置 OCR provider/)
 
   process.env.BAIYING_TRANSLATE_LOCAL_URL = ocrServer.url
 
-  const ocrDataUrl = await CAPABILITIES['win.ocr.read'](
-    ctx('win.ocr.read', { image: SMALL_PNG, lang: 'zh', layout: 'true' })
+  const ocrDataUrl = await CAPABILITIES['point.ocr_read'](
+    ctx('point.ocr_read', { image: SMALL_PNG, lang: 'zh', layout: 'true' })
   )
   assert.strictEqual(ocrDataUrl.status, 'ok', `data URL 应成功: ${ocrDataUrl.output}`)
   assert.strictEqual(ocrDataUrl.value, '第一行\n第二行', '识别文本应原样透传')
@@ -688,19 +688,19 @@ async function main() {
 
   const imgPath = path.join(workdir, 'shot.png')
   fs.writeFileSync(imgPath, Buffer.from('fake-png-bytes'))
-  const ocrFile = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: imgPath }))
+  const ocrFile = await CAPABILITIES['point.ocr_read'](ctx('point.ocr_read', { image: imgPath }))
   assert.strictEqual(ocrFile.status, 'ok', `本地图片应成功: ${ocrFile.output}`)
   assert.strictEqual(ocrFile.evidence.imageSource, imgPath)
 
-  const ocrScreenshot = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: '$screenshot' }))
+  const ocrScreenshot = await CAPABILITIES['point.ocr_read'](ctx('point.ocr_read', { image: '$screenshot' }))
   assert.strictEqual(ocrScreenshot.status, 'ok', `截图 OCR 应成功: ${ocrScreenshot.output}`)
   assert.match(String(ocrScreenshot.evidence.imageSource), /^screenshot:/, '应走截图分支')
 
-  const ocrMissing = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: '' }))
+  const ocrMissing = await CAPABILITIES['point.ocr_read'](ctx('point.ocr_read', { image: '' }))
   assert.strictEqual(ocrMissing.status, 'warn', '缺图必须 warn')
 
   ocrHolder.text = ''
-  const ocrEmpty = await CAPABILITIES['win.ocr.read'](ctx('win.ocr.read', { image: SMALL_PNG }))
+  const ocrEmpty = await CAPABILITIES['point.ocr_read'](ctx('point.ocr_read', { image: SMALL_PNG }))
   assert.strictEqual(ocrEmpty.status, 'warn', '空结果必须 warn')
   assert.match(ocrEmpty.output, /没有识别到文字/, `空结果文案不对: ${ocrEmpty.output}`)
 
@@ -709,7 +709,7 @@ async function main() {
   console.log('✓ win.ocr.read：未配置 / data URL / 本地图片 / 截图 / 缺图 / 空结果 都正确')
 
   // ── 7h. 场层落点：自主度决策 / A2 落地 + 撤销 / prefill 端到端 ──
-  const TARGET_INSTANCE = 'win.open.i-open-github@r1'
+  const TARGET_INSTANCE = 'point.open.github@r1'
   const landing = { layer: 'point', target: 'param', instanceId: TARGET_INSTANCE, param: 'target', value: 'https://x.test' }
 
   assert.strictEqual(decideLanding('A0', landing).action, 'draft', 'A0 只能出草稿')
@@ -813,7 +813,7 @@ async function main() {
   console.log('✓ win.window.query / win.theme.mode：筛选、排序、限流、主题取值 纯函数均正确')
 
   // 实机调用窗口枚举（只读）。PowerShell 不可用时明确报告跳过，不伪装通过。
-  const realQuery = await CAPABILITIES['win.window.query'](ctx('win.window.query', { limit: '5', selector: '' }))
+  const realQuery = await CAPABILITIES['point.window_query'](ctx('point.window_query', { limit: '5', selector: '' }))
   if (realQuery.status === 'ok') {
     const listed = JSON.parse(realQuery.value)
     assert.ok(Array.isArray(listed), '窗口列表应为数组')
@@ -833,19 +833,19 @@ async function main() {
   assert.strictEqual(computeRect('a,b,c,d', AREA), null, '非数字应为 null')
 
   const bogusSelector = '{"title":"__绝不存在的窗口标题__"}'
-  const ctlNoTarget = await CAPABILITIES['win.window.control'](
-    ctx('win.window.control', { op: 'focus', selector: bogusSelector })
+  const ctlNoTarget = await CAPABILITIES['point.window_control'](
+    ctx('point.window_control', { op: 'focus', selector: bogusSelector })
   )
   assert.strictEqual(ctlNoTarget.status, 'warn', '匹配不到窗口必须 warn')
   assert.match(ctlNoTarget.output, /没有匹配的窗口/)
 
-  const unknownOp = await CAPABILITIES['win.window.control'](ctx('win.window.control', { op: 'explode' }))
+  const unknownOp = await CAPABILITIES['point.window_control'](ctx('point.window_control', { op: 'explode' }))
   assert.strictEqual(unknownOp.status, 'warn')
   assert.match(unknownOp.output, /未知 op/)
 
   // 真实 Win32 读路径（枚举 + 主屏工作区），但 rect 非法 → 不会移动任何窗口
-  const badRect = await CAPABILITIES['win.window.control'](
-    ctx('win.window.control', { op: 'move', selector: '', rect: 'bogus', monitor: '1' })
+  const badRect = await CAPABILITIES['point.window_control'](
+    ctx('point.window_control', { op: 'move', selector: '', rect: 'bogus', monitor: '1' })
   )
   if (badRect.output.includes('没有匹配的窗口')) {
     console.log('· win.window.control 实机跳过：当前没有可匹配的窗口')
@@ -891,11 +891,11 @@ async function main() {
   assert.strictEqual(noHeld.ctrlKey, true, '事件自带修饰位时保持原样')
 
   // 钩子起停（真启动全局钩子，随后立刻停掉）
-  const trigStart = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'Ctrl+Alt+Space', scope: 'global' }))
+  const trigStart = await CAPABILITIES['point.key_trigger'](ctx('point.key_trigger', { keys: 'Ctrl+Alt+Space', scope: 'global' }))
   if (trigStart.status === 'ok') {
     assert.match(trigStart.output, /已开始监听 Ctrl\+Alt\+Space/)
     assert.deepStrictEqual(registeredCombos(), ['Ctrl+Alt+Space'], '应注册 1 个组合')
-    const trigStop = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: '', scope: 'global' }))
+    const trigStop = await CAPABILITIES['point.key_trigger'](ctx('point.key_trigger', { keys: '', scope: 'global' }))
     assert.strictEqual(trigStop.status, 'ok')
     assert.match(trigStop.output, /已停止全局钩子|钩子本来就没在运行/)
     assert.deepStrictEqual(registeredCombos(), [], '停止后应清空组合')
@@ -905,7 +905,7 @@ async function main() {
     console.log(`· win.key.trigger 实机跳过：${trigStart.output.slice(0, 60)}`)
   }
 
-  const badScope = await CAPABILITIES['win.key.trigger'](ctx('win.key.trigger', { keys: 'F5', scope: 'window' }))
+  const badScope = await CAPABILITIES['point.key_trigger'](ctx('point.key_trigger', { keys: 'F5', scope: 'window' }))
   assert.strictEqual(badScope.status, 'warn', '非 global 作用域必须 warn')
 
   // ── 7l. 触发器服务：热键与手势共用一条 dispatch ──────────────
@@ -926,7 +926,7 @@ async function main() {
     lineStore: () => lnForTrigger
   })
 
-  const TRIGGER_TARGET = 'win.open.i-open-github@r1'
+  const TRIGGER_TARGET = 'point.open.github@r1'
   const LINE_TARGET = catalogs.line[0].instances[0].id
 
   const hotBinding = triggerService.add({ source: 'hotkey', pattern: 'ctrl+alt+space', targetKind: 'point', targetId: TRIGGER_TARGET })
@@ -1117,18 +1117,18 @@ async function main() {
   assert.strictEqual(keysend.buildKeyEvents(csa, 'down', new Set()).length, 3, 'down 无 keyup')
   assert.strictEqual(keysend.buildKeyEvents(keysend.parseKeys('Left'), 'press', new Set())[0].extended, true, '方向键应带扩展标记')
 
-  const unknownMode = await CAPABILITIES['win.key.send'](ctx('win.key.send', { keys: 'F24', mode: 'teleport' }))
+  const unknownMode = await CAPABILITIES['point.key_send'](ctx('point.key_send', { keys: 'F24', mode: 'teleport' }))
   assert.strictEqual(unknownMode.status, 'warn')
   assert.match(unknownMode.output, /未知 mode/)
 
-  const sendNoTarget = await CAPABILITIES['win.key.send'](
-    ctx('win.key.send', { keys: 'F24', target: '{"title":"__绝不存在的窗口标题__"}' })
+  const sendNoTarget = await CAPABILITIES['point.key_send'](
+    ctx('point.key_send', { keys: 'F24', target: '{"title":"__绝不存在的窗口标题__"}' })
   )
   assert.strictEqual(sendNoTarget.status, 'warn', '目标不存在必须 warn')
   assert.match(sendNoTarget.output, /没有匹配的目标窗口/)
 
   // 真实发送 F24：所有正常应用都没有绑定这个键，绝对安全
-  const realSend = await CAPABILITIES['win.key.send'](ctx('win.key.send', { keys: 'F24', mode: 'press', repeat: '1' }))
+  const realSend = await CAPABILITIES['point.key_send'](ctx('point.key_send', { keys: 'F24', mode: 'press', repeat: '1' }))
   if (realSend.status === 'ok') {
     assert.strictEqual(realSend.evidence.backend, 'sendinput')
     assert.strictEqual(realSend.evidence.events, 2, 'F24 单击应为 2 个事件')
@@ -1173,15 +1173,15 @@ async function main() {
   try { comm.guid('不是GUID') } catch { guidThrew = true }
   assert.strictEqual(guidThrew, true, '非法 GUID 应抛错')
 
-  const volumeRead = await CAPABILITIES['win.audio.volume'](ctx('win.audio.volume', { action: 'get' }))
+  const volumeRead = await CAPABILITIES['point.audio_volume'](ctx('point.audio_volume', { action: 'get' }))
   if (volumeRead.status === 'ok') {
     assert.strictEqual(volumeRead.evidence.backend, 'coreaudio')
     const level = volumeRead.evidence.after.level
     assert.ok(level >= 0 && level <= 1, `音量应在 0..1，得到 ${level}`)
 
     // 写路径：设成「当前值」，能验证 SetMasterVolumeLevelScalar 通，且不产生净变化
-    const roundTrip = await CAPABILITIES['win.audio.volume'](
-      ctx('win.audio.volume', { action: 'set', level: String(Math.round(level * 100)) })
+    const roundTrip = await CAPABILITIES['point.audio_volume'](
+      ctx('point.audio_volume', { action: 'set', level: String(Math.round(level * 100)) })
     )
     assert.strictEqual(roundTrip.status, 'ok', `回写当前值应成功: ${roundTrip.output}`)
     assert.ok(Math.abs(roundTrip.evidence.after.level - level) < 0.011, '回写后音量应基本不变')
@@ -1191,7 +1191,7 @@ async function main() {
     console.log(`· win.audio.volume 实机跳过：${volumeRead.output.slice(0, 60)}`)
   }
 
-  const badApp = await CAPABILITIES['win.audio.volume'](ctx('win.audio.volume', { action: 'up', app: 'chrome.exe' }))
+  const badApp = await CAPABILITIES['point.audio_volume'](ctx('point.audio_volume', { action: 'up', app: 'chrome.exe' }))
   assert.strictEqual(badApp.status, 'warn', '应用级音量应明确拒绝')
 
   // ── 7p. win.display.brightness：计划纯函数 + WMI 读写 ───────────
@@ -1205,15 +1205,15 @@ async function main() {
   assert.strictEqual(bright.planBrightnessChange('down', 4, 10, 60), 0, '到底不越界')
   assert.strictEqual(bright.planBrightnessChange('explode', 76, 10, 60), null, '未知动作返回 null')
 
-  const brightRead = await CAPABILITIES['win.display.brightness'](ctx('win.display.brightness', { action: 'get' }))
+  const brightRead = await CAPABILITIES['point.display_brightness'](ctx('point.display_brightness', { action: 'get' }))
   if (brightRead.status === 'ok') {
     assert.strictEqual(brightRead.evidence.backend, 'wmi')
     const level = brightRead.evidence.level
     assert.ok(level >= 0 && level <= 100, `亮度应在 0..100，得到 ${level}`)
 
     // 写路径：设成当前值，验证 WmiSetBrightness 通，且屏幕亮度不变
-    const brightRound = await CAPABILITIES['win.display.brightness'](
-      ctx('win.display.brightness', { action: 'set', value: String(level) })
+    const brightRound = await CAPABILITIES['point.display_brightness'](
+      ctx('point.display_brightness', { action: 'set', value: String(level) })
     )
     assert.strictEqual(brightRound.status, 'ok', `回写当前亮度应成功: ${brightRound.output}`)
     assert.strictEqual(brightRound.evidence.after, level, '回写后亮度应不变')
@@ -1223,7 +1223,7 @@ async function main() {
     console.log(`· win.display.brightness 实机跳过：${brightRead.output.slice(0, 60)}`)
   }
 
-  const ext = await CAPABILITIES['win.display.brightness'](ctx('win.display.brightness', { action: 'set', value: '50', monitor: 'external' }))
+  const ext = await CAPABILITIES['point.display_brightness'](ctx('point.display_brightness', { action: 'set', value: '50', monitor: 'external' }))
   assert.strictEqual(ext.status, 'warn', '外接屏应明确 warn')
   assert.match(ext.output, /DDC\/CI|外接屏/)
 
@@ -1278,7 +1278,7 @@ async function main() {
     required: ['版本号'],
     properties: { 备注: { type: 'string' }, 版本号: { type: 'string' } }
   })
-  const submitPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '确认发布', schema: requiredSchema, timeoutMs: '60000' }))
+  const submitPromise = CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '确认发布', schema: requiredSchema, timeoutMs: '60000' }))
   assert.strictEqual(captured.length, 1, 'sink 应收到 1 个请求')
   assert.strictEqual(captured[0].spec.title, '确认发布')
   const submitId = formMod.pendingFormId()
@@ -1295,22 +1295,22 @@ async function main() {
   assert.strictEqual(JSON.parse(submitResult.value).版本号, '1.2.0')
 
   // 取消 → 必须是 warn，不能假装成功
-  const cancelPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '取消测试', fields: '备注' }))
+  const cancelPromise = CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '取消测试', fields: '备注' }))
   formMod.resolveForm(formMod.pendingFormId(), { kind: 'cancelled' })
   const cancelResult = await cancelPromise
   assert.strictEqual(cancelResult.status, 'warn', '取消必须是 warn')
   assert.match(cancelResult.output, /已取消/)
 
   // 超时 → 也是 warn
-  const timeoutPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '超时测试', fields: '备注' }))
+  const timeoutPromise = CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '超时测试', fields: '备注' }))
   formMod.resolveForm(formMod.pendingFormId(), { kind: 'timeout', reason: '测试模拟' })
   const timeoutResult = await timeoutPromise
   assert.strictEqual(timeoutResult.status, 'warn', '超时必须是 warn')
   assert.match(timeoutResult.output, /超时/)
 
   // 新请求顶替旧请求
-  const firstPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '第一个', fields: 'A' }))
-  const secondPromise = CAPABILITIES['ui.form'](ctx('ui.form', { title: '第二个', fields: 'B' }))
+  const firstPromise = CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '第一个', fields: 'A' }))
+  const secondPromise = CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '第二个', fields: 'B' }))
   const firstResult = await firstPromise
   assert.strictEqual(firstResult.status, 'warn', '被顶替的请求也是 warn')
   formMod.resolveForm(formMod.pendingFormId(), { kind: 'cancelled' })
@@ -1318,11 +1318,11 @@ async function main() {
 
   // 没有界面时的行为
   formMod.setFormSink(null)
-  const noSink = await CAPABILITIES['ui.form'](ctx('ui.form', { title: '无界面', fields: 'A' }))
+  const noSink = await CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '无界面', fields: 'A' }))
   assert.strictEqual(noSink.status, 'warn')
   assert.match(noSink.output, /无法显示/)
 
-  const emptyForm = await CAPABILITIES['ui.form'](ctx('ui.form', { title: '空', fields: '' }))
+  const emptyForm = await CAPABILITIES['point.ui_form'](ctx('point.ui_form', { title: '空', fields: '' }))
   assert.strictEqual(emptyForm.status, 'warn', '空表单应拒绝')
   assert.match(emptyForm.output, /没有字段/)
   console.log('✓ ui.form：规格解析 / 校验 / 提交·取消·超时·顶替·无界面 都正确')
@@ -1434,14 +1434,14 @@ async function main() {
 
   // 接触面推断
   assert.deepStrictEqual(
-    simulate.inferTouchPoints('file.move', { from: 'a.txt', toDir: 'D:\\archive' }).paths,
+    simulate.inferTouchPoints('point.file_move', { from: 'a.txt', toDir: 'D:\\archive' }).paths,
     ['a.txt', 'D:\\archive'],
     'from / toDir 都应算路径'
   )
-  assert.deepStrictEqual(simulate.inferTouchPoints('win.open', { kind: 'url', target: 'https://x' }).paths, [], 'URL 不是文件路径')
-  assert.deepStrictEqual(simulate.inferTouchPoints('win.open', { kind: 'folder', target: 'C:\\p' }).paths, ['C:\\p'])
+  assert.deepStrictEqual(simulate.inferTouchPoints('point.open', { kind: 'url', target: 'https://x' }).paths, [], 'URL 不是文件路径')
+  assert.deepStrictEqual(simulate.inferTouchPoints('point.open', { kind: 'folder', target: 'C:\\p' }).paths, ['C:\\p'])
   assert.deepStrictEqual(
-    simulate.inferTouchPoints('win.window.control', { selector: '{"process":"notepad.exe","title":"x"}' }).windows,
+    simulate.inferTouchPoints('point.window_control', { selector: '{"process":"notepad.exe","title":"x"}' }).windows,
     ['进程~notepad.exe', '标题~x']
   )
 
@@ -1458,51 +1458,51 @@ async function main() {
   assert.strictEqual(simulate.worstEffect([]), null)
 
   // 整图推演
-  const archiveSim = simulate.analyzeFlow('flow.batch-archive', { path: 'D:\\inbox', pattern: '*.pdf', target: 'D:\\archive' })
+  const archiveSim = simulate.analyzeFlow('line.batch_archive', { path: 'D:\\inbox', pattern: '*.pdf', target: 'D:\\archive' })
   assert.strictEqual(archiveSim.maxEffect, 'L1', `批量归档最坏应是 L1，得到 ${archiveSim.maxEffect}`)
   assert.strictEqual(archiveSim.problems.length, 0, `不应有问题: ${archiveSim.problems.join(';')}`)
   assert.deepStrictEqual(archiveSim.nodes.map((n) => n.id), ['scan', 'loop', 'move', 'notify'])
   assert.ok(archiveSim.nodes.find((n) => n.id === 'scan').touch.paths[0].includes('inbox'), '扫描节点应报出收件箱路径')
 
   // L2 类会被识别出来
-  const shotSim = simulate.analyzeFlow('flow.screenshot-translate', {})
+  const shotSim = simulate.analyzeFlow('line.screenshot_translate', {})
   assert.strictEqual(shotSim.maxEffect, 'L2', '截图翻译含 win.screen.capture(L2)')
 
   // 子流程被展开
-  const siteSim = simulate.analyzeFlow('flow.open-external-site', { vpn: 'inst.ensure-vpn-ask@r2' })
-  assert.ok(siteSim.subflows.includes('flow.ensure-vpn'), `应展开子流程: ${siteSim.subflows}`)
+  const siteSim = simulate.analyzeFlow('line.open_external_site', { vpn: 'line.ensure_vpn.ask@r2' })
+  assert.ok(siteSim.subflows.includes('line.ensure_vpn'), `应展开子流程: ${siteSim.subflows}`)
   assert.strictEqual(siteSim.branchCount >= 1, true, '子流程里的分支也要计入')
 
   // 缺图 / 循环引用
   assert.match(simulate.analyzeFlow('flow.nope', {}).problems[0], /没有数据流图谱/)
-  const loopSim = simulate.analyzeFlow('flow.ensure-vpn', {}, ['flow.ensure-vpn'])
+  const loopSim = simulate.analyzeFlow('line.ensure_vpn', {}, ['line.ensure_vpn'])
   assert.match(loopSim.problems[0], /循环引用/)
 
   // 能力入口：三种模式
   const simCtx = (params) => ({ ...ctx('field.simulate', params), instance: { classId: 'field.simulate', name: 's', description: '', params } })
   const argsJson = JSON.stringify({ path: 'D:\\inbox', target: 'D:\\archive' })
-  const dryRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', mode: 'dry-run', args: argsJson }))
+  const dryRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'line.batch_archive', mode: 'dry-run', args: argsJson }))
   assert.strictEqual(dryRun.status, 'ok')
-  assert.match(dryRun.output, /dry-run flow\.batch-archive/)
+  assert.match(dryRun.output, /dry-run line\.batch_archive/)
   assert.strictEqual(dryRun.evidence.maxEffect, 'L1')
   assert.strictEqual(dryRun.evidence.verdict, 'allow', 'L1 应放行')
 
-  const impactRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', mode: 'impact', args: argsJson }))
-  assert.match(impactRun.output, /层 file/)
+  const impactRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'line.batch_archive', mode: 'impact', args: argsJson }))
+  assert.match(impactRun.output, /层 point/)
   assert.ok(impactRun.evidence.impact.effects.L1 >= 1)
 
-  const rollbackRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', mode: 'rollback', args: argsJson }))
+  const rollbackRun = await CAPABILITIES['field.simulate'](simCtx({ classId: 'line.batch_archive', mode: 'rollback', args: argsJson }))
   assert.match(rollbackRun.output, /可.*回滚/)
   assert.strictEqual(rollbackRun.evidence.needsJournal, true, '全是 L0/L1 时可用 undo journal')
 
   // 闸门联动：L2 流程必须判为需人工确认
-  const l2Run = await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.screenshot-translate', mode: 'dry-run' }))
+  const l2Run = await CAPABILITIES['field.simulate'](simCtx({ classId: 'line.screenshot_translate', mode: 'dry-run' }))
   assert.strictEqual(l2Run.evidence.maxEffect, 'L2')
   assert.strictEqual(l2Run.evidence.verdict, 'ask', 'L2 必须判需要确认，不能直接放行')
 
   // 错误路径
   assert.strictEqual((await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.nope' }))).status, 'warn')
-  assert.strictEqual((await CAPABILITIES['field.simulate'](simCtx({ classId: 'flow.batch-archive', args: '不是json' }))).status, 'warn')
+  assert.strictEqual((await CAPABILITIES['field.simulate'](simCtx({ classId: 'line.batch_archive', args: '不是json' }))).status, 'warn')
   console.log('✓ field.simulate：接触面推断 / mapping / 最坏副作用 / 整图推演 / 子流程展开 / L2 判需确认 / 三模式 都正确')
 
   // ── 8. 存储：新增类必须增量补齐，不能清空已有实例 ────────────

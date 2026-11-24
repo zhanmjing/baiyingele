@@ -3,7 +3,7 @@ import { resolveTarget } from './win.window.control'
 import { isWindows } from './_powershell'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.key.send'
+export const id = 'point.key_send'
 export const summary = 'koffi SendInput 真实发送组合键（走系统输入队列，目标程序无法区分真假）'
 
 export type ModifierName = 'Ctrl' | 'Alt' | 'Shift' | 'Meta'

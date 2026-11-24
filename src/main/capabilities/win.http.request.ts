@@ -1,6 +1,6 @@
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.http.request'
+export const id = 'point.http_request'
 export const summary = 'fetch + 10s 超时，返回状态码与字节数'
 
 /** L1 · HTTP 请求 */

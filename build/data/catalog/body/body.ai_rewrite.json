@@ -1,0 +1,33 @@
+{
+  "id": "body.ai_rewrite",
+  "name": "AI 改写",
+  "group": "ai",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "选中文本/剪贴板 → 改写、缩短、翻译。",
+  "instances": [
+    {
+      "name": "formal",
+      "rev": 2,
+      "status": "active",
+      "detail": "tone=formal · preview=true",
+      "id": "body.ai_rewrite.formal@r2"
+    },
+    {
+      "name": "shorten",
+      "rev": 1,
+      "status": "active",
+      "detail": "ratio=0.5 · preview=true",
+      "id": "body.ai_rewrite.shorten@r1"
+    },
+    {
+      "name": "translate",
+      "rev": 1,
+      "status": "active",
+      "detail": "to=en · preview=true",
+      "id": "body.ai_rewrite.translate@r1"
+    }
+  ]
+}

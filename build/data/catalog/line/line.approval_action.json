@@ -1,0 +1,33 @@
+{
+  "id": "line.approval_action",
+  "name": "flow.approval-action",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "审批通过后执行一个子流程",
+  "instances": [
+    {
+      "id": "line.approval_action.publish@r1",
+      "name": "approval-publish",
+      "rev": 1,
+      "status": "active",
+      "detail": "action=publish；target=line.open_external_site.github@r1"
+    },
+    {
+      "id": "line.approval_action.delete@r1",
+      "name": "approval-delete",
+      "rev": 1,
+      "status": "active",
+      "detail": "action=cleanup；target=line.clipboard_to_file.daily@r2"
+    },
+    {
+      "id": "line.approval_action.deploy@r1",
+      "name": "approval-deploy",
+      "rev": 1,
+      "status": "active",
+      "detail": "action=deploy；target=line.ensure_service.docker@r1"
+    }
+  ]
+}

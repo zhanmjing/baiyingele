@@ -63,7 +63,7 @@ const resourceFields: Record<ResourceKind, ResourceField[]> = {
   ],
   'panel-instance': [
     { key: 'label', label: 'Instance Label', placeholder: 'point' },
-    { key: 'content', label: 'Content', placeholder: 'surface.inspector.point' },
+    { key: 'content', label: 'Content', placeholder: 'surface.inspector.point@r4' },
     { key: 'mode', label: 'Mode', options: ['right', 'left', 'bottom', 'floating', 'modal', 'sheet'] },
     { key: 'width', label: 'Width', placeholder: '380' },
     { key: 'state', label: 'State', options: ['ready', 'loading', 'empty', 'error', 'streaming', 'needsApproval', 'blocked'] },
@@ -74,7 +74,7 @@ const resourceFields: Record<ResourceKind, ResourceField[]> = {
     { key: 'pattern', label: 'Pattern', placeholder: 'LDR' },
     { key: 'name', label: '名称', placeholder: '打开 GitHub' },
     { key: 'kind', label: 'Kind', placeholder: 'flow 或 point' },
-    { key: 'target', label: 'Target', placeholder: 'inst.site-github@r1' },
+    { key: 'target', label: 'Target', placeholder: 'line.open_external_site.github@r1' },
     { key: 'effect', label: 'Effect', placeholder: 'L2' },
     { key: 'desc', label: '说明', multiline: true }
   ],
@@ -89,8 +89,8 @@ const resourceFields: Record<ResourceKind, ResourceField[]> = {
     { key: 'icon', label: 'Icon', placeholder: '▣' },
     { key: 'kind', label: 'Kind', placeholder: 'flow 或 point' },
     { key: 'hotkey', label: 'Hotkey', placeholder: '1' },
-    { key: 'target', label: 'Target', placeholder: 'inst.site-github@r1' },
-    { key: 'sub', label: 'Sub Label', placeholder: 'inst.site-github' },
+    { key: 'target', label: 'Target', placeholder: 'line.open_external_site.github@r1' },
+    { key: 'sub', label: 'Sub Label', placeholder: 'line.open_external_site.github' },
     { key: 'effect', label: 'Effect', placeholder: 'L2' }
   ]
 }

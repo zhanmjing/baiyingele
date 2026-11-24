@@ -1,18 +1,18 @@
 {
   "layer": "line",
   "order": [
-    "flow.ensure-vpn",
-    "flow.ensure-app",
-    "flow.ensure-service",
-    "flow.ensure-download",
-    "flow.open-external-site",
-    "flow.open-app",
-    "flow.open-workspace",
-    "flow.clipboard-to-file",
-    "flow.screenshot-translate",
-    "flow.http-extract",
-    "flow.ai-rewrite",
-    "flow.batch-archive",
-    "flow.approval-action"
+    "line.ensure_vpn",
+    "line.ensure_app",
+    "line.ensure_service",
+    "line.ensure_download",
+    "line.open_external_site",
+    "line.open_app",
+    "line.open_workspace",
+    "line.clipboard_to_file",
+    "line.screenshot_translate",
+    "line.http_extract",
+    "line.ai_rewrite",
+    "line.batch_archive",
+    "line.approval_action"
   ]
 }

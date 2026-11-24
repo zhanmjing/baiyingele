@@ -12,13 +12,15 @@
       "name": "office",
       "rev": 1,
       "status": "active",
-      "detail": "members=external-access,invoice-archive,screenshot-translate"
+      "detail": "members=external-access,invoice-archive,screenshot-translate",
+      "id": "body.suite.office@r1"
     },
     {
       "name": "dev",
       "rev": 1,
       "status": "active",
-      "detail": "members=external-access,workspace,ocr,quick-launch"
+      "detail": "members=external-access,workspace,ocr,quick-launch",
+      "id": "body.suite.dev@r1"
     }
   ]
 }

@@ -49,7 +49,7 @@
         },
         {
           "label": "flow-slot",
-          "content": "surface.inspector.flow-slot",
+          "content": "surface.inspector.flow_slot",
           "mode": "right",
           "width": 400,
           "state": "ready",
@@ -63,7 +63,7 @@
         },
         {
           "label": "body-manifest",
-          "content": "surface.inspector.body-manifest",
+          "content": "surface.inspector.body_manifest",
           "mode": "right",
           "width": 440,
           "state": "ready",
@@ -94,7 +94,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.settings-page",
+      "content": "surface.settings_page",
       "states": [
         "ready",
         "error"
@@ -140,7 +140,7 @@
         },
         {
           "label": "vpn",
-          "content": "surface.form.settings.vpn",
+          "content": "surface.form.settings_vpn",
           "mode": "right",
           "width": 440,
           "state": "ready",
@@ -169,7 +169,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.command-palette",
+      "content": "surface.command_palette",
       "states": [
         "ready",
         "empty",
@@ -203,7 +203,7 @@
         },
         {
           "label": "flow-editor",
-          "content": "surface.palette.flow-editor",
+          "content": "surface.palette.flow_editor",
           "mode": "modal",
           "width": 560,
           "state": "ready",
@@ -217,7 +217,7 @@
         },
         {
           "label": "body-launcher",
-          "content": "surface.palette.body-launcher",
+          "content": "surface.palette.body_launcher",
           "mode": "modal",
           "width": 600,
           "state": "ready",
@@ -248,7 +248,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.run-history",
+      "content": "surface.run_history",
       "states": [
         "ready",
         "empty",
@@ -267,7 +267,7 @@
       "instances": [
         {
           "label": "flow",
-          "content": "surface.run-history.flow",
+          "content": "surface.run_history.flow",
           "mode": "right",
           "width": 460,
           "state": "ready",
@@ -281,7 +281,7 @@
         },
         {
           "label": "vpn",
-          "content": "surface.run-history.vpn",
+          "content": "surface.run_history.vpn",
           "mode": "right",
           "width": 460,
           "state": "ready",
@@ -295,7 +295,7 @@
         },
         {
           "label": "body",
-          "content": "surface.run-history.body",
+          "content": "surface.run_history.body",
           "mode": "right",
           "width": 520,
           "state": "ready",
@@ -326,7 +326,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.artifact-panel",
+      "content": "surface.artifact_panel",
       "states": [
         "ready",
         "loading",
@@ -408,7 +408,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.prompt-input + surface.streaming-response",
+      "content": "surface.prompt_input + surface.streaming_response",
       "states": [
         "ready",
         "streaming",
@@ -458,7 +458,7 @@
         },
         {
           "label": "inline-edit",
-          "content": "surface.prompt.inline-edit",
+          "content": "surface.prompt.inline_edit",
           "mode": "floating",
           "width": 440,
           "state": "ready",
@@ -489,7 +489,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.approval-card",
+      "content": "surface.approval_card",
       "states": [
         "needsApproval",
         "blocked",
@@ -510,7 +510,7 @@
       "instances": [
         {
           "label": "tool-call",
-          "content": "surface.approval.tool-call",
+          "content": "surface.approval.tool_call",
           "mode": "modal",
           "width": 520,
           "state": "needsApproval",
@@ -601,7 +601,7 @@
         },
         {
           "label": "vpn",
-          "content": "surface.notify.vpn",
+          "content": "surface.notification.vpn",
           "mode": "floating",
           "width": 340,
           "state": "ready",
@@ -644,7 +644,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.launch-dock",
+      "content": "surface.launch_dock",
       "states": [
         "ready",
         "empty"
@@ -755,7 +755,7 @@
         },
         {
           "label": "body-health",
-          "content": "surface.dashboard.body-health",
+          "content": "surface.dashboard.body_health",
           "mode": "bottom",
           "width": 520,
           "state": "ready",
@@ -805,7 +805,7 @@
       "instances": [
         {
           "label": "flow-version",
-          "content": "surface.diff.flow-version",
+          "content": "surface.diff.flow_version",
           "mode": "right",
           "width": 560,
           "state": "ready",
@@ -819,7 +819,7 @@
         },
         {
           "label": "body-manifest",
-          "content": "surface.diff.body-manifest",
+          "content": "surface.diff.body_manifest",
           "mode": "right",
           "width": 560,
           "state": "ready",
@@ -850,7 +850,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.preview-window",
+      "content": "surface.preview_window",
       "states": [
         "ready",
         "loading",
@@ -868,7 +868,7 @@
       "instances": [
         {
           "label": "file",
-          "content": "surface.preview-window.file",
+          "content": "surface.preview_window.file",
           "mode": "right",
           "width": 520,
           "state": "ready",
@@ -882,7 +882,7 @@
         },
         {
           "label": "image",
-          "content": "surface.preview-window.image",
+          "content": "surface.preview_window.image",
           "mode": "floating",
           "width": 560,
           "state": "ready",
@@ -914,7 +914,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.tool-call-trace",
+      "content": "surface.tool_call_trace",
       "states": [
         "ready",
         "streaming",
@@ -977,7 +977,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.log-viewer",
+      "content": "surface.log_viewer",
       "states": [
         "ready",
         "empty",
@@ -996,7 +996,7 @@
       "instances": [
         {
           "label": "logs",
-          "content": "surface.log-viewer.logs",
+          "content": "surface.log_viewer.logs",
           "mode": "bottom",
           "width": 300,
           "state": "ready",
@@ -1011,7 +1011,7 @@
         },
         {
           "label": "terminal",
-          "content": "surface.log-viewer.terminal",
+          "content": "surface.log_viewer.terminal",
           "mode": "bottom",
           "width": 320,
           "state": "ready",

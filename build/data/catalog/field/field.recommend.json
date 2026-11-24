@@ -7,7 +7,7 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.recommend.next-action@r1",
+      "id": "field.recommend.next_action@r1",
       "classId": "field.recommend",
       "scope": "point/surface",
       "output": "action suggestion",

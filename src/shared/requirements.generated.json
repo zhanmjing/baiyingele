@@ -10,9 +10,9 @@
   },
   "requirements": [
     {
-      "id": "req:point.inst.site-openai@r1.instance",
+      "id": "req:point.line.inst.site_openai@r1.instance",
       "layer": "point",
-      "capability": "point:inst.site-openai@r1",
+      "capability": "point:line.inst.site_openai@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -30,9 +30,9 @@
       ]
     },
     {
-      "id": "req:point.open.terminal@r1.instance",
+      "id": "req:point.point.open.terminal@r1.instance",
       "layer": "point",
-      "capability": "point:open.terminal@r1",
+      "capability": "point:point.open.terminal@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -50,107 +50,107 @@
       ]
     },
     {
-      "id": "req:line.flow.backup-folder",
+      "id": "req:line.line.backup_folder",
       "layer": "line",
-      "capability": "line:flow.backup-folder",
+      "capability": "line:line.backup_folder",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.backup-sync",
+          "owner": "body.backup_sync",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.clip-page",
+      "id": "req:line.line.clip_page",
       "layer": "line",
-      "capability": "line:flow.clip-page",
+      "capability": "line:line.clip_page",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.web-clipper",
+          "owner": "body.web_clipper",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.clipboard-history",
+      "id": "req:line.line.clipboard_history",
       "layer": "line",
-      "capability": "line:flow.clipboard-history",
+      "capability": "line:line.clipboard_history",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.clipboard-history",
+          "owner": "body.clipboard_history",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.convert-media",
+      "id": "req:line.line.convert_media",
       "layer": "line",
-      "capability": "line:flow.convert-media",
+      "capability": "line:line.convert_media",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.media-converter",
+          "owner": "body.media_converter",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.edit-env",
+      "id": "req:line.line.edit_env",
       "layer": "line",
-      "capability": "line:flow.edit-env",
+      "capability": "line:line.edit_env",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.env-vars",
+          "owner": "body.env_vars",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.edit-hosts",
+      "id": "req:line.line.edit_hosts",
       "layer": "line",
-      "capability": "line:flow.edit-hosts",
+      "capability": "line:line.edit_hosts",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.hosts-editor",
+          "owner": "body.hosts_editor",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.find-file-lock",
+      "id": "req:line.line.find_file_lock",
       "layer": "line",
-      "capability": "line:flow.find-file-lock",
+      "capability": "line:line.find_file_lock",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-locksmith",
+          "owner": "body.file_locksmith",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.keep-awake",
+      "id": "req:line.line.keep_awake",
       "layer": "line",
-      "capability": "line:flow.keep-awake",
+      "capability": "line:line.keep_awake",
       "type": "class",
       "requiredBy": [
         {
@@ -162,65 +162,65 @@
       ]
     },
     {
-      "id": "req:line.flow.launch-target",
+      "id": "req:line.line.launch_target",
       "layer": "line",
-      "capability": "line:flow.launch-target",
+      "capability": "line:line.launch_target",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.quick-launch",
+          "owner": "body.quick_launch",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.layout-windows",
+      "id": "req:line.line.layout_windows",
       "layer": "line",
-      "capability": "line:flow.layout-windows",
+      "capability": "line:line.layout_windows",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.window-layout",
+          "owner": "body.window_layout",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.measure-screen",
+      "id": "req:line.line.measure_screen",
       "layer": "line",
-      "capability": "line:flow.measure-screen",
+      "capability": "line:line.measure_screen",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.screen-ruler",
+          "owner": "body.screen_ruler",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.metric-stream",
+      "id": "req:line.line.metric_stream",
       "layer": "line",
-      "capability": "line:flow.metric-stream",
+      "capability": "line:line.metric_stream",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.system-monitor",
+          "owner": "body.system_monitor",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.ocr.recognize",
+      "id": "req:line.line.ocr_recognize",
       "layer": "line",
-      "capability": "line:flow.ocr.recognize",
+      "capability": "line:line.ocr_recognize",
       "type": "class",
       "requiredBy": [
         {
@@ -232,121 +232,121 @@
       ]
     },
     {
-      "id": "req:line.flow.organize-files",
+      "id": "req:line.line.organize_files",
       "layer": "line",
-      "capability": "line:flow.organize-files",
+      "capability": "line:line.organize_files",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-organizer",
+          "owner": "body.file_organizer",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.paste-transform",
+      "id": "req:line.line.paste_transform",
       "layer": "line",
-      "capability": "line:flow.paste-transform",
+      "capability": "line:line.paste_transform",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.advanced-paste",
+          "owner": "body.advanced_paste",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.pdf-op",
+      "id": "req:line.line.pdf_op",
       "layer": "line",
-      "capability": "line:flow.pdf-op",
+      "capability": "line:line.pdf_op",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.pdf-toolkit",
+          "owner": "body.pdf_toolkit",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.pick-color",
+      "id": "req:line.line.pick_color",
       "layer": "line",
-      "capability": "line:flow.pick-color",
+      "capability": "line:line.pick_color",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.color-picker",
+          "owner": "body.color_picker",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.pin-window",
+      "id": "req:line.line.pin_window",
       "layer": "line",
-      "capability": "line:flow.pin-window",
+      "capability": "line:line.pin_window",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.always-on-top",
+          "owner": "body.always_on_top",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.preview-file",
+      "id": "req:line.line.preview_file",
       "layer": "line",
-      "capability": "line:flow.preview-file",
+      "capability": "line:line.preview_file",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-preview",
+          "owner": "body.file_preview",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.rename-files",
+      "id": "req:line.line.rename_files",
       "layer": "line",
-      "capability": "line:flow.rename-files",
+      "capability": "line:line.rename_files",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.batch-rename",
+          "owner": "body.batch_rename",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.resize-image",
+      "id": "req:line.line.resize_image",
       "layer": "line",
-      "capability": "line:flow.resize-image",
+      "capability": "line:line.resize_image",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.image-resizer",
+          "owner": "body.image_resizer",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.suite.launch",
+      "id": "req:line.line.suite_launch",
       "layer": "line",
-      "capability": "line:flow.suite.launch",
+      "capability": "line:line.suite_launch",
       "type": "class",
       "requiredBy": [
         {
@@ -358,401 +358,37 @@
       ]
     },
     {
-      "id": "req:line.flow.summarize",
+      "id": "req:line.line.summarize",
       "layer": "line",
-      "capability": "line:flow.summarize",
+      "capability": "line:line.summarize",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.meeting-notes",
+          "owner": "body.meeting_notes",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:line.flow.transcribe",
+      "id": "req:line.line.transcribe",
       "layer": "line",
-      "capability": "line:flow.transcribe",
+      "capability": "line:line.transcribe",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.meeting-notes",
+          "owner": "body.meeting_notes",
           "role": "流程编排",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.ai.rewrite",
+      "id": "req:point.line.inst.site_bili@r1.instance",
       "layer": "point",
-      "capability": "point:ai.rewrite",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.ai-rewrite",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.ai.summarize",
-      "layer": "point",
-      "capability": "point:ai.summarize",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.meeting-notes",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.audio.capture",
-      "layer": "point",
-      "capability": "point:audio.capture",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.meeting-notes",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.browser.read",
-      "layer": "point",
-      "capability": "point:browser.read",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.web-clipper",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.clipboard.watch",
-      "layer": "point",
-      "capability": "point:clipboard.watch",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.clipboard-history",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.color.convert",
-      "layer": "point",
-      "capability": "point:color.convert",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.color-picker",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.env.read",
-      "layer": "point",
-      "capability": "point:env.read",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.env-vars",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.env.validate",
-      "layer": "point",
-      "capability": "point:env.validate",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.env-vars",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.env.write",
-      "layer": "point",
-      "capability": "point:env.write",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.env-vars",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.classify",
-      "layer": "point",
-      "capability": "point:file.classify",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.file-organizer",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.copy",
-      "layer": "point",
-      "capability": "point:file.copy",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.backup-sync",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.handle",
-      "layer": "point",
-      "capability": "point:file.handle",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.file-locksmith",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.list",
-      "layer": "point",
-      "capability": "point:file.list",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.batch-rename",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.read.image",
-      "layer": "point",
-      "capability": "point:file.read.image",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.image-resizer",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.write@r1.instance",
-      "layer": "point",
-      "capability": "point:file.write@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "tool-write",
-          "role": "写文件",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.file.zip@r1.instance",
-      "layer": "point",
-      "capability": "point:file.zip@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "tool-zip",
-          "role": "压缩",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.flow.run.logs@r1.instance",
-      "layer": "point",
-      "capability": "point:flow.run.logs@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "dev-logs",
-          "role": "运行日志",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.hash.sha256@r1.instance",
-      "layer": "point",
-      "capability": "point:hash.sha256@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "tool-hash",
-          "role": "哈希",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.hash.verify",
-      "layer": "point",
-      "capability": "point:hash.verify",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.backup-sync",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.hosts.read",
-      "layer": "point",
-      "capability": "point:hosts.read",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.hosts-editor",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.hosts.validate",
-      "layer": "point",
-      "capability": "point:hosts.validate",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.hosts-editor",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.hosts.write",
-      "layer": "point",
-      "capability": "point:hosts.write",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.hosts-editor",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.html.toMarkdown",
-      "layer": "point",
-      "capability": "point:html.toMarkdown",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.web-clipper",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.image.preprocess",
-      "layer": "point",
-      "capability": "point:image.preprocess",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.ocr",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.image.resize",
-      "layer": "point",
-      "capability": "point:image.resize",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.image-resizer",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.input.clipboard@r1.instance",
-      "layer": "point",
-      "capability": "point:input.clipboard@r1",
-      "type": "instance",
-      "requiredBy": [
-        {
-          "where": "dock.tile.target",
-          "owner": "tool-clip",
-          "role": "剪贴板",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.inst.site-bili@r1.instance",
-      "layer": "point",
-      "capability": "point:inst.site-bili@r1",
+      "capability": "point:line.inst.site_bili@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -764,9 +400,9 @@
       ]
     },
     {
-      "id": "req:point.inst.site-gmail@r1.instance",
+      "id": "req:point.line.inst.site_gmail@r1.instance",
       "layer": "point",
-      "capability": "point:inst.site-gmail@r1",
+      "capability": "point:line.inst.site_gmail@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -778,9 +414,9 @@
       ]
     },
     {
-      "id": "req:point.inst.site-maps@r1.instance",
+      "id": "req:point.line.inst.site_maps@r1.instance",
       "layer": "point",
-      "capability": "point:inst.site-maps@r1",
+      "capability": "point:line.inst.site_maps@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -792,9 +428,9 @@
       ]
     },
     {
-      "id": "req:point.inst.site-reddit@r1.instance",
+      "id": "req:point.line.inst.site_reddit@r1.instance",
       "layer": "point",
-      "capability": "point:inst.site-reddit@r1",
+      "capability": "point:line.inst.site_reddit@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -806,9 +442,9 @@
       ]
     },
     {
-      "id": "req:point.inst.site-so@r1.instance",
+      "id": "req:point.line.inst.site_so@r1.instance",
       "layer": "point",
-      "capability": "point:inst.site-so@r1",
+      "capability": "point:line.inst.site_so@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -820,9 +456,9 @@
       ]
     },
     {
-      "id": "req:point.inst.site-x@r1.instance",
+      "id": "req:point.line.inst.site_x@r1.instance",
       "layer": "point",
-      "capability": "point:inst.site-x@r1",
+      "capability": "point:line.inst.site_x@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -834,23 +470,387 @@
       ]
     },
     {
-      "id": "req:point.invoice.parse",
+      "id": "req:point.point.ai_rewrite",
       "layer": "point",
-      "capability": "point:invoice.parse",
+      "capability": "point:point.ai_rewrite",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.invoice-archive",
+          "owner": "body.ai_rewrite",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.json.format@r1.instance",
+      "id": "req:point.point.ai_summarize",
       "layer": "point",
-      "capability": "point:json.format@r1",
+      "capability": "point:point.ai_summarize",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting_notes",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.audio_capture",
+      "layer": "point",
+      "capability": "point:point.audio_capture",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.meeting_notes",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.browser_read",
+      "layer": "point",
+      "capability": "point:point.browser_read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.web_clipper",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.clipboard_watch",
+      "layer": "point",
+      "capability": "point:point.clipboard_watch",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.clipboard_history",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.color_convert",
+      "layer": "point",
+      "capability": "point:point.color_convert",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color_picker",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.env_read",
+      "layer": "point",
+      "capability": "point:point.env_read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env_vars",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.env_validate",
+      "layer": "point",
+      "capability": "point:point.env_validate",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env_vars",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.env_write",
+      "layer": "point",
+      "capability": "point:point.env_write",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.env_vars",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file_classify",
+      "layer": "point",
+      "capability": "point:point.file_classify",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file_organizer",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file_copy",
+      "layer": "point",
+      "capability": "point:point.file_copy",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.backup_sync",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file_handle",
+      "layer": "point",
+      "capability": "point:point.file_handle",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.file_locksmith",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file_list",
+      "layer": "point",
+      "capability": "point:point.file_list",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.batch_rename",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file_read_image",
+      "layer": "point",
+      "capability": "point:point.file_read_image",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image_resizer",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file.write@r1.instance",
+      "layer": "point",
+      "capability": "point:point.file.write@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-write",
+          "role": "写文件",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.file.zip@r1.instance",
+      "layer": "point",
+      "capability": "point:point.file.zip@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-zip",
+          "role": "压缩",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.flow.run_logs@r1.instance",
+      "layer": "point",
+      "capability": "point:point.flow.run_logs@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "dev-logs",
+          "role": "运行日志",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.hash_verify",
+      "layer": "point",
+      "capability": "point:point.hash_verify",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.backup_sync",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.hash.sha256@r1.instance",
+      "layer": "point",
+      "capability": "point:point.hash.sha256@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-hash",
+          "role": "哈希",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.hosts_read",
+      "layer": "point",
+      "capability": "point:point.hosts_read",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts_editor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.hosts_validate",
+      "layer": "point",
+      "capability": "point:point.hosts_validate",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts_editor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.hosts_write",
+      "layer": "point",
+      "capability": "point:point.hosts_write",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.hosts_editor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.html_tomarkdown",
+      "layer": "point",
+      "capability": "point:point.html_tomarkdown",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.web_clipper",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.image_preprocess",
+      "layer": "point",
+      "capability": "point:point.image_preprocess",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.ocr",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.image_resize",
+      "layer": "point",
+      "capability": "point:point.image_resize",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.image_resizer",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.input.clipboard@r1.instance",
+      "layer": "point",
+      "capability": "point:point.input.clipboard@r1",
+      "type": "instance",
+      "requiredBy": [
+        {
+          "where": "dock.tile.target",
+          "owner": "tool-clip",
+          "role": "剪贴板",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.invoice_parse",
+      "layer": "point",
+      "capability": "point:point.invoice_parse",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.invoice_archive",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.json.format@r1.instance",
+      "layer": "point",
+      "capability": "point:point.json.format@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -862,93 +862,93 @@
       ]
     },
     {
-      "id": "req:point.launch.run",
+      "id": "req:point.point.launch_run",
       "layer": "point",
-      "capability": "point:launch.run",
+      "capability": "point:point.launch_run",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.quick-launch",
+          "owner": "body.quick_launch",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.launch.search",
+      "id": "req:point.point.launch_search",
       "layer": "point",
-      "capability": "point:launch.search",
+      "capability": "point:point.launch_search",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.quick-launch",
+          "owner": "body.quick_launch",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.measure.angle",
+      "id": "req:point.point.measure_angle",
       "layer": "point",
-      "capability": "point:measure.angle",
+      "capability": "point:point.measure_angle",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.screen-ruler",
+          "owner": "body.screen_ruler",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.measure.length",
+      "id": "req:point.point.measure_length",
       "layer": "point",
-      "capability": "point:measure.length",
+      "capability": "point:point.measure_length",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.screen-ruler",
+          "owner": "body.screen_ruler",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.media.probe",
+      "id": "req:point.point.media_probe",
       "layer": "point",
-      "capability": "point:media.probe",
+      "capability": "point:point.media_probe",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.media-converter",
+          "owner": "body.media_converter",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.media.transcode",
+      "id": "req:point.point.media_transcode",
       "layer": "point",
-      "capability": "point:media.transcode",
+      "capability": "point:point.media_transcode",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.media-converter",
+          "owner": "body.media_converter",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.ocr.read@r1.instance",
+      "id": "req:point.point.ocr.read@r1.instance",
       "layer": "point",
-      "capability": "point:ocr.read@r1",
+      "capability": "point:point.ocr.read@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -960,51 +960,51 @@
       ]
     },
     {
-      "id": "req:point.pdf.merge",
+      "id": "req:point.point.pdf_merge",
       "layer": "point",
-      "capability": "point:pdf.merge",
+      "capability": "point:point.pdf_merge",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.pdf-toolkit",
+          "owner": "body.pdf_toolkit",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.pdf.read",
+      "id": "req:point.point.pdf_read",
       "layer": "point",
-      "capability": "point:pdf.read",
+      "capability": "point:point.pdf_read",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.pdf-toolkit",
+          "owner": "body.pdf_toolkit",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.pdf.write",
+      "id": "req:point.point.pdf_write",
       "layer": "point",
-      "capability": "point:pdf.write",
+      "capability": "point:point.pdf_write",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.pdf-toolkit",
+          "owner": "body.pdf_toolkit",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.permission.check",
+      "id": "req:point.point.permission_check",
       "layer": "point",
-      "capability": "point:permission.check",
+      "capability": "point:point.permission_check",
       "type": "class",
       "requiredBy": [
         {
@@ -1016,9 +1016,9 @@
       ]
     },
     {
-      "id": "req:point.power.keepAwake",
+      "id": "req:point.point.power_keepawake",
       "layer": "point",
-      "capability": "point:power.keepAwake",
+      "capability": "point:point.power_keepawake",
       "type": "class",
       "requiredBy": [
         {
@@ -1030,9 +1030,9 @@
       ]
     },
     {
-      "id": "req:point.power.state",
+      "id": "req:point.point.power_state",
       "layer": "point",
-      "capability": "point:power.state",
+      "capability": "point:point.power_state",
       "type": "class",
       "requiredBy": [
         {
@@ -1044,23 +1044,23 @@
       ]
     },
     {
-      "id": "req:point.process.kill",
+      "id": "req:point.point.process_kill",
       "layer": "point",
-      "capability": "point:process.kill",
+      "capability": "point:point.process_kill",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-locksmith",
+          "owner": "body.file_locksmith",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.process.launch",
+      "id": "req:point.point.process_launch",
       "layer": "point",
-      "capability": "point:process.launch",
+      "capability": "point:point.process_launch",
       "type": "class",
       "requiredBy": [
         {
@@ -1072,65 +1072,93 @@
       ]
     },
     {
-      "id": "req:point.process.open",
+      "id": "req:point.point.process_open",
       "layer": "point",
-      "capability": "point:process.open",
+      "capability": "point:point.process_open",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-locksmith",
+          "owner": "body.file_locksmith",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.rename.plan",
+      "id": "req:point.point.rename_plan",
       "layer": "point",
-      "capability": "point:rename.plan",
+      "capability": "point:point.rename_plan",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.batch-rename",
+          "owner": "body.batch_rename",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.render.image",
+      "id": "req:point.point.render_image",
       "layer": "point",
-      "capability": "point:render.image",
+      "capability": "point:point.render_image",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-preview",
+          "owner": "body.file_preview",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.render.text",
+      "id": "req:point.point.render_text",
       "layer": "point",
-      "capability": "point:render.text",
+      "capability": "point:point.render_text",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-preview",
+          "owner": "body.file_preview",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.screen.color@r1.instance",
+      "id": "req:point.point.screen_pick",
       "layer": "point",
-      "capability": "point:screen.color@r1",
+      "capability": "point:point.screen_pick",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.color_picker",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.screen_region",
+      "layer": "point",
+      "capability": "point:point.screen_region",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.screen_ruler",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.screen.color@r1.instance",
+      "layer": "point",
+      "capability": "point:point.screen.color@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1142,65 +1170,37 @@
       ]
     },
     {
-      "id": "req:point.screen.pick",
+      "id": "req:point.point.service_start",
       "layer": "point",
-      "capability": "point:screen.pick",
+      "capability": "point:point.service_start",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.color-picker",
+          "owner": "body.service_health",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.screen.region",
+      "id": "req:point.point.service_status",
       "layer": "point",
-      "capability": "point:screen.region",
+      "capability": "point:point.service_status",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.screen-ruler",
+          "owner": "body.service_health",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.service.start",
+      "id": "req:point.point.service.status@r1.instance",
       "layer": "point",
-      "capability": "point:service.start",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.service-health",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.service.status",
-      "layer": "point",
-      "capability": "point:service.status",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.service-health",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.service.status@r1.instance",
-      "layer": "point",
-      "capability": "point:service.status@r1",
+      "capability": "point:point.service.status@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1212,9 +1212,9 @@
       ]
     },
     {
-      "id": "req:point.settings.open@r1.instance",
+      "id": "req:point.point.settings.open@r1.instance",
       "layer": "point",
-      "capability": "point:settings.open@r1",
+      "capability": "point:point.settings.open@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1226,51 +1226,79 @@
       ]
     },
     {
-      "id": "req:point.speech.transcribe",
+      "id": "req:point.point.speech_transcribe",
       "layer": "point",
-      "capability": "point:speech.transcribe",
+      "capability": "point:point.speech_transcribe",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.meeting-notes",
+          "owner": "body.meeting_notes",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.store.query",
+      "id": "req:point.point.store_query",
       "layer": "point",
-      "capability": "point:store.query",
+      "capability": "point:point.store_query",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.clipboard-history",
+          "owner": "body.clipboard_history",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.sys.cpu.stats",
+      "id": "req:point.point.sys_cpu_stats",
       "layer": "point",
-      "capability": "point:sys.cpu.stats",
+      "capability": "point:point.sys_cpu_stats",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.system-monitor",
+          "owner": "body.system_monitor",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.sys.cpu.stats@r1.instance",
+      "id": "req:point.point.sys_gpu_stats",
       "layer": "point",
-      "capability": "point:sys.cpu.stats@r1",
+      "capability": "point:point.sys_gpu_stats",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.system_monitor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.sys_memory_stats",
+      "layer": "point",
+      "capability": "point:point.sys_memory_stats",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.system_monitor",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.sys.cpu_stats@r1.instance",
+      "layer": "point",
+      "capability": "point:point.sys.cpu_stats@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1282,9 +1310,9 @@
       ]
     },
     {
-      "id": "req:point.sys.disk.stats@r1.instance",
+      "id": "req:point.point.sys.disk_stats@r1.instance",
       "layer": "point",
-      "capability": "point:sys.disk.stats@r1",
+      "capability": "point:point.sys.disk_stats@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1296,23 +1324,9 @@
       ]
     },
     {
-      "id": "req:point.sys.gpu.stats",
+      "id": "req:point.point.sys.gpu_stats@r1.instance",
       "layer": "point",
-      "capability": "point:sys.gpu.stats",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.system-monitor",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.sys.gpu.stats@r1.instance",
-      "layer": "point",
-      "capability": "point:sys.gpu.stats@r1",
+      "capability": "point:point.sys.gpu_stats@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1324,23 +1338,9 @@
       ]
     },
     {
-      "id": "req:point.sys.memory.stats",
+      "id": "req:point.point.sys.memory_stats@r1.instance",
       "layer": "point",
-      "capability": "point:sys.memory.stats",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.system-monitor",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.sys.memory.stats@r1.instance",
-      "layer": "point",
-      "capability": "point:sys.memory.stats@r1",
+      "capability": "point:point.sys.memory_stats@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1352,9 +1352,9 @@
       ]
     },
     {
-      "id": "req:point.sys.metrics.snapshot@r1.instance",
+      "id": "req:point.point.sys.metrics_snapshot@r1.instance",
       "layer": "point",
-      "capability": "point:sys.metrics.snapshot@r1",
+      "capability": "point:point.sys.metrics_snapshot@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1366,9 +1366,9 @@
       ]
     },
     {
-      "id": "req:point.sys.network.stats@r1.instance",
+      "id": "req:point.point.sys.network_stats@r1.instance",
       "layer": "point",
-      "capability": "point:sys.network.stats@r1",
+      "capability": "point:point.sys.network_stats@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1380,9 +1380,9 @@
       ]
     },
     {
-      "id": "req:point.sys.power.status@r1.instance",
+      "id": "req:point.point.sys.power_status@r1.instance",
       "layer": "point",
-      "capability": "point:sys.power.status@r1",
+      "capability": "point:point.sys.power_status@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1394,9 +1394,9 @@
       ]
     },
     {
-      "id": "req:point.sys.process.top@r1.instance",
+      "id": "req:point.point.sys.process_top@r1.instance",
       "layer": "point",
-      "capability": "point:sys.process.top@r1",
+      "capability": "point:point.sys.process_top@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1408,9 +1408,9 @@
       ]
     },
     {
-      "id": "req:point.sys.sensors.temp@r1.instance",
+      "id": "req:point.point.sys.sensors_temp@r1.instance",
       "layer": "point",
-      "capability": "point:sys.sensors.temp@r1",
+      "capability": "point:point.sys.sensors_temp@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1422,9 +1422,9 @@
       ]
     },
     {
-      "id": "req:point.sys.uptime@r1.instance",
+      "id": "req:point.point.sys.uptime@r1.instance",
       "layer": "point",
-      "capability": "point:sys.uptime@r1",
+      "capability": "point:point.sys.uptime@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1436,37 +1436,51 @@
       ]
     },
     {
-      "id": "req:point.text.diff",
+      "id": "req:point.point.text_diff",
       "layer": "point",
-      "capability": "point:text.diff",
+      "capability": "point:point.text_diff",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.ai-rewrite",
+          "owner": "body.ai_rewrite",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.text.read",
+      "id": "req:point.point.text_read",
       "layer": "point",
-      "capability": "point:text.read",
+      "capability": "point:point.text_read",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.ai-rewrite",
+          "owner": "body.ai_rewrite",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.text.regex@r1.instance",
+      "id": "req:point.point.text_transform",
       "layer": "point",
-      "capability": "point:text.regex@r1",
+      "capability": "point:point.text_transform",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.advanced_paste",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:point.point.text.regex@r1.instance",
+      "layer": "point",
+      "capability": "point:point.text.regex@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1478,23 +1492,23 @@
       ]
     },
     {
-      "id": "req:point.text.transform",
+      "id": "req:point.point.timer_wait",
       "layer": "point",
-      "capability": "point:text.transform",
+      "capability": "point:point.timer_wait",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.advanced-paste",
+          "owner": "body.awake",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.timer.start@r1.instance",
+      "id": "req:point.point.timer.start@r1.instance",
       "layer": "point",
-      "capability": "point:timer.start@r1",
+      "capability": "point:point.timer.start@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1506,23 +1520,9 @@
       ]
     },
     {
-      "id": "req:point.timer.wait",
+      "id": "req:point.point.translate.text@r1.instance",
       "layer": "point",
-      "capability": "point:timer.wait",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.awake",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.translate.text@r1.instance",
-      "layer": "point",
-      "capability": "point:translate.text@r1",
+      "capability": "point:point.translate.text@r1",
       "type": "instance",
       "requiredBy": [
         {
@@ -1534,51 +1534,37 @@
       ]
     },
     {
-      "id": "req:point.usage.rank",
+      "id": "req:point.point.usage_rank",
       "layer": "point",
-      "capability": "point:usage.rank",
+      "capability": "point:point.usage_rank",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.quick-launch",
+          "owner": "body.quick_launch",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.vpn.status",
+      "id": "req:point.point.vpn_status",
       "layer": "point",
-      "capability": "point:vpn.status",
+      "capability": "point:point.vpn_status",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.external-access",
+          "owner": "body.external_access",
           "role": "能力执行",
           "required": true
         }
       ]
     },
     {
-      "id": "req:point.window.layout",
+      "id": "req:point.point.window_layout",
       "layer": "point",
-      "capability": "point:window.layout",
-      "type": "class",
-      "requiredBy": [
-        {
-          "where": "body.composition",
-          "owner": "body.workspace",
-          "role": "能力执行",
-          "required": true
-        }
-      ]
-    },
-    {
-      "id": "req:point.workspace.restore",
-      "layer": "point",
-      "capability": "point:workspace.restore",
+      "capability": "point:point.window_layout",
       "type": "class",
       "requiredBy": [
         {
@@ -1590,9 +1576,23 @@
       ]
     },
     {
-      "id": "req:surface.surface.awake-status",
+      "id": "req:point.point.workspace_restore",
+      "layer": "point",
+      "capability": "point:point.workspace_restore",
+      "type": "class",
+      "requiredBy": [
+        {
+          "where": "body.composition",
+          "owner": "body.workspace",
+          "role": "能力执行",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "req:surface.surface.awake_status",
       "layer": "surface",
-      "capability": "surface:surface.awake-status",
+      "capability": "surface:surface.awake_status",
       "type": "class",
       "requiredBy": [
         {
@@ -1604,140 +1604,140 @@
       ]
     },
     {
-      "id": "req:surface.surface.backup-status",
+      "id": "req:surface.surface.backup_status",
       "layer": "surface",
-      "capability": "surface:surface.backup-status",
+      "capability": "surface:surface.backup_status",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.backup-sync",
+          "owner": "body.backup_sync",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.clipboard-list",
+      "id": "req:surface.surface.clipboard_list",
       "layer": "surface",
-      "capability": "surface:surface.clipboard-list",
+      "capability": "surface:surface.clipboard_list",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.clipboard-history",
+          "owner": "body.clipboard_history",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.clipper-preview",
+      "id": "req:surface.surface.clipper_preview",
       "layer": "surface",
-      "capability": "surface:surface.clipper-preview",
+      "capability": "surface:surface.clipper_preview",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.web-clipper",
+          "owner": "body.web_clipper",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.color-inspector",
+      "id": "req:surface.surface.color_inspector",
       "layer": "surface",
-      "capability": "surface:surface.color-inspector",
+      "capability": "surface:surface.color_inspector",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.color-picker",
+          "owner": "body.color_picker",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.convert-dialog",
+      "id": "req:surface.surface.convert_dialog",
       "layer": "surface",
-      "capability": "surface:surface.convert-dialog",
+      "capability": "surface:surface.convert_dialog",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.media-converter",
+          "owner": "body.media_converter",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.hud.ruler",
+      "id": "req:surface.surface.hud_ruler",
       "layer": "surface",
-      "capability": "surface:surface.hud.ruler",
+      "capability": "surface:surface.hud_ruler",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.screen-ruler",
+          "owner": "body.screen_ruler",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.key-value-editor",
+      "id": "req:surface.surface.key_value_editor",
       "layer": "surface",
-      "capability": "surface:surface.key-value-editor",
+      "capability": "surface:surface.key_value_editor",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.env-vars",
+          "owner": "body.env_vars",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.launch-dock",
+      "id": "req:surface.surface.launch_dock",
       "layer": "surface",
-      "capability": "surface:surface.launch-dock",
+      "capability": "surface:surface.launch_dock",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.quick-launch",
+          "owner": "body.quick_launch",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.layout-editor",
+      "id": "req:surface.surface.layout_editor",
       "layer": "surface",
-      "capability": "surface:surface.layout-editor",
+      "capability": "surface:surface.layout_editor",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.window-layout",
+          "owner": "body.window_layout",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.lock-list",
+      "id": "req:surface.surface.lock_list",
       "layer": "surface",
-      "capability": "surface:surface.lock-list",
+      "capability": "surface:surface.lock_list",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-locksmith",
+          "owner": "body.file_locksmith",
           "role": "界面承载",
           "required": true
         }
@@ -1751,16 +1751,16 @@
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.meeting-notes",
+          "owner": "body.meeting_notes",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.ocr-result",
+      "id": "req:surface.surface.ocr_result",
       "layer": "surface",
-      "capability": "surface:surface.ocr-result",
+      "capability": "surface:surface.ocr_result",
       "type": "class",
       "requiredBy": [
         {
@@ -1772,163 +1772,163 @@
       ]
     },
     {
-      "id": "req:surface.surface.organize-preview",
+      "id": "req:surface.surface.organize_preview",
       "layer": "surface",
-      "capability": "surface:surface.organize-preview",
+      "capability": "surface:surface.organize_preview",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-organizer",
+          "owner": "body.file_organizer",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.paste-preview",
+      "id": "req:surface.surface.paste_preview",
       "layer": "surface",
-      "capability": "surface:surface.paste-preview",
+      "capability": "surface:surface.paste_preview",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.advanced-paste",
+          "owner": "body.advanced_paste",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.pdf-workspace",
+      "id": "req:surface.surface.pdf_workspace",
       "layer": "surface",
-      "capability": "surface:surface.pdf-workspace",
+      "capability": "surface:surface.pdf_workspace",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.pdf-toolkit",
+          "owner": "body.pdf_toolkit",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.pin-indicator",
+      "id": "req:surface.surface.pin_indicator",
       "layer": "surface",
-      "capability": "surface:surface.pin-indicator",
+      "capability": "surface:surface.pin_indicator",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.always-on-top",
+          "owner": "body.always_on_top",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.preview-window",
+      "id": "req:surface.surface.preview_window",
       "layer": "surface",
-      "capability": "surface:surface.preview-window",
+      "capability": "surface:surface.preview_window",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.file-preview",
+          "owner": "body.file_preview",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.prompt-preview",
+      "id": "req:surface.surface.prompt_preview",
       "layer": "surface",
-      "capability": "surface:surface.prompt-preview",
+      "capability": "surface:surface.prompt_preview",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.ai-rewrite",
+          "owner": "body.ai_rewrite",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.quick-launch",
+      "id": "req:surface.surface.quick_launch",
       "layer": "surface",
-      "capability": "surface:surface.quick-launch",
+      "capability": "surface:surface.quick_launch",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.quick-launch",
+          "owner": "body.quick_launch",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.rename-dialog",
+      "id": "req:surface.surface.rename_dialog",
       "layer": "surface",
-      "capability": "surface:surface.rename-dialog",
+      "capability": "surface:surface.rename_dialog",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.batch-rename",
+          "owner": "body.batch_rename",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.resize-dialog",
+      "id": "req:surface.surface.resize_dialog",
       "layer": "surface",
-      "capability": "surface:surface.resize-dialog",
+      "capability": "surface:surface.resize_dialog",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.image-resizer",
+          "owner": "body.image_resizer",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.service-dashboard",
+      "id": "req:surface.surface.service_dashboard",
       "layer": "surface",
-      "capability": "surface:surface.service-dashboard",
+      "capability": "surface:surface.service_dashboard",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.service-health",
+          "owner": "body.service_health",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.settings.invoice",
+      "id": "req:surface.surface.settings_invoice",
       "layer": "surface",
-      "capability": "surface:surface.settings.invoice",
+      "capability": "surface:surface.settings_invoice",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.invoice-archive",
+          "owner": "body.invoice_archive",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.settings.suite",
+      "id": "req:surface.surface.settings_suite",
       "layer": "surface",
-      "capability": "surface:surface.settings.suite",
+      "capability": "surface:surface.settings_suite",
       "type": "class",
       "requiredBy": [
         {
@@ -1940,37 +1940,37 @@
       ]
     },
     {
-      "id": "req:surface.surface.settings.translate",
+      "id": "req:surface.surface.settings_translate",
       "layer": "surface",
-      "capability": "surface:surface.settings.translate",
+      "capability": "surface:surface.settings_translate",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.screenshot-translate",
+          "owner": "body.screenshot_translate",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.text-editor",
+      "id": "req:surface.surface.text_editor",
       "layer": "surface",
-      "capability": "surface:surface.text-editor",
+      "capability": "surface:surface.text_editor",
       "type": "class",
       "requiredBy": [
         {
           "where": "body.composition",
-          "owner": "body.hosts-editor",
+          "owner": "body.hosts_editor",
           "role": "界面承载",
           "required": true
         }
       ]
     },
     {
-      "id": "req:surface.surface.workspace-launcher",
+      "id": "req:surface.surface.workspace_launcher",
       "layer": "surface",
-      "capability": "surface:surface.workspace-launcher",
+      "capability": "surface:surface.workspace_launcher",
       "type": "class",
       "requiredBy": [
         {

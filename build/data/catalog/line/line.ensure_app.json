@@ -1,0 +1,26 @@
+{
+  "id": "line.ensure_app",
+  "name": "flow.ensure-app",
+  "group": "Guard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "确保应用已安装/已运行",
+  "instances": [
+    {
+      "id": "line.ensure_app.vscode@r2",
+      "name": "ensure-app-vscode",
+      "rev": 2,
+      "status": "active",
+      "detail": "确保 VS Code"
+    },
+    {
+      "id": "line.ensure_app.notepad@r1",
+      "name": "ensure-app-notepad",
+      "rev": 1,
+      "status": "active",
+      "detail": "确保记事本"
+    }
+  ]
+}

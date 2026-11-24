@@ -3,7 +3,7 @@ import { desktopCapturer, screen } from 'electron'
 import { chatWithImages, describeTierConfig, resolveTiers } from './_llm'
 import { elapsed, errorMessage, expandPath, type Capability } from './_shared'
 
-export const id = 'win.ocr.read'
+export const id = 'point.ocr_read'
 export const summary = '视觉模型 OCR：支持截图 / 本地图片 / 图片 URL，复用 provider 降级链'
 
 /** 视觉模型的建议上限，超过就等比缩小，避免几 MB 的 base64 把请求打爆 */

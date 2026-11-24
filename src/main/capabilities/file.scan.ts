@@ -2,7 +2,7 @@ import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { elapsed, errorMessage, expandPath, pathExists, type Capability } from './_shared'
 
-export const id = 'file.scan'
+export const id = 'point.file_scan'
 export const summary = 'node:fs 递归扫描；limit 封顶，不可读目录跳过并计入说明'
 
 function globToRegExp(pattern: string): RegExp {

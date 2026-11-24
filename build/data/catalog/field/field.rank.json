@@ -7,7 +7,7 @@
   "count": 4,
   "instances": [
     {
-      "id": "field.rank.scene-grid@r1",
+      "id": "field.rank.scene_grid@r1",
       "classId": "field.rank",
       "scope": "surface.launch-dock",
       "output": "tile.order",
@@ -17,27 +17,27 @@
       "detail": "surface.launch-dock · tile.order"
     },
     {
-      "id": "field.rank.command-palette@r1",
+      "id": "field.rank.command_palette@r1",
       "classId": "field.rank",
       "scope": "surface.command-palette",
       "output": "result.order",
       "rev": 1,
       "name": "rank.command-palette",
       "status": "active",
-      "detail": "surface.command-palette · result.order"
+      "detail": "surface.command_palette · result.order"
     },
     {
-      "id": "field.rank.body-market@r1",
+      "id": "field.rank.body_market@r1",
       "classId": "field.rank",
       "scope": "surface.card-grid",
       "output": "body.order",
       "rev": 1,
       "name": "rank.body-market",
       "status": "active",
-      "detail": "surface.card-grid · body.order"
+      "detail": "surface.card_grid · body.order"
     },
     {
-      "id": "field.rank.ocr-mode@r1",
+      "id": "field.rank.ocr_mode@r1",
       "classId": "field.rank",
       "scope": "body.ocr",
       "output": "mode order",

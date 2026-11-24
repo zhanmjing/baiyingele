@@ -7,14 +7,14 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.summarize.run-history@r1",
+      "id": "field.summarize.run_history@r1",
       "classId": "field.summarize",
       "scope": "surface.run-history",
       "output": "运行摘要",
       "rev": 1,
       "name": "summarize.run-history",
       "status": "active",
-      "detail": "surface.run-history · 运行摘要"
+      "detail": "surface.run_history · 运行摘要"
     },
     {
       "id": "field.summarize.context@r1",

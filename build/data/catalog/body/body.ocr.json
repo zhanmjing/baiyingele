@@ -12,31 +12,36 @@
       "name": "text",
       "rev": 1,
       "status": "active",
-      "detail": "mode=text · language=auto"
+      "detail": "mode=text · language=auto",
+      "id": "body.ocr.text@r1"
     },
     {
       "name": "math",
       "rev": 1,
       "status": "active",
-      "detail": "mode=math · output=latex"
+      "detail": "mode=math · output=latex",
+      "id": "body.ocr.math@r1"
     },
     {
       "name": "qr",
       "rev": 1,
       "status": "active",
-      "detail": "mode=qr · formats=qr,code128"
+      "detail": "mode=qr · formats=qr,code128",
+      "id": "body.ocr.qr@r1"
     },
     {
       "name": "table",
       "rev": 1,
       "status": "active",
-      "detail": "mode=table · output=markdown"
+      "detail": "mode=table · output=markdown",
+      "id": "body.ocr.table@r1"
     },
     {
       "name": "handwriting",
       "rev": 1,
       "status": "active",
-      "detail": "mode=handwriting · threshold=0.4"
+      "detail": "mode=handwriting · threshold=0.4",
+      "id": "body.ocr.handwriting@r1"
     }
   ]
 }

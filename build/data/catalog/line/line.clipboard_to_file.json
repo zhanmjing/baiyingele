@@ -1,0 +1,26 @@
+{
+  "id": "line.clipboard_to_file",
+  "name": "flow.clipboard-to-file",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "剪贴板 → 模板 → 写文件",
+  "instances": [
+    {
+      "id": "line.clipboard_to_file.inbox@r3",
+      "name": "clipboard-inbox",
+      "rev": 3,
+      "status": "active",
+      "detail": "path=inbox.md；append=true"
+    },
+    {
+      "id": "line.clipboard_to_file.daily@r2",
+      "name": "clipboard-daily",
+      "rev": 2,
+      "status": "active",
+      "detail": "path=daily/...；append=false"
+    }
+  ]
+}

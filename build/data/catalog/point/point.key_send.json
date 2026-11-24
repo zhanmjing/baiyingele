@@ -1,0 +1,47 @@
+{
+  "id": "point.key_send",
+  "name": "发送快捷键",
+  "group": "hotkey",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "向目标窗口发送组合键；复制、粘贴、剪切只是不同 keys 的实例。",
+  "instances": [
+    {
+      "id": "point.key_send.copy@r1",
+      "name": "复制",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+C\",\"mode\":\"press\",\"repeat\":1}"
+    },
+    {
+      "id": "point.key_send.paste@r1",
+      "name": "粘贴",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+V\",\"mode\":\"press\",\"repeat\":1}"
+    },
+    {
+      "id": "point.key_send.cut@r1",
+      "name": "剪切",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+X\",\"mode\":\"press\",\"repeat\":1}"
+    },
+    {
+      "id": "point.key_send.undo@r1",
+      "name": "撤销",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+Z\",\"mode\":\"press\",\"repeat\":1}"
+    },
+    {
+      "id": "point.key_send.select_all@r1",
+      "name": "全选",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+A\",\"mode\":\"press\",\"repeat\":1}"
+    }
+  ]
+}

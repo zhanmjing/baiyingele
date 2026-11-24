@@ -7,7 +7,7 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.mine.action-sequence@r1",
+      "id": "field.mine.action_sequence@r1",
       "classId": "field.mine",
       "scope": "global",
       "output": "action sequence suggestion",
@@ -17,7 +17,7 @@
       "detail": "global · action sequence suggestion"
     },
     {
-      "id": "field.mine.flow-template@r1",
+      "id": "field.mine.flow_template@r1",
       "classId": "field.mine",
       "scope": "line",
       "output": "flow template",
@@ -27,7 +27,7 @@
       "detail": "line · flow template"
     },
     {
-      "id": "field.mine.body-candidate@r1",
+      "id": "field.mine.body_candidate@r1",
       "classId": "field.mine",
       "scope": "body",
       "output": "body candidate",

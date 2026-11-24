@@ -1,0 +1,26 @@
+{
+  "id": "body.file_locksmith",
+  "name": "文件占用",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P2",
+  "summary": "查找占用文件的进程/句柄。",
+  "instances": [
+    {
+      "name": "process",
+      "rev": 1,
+      "status": "active",
+      "detail": "scope=user · confirmKill=true",
+      "id": "body.file_locksmith.process@r1"
+    },
+    {
+      "name": "handle",
+      "rev": 1,
+      "status": "active",
+      "detail": "scope=system · showSystem=true",
+      "id": "body.file_locksmith.handle@r1"
+    }
+  ]
+}

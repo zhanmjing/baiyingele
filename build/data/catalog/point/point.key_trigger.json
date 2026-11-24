@@ -1,0 +1,26 @@
+{
+  "id": "point.key_trigger",
+  "name": "监听快捷键",
+  "group": "hotkey",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "全局或按应用监听组合键，发出 trigger 事件；和发送快捷键共用 Hotkey 契约。",
+  "instances": [
+    {
+      "id": "point.key_trigger.panel@r1",
+      "name": "打开面板",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+Alt+Space\",\"scope\":\"global\"}"
+    },
+    {
+      "id": "point.key_trigger.shot@r1",
+      "name": "截图翻译",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"keys\":\"Ctrl+Alt+T\",\"scope\":\"global\"}"
+    }
+  ]
+}

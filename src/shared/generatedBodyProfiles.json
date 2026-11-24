@@ -1,34 +1,34 @@
 {
-  "body.file-preview": {
-    "classId": "body.file-preview",
+  "body.file_preview": {
+    "classId": "body.file_preview",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.preview-file",
+        "ref": "line.preview_file",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.preview-window",
+        "ref": "surface.preview_window",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.read",
+        "ref": "point.file_read",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "render.text",
+        "ref": "point.render_text",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "render.image",
+        "ref": "point.render_image",
         "role": "能力执行",
         "required": true
       }
@@ -63,32 +63,32 @@
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.ocr.recognize",
+        "ref": "line.ocr_recognize",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.ocr-result",
+        "ref": "surface.ocr_result",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "image.preprocess",
+        "ref": "point.image_preprocess",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.ocr.read",
+        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "ocr.text"
       },
       {
         "layer": "point",
-        "ref": "win.ocr.read",
+        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "ocr.table"
@@ -120,36 +120,36 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.image-resizer": {
-    "classId": "body.image-resizer",
+  "body.image_resizer": {
+    "classId": "body.image_resizer",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.resize-image",
+        "ref": "line.resize_image",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.resize-dialog",
+        "ref": "surface.resize_dialog",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.read.image",
+        "ref": "point.file_read_image",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "image.resize",
+        "ref": "point.image_resize",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.write",
+        "ref": "point.file_write",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "file.write.image"
@@ -180,18 +180,18 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.batch-rename": {
-    "classId": "body.batch-rename",
+  "body.batch_rename": {
+    "classId": "body.batch_rename",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.rename-files",
+        "ref": "line.rename_files",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.rename-dialog",
+        "ref": "surface.rename_dialog",
         "role": "界面承载",
         "required": true
       },
@@ -203,19 +203,19 @@
       },
       {
         "layer": "point",
-        "ref": "file.list",
+        "ref": "point.file_list",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "rename.plan",
+        "ref": "point.rename_plan",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.move",
+        "ref": "point.file_move",
         "role": "能力执行",
         "required": true
       }
@@ -245,36 +245,36 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.pdf-toolkit": {
-    "classId": "body.pdf-toolkit",
+  "body.pdf_toolkit": {
+    "classId": "body.pdf_toolkit",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.pdf-op",
+        "ref": "line.pdf_op",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.pdf-workspace",
+        "ref": "surface.pdf_workspace",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "pdf.read",
+        "ref": "point.pdf_read",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "pdf.merge",
+        "ref": "point.pdf_merge",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "pdf.write",
+        "ref": "point.pdf_write",
         "role": "能力执行",
         "required": true
       }
@@ -303,36 +303,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.media-converter": {
-    "classId": "body.media-converter",
+  "body.media_converter": {
+    "classId": "body.media_converter",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.convert-media",
+        "ref": "line.convert_media",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.convert-dialog",
+        "ref": "surface.convert_dialog",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "media.probe",
+        "ref": "point.media_probe",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "media.transcode",
+        "ref": "point.media_transcode",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.write",
+        "ref": "point.file_write",
         "role": "能力执行",
         "required": true
       }
@@ -361,36 +361,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.file-organizer": {
-    "classId": "body.file-organizer",
+  "body.file_organizer": {
+    "classId": "body.file_organizer",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.organize-files",
+        "ref": "line.organize_files",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.organize-preview",
+        "ref": "surface.organize_preview",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.scan",
+        "ref": "point.file_scan",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.classify",
+        "ref": "point.file_classify",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.move",
+        "ref": "point.file_move",
         "role": "能力执行",
         "required": true
       }
@@ -419,37 +419,37 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.advanced-paste": {
-    "classId": "body.advanced-paste",
+  "body.advanced_paste": {
+    "classId": "body.advanced_paste",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.paste-transform",
+        "ref": "line.paste_transform",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.paste-preview",
+        "ref": "surface.paste_preview",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.clipboard.get",
+        "ref": "point.clipboard_get",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "clipboard.read"
       },
       {
         "layer": "point",
-        "ref": "text.transform",
+        "ref": "point.text_transform",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "clipboard.write",
+        "ref": "point.clipboard_write",
         "role": "能力执行",
         "required": true
       }
@@ -479,36 +479,36 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.clipboard-history": {
-    "classId": "body.clipboard-history",
+  "body.clipboard_history": {
+    "classId": "body.clipboard_history",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.clipboard-history",
+        "ref": "line.clipboard_history",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.clipboard-list",
+        "ref": "surface.clipboard_list",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "clipboard.watch",
+        "ref": "point.clipboard_watch",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "store.query",
+        "ref": "point.store_query",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "clipboard.write",
+        "ref": "point.clipboard_write",
         "role": "能力执行",
         "required": true
       }
@@ -537,36 +537,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.color-picker": {
-    "classId": "body.color-picker",
+  "body.color_picker": {
+    "classId": "body.color_picker",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.pick-color",
+        "ref": "line.pick_color",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.color-inspector",
+        "ref": "surface.color_inspector",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "screen.pick",
+        "ref": "point.screen_pick",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "color.convert",
+        "ref": "point.color_convert",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "clipboard.write",
+        "ref": "point.clipboard_write",
         "role": "能力执行",
         "required": true
       }
@@ -596,36 +596,36 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.screen-ruler": {
-    "classId": "body.screen-ruler",
+  "body.screen_ruler": {
+    "classId": "body.screen_ruler",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.measure-screen",
+        "ref": "line.measure_screen",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.hud.ruler",
+        "ref": "surface.hud_ruler",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "screen.region",
+        "ref": "point.screen_region",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "measure.length",
+        "ref": "point.measure_length",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "measure.angle",
+        "ref": "point.measure_angle",
         "role": "能力执行",
         "required": true
       }
@@ -653,38 +653,38 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.window-layout": {
-    "classId": "body.window-layout",
+  "body.window_layout": {
+    "classId": "body.window_layout",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.layout-windows",
+        "ref": "line.layout_windows",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.layout-editor",
+        "ref": "surface.layout_editor",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.window.query",
+        "ref": "point.window_query",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "window.list"
       },
       {
         "layer": "point",
-        "ref": "win.window.control",
+        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "window.move"
       },
       {
         "layer": "point",
-        "ref": "win.window.control",
+        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "window.resize"
@@ -715,38 +715,38 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.always-on-top": {
-    "classId": "body.always-on-top",
+  "body.always_on_top": {
+    "classId": "body.always_on_top",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.pin-window",
+        "ref": "line.pin_window",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.pin-indicator",
+        "ref": "surface.pin_indicator",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.window.query",
+        "ref": "point.window_query",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "window.find"
       },
       {
         "layer": "point",
-        "ref": "win.window.control",
+        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "window.pin"
       },
       {
         "layer": "point",
-        "ref": "win.window.control",
+        "ref": "point.window_control",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "window.restore"
@@ -781,31 +781,31 @@
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.keep-awake",
+        "ref": "line.keep_awake",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.awake-status",
+        "ref": "surface.awake_status",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "power.state",
+        "ref": "point.power_state",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "power.keepAwake",
+        "ref": "point.power_keepawake",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "timer.wait",
+        "ref": "point.timer_wait",
         "role": "能力执行",
         "required": true
       }
@@ -838,31 +838,31 @@
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.open-workspace",
+        "ref": "line.open_workspace",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.workspace-launcher",
+        "ref": "surface.workspace_launcher",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "process.launch",
+        "ref": "point.process_launch",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "window.layout",
+        "ref": "point.window_layout",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "workspace.restore",
+        "ref": "point.workspace_restore",
         "role": "能力执行",
         "required": true
       }
@@ -891,42 +891,42 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.quick-launch": {
-    "classId": "body.quick-launch",
+  "body.quick_launch": {
+    "classId": "body.quick_launch",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.launch-target",
+        "ref": "line.launch_target",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.launch-dock",
+        "ref": "surface.launch_dock",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.quick-launch",
+        "ref": "surface.quick_launch",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "launch.search",
+        "ref": "point.launch_search",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "launch.run",
+        "ref": "point.launch_run",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "usage.rank",
+        "ref": "point.usage_rank",
         "role": "能力执行",
         "required": true
       }
@@ -956,12 +956,12 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.system-monitor": {
-    "classId": "body.system-monitor",
+  "body.system_monitor": {
+    "classId": "body.system_monitor",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.metric-stream",
+        "ref": "line.metric_stream",
         "role": "流程编排",
         "required": true
       },
@@ -981,19 +981,19 @@
       },
       {
         "layer": "point",
-        "ref": "sys.cpu.stats",
+        "ref": "point.sys_cpu_stats",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "sys.gpu.stats",
+        "ref": "point.sys_gpu_stats",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "sys.memory.stats",
+        "ref": "point.sys_memory_stats",
         "role": "能力执行",
         "required": true
       }
@@ -1022,36 +1022,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.service-health": {
-    "classId": "body.service-health",
+  "body.service_health": {
+    "classId": "body.service_health",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.ensure-service",
+        "ref": "line.ensure_service",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.service-dashboard",
+        "ref": "surface.service_dashboard",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "service.status",
+        "ref": "point.service_status",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "service.start",
+        "ref": "point.service_start",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.http.request",
+        "ref": "point.http_request",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "net.reachable"
@@ -1081,36 +1081,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.file-locksmith": {
-    "classId": "body.file-locksmith",
+  "body.file_locksmith": {
+    "classId": "body.file_locksmith",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.find-file-lock",
+        "ref": "line.find_file_lock",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.lock-list",
+        "ref": "surface.lock_list",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.handle",
+        "ref": "point.file_handle",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "process.open",
+        "ref": "point.process_open",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "process.kill",
+        "ref": "point.process_kill",
         "role": "能力执行",
         "required": true
       }
@@ -1139,18 +1139,18 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.hosts-editor": {
-    "classId": "body.hosts-editor",
+  "body.hosts_editor": {
+    "classId": "body.hosts_editor",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.edit-hosts",
+        "ref": "line.edit_hosts",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.text-editor",
+        "ref": "surface.text_editor",
         "role": "界面承载",
         "required": true
       },
@@ -1162,19 +1162,19 @@
       },
       {
         "layer": "point",
-        "ref": "hosts.read",
+        "ref": "point.hosts_read",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "hosts.validate",
+        "ref": "point.hosts_validate",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "hosts.write",
+        "ref": "point.hosts_write",
         "role": "能力执行",
         "required": true
       }
@@ -1204,36 +1204,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.env-vars": {
-    "classId": "body.env-vars",
+  "body.env_vars": {
+    "classId": "body.env_vars",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.edit-env",
+        "ref": "line.edit_env",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.key-value-editor",
+        "ref": "surface.key_value_editor",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "env.read",
+        "ref": "point.env_read",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "env.validate",
+        "ref": "point.env_validate",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "env.write",
+        "ref": "point.env_write",
         "role": "能力执行",
         "required": true
       }
@@ -1262,24 +1262,24 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.external-access": {
-    "classId": "body.external-access",
+  "body.external_access": {
+    "classId": "body.external_access",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.open-external-site",
+        "ref": "line.open_external_site",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "line",
-        "ref": "flow.ensure-vpn",
+        "ref": "line.ensure_vpn",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.card-grid",
+        "ref": "surface.card_grid",
         "role": "界面承载",
         "required": true,
         "rewrittenFrom": "surface.site-launcher"
@@ -1293,20 +1293,20 @@
       },
       {
         "layer": "point",
-        "ref": "vpn.status",
+        "ref": "point.vpn_status",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.http.request",
+        "ref": "point.http_request",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "net.reachable"
       },
       {
         "layer": "point",
-        "ref": "win.open",
+        "ref": "point.open",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "browser.open"
@@ -1338,12 +1338,12 @@
       "previousVersion": "0.9.0"
     }
   },
-  "body.screenshot-translate": {
-    "classId": "body.screenshot-translate",
+  "body.screenshot_translate": {
+    "classId": "body.screenshot_translate",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.screenshot-translate",
+        "ref": "line.screenshot_translate",
         "role": "流程编排",
         "required": true
       },
@@ -1356,27 +1356,27 @@
       },
       {
         "layer": "surface",
-        "ref": "surface.settings.translate",
+        "ref": "surface.settings_translate",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.screen.capture",
+        "ref": "point.screen_capture",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "screen.capture"
       },
       {
         "layer": "point",
-        "ref": "win.ocr.read",
+        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "ocr.text"
       },
       {
         "layer": "point",
-        "ref": "translate.text",
+        "ref": "point.translate_text",
         "role": "能力执行",
         "required": true
       }
@@ -1406,12 +1406,12 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.ai-rewrite": {
-    "classId": "body.ai-rewrite",
+  "body.ai_rewrite": {
+    "classId": "body.ai_rewrite",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.ai-rewrite",
+        "ref": "line.ai_rewrite",
         "role": "流程编排",
         "required": true
       },
@@ -1423,25 +1423,25 @@
       },
       {
         "layer": "surface",
-        "ref": "surface.prompt-preview",
+        "ref": "surface.prompt_preview",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "text.read",
+        "ref": "point.text_read",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "ai.rewrite",
+        "ref": "point.ai_rewrite",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "text.diff",
+        "ref": "point.text_diff",
         "role": "能力执行",
         "required": true
       }
@@ -1471,18 +1471,18 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.meeting-notes": {
-    "classId": "body.meeting-notes",
+  "body.meeting_notes": {
+    "classId": "body.meeting_notes",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.transcribe",
+        "ref": "line.transcribe",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "line",
-        "ref": "flow.summarize",
+        "ref": "line.summarize",
         "role": "流程编排",
         "required": true
       },
@@ -1494,19 +1494,19 @@
       },
       {
         "layer": "point",
-        "ref": "audio.capture",
+        "ref": "point.audio_capture",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "speech.transcribe",
+        "ref": "point.speech_transcribe",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "ai.summarize",
+        "ref": "point.ai_summarize",
         "role": "能力执行",
         "required": true
       }
@@ -1536,12 +1536,12 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.invoice-archive": {
-    "classId": "body.invoice-archive",
+  "body.invoice_archive": {
+    "classId": "body.invoice_archive",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.batch-archive",
+        "ref": "line.batch_archive",
         "role": "流程编排",
         "required": true
       },
@@ -1553,26 +1553,26 @@
       },
       {
         "layer": "surface",
-        "ref": "surface.settings.invoice",
+        "ref": "surface.settings_invoice",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "win.ocr.read",
+        "ref": "point.ocr_read",
         "role": "能力执行",
         "required": true,
         "rewrittenFrom": "ocr.table"
       },
       {
         "layer": "point",
-        "ref": "invoice.parse",
+        "ref": "point.invoice_parse",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.move",
+        "ref": "point.file_move",
         "role": "能力执行",
         "required": true
       }
@@ -1607,25 +1607,25 @@
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.suite.launch",
+        "ref": "line.suite_launch",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.card-grid",
+        "ref": "surface.card_grid",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.settings.suite",
+        "ref": "surface.settings_suite",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "permission.check",
+        "ref": "point.permission_check",
         "role": "能力执行",
         "required": true
       }
@@ -1655,36 +1655,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.web-clipper": {
-    "classId": "body.web-clipper",
+  "body.web_clipper": {
+    "classId": "body.web_clipper",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.clip-page",
+        "ref": "line.clip_page",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.clipper-preview",
+        "ref": "surface.clipper_preview",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "browser.read",
+        "ref": "point.browser_read",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "html.toMarkdown",
+        "ref": "point.html_tomarkdown",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.write",
+        "ref": "point.file_write",
         "role": "能力执行",
         "required": true
       }
@@ -1714,36 +1714,36 @@
       "lastChecked": "刚刚"
     }
   },
-  "body.backup-sync": {
-    "classId": "body.backup-sync",
+  "body.backup_sync": {
+    "classId": "body.backup_sync",
     "composition": [
       {
         "layer": "line",
-        "ref": "flow.backup-folder",
+        "ref": "line.backup_folder",
         "role": "流程编排",
         "required": true
       },
       {
         "layer": "surface",
-        "ref": "surface.backup-status",
+        "ref": "surface.backup_status",
         "role": "界面承载",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.scan",
+        "ref": "point.file_scan",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "file.copy",
+        "ref": "point.file_copy",
         "role": "能力执行",
         "required": true
       },
       {
         "layer": "point",
-        "ref": "hash.verify",
+        "ref": "point.hash_verify",
         "role": "能力执行",
         "required": true
       }

@@ -12,19 +12,22 @@
       "name": "dev",
       "rev": 3,
       "status": "active",
-      "detail": "preset=dev · monitor=dual"
+      "detail": "preset=dev · monitor=dual",
+      "id": "body.workspace.dev@r3"
     },
     {
       "name": "meeting",
       "rev": 1,
       "status": "active",
-      "detail": "preset=meeting · monitor=main"
+      "detail": "preset=meeting · monitor=main",
+      "id": "body.workspace.meeting@r1"
     },
     {
       "name": "writing",
       "rev": 1,
       "status": "active",
-      "detail": "preset=writing · monitor=main"
+      "detail": "preset=writing · monitor=main",
+      "id": "body.workspace.writing@r1"
     }
   ]
 }

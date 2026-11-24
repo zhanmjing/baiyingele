@@ -1,0 +1,26 @@
+{
+  "id": "body.always_on_top",
+  "name": "窗口置顶",
+  "group": "window",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "钉住窗口或屏幕区域。",
+  "instances": [
+    {
+      "name": "window",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=window · opacity=0.92",
+      "id": "body.always_on_top.window@r1"
+    },
+    {
+      "name": "region",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=region · crop=true",
+      "id": "body.always_on_top.region@r1"
+    }
+  ]
+}

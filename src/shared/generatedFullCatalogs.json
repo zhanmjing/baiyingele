@@ -1,7 +1,7 @@
 {
   "point": [
     {
-      "id": "win.key.send",
+      "id": "point.key_send",
       "name": "发送快捷键",
       "family": "hotkey",
       "priority": "P0",
@@ -36,7 +36,7 @@
       ],
       "instances": [
         {
-          "id": "win.key.send.i-copy@r1",
+          "id": "point.key_send.copy@r1",
           "name": "复制",
           "rev": 1,
           "status": "active",
@@ -48,7 +48,7 @@
           }
         },
         {
-          "id": "win.key.send.i-paste@r1",
+          "id": "point.key_send.paste@r1",
           "name": "粘贴",
           "rev": 1,
           "status": "active",
@@ -60,7 +60,7 @@
           }
         },
         {
-          "id": "win.key.send.i-cut@r1",
+          "id": "point.key_send.cut@r1",
           "name": "剪切",
           "rev": 1,
           "status": "active",
@@ -72,7 +72,7 @@
           }
         },
         {
-          "id": "win.key.send.i-undo@r1",
+          "id": "point.key_send.undo@r1",
           "name": "撤销",
           "rev": 1,
           "status": "active",
@@ -84,7 +84,7 @@
           }
         },
         {
-          "id": "win.key.send.i-select-all@r1",
+          "id": "point.key_send.select_all@r1",
           "name": "全选",
           "rev": 1,
           "status": "active",
@@ -98,7 +98,7 @@
       ]
     },
     {
-      "id": "win.key.trigger",
+      "id": "point.key_trigger",
       "name": "监听快捷键",
       "family": "hotkey",
       "priority": "P0",
@@ -125,7 +125,7 @@
       ],
       "instances": [
         {
-          "id": "win.key.trigger.i-trigger-panel@r1",
+          "id": "point.key_trigger.panel@r1",
           "name": "打开面板",
           "rev": 1,
           "status": "active",
@@ -136,7 +136,7 @@
           }
         },
         {
-          "id": "win.key.trigger.i-trigger-shot@r1",
+          "id": "point.key_trigger.shot@r1",
           "name": "截图翻译",
           "rev": 1,
           "status": "active",
@@ -149,7 +149,7 @@
       ]
     },
     {
-      "id": "win.window.control",
+      "id": "point.window_control",
       "name": "控制窗口",
       "family": "window",
       "priority": "P0",
@@ -208,7 +208,7 @@
       ],
       "instances": [
         {
-          "id": "win.window.control.i-focus-notepad@r1",
+          "id": "point.window_control.focus_notepad@r1",
           "name": "聚焦记事本",
           "rev": 1,
           "status": "active",
@@ -219,7 +219,7 @@
           }
         },
         {
-          "id": "win.window.control.i-move-chrome@r1",
+          "id": "point.window_control.move_chrome@r1",
           "name": "Chrome 移到副屏左半",
           "rev": 1,
           "status": "active",
@@ -232,7 +232,7 @@
           }
         },
         {
-          "id": "win.window.control.i-topmost@r1",
+          "id": "point.window_control.topmost@r1",
           "name": "当前窗口置顶切换",
           "rev": 1,
           "status": "active",
@@ -244,7 +244,7 @@
           }
         },
         {
-          "id": "win.window.control.i-close-explorer@r1",
+          "id": "point.window_control.close_explorer@r1",
           "name": "关闭所有资源管理器",
           "rev": 1,
           "status": "draft",
@@ -258,7 +258,7 @@
       ]
     },
     {
-      "id": "win.window.query",
+      "id": "point.window_query",
       "name": "查询窗口",
       "family": "window",
       "priority": "P0",
@@ -293,7 +293,7 @@
       ],
       "instances": [
         {
-          "id": "win.window.query.i-list-windows@r1",
+          "id": "point.window_query.list_windows@r1",
           "name": "列出可见窗口",
           "rev": 1,
           "status": "active",
@@ -305,7 +305,7 @@
           }
         },
         {
-          "id": "win.window.query.i-foreground@r1",
+          "id": "point.window_query.foreground@r1",
           "name": "当前前台窗口",
           "rev": 1,
           "status": "active",
@@ -319,7 +319,7 @@
       ]
     },
     {
-      "id": "win.open",
+      "id": "point.open",
       "name": "打开目标",
       "family": "open",
       "priority": "P0",
@@ -362,7 +362,7 @@
       ],
       "instances": [
         {
-          "id": "win.open.i-open-downloads@r1",
+          "id": "point.open.downloads@r1",
           "name": "打开下载文件夹",
           "rev": 1,
           "status": "active",
@@ -375,7 +375,7 @@
           }
         },
         {
-          "id": "win.open.i-open-github@r1",
+          "id": "point.open.github@r1",
           "name": "打开 GitHub",
           "rev": 1,
           "status": "active",
@@ -388,7 +388,7 @@
           }
         },
         {
-          "id": "win.open.i-open-project@r1",
+          "id": "point.open.project@r1",
           "name": "用 VS Code 打开项目",
           "rev": 1,
           "status": "active",
@@ -403,7 +403,7 @@
       ]
     },
     {
-      "id": "win.audio.volume",
+      "id": "point.audio_volume",
       "name": "控制系统音量",
       "family": "settings",
       "priority": "P0",
@@ -446,7 +446,7 @@
       ],
       "instances": [
         {
-          "id": "win.audio.volume.i-vol-up@r1",
+          "id": "point.audio_volume.vol_up@r1",
           "name": "音量 +5",
           "rev": 1,
           "status": "active",
@@ -459,7 +459,7 @@
           }
         },
         {
-          "id": "win.audio.volume.i-vol-toggle@r1",
+          "id": "point.audio_volume.vol_toggle@r1",
           "name": "静音切换",
           "rev": 1,
           "status": "active",
@@ -472,7 +472,7 @@
           }
         },
         {
-          "id": "win.audio.volume.i-vol-30@r1",
+          "id": "point.audio_volume.vol_30@r1",
           "name": "设 30%",
           "rev": 1,
           "status": "active",
@@ -487,7 +487,7 @@
       ]
     },
     {
-      "id": "win.display.brightness",
+      "id": "point.display_brightness",
       "name": "控制亮度",
       "family": "settings",
       "priority": "P0",
@@ -538,7 +538,7 @@
       ],
       "instances": [
         {
-          "id": "win.display.brightness.i-bright-60@r1",
+          "id": "point.display_brightness.bright_60@r1",
           "name": "内屏亮度 60%",
           "rev": 1,
           "status": "active",
@@ -552,7 +552,7 @@
           }
         },
         {
-          "id": "win.display.brightness.i-bright-up@r1",
+          "id": "point.display_brightness.bright_up@r1",
           "name": "亮度 +10",
           "rev": 1,
           "status": "draft",
@@ -568,7 +568,7 @@
       ]
     },
     {
-      "id": "win.theme.mode",
+      "id": "point.theme_mode",
       "name": "深浅主题",
       "family": "settings",
       "priority": "P0",
@@ -603,7 +603,7 @@
       ],
       "instances": [
         {
-          "id": "win.theme.mode.i-dark@r1",
+          "id": "point.theme_mode.dark@r1",
           "name": "深色模式",
           "rev": 1,
           "status": "active",
@@ -615,7 +615,7 @@
           }
         },
         {
-          "id": "win.theme.mode.i-light-apps@r1",
+          "id": "point.theme_mode.light_apps@r1",
           "name": "应用浅色",
           "rev": 1,
           "status": "active",
@@ -629,7 +629,7 @@
       ]
     },
     {
-      "id": "win.ocr.read",
+      "id": "point.ocr_read",
       "name": "OCR 识别",
       "family": "capture",
       "priority": "P0",
@@ -664,7 +664,7 @@
       ],
       "instances": [
         {
-          "id": "win.ocr.read.i-ocr-auto@r1",
+          "id": "point.ocr_read.auto@r1",
           "name": "截图转文字",
           "rev": 1,
           "status": "active",
@@ -676,7 +676,7 @@
           }
         },
         {
-          "id": "win.ocr.read.i-ocr-en@r1",
+          "id": "point.ocr_read.ocr_en@r1",
           "name": "英文截图",
           "rev": 1,
           "status": "active",
@@ -690,7 +690,7 @@
       ]
     },
     {
-      "id": "win.clipboard.get",
+      "id": "point.clipboard_get",
       "name": "读取剪贴板",
       "family": "file",
       "priority": "P0",
@@ -709,7 +709,7 @@
       ],
       "instances": [
         {
-          "id": "win.clipboard.get.i-clip-text@r1",
+          "id": "point.clipboard_get.clip_text@r1",
           "name": "取文本",
           "rev": 1,
           "status": "active",
@@ -719,7 +719,7 @@
           }
         },
         {
-          "id": "win.clipboard.get.i-clip-image@r1",
+          "id": "point.clipboard_get.clip_image@r1",
           "name": "取图片",
           "rev": 1,
           "status": "active",
@@ -731,7 +731,7 @@
       ]
     },
     {
-      "id": "win.http.request",
+      "id": "point.http_request",
       "name": "HTTP 请求",
       "family": "network",
       "priority": "P0",
@@ -766,7 +766,7 @@
       ],
       "instances": [
         {
-          "id": "win.http.request.i-http-github@r1",
+          "id": "point.http_request.github@r1",
           "name": "GET GitHub API",
           "rev": 1,
           "status": "active",
@@ -778,7 +778,7 @@
           }
         },
         {
-          "id": "win.http.request.i-http-webhook@r1",
+          "id": "point.http_request.webhook@r1",
           "name": "POST Webhook",
           "rev": 1,
           "status": "draft",
@@ -792,7 +792,7 @@
       ]
     },
     {
-      "id": "ui.form",
+      "id": "point.ui_form",
       "name": "用户表单",
       "family": "human",
       "priority": "P0",
@@ -819,7 +819,7 @@
       ],
       "instances": [
         {
-          "id": "ui.form.i-form-confirm@r1",
+          "id": "point.ui_form.confirm@r1",
           "name": "发布确认",
           "rev": 1,
           "status": "draft",
@@ -832,7 +832,7 @@
       ]
     },
     {
-      "id": "win.screen.capture",
+      "id": "point.screen_capture",
       "name": "抓屏",
       "family": "capture",
       "priority": "P0",
@@ -859,7 +859,7 @@
       ],
       "instances": [
         {
-          "id": "win.screen.capture.i-full@r1",
+          "id": "point.screen_capture.full@r1",
           "name": "全屏截图",
           "rev": 1,
           "status": "active",
@@ -870,7 +870,7 @@
           }
         },
         {
-          "id": "win.screen.capture.i-region@r1",
+          "id": "point.screen_capture.region@r1",
           "name": "区域截图",
           "rev": 1,
           "status": "active",
@@ -883,7 +883,7 @@
       ]
     },
     {
-      "id": "text.template",
+      "id": "point.text_template",
       "name": "套用模板",
       "family": "transform",
       "priority": "P1",
@@ -910,7 +910,7 @@
       ],
       "instances": [
         {
-          "id": "text.template.i-markdown@r1",
+          "id": "point.text_template.markdown@r1",
           "name": "Markdown 代码块",
           "rev": 1,
           "status": "active",
@@ -921,7 +921,7 @@
           }
         },
         {
-          "id": "text.template.i-plain@r1",
+          "id": "point.text_template.plain@r1",
           "name": "纯文本",
           "rev": 1,
           "status": "active",
@@ -934,7 +934,7 @@
       ]
     },
     {
-      "id": "file.write",
+      "id": "point.file_write",
       "name": "写文件",
       "family": "file",
       "priority": "P0",
@@ -969,7 +969,7 @@
       ],
       "instances": [
         {
-          "id": "file.write.i-append@r1",
+          "id": "point.file_write.append@r1",
           "name": "追加写入",
           "rev": 1,
           "status": "active",
@@ -981,7 +981,7 @@
           }
         },
         {
-          "id": "file.write.i-overwrite@r1",
+          "id": "point.file_write.overwrite@r1",
           "name": "覆盖写入",
           "rev": 1,
           "status": "active",
@@ -995,7 +995,7 @@
       ]
     },
     {
-      "id": "file.move",
+      "id": "point.file_move",
       "name": "移动 / 重命名文件",
       "family": "file",
       "priority": "P0",
@@ -1030,7 +1030,7 @@
       ],
       "instances": [
         {
-          "id": "file.move.i-rename@r1",
+          "id": "point.file_move.rename@r1",
           "name": "i-rename",
           "rev": 1,
           "status": "active",
@@ -1042,7 +1042,7 @@
           }
         },
         {
-          "id": "file.move.i-move@r1",
+          "id": "point.file_move.move@r1",
           "name": "i-move",
           "rev": 1,
           "status": "active",
@@ -1054,7 +1054,7 @@
           }
         },
         {
-          "id": "file.move.i-archive@r1",
+          "id": "point.file_move.archive@r1",
           "name": "i-archive",
           "rev": 1,
           "status": "active",
@@ -1068,7 +1068,7 @@
       ]
     },
     {
-      "id": "file.read",
+      "id": "point.file_read",
       "name": "读文件",
       "family": "file",
       "priority": "P0",
@@ -1103,7 +1103,7 @@
       ],
       "instances": [
         {
-          "id": "file.read.i-text@r1",
+          "id": "point.file_read.text@r1",
           "name": "i-text",
           "rev": 1,
           "status": "active",
@@ -1115,7 +1115,7 @@
           }
         },
         {
-          "id": "file.read.i-preview@r1",
+          "id": "point.file_read.preview@r1",
           "name": "i-preview",
           "rev": 1,
           "status": "active",
@@ -1129,7 +1129,7 @@
       ]
     },
     {
-      "id": "notify.toast",
+      "id": "point.notify_toast",
       "name": "系统通知",
       "family": "notify",
       "priority": "P1",
@@ -1156,7 +1156,7 @@
       ],
       "instances": [
         {
-          "id": "notify.toast.i-system@r1",
+          "id": "point.notify_toast.system@r1",
           "name": "系统通知",
           "rev": 1,
           "status": "active",
@@ -1169,7 +1169,7 @@
       ]
     },
     {
-      "id": "file.scan",
+      "id": "point.file_scan",
       "name": "扫描目录",
       "family": "file",
       "priority": "P1",
@@ -1212,7 +1212,7 @@
       ],
       "instances": [
         {
-          "id": "file.scan.i-recursive@r1",
+          "id": "point.file_scan.recursive@r1",
           "name": "i-recursive",
           "rev": 1,
           "status": "active",
@@ -1225,7 +1225,7 @@
           }
         },
         {
-          "id": "file.scan.i-flat@r1",
+          "id": "point.file_scan.flat@r1",
           "name": "i-flat",
           "rev": 1,
           "status": "active",
@@ -1240,7 +1240,7 @@
       ]
     },
     {
-      "id": "clipboard.write",
+      "id": "point.clipboard_write",
       "name": "写剪贴板",
       "family": "file",
       "priority": "P0",
@@ -1267,7 +1267,7 @@
       ],
       "instances": [
         {
-          "id": "clipboard.write.i-text@r1",
+          "id": "point.clipboard_write.text@r1",
           "name": "i-text",
           "rev": 1,
           "status": "active",
@@ -1278,7 +1278,7 @@
           }
         },
         {
-          "id": "clipboard.write.i-uppercase@r1",
+          "id": "point.clipboard_write.uppercase@r1",
           "name": "i-uppercase",
           "rev": 1,
           "status": "active",
@@ -1291,7 +1291,7 @@
       ]
     },
     {
-      "id": "translate.text",
+      "id": "point.translate_text",
       "name": "翻译文本",
       "family": "text",
       "priority": "P1",
@@ -1326,7 +1326,7 @@
       ],
       "instances": [
         {
-          "id": "translate.text.i-en2zh@r1",
+          "id": "point.translate_text.en2zh@r1",
           "name": "i-en2zh",
           "rev": 1,
           "status": "active",
@@ -1338,7 +1338,7 @@
           }
         },
         {
-          "id": "translate.text.i-auto@r1",
+          "id": "point.translate_text.auto@r1",
           "name": "i-auto",
           "rev": 1,
           "status": "active",
@@ -1354,7 +1354,7 @@
   ],
   "line": [
     {
-      "id": "flow.ensure-vpn",
+      "id": "line.ensure_vpn",
       "name": "flow.ensure-vpn",
       "family": "Guard",
       "priority": "P1",
@@ -1373,7 +1373,7 @@
       ],
       "instances": [
         {
-          "id": "inst.ensure-vpn-ask@r2",
+          "id": "line.ensure_vpn.ask@r2",
           "name": "ensure-vpn-ask",
           "rev": 2,
           "status": "active",
@@ -1383,7 +1383,7 @@
           }
         },
         {
-          "id": "inst.ensure-vpn-auto@r1",
+          "id": "line.ensure_vpn.auto@r1",
           "name": "ensure-vpn-auto",
           "rev": 1,
           "status": "active",
@@ -1393,7 +1393,7 @@
           }
         },
         {
-          "id": "inst.ensure-vpn-auto-connect@r1",
+          "id": "line.ensure_vpn.auto_connect@r1",
           "name": "ensure-vpn-auto-connect",
           "rev": 1,
           "status": "active",
@@ -1403,7 +1403,7 @@
           }
         },
         {
-          "id": "inst.ensure-vpn-manual@r1",
+          "id": "line.ensure_vpn.manual@r1",
           "name": "ensure-vpn-manual",
           "rev": 1,
           "status": "active",
@@ -1415,7 +1415,7 @@
       ]
     },
     {
-      "id": "flow.ensure-app",
+      "id": "line.ensure_app",
       "name": "flow.ensure-app",
       "family": "Guard",
       "priority": "P1",
@@ -1434,7 +1434,7 @@
       ],
       "instances": [
         {
-          "id": "inst.ensure-app-vscode@r2",
+          "id": "line.ensure_app.vscode@r2",
           "name": "ensure-app-vscode",
           "rev": 2,
           "status": "active",
@@ -1444,7 +1444,7 @@
           }
         },
         {
-          "id": "inst.ensure-app-notepad@r1",
+          "id": "line.ensure_app.notepad@r1",
           "name": "ensure-app-notepad",
           "rev": 1,
           "status": "active",
@@ -1456,7 +1456,7 @@
       ]
     },
     {
-      "id": "flow.ensure-service",
+      "id": "line.ensure_service",
       "name": "flow.ensure-service",
       "family": "Guard",
       "priority": "P1",
@@ -1475,7 +1475,7 @@
       ],
       "instances": [
         {
-          "id": "inst.ensure-service-docker@r1",
+          "id": "line.ensure_service.docker@r1",
           "name": "ensure-service-docker",
           "rev": 1,
           "status": "active",
@@ -1485,7 +1485,7 @@
           }
         },
         {
-          "id": "inst.ensure-service-local-api@r1",
+          "id": "line.ensure_service.local_api@r1",
           "name": "ensure-service-local-api",
           "rev": 1,
           "status": "active",
@@ -1497,7 +1497,7 @@
       ]
     },
     {
-      "id": "flow.ensure-download",
+      "id": "line.ensure_download",
       "name": "flow.ensure-download",
       "family": "Guard",
       "priority": "P1",
@@ -1516,7 +1516,7 @@
       ],
       "instances": [
         {
-          "id": "inst.ensure-download-vscode@r2",
+          "id": "line.ensure_download.vscode@r2",
           "name": "ensure-download-vscode",
           "rev": 2,
           "status": "active",
@@ -1526,7 +1526,7 @@
           }
         },
         {
-          "id": "inst.ensure-download-driver@r1",
+          "id": "line.ensure_download.driver@r1",
           "name": "ensure-download-driver",
           "rev": 1,
           "status": "active",
@@ -1538,7 +1538,7 @@
       ]
     },
     {
-      "id": "flow.open-external-site",
+      "id": "line.open_external_site",
       "name": "flow.open-external-site",
       "family": "Action",
       "priority": "P1",
@@ -1557,37 +1557,37 @@
       ],
       "instances": [
         {
-          "id": "inst.site-youtube@r3",
+          "id": "line.open_external_site.youtube@r3",
           "name": "site-youtube",
           "rev": 3,
           "status": "active",
-          "description": "url=YouTube；vpn=inst.ensure-vpn-ask@r2",
+          "description": "url=YouTube；vpn=line.ensure_vpn.ask@r2",
           "params": {
-            "detail": "url=YouTube；vpn=inst.ensure-vpn-ask@r2"
+            "detail": "url=YouTube；vpn=line.ensure_vpn.ask@r2"
           }
         },
         {
-          "id": "inst.site-github@r1",
+          "id": "line.open_external_site.github@r1",
           "name": "site-github",
           "rev": 1,
           "status": "active",
-          "description": "url=GitHub；vpn=inst.ensure-vpn-ask@r2",
+          "description": "url=GitHub；vpn=line.ensure_vpn.ask@r2",
           "params": {
-            "detail": "url=GitHub；vpn=inst.ensure-vpn-ask@r2"
+            "detail": "url=GitHub；vpn=line.ensure_vpn.ask@r2"
           }
         },
         {
-          "id": "inst.site-google@r1",
+          "id": "line.open_external_site.google@r1",
           "name": "site-google",
           "rev": 1,
           "status": "active",
-          "description": "url=Google；vpn=inst.ensure-vpn-ask@r2",
+          "description": "url=Google；vpn=line.ensure_vpn.ask@r2",
           "params": {
-            "detail": "url=Google；vpn=inst.ensure-vpn-ask@r2"
+            "detail": "url=Google；vpn=line.ensure_vpn.ask@r2"
           }
         },
         {
-          "id": "inst.site-intranet@r1",
+          "id": "line.open_external_site.intranet@r1",
           "name": "site-intranet",
           "rev": 1,
           "status": "active",
@@ -1599,7 +1599,7 @@
       ]
     },
     {
-      "id": "flow.open-app",
+      "id": "line.open_app",
       "name": "flow.open-app",
       "family": "Action",
       "priority": "P1",
@@ -1618,29 +1618,29 @@
       ],
       "instances": [
         {
-          "id": "inst.open-app-vscode-project@r2",
+          "id": "line.open_app.vscode_project@r2",
           "name": "open-app-vscode-project",
           "rev": 2,
           "status": "active",
-          "description": "ensure=inst.ensure-app-vscode@r2",
+          "description": "ensure=line.ensure_app.vscode@r2",
           "params": {
-            "detail": "ensure=inst.ensure-app-vscode@r2"
+            "detail": "ensure=line.ensure_app.vscode@r2"
           }
         },
         {
-          "id": "inst.open-app-notepad-file@r1",
+          "id": "line.open_app.notepad_file@r1",
           "name": "open-app-notepad-file",
           "rev": 1,
           "status": "active",
-          "description": "ensure=inst.ensure-app-notepad@r1",
+          "description": "ensure=line.ensure_app.notepad@r1",
           "params": {
-            "detail": "ensure=inst.ensure-app-notepad@r1"
+            "detail": "ensure=line.ensure_app.notepad@r1"
           }
         }
       ]
     },
     {
-      "id": "flow.open-workspace",
+      "id": "line.open_workspace",
       "name": "flow.open-workspace",
       "family": "Action",
       "priority": "P1",
@@ -1659,7 +1659,7 @@
       ],
       "instances": [
         {
-          "id": "inst.workspace-dev@r3",
+          "id": "line.open_workspace.dev@r3",
           "name": "workspace-dev",
           "rev": 3,
           "status": "active",
@@ -1669,7 +1669,7 @@
           }
         },
         {
-          "id": "inst.workspace-meeting@r1",
+          "id": "line.open_workspace.meeting@r1",
           "name": "workspace-meeting",
           "rev": 1,
           "status": "active",
@@ -1681,7 +1681,7 @@
       ]
     },
     {
-      "id": "flow.clipboard-to-file",
+      "id": "line.clipboard_to_file",
       "name": "flow.clipboard-to-file",
       "family": "Action",
       "priority": "P1",
@@ -1700,7 +1700,7 @@
       ],
       "instances": [
         {
-          "id": "inst.clipboard-inbox@r3",
+          "id": "line.clipboard_to_file.inbox@r3",
           "name": "clipboard-inbox",
           "rev": 3,
           "status": "active",
@@ -1710,7 +1710,7 @@
           }
         },
         {
-          "id": "inst.clipboard-daily@r2",
+          "id": "line.clipboard_to_file.daily@r2",
           "name": "clipboard-daily",
           "rev": 2,
           "status": "active",
@@ -1722,7 +1722,7 @@
       ]
     },
     {
-      "id": "flow.screenshot-translate",
+      "id": "line.screenshot_translate",
       "name": "flow.screenshot-translate",
       "family": "Action",
       "priority": "P1",
@@ -1741,7 +1741,7 @@
       ],
       "instances": [
         {
-          "id": "inst.screenshot-en-zh@r4",
+          "id": "line.screenshot_translate.en_zh@r4",
           "name": "screenshot-en-zh",
           "rev": 4,
           "status": "active",
@@ -1751,7 +1751,7 @@
           }
         },
         {
-          "id": "inst.screenshot-ja-zh@r2",
+          "id": "line.screenshot_translate.ja_zh@r2",
           "name": "screenshot-ja-zh",
           "rev": 2,
           "status": "active",
@@ -1763,7 +1763,7 @@
       ]
     },
     {
-      "id": "flow.http-extract",
+      "id": "line.http_extract",
       "name": "flow.http-extract",
       "family": "Action",
       "priority": "P1",
@@ -1782,7 +1782,7 @@
       ],
       "instances": [
         {
-          "id": "inst.http-github-status@r2",
+          "id": "line.http_extract.github_status@r2",
           "name": "http-github-status",
           "rev": 2,
           "status": "active",
@@ -1792,7 +1792,7 @@
           }
         },
         {
-          "id": "inst.http-weather@r1",
+          "id": "line.http_extract.weather@r1",
           "name": "http-weather",
           "rev": 1,
           "status": "active",
@@ -1804,7 +1804,7 @@
       ]
     },
     {
-      "id": "flow.ai-rewrite",
+      "id": "line.ai_rewrite",
       "name": "flow.ai-rewrite",
       "family": "Action",
       "priority": "P1",
@@ -1823,7 +1823,7 @@
       ],
       "instances": [
         {
-          "id": "inst.ai-rewrite-formal@r2",
+          "id": "line.ai_rewrite.formal@r2",
           "name": "ai-rewrite-formal",
           "rev": 2,
           "status": "active",
@@ -1833,7 +1833,7 @@
           }
         },
         {
-          "id": "inst.ai-rewrite-shorten@r1",
+          "id": "line.ai_rewrite.shorten@r1",
           "name": "ai-rewrite-shorten",
           "rev": 1,
           "status": "active",
@@ -1843,7 +1843,7 @@
           }
         },
         {
-          "id": "inst.ai-rewrite-translate@r1",
+          "id": "line.ai_rewrite.translate@r1",
           "name": "ai-rewrite-translate",
           "rev": 1,
           "status": "active",
@@ -1855,7 +1855,7 @@
       ]
     },
     {
-      "id": "flow.batch-archive",
+      "id": "line.batch_archive",
       "name": "flow.batch-archive",
       "family": "Action",
       "priority": "P1",
@@ -1874,7 +1874,7 @@
       ],
       "instances": [
         {
-          "id": "inst.invoice-company@r6",
+          "id": "line.batch_archive.invoice_company@r6",
           "name": "invoice-company",
           "rev": 6,
           "status": "active",
@@ -1884,7 +1884,7 @@
           }
         },
         {
-          "id": "inst.invoice-personal@r2",
+          "id": "line.batch_archive.invoice_personal@r2",
           "name": "invoice-personal",
           "rev": 2,
           "status": "active",
@@ -1896,7 +1896,7 @@
       ]
     },
     {
-      "id": "flow.approval-action",
+      "id": "line.approval_action",
       "name": "flow.approval-action",
       "family": "Action",
       "priority": "P1",
@@ -1915,33 +1915,33 @@
       ],
       "instances": [
         {
-          "id": "inst.approval-publish@r1",
+          "id": "line.approval_action.publish@r1",
           "name": "approval-publish",
           "rev": 1,
           "status": "active",
-          "description": "action=publish；target=inst.site-github@r1",
+          "description": "action=publish；target=line.open_external_site.github@r1",
           "params": {
-            "detail": "action=publish；target=inst.site-github@r1"
+            "detail": "action=publish；target=line.open_external_site.github@r1"
           }
         },
         {
-          "id": "inst.approval-delete@r1",
+          "id": "line.approval_action.delete@r1",
           "name": "approval-delete",
           "rev": 1,
           "status": "active",
-          "description": "action=cleanup；target=inst.clipboard-daily@r2",
+          "description": "action=cleanup；target=line.clipboard_to_file.daily@r2",
           "params": {
-            "detail": "action=cleanup；target=inst.clipboard-daily@r2"
+            "detail": "action=cleanup；target=line.clipboard_to_file.daily@r2"
           }
         },
         {
-          "id": "inst.approval-deploy@r1",
+          "id": "line.approval_action.deploy@r1",
           "name": "approval-deploy",
           "rev": 1,
           "status": "active",
-          "description": "action=deploy；target=inst.ensure-service-docker@r1",
+          "description": "action=deploy；target=line.ensure_service.docker@r1",
           "params": {
-            "detail": "action=deploy；target=inst.ensure-service-docker@r1"
+            "detail": "action=deploy；target=line.ensure_service.docker@r1"
           }
         }
       ]
@@ -1968,7 +1968,7 @@
       ],
       "instances": [
         {
-          "id": "surface.settings.vpn",
+          "id": "surface.form.settings_vpn@r3",
           "name": "VPN 设置",
           "rev": 3,
           "status": "active",
@@ -1978,7 +1978,7 @@
           }
         },
         {
-          "id": "surface.settings.general",
+          "id": "surface.form.settings_general@r2",
           "name": "通用设置",
           "rev": 2,
           "status": "active",
@@ -1988,7 +1988,7 @@
           }
         },
         {
-          "id": "surface.point-params",
+          "id": "surface.form.point_params@r1",
           "name": "点实例参数",
           "rev": 1,
           "status": "active",
@@ -1998,7 +1998,7 @@
           }
         },
         {
-          "id": "surface.settings.system-monitor",
+          "id": "surface.form.settings_system_monitor@r2",
           "name": "系统监控设置",
           "rev": 2,
           "status": "active",
@@ -2029,7 +2029,7 @@
       ],
       "instances": [
         {
-          "id": "surface.wizard.new-flow",
+          "id": "surface.wizard.new_flow@r1",
           "name": "新建流程",
           "rev": 1,
           "status": "active",
@@ -2039,7 +2039,7 @@
           }
         },
         {
-          "id": "surface.wizard.vpn-setup",
+          "id": "surface.wizard.vpn_setup@r1",
           "name": "VPN 首次配置",
           "rev": 1,
           "status": "active",
@@ -2070,7 +2070,7 @@
       ],
       "instances": [
         {
-          "id": "surface.inspector.point",
+          "id": "surface.inspector.point@r4",
           "name": "点检查器",
           "rev": 4,
           "status": "active",
@@ -2080,7 +2080,7 @@
           }
         },
         {
-          "id": "surface.inspector.slot-vpn",
+          "id": "surface.inspector.slot_vpn@r2",
           "name": "VPN 槽位检查器",
           "rev": 2,
           "status": "active",
@@ -2090,7 +2090,7 @@
           }
         },
         {
-          "id": "surface.inspector.run-node",
+          "id": "surface.inspector.run_node@r1",
           "name": "运行节点检查器",
           "rev": 1,
           "status": "active",
@@ -2121,7 +2121,7 @@
       ],
       "instances": [
         {
-          "id": "surface.point-catalog",
+          "id": "surface.table.point_catalog@r5",
           "name": "点目录",
           "rev": 5,
           "status": "active",
@@ -2131,7 +2131,7 @@
           }
         },
         {
-          "id": "surface.flow-instances",
+          "id": "surface.table.flow_instances@r3",
           "name": "线实例列表",
           "rev": 3,
           "status": "active",
@@ -2141,7 +2141,7 @@
           }
         },
         {
-          "id": "surface.run-history.table",
+          "id": "surface.table.run_history_table@r2",
           "name": "运行列表",
           "rev": 2,
           "status": "active",
@@ -2153,7 +2153,7 @@
       ]
     },
     {
-      "id": "surface.card-grid",
+      "id": "surface.card_grid",
       "name": "卡片墙",
       "family": "browse",
       "priority": "P1",
@@ -2172,7 +2172,7 @@
       ],
       "instances": [
         {
-          "id": "surface.site-launcher",
+          "id": "surface.card_grid.site_launcher@r3",
           "name": "站点启动器",
           "rev": 3,
           "status": "active",
@@ -2182,7 +2182,7 @@
           }
         },
         {
-          "id": "surface.body-market",
+          "id": "surface.card_grid.body_market@r1",
           "name": "Body 市场",
           "rev": 1,
           "status": "active",
@@ -2192,7 +2192,7 @@
           }
         },
         {
-          "id": "surface.flow-gallery",
+          "id": "surface.card_grid.flow_gallery@r2",
           "name": "流程模板",
           "rev": 2,
           "status": "active",
@@ -2223,7 +2223,7 @@
       ],
       "instances": [
         {
-          "id": "surface.point-domains",
+          "id": "surface.tree.point_domains@r2",
           "name": "点 Domain 树",
           "rev": 2,
           "status": "active",
@@ -2233,7 +2233,7 @@
           }
         },
         {
-          "id": "surface.flow-outline",
+          "id": "surface.tree.flow_outline@r1",
           "name": "流程大纲",
           "rev": 1,
           "status": "active",
@@ -2245,7 +2245,7 @@
       ]
     },
     {
-      "id": "surface.command-palette",
+      "id": "surface.command_palette",
       "name": "命令面板",
       "family": "browse",
       "priority": "P0",
@@ -2264,7 +2264,7 @@
       ],
       "instances": [
         {
-          "id": "surface.command-palette.global",
+          "id": "surface.command_palette.global@r4",
           "name": "全局命令面板",
           "rev": 4,
           "status": "active",
@@ -2274,7 +2274,7 @@
           }
         },
         {
-          "id": "surface.command-palette.points",
+          "id": "surface.command_palette.points@r2",
           "name": "点实例面板",
           "rev": 2,
           "status": "active",
@@ -2305,7 +2305,7 @@
       ],
       "instances": [
         {
-          "id": "surface.canvas.flow-editor",
+          "id": "surface.canvas.flow_editor@r6",
           "name": "线层编辑器",
           "rev": 6,
           "status": "active",
@@ -2315,7 +2315,7 @@
           }
         },
         {
-          "id": "surface.canvas.body-composer",
+          "id": "surface.canvas.body_composer@r1",
           "name": "Body 组合器",
           "rev": 1,
           "status": "active",
@@ -2346,7 +2346,7 @@
       ],
       "instances": [
         {
-          "id": "surface.dashboard.system",
+          "id": "surface.dashboard.system@r2",
           "name": "系统总览",
           "rev": 2,
           "status": "active",
@@ -2356,7 +2356,7 @@
           }
         },
         {
-          "id": "surface.dashboard.vpn",
+          "id": "surface.dashboard.vpn@r1",
           "name": "VPN 健康",
           "rev": 1,
           "status": "active",
@@ -2366,7 +2366,7 @@
           }
         },
         {
-          "id": "surface.system-monitor",
+          "id": "surface.dashboard.system_monitor@r2",
           "name": "系统状态总览",
           "rev": 2,
           "status": "active",
@@ -2378,7 +2378,7 @@
       ]
     },
     {
-      "id": "surface.run-history",
+      "id": "surface.run_history",
       "name": "运行历史",
       "family": "visualize",
       "priority": "P1",
@@ -2397,7 +2397,7 @@
       ],
       "instances": [
         {
-          "id": "surface.run-history.flow",
+          "id": "surface.run_history.flow@r3",
           "name": "流程运行历史",
           "rev": 3,
           "status": "active",
@@ -2407,7 +2407,7 @@
           }
         },
         {
-          "id": "surface.run-history.vpn",
+          "id": "surface.run_history.vpn@r2",
           "name": "VPN 运行历史",
           "rev": 2,
           "status": "active",
@@ -2438,7 +2438,7 @@
       ],
       "instances": [
         {
-          "id": "surface.diff.flow-version",
+          "id": "surface.diff.flow_version@r1",
           "name": "流程版本 diff",
           "rev": 1,
           "status": "active",
@@ -2448,7 +2448,7 @@
           }
         },
         {
-          "id": "surface.diff.instance-revision",
+          "id": "surface.diff.instance_revision@r1",
           "name": "实例 revision diff",
           "rev": 1,
           "status": "active",
@@ -2479,7 +2479,7 @@
       ],
       "instances": [
         {
-          "id": "surface.dialog.vpn-approval",
+          "id": "surface.dialog.vpn_approval@r2",
           "name": "VPN 审批",
           "rev": 2,
           "status": "active",
@@ -2489,7 +2489,7 @@
           }
         },
         {
-          "id": "surface.dialog.delete-confirm",
+          "id": "surface.dialog.delete_confirm@r1",
           "name": "删除确认",
           "rev": 1,
           "status": "active",
@@ -2499,7 +2499,7 @@
           }
         },
         {
-          "id": "surface.dialog.deploy-approval",
+          "id": "surface.dialog.deploy_approval@r1",
           "name": "部署审批",
           "rev": 1,
           "status": "active",
@@ -2530,7 +2530,7 @@
       ],
       "instances": [
         {
-          "id": "surface.notify.vpn",
+          "id": "surface.notification.vpn@r3",
           "name": "VPN 通知",
           "rev": 3,
           "status": "active",
@@ -2540,7 +2540,7 @@
           }
         },
         {
-          "id": "surface.notify.run",
+          "id": "surface.notification.run@r2",
           "name": "运行通知",
           "rev": 2,
           "status": "active",
@@ -2550,7 +2550,7 @@
           }
         },
         {
-          "id": "surface.notify.download",
+          "id": "surface.notification.download@r1",
           "name": "下载通知",
           "rev": 1,
           "status": "active",
@@ -2560,7 +2560,7 @@
           }
         },
         {
-          "id": "surface.notify.system-threshold",
+          "id": "surface.notification.system_threshold@r1",
           "name": "系统阈值告警",
           "rev": 1,
           "status": "active",
@@ -2572,7 +2572,7 @@
       ]
     },
     {
-      "id": "surface.tray-menu",
+      "id": "surface.tray_menu",
       "name": "托盘菜单",
       "family": "communicate",
       "priority": "P1",
@@ -2591,7 +2591,7 @@
       ],
       "instances": [
         {
-          "id": "surface.tray.quick-actions",
+          "id": "surface.tray_menu.quick_actions@r2",
           "name": "快捷动作",
           "rev": 2,
           "status": "active",
@@ -2601,7 +2601,7 @@
           }
         },
         {
-          "id": "surface.tray.vpn",
+          "id": "surface.tray_menu.vpn@r1",
           "name": "VPN 托盘菜单",
           "rev": 1,
           "status": "active",
@@ -2611,7 +2611,7 @@
           }
         },
         {
-          "id": "surface.tray.system-status",
+          "id": "surface.tray_menu.system_status@r1",
           "name": "系统状态托盘",
           "rev": 1,
           "status": "active",
@@ -2642,7 +2642,7 @@
       ],
       "instances": [
         {
-          "id": "surface.hud.translate",
+          "id": "surface.hud.translate@r2",
           "name": "翻译浮层",
           "rev": 2,
           "status": "active",
@@ -2652,7 +2652,7 @@
           }
         },
         {
-          "id": "surface.hud.vpn-status",
+          "id": "surface.hud.vpn_status@r1",
           "name": "VPN 状态浮层",
           "rev": 1,
           "status": "active",
@@ -2662,7 +2662,7 @@
           }
         },
         {
-          "id": "surface.hud.system-status",
+          "id": "surface.hud.system_status@r1",
           "name": "系统状态浮层",
           "rev": 1,
           "status": "active",
@@ -2674,7 +2674,7 @@
       ]
     },
     {
-      "id": "surface.metric-card",
+      "id": "surface.metric_card",
       "name": "指标卡",
       "family": "visualize",
       "priority": "P1",
@@ -2693,7 +2693,7 @@
       ],
       "instances": [
         {
-          "id": "metric.cpu",
+          "id": "surface.metric_card.cpu@r1",
           "name": "CPU",
           "rev": 1,
           "status": "active",
@@ -2703,7 +2703,7 @@
           }
         },
         {
-          "id": "metric.gpu",
+          "id": "surface.metric_card.gpu@r1",
           "name": "GPU",
           "rev": 1,
           "status": "active",
@@ -2713,7 +2713,7 @@
           }
         },
         {
-          "id": "metric.memory",
+          "id": "surface.metric_card.memory@r1",
           "name": "内存",
           "rev": 1,
           "status": "active",
@@ -2723,7 +2723,7 @@
           }
         },
         {
-          "id": "metric.network",
+          "id": "surface.metric_card.network@r1",
           "name": "网速",
           "rev": 1,
           "status": "active",
@@ -2733,7 +2733,7 @@
           }
         },
         {
-          "id": "metric.disk",
+          "id": "surface.metric_card.disk@r1",
           "name": "磁盘",
           "rev": 1,
           "status": "active",
@@ -2747,7 +2747,7 @@
   ],
   "body": [
     {
-      "id": "body.file-preview",
+      "id": "body.file_preview",
       "name": "文件预览",
       "family": "content",
       "priority": "P0",
@@ -2766,7 +2766,7 @@
       ],
       "instances": [
         {
-          "id": "body.file-preview.text@r1",
+          "id": "body.file_preview.text@r1",
           "name": "text",
           "rev": 1,
           "status": "active",
@@ -2776,7 +2776,7 @@
           }
         },
         {
-          "id": "body.file-preview.markdown@r1",
+          "id": "body.file_preview.markdown@r1",
           "name": "markdown",
           "rev": 1,
           "status": "active",
@@ -2786,7 +2786,7 @@
           }
         },
         {
-          "id": "body.file-preview.image@r1",
+          "id": "body.file_preview.image@r1",
           "name": "image",
           "rev": 1,
           "status": "active",
@@ -2796,7 +2796,7 @@
           }
         },
         {
-          "id": "body.file-preview.pdf@r1",
+          "id": "body.file_preview.pdf@r1",
           "name": "pdf",
           "rev": 1,
           "status": "active",
@@ -2806,7 +2806,7 @@
           }
         },
         {
-          "id": "body.file-preview.video@r1",
+          "id": "body.file_preview.video@r1",
           "name": "video",
           "rev": 1,
           "status": "active",
@@ -2816,7 +2816,7 @@
           }
         },
         {
-          "id": "body.file-preview.audio@r1",
+          "id": "body.file_preview.audio@r1",
           "name": "audio",
           "rev": 1,
           "status": "active",
@@ -2899,7 +2899,7 @@
       ]
     },
     {
-      "id": "body.image-resizer",
+      "id": "body.image_resizer",
       "name": "图片尺寸",
       "family": "content",
       "priority": "P0",
@@ -2918,7 +2918,7 @@
       ],
       "instances": [
         {
-          "id": "body.image-resizer.web@r2",
+          "id": "body.image_resizer.web@r2",
           "name": "web",
           "rev": 2,
           "status": "active",
@@ -2928,7 +2928,7 @@
           }
         },
         {
-          "id": "body.image-resizer.thumbnail@r1",
+          "id": "body.image_resizer.thumbnail@r1",
           "name": "thumbnail",
           "rev": 1,
           "status": "active",
@@ -2938,7 +2938,7 @@
           }
         },
         {
-          "id": "body.image-resizer.avatar@r1",
+          "id": "body.image_resizer.avatar@r1",
           "name": "avatar",
           "rev": 1,
           "status": "active",
@@ -2948,7 +2948,7 @@
           }
         },
         {
-          "id": "body.image-resizer.email@r1",
+          "id": "body.image_resizer.email@r1",
           "name": "email",
           "rev": 1,
           "status": "active",
@@ -2960,7 +2960,7 @@
       ]
     },
     {
-      "id": "body.batch-rename",
+      "id": "body.batch_rename",
       "name": "批量重命名",
       "family": "content",
       "priority": "P0",
@@ -2979,7 +2979,7 @@
       ],
       "instances": [
         {
-          "id": "body.batch-rename.regex@r1",
+          "id": "body.batch_rename.regex@r1",
           "name": "regex",
           "rev": 1,
           "status": "active",
@@ -2989,7 +2989,7 @@
           }
         },
         {
-          "id": "body.batch-rename.sequence@r1",
+          "id": "body.batch_rename.sequence@r1",
           "name": "sequence",
           "rev": 1,
           "status": "active",
@@ -2999,7 +2999,7 @@
           }
         },
         {
-          "id": "body.batch-rename.date-prefix@r1",
+          "id": "body.batch_rename.date_prefix@r1",
           "name": "date-prefix",
           "rev": 1,
           "status": "active",
@@ -3009,7 +3009,7 @@
           }
         },
         {
-          "id": "body.batch-rename.extension-normalize@r1",
+          "id": "body.batch_rename.extension_normalize@r1",
           "name": "extension-normalize",
           "rev": 1,
           "status": "active",
@@ -3021,7 +3021,7 @@
       ]
     },
     {
-      "id": "body.pdf-toolkit",
+      "id": "body.pdf_toolkit",
       "name": "PDF 工具",
       "family": "content",
       "priority": "P1",
@@ -3040,7 +3040,7 @@
       ],
       "instances": [
         {
-          "id": "body.pdf-toolkit.merge@r1",
+          "id": "body.pdf_toolkit.merge@r1",
           "name": "merge",
           "rev": 1,
           "status": "active",
@@ -3050,7 +3050,7 @@
           }
         },
         {
-          "id": "body.pdf-toolkit.split@r1",
+          "id": "body.pdf_toolkit.split@r1",
           "name": "split",
           "rev": 1,
           "status": "active",
@@ -3060,7 +3060,7 @@
           }
         },
         {
-          "id": "body.pdf-toolkit.compress@r1",
+          "id": "body.pdf_toolkit.compress@r1",
           "name": "compress",
           "rev": 1,
           "status": "active",
@@ -3070,7 +3070,7 @@
           }
         },
         {
-          "id": "body.pdf-toolkit.rotate@r1",
+          "id": "body.pdf_toolkit.rotate@r1",
           "name": "rotate",
           "rev": 1,
           "status": "active",
@@ -3082,7 +3082,7 @@
       ]
     },
     {
-      "id": "body.media-converter",
+      "id": "body.media_converter",
       "name": "媒体转换",
       "family": "content",
       "priority": "P1",
@@ -3101,7 +3101,7 @@
       ],
       "instances": [
         {
-          "id": "body.media-converter.image@r1",
+          "id": "body.media_converter.image@r1",
           "name": "image",
           "rev": 1,
           "status": "active",
@@ -3111,7 +3111,7 @@
           }
         },
         {
-          "id": "body.media-converter.video@r1",
+          "id": "body.media_converter.video@r1",
           "name": "video",
           "rev": 1,
           "status": "active",
@@ -3121,7 +3121,7 @@
           }
         },
         {
-          "id": "body.media-converter.audio@r1",
+          "id": "body.media_converter.audio@r1",
           "name": "audio",
           "rev": 1,
           "status": "active",
@@ -3133,7 +3133,7 @@
       ]
     },
     {
-      "id": "body.file-organizer",
+      "id": "body.file_organizer",
       "name": "文件整理",
       "family": "content",
       "priority": "P1",
@@ -3152,7 +3152,7 @@
       ],
       "instances": [
         {
-          "id": "body.file-organizer.downloads@r1",
+          "id": "body.file_organizer.downloads@r1",
           "name": "downloads",
           "rev": 1,
           "status": "active",
@@ -3162,7 +3162,7 @@
           }
         },
         {
-          "id": "body.file-organizer.screenshots@r1",
+          "id": "body.file_organizer.screenshots@r1",
           "name": "screenshots",
           "rev": 1,
           "status": "active",
@@ -3172,7 +3172,7 @@
           }
         },
         {
-          "id": "body.file-organizer.duplicates@r1",
+          "id": "body.file_organizer.duplicates@r1",
           "name": "duplicates",
           "rev": 1,
           "status": "active",
@@ -3184,7 +3184,7 @@
       ]
     },
     {
-      "id": "body.advanced-paste",
+      "id": "body.advanced_paste",
       "name": "高级粘贴",
       "family": "clipboard",
       "priority": "P0",
@@ -3203,7 +3203,7 @@
       ],
       "instances": [
         {
-          "id": "body.advanced-paste.plain@r1",
+          "id": "body.advanced_paste.plain@r1",
           "name": "plain",
           "rev": 1,
           "status": "active",
@@ -3213,7 +3213,7 @@
           }
         },
         {
-          "id": "body.advanced-paste.markdown@r1",
+          "id": "body.advanced_paste.markdown@r1",
           "name": "markdown",
           "rev": 1,
           "status": "active",
@@ -3223,7 +3223,7 @@
           }
         },
         {
-          "id": "body.advanced-paste.json@r1",
+          "id": "body.advanced_paste.json@r1",
           "name": "json",
           "rev": 1,
           "status": "active",
@@ -3233,7 +3233,7 @@
           }
         },
         {
-          "id": "body.advanced-paste.ai@r1",
+          "id": "body.advanced_paste.ai@r1",
           "name": "ai",
           "rev": 1,
           "status": "active",
@@ -3245,7 +3245,7 @@
       ]
     },
     {
-      "id": "body.clipboard-history",
+      "id": "body.clipboard_history",
       "name": "剪贴板历史",
       "family": "clipboard",
       "priority": "P1",
@@ -3264,7 +3264,7 @@
       ],
       "instances": [
         {
-          "id": "body.clipboard-history.recent@r1",
+          "id": "body.clipboard_history.recent@r1",
           "name": "recent",
           "rev": 1,
           "status": "active",
@@ -3274,7 +3274,7 @@
           }
         },
         {
-          "id": "body.clipboard-history.pinned@r1",
+          "id": "body.clipboard_history.pinned@r1",
           "name": "pinned",
           "rev": 1,
           "status": "active",
@@ -3286,7 +3286,7 @@
       ]
     },
     {
-      "id": "body.color-picker",
+      "id": "body.color_picker",
       "name": "取色器",
       "family": "clipboard",
       "priority": "P0",
@@ -3305,7 +3305,7 @@
       ],
       "instances": [
         {
-          "id": "body.color-picker.hex@r1",
+          "id": "body.color_picker.hex@r1",
           "name": "hex",
           "rev": 1,
           "status": "active",
@@ -3315,7 +3315,7 @@
           }
         },
         {
-          "id": "body.color-picker.palette@r1",
+          "id": "body.color_picker.palette@r1",
           "name": "palette",
           "rev": 1,
           "status": "active",
@@ -3327,7 +3327,7 @@
       ]
     },
     {
-      "id": "body.screen-ruler",
+      "id": "body.screen_ruler",
       "name": "屏幕标尺",
       "family": "clipboard",
       "priority": "P1",
@@ -3346,7 +3346,7 @@
       ],
       "instances": [
         {
-          "id": "body.screen-ruler.px@r1",
+          "id": "body.screen_ruler.px@r1",
           "name": "px",
           "rev": 1,
           "status": "active",
@@ -3356,7 +3356,7 @@
           }
         },
         {
-          "id": "body.screen-ruler.inches@r1",
+          "id": "body.screen_ruler.inches@r1",
           "name": "inches",
           "rev": 1,
           "status": "active",
@@ -3366,7 +3366,7 @@
           }
         },
         {
-          "id": "body.screen-ruler.angle@r1",
+          "id": "body.screen_ruler.angle@r1",
           "name": "angle",
           "rev": 1,
           "status": "active",
@@ -3378,7 +3378,7 @@
       ]
     },
     {
-      "id": "body.window-layout",
+      "id": "body.window_layout",
       "name": "窗口布局",
       "family": "window",
       "priority": "P0",
@@ -3397,7 +3397,7 @@
       ],
       "instances": [
         {
-          "id": "body.window-layout.dev@r1",
+          "id": "body.window_layout.dev@r1",
           "name": "dev",
           "rev": 1,
           "status": "active",
@@ -3407,7 +3407,7 @@
           }
         },
         {
-          "id": "body.window-layout.meeting@r1",
+          "id": "body.window_layout.meeting@r1",
           "name": "meeting",
           "rev": 1,
           "status": "active",
@@ -3417,7 +3417,7 @@
           }
         },
         {
-          "id": "body.window-layout.ultrawide@r1",
+          "id": "body.window_layout.ultrawide@r1",
           "name": "ultrawide",
           "rev": 1,
           "status": "active",
@@ -3429,7 +3429,7 @@
       ]
     },
     {
-      "id": "body.always-on-top",
+      "id": "body.always_on_top",
       "name": "窗口置顶",
       "family": "window",
       "priority": "P1",
@@ -3448,7 +3448,7 @@
       ],
       "instances": [
         {
-          "id": "body.always-on-top.window@r1",
+          "id": "body.always_on_top.window@r1",
           "name": "window",
           "rev": 1,
           "status": "active",
@@ -3458,7 +3458,7 @@
           }
         },
         {
-          "id": "body.always-on-top.region@r1",
+          "id": "body.always_on_top.region@r1",
           "name": "region",
           "rev": 1,
           "status": "active",
@@ -3509,7 +3509,7 @@
           }
         },
         {
-          "id": "body.awake.while-app@r1",
+          "id": "body.awake.while_app@r1",
           "name": "while-app",
           "rev": 1,
           "status": "active",
@@ -3572,7 +3572,7 @@
       ]
     },
     {
-      "id": "body.quick-launch",
+      "id": "body.quick_launch",
       "name": "快速启动",
       "family": "window",
       "priority": "P0",
@@ -3591,7 +3591,7 @@
       ],
       "instances": [
         {
-          "id": "body.quick-launch.dock@r1",
+          "id": "body.quick_launch.dock@r1",
           "name": "dock",
           "rev": 1,
           "status": "active",
@@ -3601,7 +3601,7 @@
           }
         },
         {
-          "id": "body.quick-launch.palette@r1",
+          "id": "body.quick_launch.palette@r1",
           "name": "palette",
           "rev": 1,
           "status": "active",
@@ -3613,7 +3613,7 @@
       ]
     },
     {
-      "id": "body.system-monitor",
+      "id": "body.system_monitor",
       "name": "系统监控",
       "family": "system",
       "priority": "P1",
@@ -3632,7 +3632,7 @@
       ],
       "instances": [
         {
-          "id": "body.system-monitor.desktop@r2",
+          "id": "body.system_monitor.desktop@r2",
           "name": "desktop",
           "rev": 2,
           "status": "active",
@@ -3642,7 +3642,7 @@
           }
         },
         {
-          "id": "body.system-monitor.minimal@r1",
+          "id": "body.system_monitor.minimal@r1",
           "name": "minimal",
           "rev": 1,
           "status": "active",
@@ -3654,7 +3654,7 @@
       ]
     },
     {
-      "id": "body.service-health",
+      "id": "body.service_health",
       "name": "服务健康",
       "family": "system",
       "priority": "P1",
@@ -3673,7 +3673,7 @@
       ],
       "instances": [
         {
-          "id": "body.service-health.docker@r1",
+          "id": "body.service_health.docker@r1",
           "name": "docker",
           "rev": 1,
           "status": "active",
@@ -3683,7 +3683,7 @@
           }
         },
         {
-          "id": "body.service-health.local-api@r1",
+          "id": "body.service_health.local_api@r1",
           "name": "local-api",
           "rev": 1,
           "status": "active",
@@ -3693,7 +3693,7 @@
           }
         },
         {
-          "id": "body.service-health.vpn@r1",
+          "id": "body.service_health.vpn@r1",
           "name": "vpn",
           "rev": 1,
           "status": "active",
@@ -3705,7 +3705,7 @@
       ]
     },
     {
-      "id": "body.file-locksmith",
+      "id": "body.file_locksmith",
       "name": "文件占用",
       "family": "system",
       "priority": "P2",
@@ -3724,7 +3724,7 @@
       ],
       "instances": [
         {
-          "id": "body.file-locksmith.process@r1",
+          "id": "body.file_locksmith.process@r1",
           "name": "process",
           "rev": 1,
           "status": "active",
@@ -3734,7 +3734,7 @@
           }
         },
         {
-          "id": "body.file-locksmith.handle@r1",
+          "id": "body.file_locksmith.handle@r1",
           "name": "handle",
           "rev": 1,
           "status": "active",
@@ -3746,7 +3746,7 @@
       ]
     },
     {
-      "id": "body.hosts-editor",
+      "id": "body.hosts_editor",
       "name": "Hosts 编辑",
       "family": "system",
       "priority": "P2",
@@ -3765,7 +3765,7 @@
       ],
       "instances": [
         {
-          "id": "body.hosts-editor.local@r1",
+          "id": "body.hosts_editor.local@r1",
           "name": "local",
           "rev": 1,
           "status": "active",
@@ -3775,7 +3775,7 @@
           }
         },
         {
-          "id": "body.hosts-editor.blocklist@r1",
+          "id": "body.hosts_editor.blocklist@r1",
           "name": "blocklist",
           "rev": 1,
           "status": "active",
@@ -3787,7 +3787,7 @@
       ]
     },
     {
-      "id": "body.env-vars",
+      "id": "body.env_vars",
       "name": "环境变量",
       "family": "system",
       "priority": "P2",
@@ -3806,7 +3806,7 @@
       ],
       "instances": [
         {
-          "id": "body.env-vars.user@r1",
+          "id": "body.env_vars.user@r1",
           "name": "user",
           "rev": 1,
           "status": "active",
@@ -3816,7 +3816,7 @@
           }
         },
         {
-          "id": "body.env-vars.path@r1",
+          "id": "body.env_vars.path@r1",
           "name": "path",
           "rev": 1,
           "status": "active",
@@ -3828,7 +3828,7 @@
       ]
     },
     {
-      "id": "body.external-access",
+      "id": "body.external_access",
       "name": "外网访问",
       "family": "web",
       "priority": "P0",
@@ -3847,7 +3847,7 @@
       ],
       "instances": [
         {
-          "id": "body.external-access.work@r3",
+          "id": "body.external_access.work@r3",
           "name": "work",
           "rev": 3,
           "status": "active",
@@ -3857,7 +3857,7 @@
           }
         },
         {
-          "id": "body.external-access.personal@r2",
+          "id": "body.external_access.personal@r2",
           "name": "personal",
           "rev": 2,
           "status": "active",
@@ -3869,7 +3869,7 @@
       ]
     },
     {
-      "id": "body.screenshot-translate",
+      "id": "body.screenshot_translate",
       "name": "截图翻译",
       "family": "ai",
       "priority": "P1",
@@ -3888,7 +3888,7 @@
       ],
       "instances": [
         {
-          "id": "body.screenshot-translate.en-zh@r4",
+          "id": "body.screenshot_translate.en_zh@r4",
           "name": "en-zh",
           "rev": 4,
           "status": "active",
@@ -3898,7 +3898,7 @@
           }
         },
         {
-          "id": "body.screenshot-translate.ja-zh@r2",
+          "id": "body.screenshot_translate.ja_zh@r2",
           "name": "ja-zh",
           "rev": 2,
           "status": "active",
@@ -3910,7 +3910,7 @@
       ]
     },
     {
-      "id": "body.ai-rewrite",
+      "id": "body.ai_rewrite",
       "name": "AI 改写",
       "family": "ai",
       "priority": "P1",
@@ -3929,7 +3929,7 @@
       ],
       "instances": [
         {
-          "id": "body.ai-rewrite.formal@r2",
+          "id": "body.ai_rewrite.formal@r2",
           "name": "formal",
           "rev": 2,
           "status": "active",
@@ -3939,7 +3939,7 @@
           }
         },
         {
-          "id": "body.ai-rewrite.shorten@r1",
+          "id": "body.ai_rewrite.shorten@r1",
           "name": "shorten",
           "rev": 1,
           "status": "active",
@@ -3949,7 +3949,7 @@
           }
         },
         {
-          "id": "body.ai-rewrite.translate@r1",
+          "id": "body.ai_rewrite.translate@r1",
           "name": "translate",
           "rev": 1,
           "status": "active",
@@ -3961,7 +3961,7 @@
       ]
     },
     {
-      "id": "body.meeting-notes",
+      "id": "body.meeting_notes",
       "name": "会议纪要",
       "family": "ai",
       "priority": "P2",
@@ -3980,7 +3980,7 @@
       ],
       "instances": [
         {
-          "id": "body.meeting-notes.local@r1",
+          "id": "body.meeting_notes.local@r1",
           "name": "local",
           "rev": 1,
           "status": "active",
@@ -3990,7 +3990,7 @@
           }
         },
         {
-          "id": "body.meeting-notes.cloud@r1",
+          "id": "body.meeting_notes.cloud@r1",
           "name": "cloud",
           "rev": 1,
           "status": "active",
@@ -4002,7 +4002,7 @@
       ]
     },
     {
-      "id": "body.invoice-archive",
+      "id": "body.invoice_archive",
       "name": "发票归档",
       "family": "content",
       "priority": "P1",
@@ -4021,7 +4021,7 @@
       ],
       "instances": [
         {
-          "id": "body.invoice-archive.company@r6",
+          "id": "body.invoice_archive.company@r6",
           "name": "company",
           "rev": 6,
           "status": "active",
@@ -4031,7 +4031,7 @@
           }
         },
         {
-          "id": "body.invoice-archive.personal@r2",
+          "id": "body.invoice_archive.personal@r2",
           "name": "personal",
           "rev": 2,
           "status": "active",
@@ -4084,7 +4084,7 @@
       ]
     },
     {
-      "id": "body.web-clipper",
+      "id": "body.web_clipper",
       "name": "网页剪藏",
       "family": "web",
       "priority": "P2",
@@ -4103,7 +4103,7 @@
       ],
       "instances": [
         {
-          "id": "body.web-clipper.selection@r1",
+          "id": "body.web_clipper.selection@r1",
           "name": "selection",
           "rev": 1,
           "status": "active",
@@ -4113,7 +4113,7 @@
           }
         },
         {
-          "id": "body.web-clipper.page@r1",
+          "id": "body.web_clipper.page@r1",
           "name": "page",
           "rev": 1,
           "status": "active",
@@ -4123,7 +4123,7 @@
           }
         },
         {
-          "id": "body.web-clipper.readability@r1",
+          "id": "body.web_clipper.readability@r1",
           "name": "readability",
           "rev": 1,
           "status": "active",
@@ -4135,7 +4135,7 @@
       ]
     },
     {
-      "id": "body.backup-sync",
+      "id": "body.backup_sync",
       "name": "备份同步",
       "family": "system",
       "priority": "P2",
@@ -4154,7 +4154,7 @@
       ],
       "instances": [
         {
-          "id": "body.backup-sync.folder@r1",
+          "id": "body.backup_sync.folder@r1",
           "name": "folder",
           "rev": 1,
           "status": "active",
@@ -4164,7 +4164,7 @@
           }
         },
         {
-          "id": "body.backup-sync.daily@r1",
+          "id": "body.backup_sync.daily@r1",
           "name": "daily",
           "rev": 1,
           "status": "active",
@@ -4218,7 +4218,7 @@
           }
         },
         {
-          "id": "field.observe.run-history@r1",
+          "id": "field.observe.run_history@r1",
           "name": "observe.run-history",
           "rev": 1,
           "status": "active",
@@ -4260,17 +4260,17 @@
           }
         },
         {
-          "id": "field.classify.file-type@r1",
+          "id": "field.classify.file_type@r1",
           "name": "classify.file-type",
           "rev": 1,
           "status": "active",
-          "description": "body.file-preview · text/image/pdf/video/audio",
+          "description": "body.file_preview · text/image/pdf/video/audio",
           "params": {
-            "detail": "body.file-preview · text/image/pdf/video/audio"
+            "detail": "body.file_preview · text/image/pdf/video/audio"
           }
         },
         {
-          "id": "field.classify.ocr-mode@r1",
+          "id": "field.classify.ocr_mode@r1",
           "name": "classify.ocr-mode",
           "rev": 1,
           "status": "active",
@@ -4280,7 +4280,7 @@
           }
         },
         {
-          "id": "field.classify.error-kind@r1",
+          "id": "field.classify.error_kind@r1",
           "name": "classify.error-kind",
           "rev": 1,
           "status": "active",
@@ -4307,7 +4307,7 @@
           "type": "text",
           "required": false,
           "description": "target",
-          "defaultValue": "win.open.i-open-github@r1"
+          "defaultValue": "point.open.github@r1"
         },
         {
           "key": "param",
@@ -4336,7 +4336,7 @@
       ],
       "instances": [
         {
-          "id": "field.prefill.point-params@r1",
+          "id": "field.prefill.point_params@r1",
           "name": "prefill.point-params",
           "rev": 1,
           "status": "active",
@@ -4346,17 +4346,17 @@
           }
         },
         {
-          "id": "field.prefill.vpn-profile@r1",
+          "id": "field.prefill.vpn_profile@r1",
           "name": "prefill.vpn-profile",
           "rev": 1,
           "status": "active",
-          "description": "body.external-access · vpn.profile",
+          "description": "body.external_access · vpn.profile",
           "params": {
-            "detail": "body.external-access · vpn.profile"
+            "detail": "body.external_access · vpn.profile"
           }
         },
         {
-          "id": "field.prefill.ocr-language@r1",
+          "id": "field.prefill.ocr_language@r1",
           "name": "prefill.ocr-language",
           "rev": 1,
           "status": "active",
@@ -4366,17 +4366,17 @@
           }
         },
         {
-          "id": "field.prefill.rename-pattern@r1",
+          "id": "field.prefill.rename_pattern@r1",
           "name": "prefill.rename-pattern",
           "rev": 1,
           "status": "active",
-          "description": "body.batch-rename.regex · rename.pattern",
+          "description": "body.batch_rename.regex · rename.pattern",
           "params": {
-            "detail": "body.batch-rename.regex · rename.pattern"
+            "detail": "body.batch_rename.regex · rename.pattern"
           }
         },
         {
-          "id": "field.prefill.search-query@r1",
+          "id": "field.prefill.search_query@r1",
           "name": "prefill.search-query",
           "rev": 1,
           "status": "active",
@@ -4386,13 +4386,13 @@
           }
         },
         {
-          "id": "field.prefill.landing-demo@r1",
+          "id": "field.prefill.landing_demo@r1",
           "name": "prefill.landing-demo",
           "rev": 1,
           "status": "active",
-          "description": "{\"target\":\"win.open.i-open-github@r1\",\"param\":\"target\",\"source\":\"clipboard\",\"literal\":\"\"}",
+          "description": "{\"target\":\"point.open.github@r1\",\"param\":\"target\",\"source\":\"clipboard\",\"literal\":\"\"}",
           "params": {
-            "target": "win.open.i-open-github@r1",
+            "target": "point.open.github@r1",
             "param": "target",
             "source": "clipboard",
             "literal": ""
@@ -4421,7 +4421,7 @@
       ],
       "instances": [
         {
-          "id": "field.rank.scene-grid@r1",
+          "id": "field.rank.scene_grid@r1",
           "name": "rank.scene-grid",
           "rev": 1,
           "status": "active",
@@ -4431,27 +4431,27 @@
           }
         },
         {
-          "id": "field.rank.command-palette@r1",
+          "id": "field.rank.command_palette@r1",
           "name": "rank.command-palette",
           "rev": 1,
           "status": "active",
-          "description": "surface.command-palette · result.order",
+          "description": "surface.command_palette · result.order",
           "params": {
-            "detail": "surface.command-palette · result.order"
+            "detail": "surface.command_palette · result.order"
           }
         },
         {
-          "id": "field.rank.body-market@r1",
+          "id": "field.rank.body_market@r1",
           "name": "rank.body-market",
           "rev": 1,
           "status": "active",
-          "description": "surface.card-grid · body.order",
+          "description": "surface.card_grid · body.order",
           "params": {
-            "detail": "surface.card-grid · body.order"
+            "detail": "surface.card_grid · body.order"
           }
         },
         {
-          "id": "field.rank.ocr-mode@r1",
+          "id": "field.rank.ocr_mode@r1",
           "name": "rank.ocr-mode",
           "rev": 1,
           "status": "active",
@@ -4483,7 +4483,7 @@
       ],
       "instances": [
         {
-          "id": "field.recommend.next-action@r1",
+          "id": "field.recommend.next_action@r1",
           "name": "recommend.next-action",
           "rev": 1,
           "status": "active",
@@ -4587,7 +4587,7 @@
       ],
       "instances": [
         {
-          "id": "field.generate.point-action@r1",
+          "id": "field.generate.point_action@r1",
           "name": "generate.point-action",
           "rev": 1,
           "status": "active",
@@ -4607,7 +4607,7 @@
           }
         },
         {
-          "id": "field.generate.surface-layout@r1",
+          "id": "field.generate.surface_layout@r1",
           "name": "generate.surface-layout",
           "rev": 1,
           "status": "active",
@@ -4617,7 +4617,7 @@
           }
         },
         {
-          "id": "field.generate.body-manifest@r1",
+          "id": "field.generate.body_manifest@r1",
           "name": "generate.body-manifest",
           "rev": 1,
           "status": "active",
@@ -4649,7 +4649,7 @@
       ],
       "instances": [
         {
-          "id": "field.compose.flow-from-points@r1",
+          "id": "field.compose.flow_from_points@r1",
           "name": "compose.flow-from-points",
           "rev": 1,
           "status": "active",
@@ -4659,7 +4659,7 @@
           }
         },
         {
-          "id": "field.compose.surface-from-data@r1",
+          "id": "field.compose.surface_from_data@r1",
           "name": "compose.surface-from-data",
           "rev": 1,
           "status": "active",
@@ -4669,7 +4669,7 @@
           }
         },
         {
-          "id": "field.compose.body-from-flows@r1",
+          "id": "field.compose.body_from_flows@r1",
           "name": "compose.body-from-flows",
           "rev": 1,
           "status": "active",
@@ -4701,7 +4701,7 @@
       ],
       "instances": [
         {
-          "id": "field.plan.single-app@r1",
+          "id": "field.plan.single_app@r1",
           "name": "plan.single-app",
           "rev": 1,
           "status": "active",
@@ -4711,7 +4711,7 @@
           }
         },
         {
-          "id": "field.plan.cross-app@r1",
+          "id": "field.plan.cross_app@r1",
           "name": "plan.cross-app",
           "rev": 1,
           "status": "active",
@@ -4753,7 +4753,7 @@
       ],
       "instances": [
         {
-          "id": "field.translate.nl-to-dsl@r1",
+          "id": "field.translate.nl_to_dsl@r1",
           "name": "translate.nl-to-dsl",
           "rev": 1,
           "status": "active",
@@ -4763,7 +4763,7 @@
           }
         },
         {
-          "id": "field.translate.dsl-to-nl@r1",
+          "id": "field.translate.dsl_to_nl@r1",
           "name": "translate.dsl-to-nl",
           "rev": 1,
           "status": "active",
@@ -4773,7 +4773,7 @@
           }
         },
         {
-          "id": "field.translate.error-to-human@r1",
+          "id": "field.translate.error_to_human@r1",
           "name": "translate.error-to-human",
           "rev": 1,
           "status": "active",
@@ -4805,13 +4805,13 @@
       ],
       "instances": [
         {
-          "id": "field.summarize.run-history@r1",
+          "id": "field.summarize.run_history@r1",
           "name": "summarize.run-history",
           "rev": 1,
           "status": "active",
-          "description": "surface.run-history · 运行摘要",
+          "description": "surface.run_history · 运行摘要",
           "params": {
-            "detail": "surface.run-history · 运行摘要"
+            "detail": "surface.run_history · 运行摘要"
           }
         },
         {
@@ -4857,7 +4857,7 @@
       ],
       "instances": [
         {
-          "id": "field.diagnose.flow-failure@r1",
+          "id": "field.diagnose.flow_failure@r1",
           "name": "diagnose.flow-failure",
           "rev": 1,
           "status": "active",
@@ -4867,7 +4867,7 @@
           }
         },
         {
-          "id": "field.diagnose.uia-timeout@r1",
+          "id": "field.diagnose.uia_timeout@r1",
           "name": "diagnose.uia-timeout",
           "rev": 1,
           "status": "active",
@@ -4877,7 +4877,7 @@
           }
         },
         {
-          "id": "field.diagnose.vpn-unreachable@r1",
+          "id": "field.diagnose.vpn_unreachable@r1",
           "name": "diagnose.vpn-unreachable",
           "rev": 1,
           "status": "active",
@@ -4887,7 +4887,7 @@
           }
         },
         {
-          "id": "field.diagnose.ocr-low-confidence@r1",
+          "id": "field.diagnose.ocr_low_confidence@r1",
           "name": "diagnose.ocr-low-confidence",
           "rev": 1,
           "status": "active",
@@ -4919,7 +4919,7 @@
       ],
       "instances": [
         {
-          "id": "field.repair.flow-patch@r1",
+          "id": "field.repair.flow_patch@r1",
           "name": "repair.flow-patch",
           "rev": 1,
           "status": "active",
@@ -4929,7 +4929,7 @@
           }
         },
         {
-          "id": "field.repair.selector-patch@r1",
+          "id": "field.repair.selector_patch@r1",
           "name": "repair.selector-patch",
           "rev": 1,
           "status": "active",
@@ -4939,7 +4939,7 @@
           }
         },
         {
-          "id": "field.repair.settings-patch@r1",
+          "id": "field.repair.settings_patch@r1",
           "name": "repair.settings-patch",
           "rev": 1,
           "status": "active",
@@ -4949,7 +4949,7 @@
           }
         },
         {
-          "id": "field.repair.permission-fix@r1",
+          "id": "field.repair.permission_fix@r1",
           "name": "repair.permission-fix",
           "rev": 1,
           "status": "active",
@@ -4981,7 +4981,7 @@
       ],
       "instances": [
         {
-          "id": "field.mine.action-sequence@r1",
+          "id": "field.mine.action_sequence@r1",
           "name": "mine.action-sequence",
           "rev": 1,
           "status": "active",
@@ -4991,7 +4991,7 @@
           }
         },
         {
-          "id": "field.mine.flow-template@r1",
+          "id": "field.mine.flow_template@r1",
           "name": "mine.flow-template",
           "rev": 1,
           "status": "active",
@@ -5001,7 +5001,7 @@
           }
         },
         {
-          "id": "field.mine.body-candidate@r1",
+          "id": "field.mine.body_candidate@r1",
           "name": "mine.body-candidate",
           "rev": 1,
           "status": "active",
@@ -5365,7 +5365,7 @@
           }
         },
         {
-          "id": "field.explain.point-run@r1",
+          "id": "field.explain.point_run@r1",
           "name": "explain.point-run",
           "rev": 1,
           "status": "active",
@@ -5375,7 +5375,7 @@
           }
         },
         {
-          "id": "field.explain.flow-run@r1",
+          "id": "field.explain.flow_run@r1",
           "name": "explain.flow-run",
           "rev": 1,
           "status": "active",
@@ -5417,7 +5417,7 @@
       ],
       "instances": [
         {
-          "id": "field.simulate.dry-run@r1",
+          "id": "field.simulate.dry_run@r1",
           "name": "simulate.dry-run",
           "rev": 1,
           "status": "active",

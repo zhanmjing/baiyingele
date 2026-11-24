@@ -17,7 +17,7 @@
       "detail": "surface · why this suggestion"
     },
     {
-      "id": "field.explain.point-run@r1",
+      "id": "field.explain.point_run@r1",
       "classId": "field.explain",
       "scope": "point run",
       "output": "what happened",
@@ -27,7 +27,7 @@
       "detail": "point run · what happened"
     },
     {
-      "id": "field.explain.flow-run@r1",
+      "id": "field.explain.flow_run@r1",
       "classId": "field.explain",
       "scope": "flow run",
       "output": "step trace",

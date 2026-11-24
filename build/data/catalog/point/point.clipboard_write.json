@@ -1,0 +1,26 @@
+{
+  "id": "point.clipboard_write",
+  "name": "写剪贴板",
+  "group": "file",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "把文本写入系统剪贴板；写后回读校验，空文本直接拒绝以免清空用户内容。",
+  "instances": [
+    {
+      "id": "point.clipboard_write.text@r1",
+      "name": "i-text",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"text\":\"\",\"format\":\"text\"}"
+    },
+    {
+      "id": "point.clipboard_write.uppercase@r1",
+      "name": "i-uppercase",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"text\":\"\",\"format\":\"text\"}"
+    }
+  ]
+}

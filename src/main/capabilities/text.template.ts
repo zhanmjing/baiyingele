@@ -1,6 +1,6 @@
 import { elapsed, type Capability } from './_shared'
 
-export const id = 'text.template'
+export const id = 'point.text_template'
 export const summary = '纯函数：把 {{input}} 替换为上游输出'
 
 /** L0 · 套模板（纯函数，不碰外部世界） */

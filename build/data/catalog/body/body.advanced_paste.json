@@ -1,0 +1,40 @@
+{
+  "id": "body.advanced_paste",
+  "name": "高级粘贴",
+  "group": "clipboard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "剪贴板内容 → 目标格式。",
+  "instances": [
+    {
+      "name": "plain",
+      "rev": 1,
+      "status": "active",
+      "detail": "format=plain · preview=false",
+      "id": "body.advanced_paste.plain@r1"
+    },
+    {
+      "name": "markdown",
+      "rev": 1,
+      "status": "active",
+      "detail": "format=markdown · preview=true",
+      "id": "body.advanced_paste.markdown@r1"
+    },
+    {
+      "name": "json",
+      "rev": 1,
+      "status": "active",
+      "detail": "format=json · indent=2",
+      "id": "body.advanced_paste.json@r1"
+    },
+    {
+      "name": "ai",
+      "rev": 1,
+      "status": "active",
+      "detail": "format=ai · model=local",
+      "id": "body.advanced_paste.ai@r1"
+    }
+  ]
+}

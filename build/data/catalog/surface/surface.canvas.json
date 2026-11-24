@@ -9,14 +9,14 @@
   "summary": "节点图编辑；线层编辑器、Body 组合器。",
   "instances": [
     {
-      "id": "surface.canvas.flow-editor",
+      "id": "surface.canvas.flow_editor@r6",
       "name": "线层编辑器",
       "rev": 6,
       "status": "active",
       "detail": "FlowClass 图 / 槽位绑定 · main"
     },
     {
-      "id": "surface.canvas.body-composer",
+      "id": "surface.canvas.body_composer@r1",
       "name": "Body 组合器",
       "rev": 1,
       "status": "active",

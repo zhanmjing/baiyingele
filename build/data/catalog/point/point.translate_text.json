@@ -1,0 +1,26 @@
+{
+  "id": "point.translate_text",
+  "name": "翻译文本",
+  "group": "text",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "翻译文本；provider 链按 本地 → 网络 → API 依次降级（免费优先），key 走环境变量。",
+  "instances": [
+    {
+      "id": "point.translate_text.en2zh@r1",
+      "name": "i-en2zh",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"text\":\"\",\"source\":\"en\",\"target\":\"zh\"}"
+    },
+    {
+      "id": "point.translate_text.auto@r1",
+      "name": "i-auto",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"text\":\"\",\"source\":\"auto\",\"target\":\"zh\"}"
+    }
+  ]
+}

@@ -7,7 +7,7 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.translate.nl-to-dsl@r1",
+      "id": "field.translate.nl_to_dsl@r1",
       "classId": "field.translate",
       "scope": "editor",
       "output": "NL → DSL",
@@ -17,7 +17,7 @@
       "detail": "editor · NL → DSL"
     },
     {
-      "id": "field.translate.dsl-to-nl@r1",
+      "id": "field.translate.dsl_to_nl@r1",
       "classId": "field.translate",
       "scope": "inspector",
       "output": "DSL → 人话",
@@ -27,7 +27,7 @@
       "detail": "inspector · DSL → 人话"
     },
     {
-      "id": "field.translate.error-to-human@r1",
+      "id": "field.translate.error_to_human@r1",
       "classId": "field.translate",
       "scope": "run history",
       "output": "error → 解释",

@@ -12,19 +12,22 @@
       "name": "30m",
       "rev": 1,
       "status": "active",
-      "detail": "duration=30m · display=on"
+      "detail": "duration=30m · display=on",
+      "id": "body.awake.30m@r1"
     },
     {
       "name": "until",
       "rev": 1,
       "status": "active",
-      "detail": "until=18:00 · display=on"
+      "detail": "until=18:00 · display=on",
+      "id": "body.awake.until@r1"
     },
     {
       "name": "while-app",
       "rev": 1,
       "status": "active",
-      "detail": "whileApp=build.exe"
+      "detail": "whileApp=build.exe",
+      "id": "body.awake.while_app@r1"
     }
   ]
 }

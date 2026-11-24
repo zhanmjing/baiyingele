@@ -9,21 +9,21 @@
   "summary": "屏幕浮层；翻译结果、VPN 状态、录屏提示。",
   "instances": [
     {
-      "id": "surface.hud.translate",
+      "id": "surface.hud.translate@r2",
       "name": "翻译浮层",
       "rev": 2,
       "status": "active",
       "detail": "截图翻译结果 · overlay"
     },
     {
-      "id": "surface.hud.vpn-status",
+      "id": "surface.hud.vpn_status@r1",
       "name": "VPN 状态浮层",
       "rev": 1,
       "status": "active",
       "detail": "连接状态/耗时 · overlay"
     },
     {
-      "id": "surface.hud.system-status",
+      "id": "surface.hud.system_status@r1",
       "name": "系统状态浮层",
       "rev": 1,
       "status": "active",

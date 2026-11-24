@@ -1,7 +1,7 @@
 import { isWindows, runPowerShell } from './_powershell'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.theme.mode'
+export const id = 'point.theme_mode'
 export const summary = 'Windows 深浅主题：读写 HKCU Personalize 注册表键并读回校验'
 
 export interface ThemeTargets {

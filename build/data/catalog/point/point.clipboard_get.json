@@ -1,0 +1,26 @@
+{
+  "id": "point.clipboard_get",
+  "name": "读取剪贴板",
+  "group": "file",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "读取文本/图片/文件列表；format 参数决定输出类型。",
+  "instances": [
+    {
+      "id": "point.clipboard_get.clip_text@r1",
+      "name": "取文本",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"format\":\"text\"}"
+    },
+    {
+      "id": "point.clipboard_get.clip_image@r1",
+      "name": "取图片",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"format\":\"image\"}"
+    }
+  ]
+}

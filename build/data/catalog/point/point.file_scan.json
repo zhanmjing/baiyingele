@@ -1,0 +1,26 @@
+{
+  "id": "point.file_scan",
+  "name": "扫描目录",
+  "group": "file",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "递归扫描目录；limit 封顶防止扫根目录卡死，权限不足的子目录跳过并计入说明。",
+  "instances": [
+    {
+      "id": "point.file_scan.recursive@r1",
+      "name": "i-recursive",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"root\":\"\",\"pattern\":\"*\",\"depth\":3,\"limit\":200}"
+    },
+    {
+      "id": "point.file_scan.flat@r1",
+      "name": "i-flat",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"root\":\"\",\"pattern\":\"*\",\"depth\":1,\"limit\":200}"
+    }
+  ]
+}

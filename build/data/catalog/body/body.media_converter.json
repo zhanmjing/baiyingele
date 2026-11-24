@@ -1,0 +1,33 @@
+{
+  "id": "body.media_converter",
+  "name": "媒体转换",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "图片、视频、音频格式转换。",
+  "instances": [
+    {
+      "name": "image",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=image · quality=85",
+      "id": "body.media_converter.image@r1"
+    },
+    {
+      "name": "video",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=video · h264",
+      "id": "body.media_converter.video@r1"
+    },
+    {
+      "name": "audio",
+      "rev": 1,
+      "status": "active",
+      "detail": "preset=audio · 192k",
+      "id": "body.media_converter.audio@r1"
+    }
+  ]
+}

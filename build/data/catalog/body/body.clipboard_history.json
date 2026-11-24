@@ -1,0 +1,26 @@
+{
+  "id": "body.clipboard_history",
+  "name": "剪贴板历史",
+  "group": "clipboard",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L2",
+  "priority": "P1",
+  "summary": "最近复制内容、固定片段与搜索。",
+  "instances": [
+    {
+      "name": "recent",
+      "rev": 1,
+      "status": "active",
+      "detail": "maxItems=100 · retention=7d",
+      "id": "body.clipboard_history.recent@r1"
+    },
+    {
+      "name": "pinned",
+      "rev": 1,
+      "status": "active",
+      "detail": "maxItems=20 · pinned=true",
+      "id": "body.clipboard_history.pinned@r1"
+    }
+  ]
+}

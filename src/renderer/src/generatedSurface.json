@@ -49,7 +49,7 @@
         },
         {
           "label": "flow-slot",
-          "content": "surface.inspector.flow-slot",
+          "content": "surface.inspector.flow_slot",
           "mode": "right",
           "width": 400,
           "state": "ready",
@@ -63,7 +63,7 @@
         },
         {
           "label": "body-manifest",
-          "content": "surface.inspector.body-manifest",
+          "content": "surface.inspector.body_manifest",
           "mode": "right",
           "width": 440,
           "state": "ready",
@@ -94,7 +94,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.settings-page",
+      "content": "surface.settings_page",
       "states": [
         "ready",
         "error"
@@ -140,7 +140,7 @@
         },
         {
           "label": "vpn",
-          "content": "surface.form.settings.vpn",
+          "content": "surface.form.settings_vpn",
           "mode": "right",
           "width": 440,
           "state": "ready",
@@ -169,7 +169,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.command-palette",
+      "content": "surface.command_palette",
       "states": [
         "ready",
         "empty",
@@ -203,7 +203,7 @@
         },
         {
           "label": "flow-editor",
-          "content": "surface.palette.flow-editor",
+          "content": "surface.palette.flow_editor",
           "mode": "modal",
           "width": 560,
           "state": "ready",
@@ -217,7 +217,7 @@
         },
         {
           "label": "body-launcher",
-          "content": "surface.palette.body-launcher",
+          "content": "surface.palette.body_launcher",
           "mode": "modal",
           "width": 600,
           "state": "ready",
@@ -248,7 +248,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.run-history",
+      "content": "surface.run_history",
       "states": [
         "ready",
         "empty",
@@ -267,7 +267,7 @@
       "instances": [
         {
           "label": "flow",
-          "content": "surface.run-history.flow",
+          "content": "surface.run_history.flow",
           "mode": "right",
           "width": 460,
           "state": "ready",
@@ -281,7 +281,7 @@
         },
         {
           "label": "vpn",
-          "content": "surface.run-history.vpn",
+          "content": "surface.run_history.vpn",
           "mode": "right",
           "width": 460,
           "state": "ready",
@@ -295,7 +295,7 @@
         },
         {
           "label": "body",
-          "content": "surface.run-history.body",
+          "content": "surface.run_history.body",
           "mode": "right",
           "width": 520,
           "state": "ready",
@@ -326,7 +326,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.artifact-panel",
+      "content": "surface.artifact_panel",
       "states": [
         "ready",
         "loading",
@@ -408,7 +408,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.prompt-input + surface.streaming-response",
+      "content": "surface.prompt_input + surface.streaming_response",
       "states": [
         "ready",
         "streaming",
@@ -458,7 +458,7 @@
         },
         {
           "label": "inline-edit",
-          "content": "surface.prompt.inline-edit",
+          "content": "surface.prompt.inline_edit",
           "mode": "floating",
           "width": 440,
           "state": "ready",
@@ -489,7 +489,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.approval-card",
+      "content": "surface.approval_card",
       "states": [
         "needsApproval",
         "blocked",
@@ -510,7 +510,7 @@
       "instances": [
         {
           "label": "tool-call",
-          "content": "surface.approval.tool-call",
+          "content": "surface.approval.tool_call",
           "mode": "modal",
           "width": 520,
           "state": "needsApproval",
@@ -601,7 +601,7 @@
         },
         {
           "label": "vpn",
-          "content": "surface.notify.vpn",
+          "content": "surface.notification.vpn",
           "mode": "floating",
           "width": 340,
           "state": "ready",
@@ -644,7 +644,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.launch-dock",
+      "content": "surface.launch_dock",
       "states": [
         "ready",
         "empty"
@@ -755,7 +755,7 @@
         },
         {
           "label": "body-health",
-          "content": "surface.dashboard.body-health",
+          "content": "surface.dashboard.body_health",
           "mode": "bottom",
           "width": 520,
           "state": "ready",
@@ -805,7 +805,7 @@
       "instances": [
         {
           "label": "flow-version",
-          "content": "surface.diff.flow-version",
+          "content": "surface.diff.flow_version",
           "mode": "right",
           "width": 560,
           "state": "ready",
@@ -819,7 +819,7 @@
         },
         {
           "label": "body-manifest",
-          "content": "surface.diff.body-manifest",
+          "content": "surface.diff.body_manifest",
           "mode": "right",
           "width": 560,
           "state": "ready",
@@ -850,7 +850,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.preview-window",
+      "content": "surface.preview_window",
       "states": [
         "ready",
         "loading",
@@ -868,7 +868,7 @@
       "instances": [
         {
           "label": "file",
-          "content": "surface.preview-window.file",
+          "content": "surface.preview_window.file",
           "mode": "right",
           "width": 520,
           "state": "ready",
@@ -882,7 +882,7 @@
         },
         {
           "label": "image",
-          "content": "surface.preview-window.image",
+          "content": "surface.preview_window.image",
           "mode": "floating",
           "width": 560,
           "state": "ready",
@@ -914,7 +914,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.tool-call-trace",
+      "content": "surface.tool_call_trace",
       "states": [
         "ready",
         "streaming",
@@ -977,7 +977,7 @@
         "body",
         "footer"
       ],
-      "content": "surface.log-viewer",
+      "content": "surface.log_viewer",
       "states": [
         "ready",
         "empty",
@@ -996,7 +996,7 @@
       "instances": [
         {
           "label": "logs",
-          "content": "surface.log-viewer.logs",
+          "content": "surface.log_viewer.logs",
           "mode": "bottom",
           "width": 300,
           "state": "ready",
@@ -1011,7 +1011,7 @@
         },
         {
           "label": "terminal",
-          "content": "surface.log-viewer.terminal",
+          "content": "surface.log_viewer.terminal",
           "mode": "bottom",
           "width": 320,
           "state": "ready",
@@ -1032,7 +1032,7 @@
       "pattern": "LDR",
       "name": "打开 GitHub",
       "kind": "point",
-      "target": "win.open.i-open-github@r1",
+      "target": "point.open.github@r1",
       "effect": "L1",
       "desc": "手势 LDR → 用默认浏览器打开 GitHub",
       "targetKind": "point"
@@ -1041,7 +1041,7 @@
       "pattern": "UD",
       "name": "列出可见窗口",
       "kind": "point",
-      "target": "win.window.query.i-list-windows@r1",
+      "target": "point.window_query.list_windows@r1",
       "effect": "L0",
       "desc": "手势 UD → 枚举当前可见窗口",
       "targetKind": "point"
@@ -1050,7 +1050,7 @@
       "pattern": "RL",
       "name": "当前前台窗口",
       "kind": "point",
-      "target": "win.window.query.i-foreground@r1",
+      "target": "point.window_query.foreground@r1",
       "effect": "L0",
       "desc": "手势 RL → 查询前台窗口",
       "targetKind": "point"
@@ -1059,7 +1059,7 @@
       "pattern": "DR",
       "name": "取剪贴板文本",
       "kind": "point",
-      "target": "win.clipboard.get.i-clip-text@r1",
+      "target": "point.clipboard_get.clip_text@r1",
       "effect": "L0",
       "desc": "手势 DR → 读取剪贴板文本",
       "targetKind": "point"
@@ -1068,7 +1068,7 @@
       "pattern": "DLU",
       "name": "窗口置顶切换",
       "kind": "point",
-      "target": "win.window.control.i-topmost@r1",
+      "target": "point.window_control.topmost@r1",
       "effect": "L1",
       "desc": "手势 DLU → 切换目标窗口置顶",
       "targetKind": "point"
@@ -1105,7 +1105,7 @@
       "kind": "flow",
       "icon": "GH",
       "hotkey": "1",
-      "target": "inst.site-github@r1",
+      "target": "line.open_external_site.github@r1",
       "effect": "L2"
     },
     {
@@ -1116,7 +1116,7 @@
       "kind": "flow",
       "icon": "▶",
       "hotkey": "2",
-      "target": "inst.site-youtube@r3",
+      "target": "line.open_external_site.youtube@r3",
       "effect": "L2"
     },
     {
@@ -1127,7 +1127,7 @@
       "kind": "flow",
       "icon": "VPN",
       "hotkey": "3",
-      "target": "inst.ensure-vpn-ask@r2",
+      "target": "line.ensure_vpn.ask@r2",
       "effect": "L2"
     },
     {
@@ -1138,7 +1138,7 @@
       "kind": "flow",
       "icon": "VS",
       "hotkey": "4",
-      "target": "inst.open-app-vscode-project@r2",
+      "target": "line.open_app.vscode_project@r2",
       "effect": "L1"
     },
     {
@@ -1149,7 +1149,7 @@
       "kind": "point",
       "icon": ">_",
       "hotkey": "5",
-      "target": "open.terminal@r1",
+      "target": "point.open.terminal@r1",
       "effect": "L1"
     },
     {
@@ -1160,7 +1160,7 @@
       "kind": "flow",
       "icon": "文",
       "hotkey": "6",
-      "target": "inst.screenshot-en-zh@r4",
+      "target": "line.screenshot_translate.en_zh@r4",
       "effect": "L1"
     },
     {
@@ -1171,7 +1171,7 @@
       "kind": "flow",
       "icon": "¥",
       "hotkey": "7",
-      "target": "inst.invoice-company@r6",
+      "target": "line.batch_archive.invoice_company@r6",
       "effect": "L1"
     },
     {
@@ -1182,7 +1182,7 @@
       "kind": "flow",
       "icon": "▤",
       "hotkey": "8",
-      "target": "inst.clipboard-inbox@r3",
+      "target": "line.clipboard_to_file.inbox@r3",
       "effect": "L1"
     },
     {
@@ -1193,7 +1193,7 @@
       "kind": "point",
       "icon": "◉",
       "hotkey": "9",
-      "target": "sys.metrics.snapshot@r1",
+      "target": "point.sys.metrics_snapshot@r1",
       "effect": "L0"
     },
     {
@@ -1204,7 +1204,7 @@
       "kind": "point",
       "icon": "⚙",
       "hotkey": "0",
-      "target": "settings.open@r1",
+      "target": "point.settings.open@r1",
       "effect": "L0"
     },
     {
@@ -1215,7 +1215,7 @@
       "kind": "flow",
       "icon": "G",
       "hotkey": "",
-      "target": "inst.site-google@r1",
+      "target": "line.open_external_site.google@r1",
       "effect": "L2"
     },
     {
@@ -1226,7 +1226,7 @@
       "kind": "flow",
       "icon": "AI",
       "hotkey": "",
-      "target": "inst.site-openai@r1",
+      "target": "line.inst.site_openai@r1",
       "effect": "L2"
     },
     {
@@ -1237,7 +1237,7 @@
       "kind": "flow",
       "icon": "GH",
       "hotkey": "1",
-      "target": "inst.site-github@r1",
+      "target": "line.open_external_site.github@r1",
       "effect": "L2"
     },
     {
@@ -1248,7 +1248,7 @@
       "kind": "flow",
       "icon": "VS",
       "hotkey": "2",
-      "target": "inst.open-app-vscode-project@r2",
+      "target": "line.open_app.vscode_project@r2",
       "effect": "L1"
     },
     {
@@ -1259,7 +1259,7 @@
       "kind": "point",
       "icon": ">_",
       "hotkey": "3",
-      "target": "open.terminal@r1",
+      "target": "point.open.terminal@r1",
       "effect": "L1"
     },
     {
@@ -1270,7 +1270,7 @@
       "kind": "flow",
       "icon": "{}",
       "hotkey": "4",
-      "target": "inst.http-github-status@r2",
+      "target": "line.http_extract.github_status@r2",
       "effect": "L1"
     },
     {
@@ -1281,7 +1281,7 @@
       "kind": "point",
       "icon": "{}",
       "hotkey": "5",
-      "target": "json.format@r1",
+      "target": "point.json.format@r1",
       "effect": "L0"
     },
     {
@@ -1292,7 +1292,7 @@
       "kind": "point",
       "icon": ".*",
       "hotkey": "6",
-      "target": "text.regex@r1",
+      "target": "point.text.regex@r1",
       "effect": "L0"
     },
     {
@@ -1303,7 +1303,7 @@
       "kind": "flow",
       "icon": "DK",
       "hotkey": "7",
-      "target": "inst.ensure-service-docker@r1",
+      "target": "line.ensure_service.docker@r1",
       "effect": "L1"
     },
     {
@@ -1314,7 +1314,7 @@
       "kind": "point",
       "icon": "≡",
       "hotkey": "8",
-      "target": "flow.run.logs@r1",
+      "target": "point.flow.run_logs@r1",
       "effect": "L0"
     },
     {
@@ -1325,7 +1325,7 @@
       "kind": "point",
       "icon": "CPU",
       "hotkey": "1",
-      "target": "sys.cpu.stats@r1",
+      "target": "point.sys.cpu_stats@r1",
       "effect": "L0"
     },
     {
@@ -1336,7 +1336,7 @@
       "kind": "point",
       "icon": "GPU",
       "hotkey": "2",
-      "target": "sys.gpu.stats@r1",
+      "target": "point.sys.gpu_stats@r1",
       "effect": "L0"
     },
     {
@@ -1347,7 +1347,7 @@
       "kind": "point",
       "icon": "RAM",
       "hotkey": "3",
-      "target": "sys.memory.stats@r1",
+      "target": "point.sys.memory_stats@r1",
       "effect": "L0"
     },
     {
@@ -1358,7 +1358,7 @@
       "kind": "point",
       "icon": "NET",
       "hotkey": "4",
-      "target": "sys.network.stats@r1",
+      "target": "point.sys.network_stats@r1",
       "effect": "L0"
     },
     {
@@ -1369,7 +1369,7 @@
       "kind": "point",
       "icon": "DSK",
       "hotkey": "5",
-      "target": "sys.disk.stats@r1",
+      "target": "point.sys.disk_stats@r1",
       "effect": "L0"
     },
     {
@@ -1380,7 +1380,7 @@
       "kind": "point",
       "icon": "UP",
       "hotkey": "6",
-      "target": "sys.uptime@r1",
+      "target": "point.sys.uptime@r1",
       "effect": "L0"
     },
     {
@@ -1391,7 +1391,7 @@
       "kind": "point",
       "icon": "°C",
       "hotkey": "7",
-      "target": "sys.sensors.temp@r1",
+      "target": "point.sys.sensors_temp@r1",
       "effect": "L0"
     },
     {
@@ -1402,7 +1402,7 @@
       "kind": "point",
       "icon": "TOP",
       "hotkey": "8",
-      "target": "sys.process.top@r1",
+      "target": "point.sys.process_top@r1",
       "effect": "L0"
     },
     {
@@ -1413,7 +1413,7 @@
       "kind": "point",
       "icon": "SVC",
       "hotkey": "9",
-      "target": "service.status@r1",
+      "target": "point.service.status@r1",
       "effect": "L0"
     },
     {
@@ -1424,7 +1424,7 @@
       "kind": "point",
       "icon": "PWR",
       "hotkey": "0",
-      "target": "sys.power.status@r1",
+      "target": "point.sys.power_status@r1",
       "effect": "L0"
     },
     {
@@ -1435,7 +1435,7 @@
       "kind": "point",
       "icon": "OCR",
       "hotkey": "1",
-      "target": "ocr.read@r1",
+      "target": "point.ocr.read@r1",
       "effect": "L0"
     },
     {
@@ -1446,7 +1446,7 @@
       "kind": "point",
       "icon": "文",
       "hotkey": "2",
-      "target": "translate.text@r1",
+      "target": "point.translate.text@r1",
       "effect": "L1"
     },
     {
@@ -1457,7 +1457,7 @@
       "kind": "point",
       "icon": "▤",
       "hotkey": "3",
-      "target": "input.clipboard@r1",
+      "target": "point.input.clipboard@r1",
       "effect": "L0"
     },
     {
@@ -1468,7 +1468,7 @@
       "kind": "point",
       "icon": "✎",
       "hotkey": "4",
-      "target": "file.write@r1",
+      "target": "point.file.write@r1",
       "effect": "L1"
     },
     {
@@ -1479,7 +1479,7 @@
       "kind": "point",
       "icon": "#",
       "hotkey": "5",
-      "target": "hash.sha256@r1",
+      "target": "point.hash.sha256@r1",
       "effect": "L0"
     },
     {
@@ -1490,7 +1490,7 @@
       "kind": "point",
       "icon": "ZIP",
       "hotkey": "6",
-      "target": "file.zip@r1",
+      "target": "point.file.zip@r1",
       "effect": "L1"
     },
     {
@@ -1501,7 +1501,7 @@
       "kind": "point",
       "icon": "◐",
       "hotkey": "7",
-      "target": "screen.color@r1",
+      "target": "point.screen.color@r1",
       "effect": "L0"
     },
     {
@@ -1512,7 +1512,7 @@
       "kind": "point",
       "icon": "◷",
       "hotkey": "8",
-      "target": "timer.start@r1",
+      "target": "point.timer.start@r1",
       "effect": "L0"
     },
     {
@@ -1523,7 +1523,7 @@
       "kind": "flow",
       "icon": "GH",
       "hotkey": "1",
-      "target": "inst.site-github@r1",
+      "target": "line.open_external_site.github@r1",
       "effect": "L2"
     },
     {
@@ -1534,7 +1534,7 @@
       "kind": "flow",
       "icon": "▶",
       "hotkey": "2",
-      "target": "inst.site-youtube@r3",
+      "target": "line.open_external_site.youtube@r3",
       "effect": "L2"
     },
     {
@@ -1545,7 +1545,7 @@
       "kind": "flow",
       "icon": "G",
       "hotkey": "3",
-      "target": "inst.site-google@r1",
+      "target": "line.open_external_site.google@r1",
       "effect": "L2"
     },
     {
@@ -1556,7 +1556,7 @@
       "kind": "flow",
       "icon": "AI",
       "hotkey": "4",
-      "target": "inst.site-openai@r1",
+      "target": "line.inst.site_openai@r1",
       "effect": "L2"
     },
     {
@@ -1567,7 +1567,7 @@
       "kind": "flow",
       "icon": "X",
       "hotkey": "5",
-      "target": "inst.site-x@r1",
+      "target": "line.inst.site_x@r1",
       "effect": "L2"
     },
     {
@@ -1578,7 +1578,7 @@
       "kind": "flow",
       "icon": "SO",
       "hotkey": "6",
-      "target": "inst.site-so@r1",
+      "target": "line.inst.site_so@r1",
       "effect": "L2"
     },
     {
@@ -1589,7 +1589,7 @@
       "kind": "flow",
       "icon": "B",
       "hotkey": "7",
-      "target": "inst.site-bili@r1",
+      "target": "line.inst.site_bili@r1",
       "effect": "L2"
     },
     {
@@ -1600,7 +1600,7 @@
       "kind": "flow",
       "icon": "R",
       "hotkey": "8",
-      "target": "inst.site-reddit@r1",
+      "target": "line.inst.site_reddit@r1",
       "effect": "L2"
     },
     {
@@ -1611,7 +1611,7 @@
       "kind": "flow",
       "icon": "M",
       "hotkey": "9",
-      "target": "inst.site-gmail@r1",
+      "target": "line.inst.site_gmail@r1",
       "effect": "L2"
     },
     {
@@ -1622,7 +1622,7 @@
       "kind": "flow",
       "icon": "⌖",
       "hotkey": "0",
-      "target": "inst.site-maps@r1",
+      "target": "line.inst.site_maps@r1",
       "effect": "L2"
     }
   ]

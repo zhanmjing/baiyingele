@@ -1,0 +1,33 @@
+{
+  "id": "surface.tray_menu",
+  "name": "托盘菜单",
+  "group": "communicate",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "托盘/右键菜单；快速入口。",
+  "instances": [
+    {
+      "id": "surface.tray_menu.quick_actions@r2",
+      "name": "快捷动作",
+      "rev": 2,
+      "status": "active",
+      "detail": "收藏的 FlowInstance · tray"
+    },
+    {
+      "id": "surface.tray_menu.vpn@r1",
+      "name": "VPN 托盘菜单",
+      "rev": 1,
+      "status": "active",
+      "detail": "打开 / 连接 / 状态 · tray"
+    },
+    {
+      "id": "surface.tray_menu.system_status@r1",
+      "name": "系统状态托盘",
+      "rev": 1,
+      "status": "active",
+      "detail": "CPU/GPU/内存/网速文本摘要 · tray"
+    }
+  ]
+}

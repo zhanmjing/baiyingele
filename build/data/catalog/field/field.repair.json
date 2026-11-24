@@ -7,7 +7,7 @@
   "count": 4,
   "instances": [
     {
-      "id": "field.repair.flow-patch@r1",
+      "id": "field.repair.flow_patch@r1",
       "classId": "field.repair",
       "scope": "flow",
       "output": "patch",
@@ -17,7 +17,7 @@
       "detail": "flow · patch"
     },
     {
-      "id": "field.repair.selector-patch@r1",
+      "id": "field.repair.selector_patch@r1",
       "classId": "field.repair",
       "scope": "UIA step",
       "output": "selector patch",
@@ -27,7 +27,7 @@
       "detail": "UIA step · selector patch"
     },
     {
-      "id": "field.repair.settings-patch@r1",
+      "id": "field.repair.settings_patch@r1",
       "classId": "field.repair",
       "scope": "body/flow",
       "output": "settings patch",
@@ -37,7 +37,7 @@
       "detail": "body/flow · settings patch"
     },
     {
-      "id": "field.repair.permission-fix@r1",
+      "id": "field.repair.permission_fix@r1",
       "classId": "field.repair",
       "scope": "permission error",
       "output": "grant/scope fix",

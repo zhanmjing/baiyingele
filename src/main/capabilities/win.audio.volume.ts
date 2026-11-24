@@ -11,7 +11,7 @@ import {
 import { isWindows } from './_powershell'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.audio.volume'
+export const id = 'point.audio_volume'
 export const summary = 'CoreAudio (IAudioEndpointVolume) 精确控制主音量与静音，写完读回校验'
 
 const CLSID_MMDEVICE_ENUMERATOR = 'BCDE0395-E52F-467C-8E3D-C4579291692E'

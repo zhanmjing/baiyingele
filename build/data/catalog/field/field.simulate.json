@@ -7,7 +7,7 @@
   "count": 3,
   "instances": [
     {
-      "id": "field.simulate.dry-run@r1",
+      "id": "field.simulate.dry_run@r1",
       "classId": "field.simulate",
       "scope": "draft/patch",
       "output": "dry-run result",

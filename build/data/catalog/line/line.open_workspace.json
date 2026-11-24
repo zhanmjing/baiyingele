@@ -1,0 +1,26 @@
+{
+  "id": "line.open_workspace",
+  "name": "flow.open-workspace",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "打开多个应用并布局/聚焦",
+  "instances": [
+    {
+      "id": "line.open_workspace.dev@r3",
+      "name": "workspace-dev",
+      "rev": 3,
+      "status": "active",
+      "detail": "editor=VS Code；terminal；dual"
+    },
+    {
+      "id": "line.open_workspace.meeting@r1",
+      "name": "workspace-meeting",
+      "rev": 1,
+      "status": "active",
+      "detail": "meeting；single"
+    }
+  ]
+}

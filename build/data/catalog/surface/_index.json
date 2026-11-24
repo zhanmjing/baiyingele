@@ -5,17 +5,17 @@
     "surface.wizard",
     "surface.inspector",
     "surface.table",
-    "surface.card-grid",
+    "surface.card_grid",
     "surface.tree",
-    "surface.command-palette",
+    "surface.command_palette",
     "surface.canvas",
     "surface.dashboard",
-    "surface.run-history",
+    "surface.run_history",
     "surface.diff",
     "surface.dialog",
     "surface.notification",
-    "surface.tray-menu",
+    "surface.tray_menu",
     "surface.hud",
-    "surface.metric-card"
+    "surface.metric_card"
   ]
 }

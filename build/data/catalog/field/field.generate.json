@@ -7,7 +7,7 @@
   "count": 4,
   "instances": [
     {
-      "id": "field.generate.point-action@r1",
+      "id": "field.generate.point_action@r1",
       "classId": "field.generate",
       "scope": "point editor",
       "output": "Action DSL draft",
@@ -27,7 +27,7 @@
       "detail": "line editor · FlowClass/FlowInstance draft"
     },
     {
-      "id": "field.generate.surface-layout@r1",
+      "id": "field.generate.surface_layout@r1",
       "classId": "field.generate",
       "scope": "surface editor",
       "output": "SurfaceClass/Instance draft",
@@ -37,7 +37,7 @@
       "detail": "surface editor · SurfaceClass/Instance draft"
     },
     {
-      "id": "field.generate.body-manifest@r1",
+      "id": "field.generate.body_manifest@r1",
       "classId": "field.generate",
       "scope": "body editor",
       "output": "BodyManifest draft",

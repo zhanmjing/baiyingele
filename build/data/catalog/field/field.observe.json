@@ -27,7 +27,7 @@
       "detail": "global · 选中文本/剪贴板/文件"
     },
     {
-      "id": "field.observe.run-history@r1",
+      "id": "field.observe.run_history@r1",
       "classId": "field.observe",
       "scope": "run history",
       "output": "最近运行/失败/耗时",

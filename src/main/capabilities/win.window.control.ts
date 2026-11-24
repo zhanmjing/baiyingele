@@ -3,7 +3,7 @@ import { isWindows } from './_powershell'
 import { parseSelector, selectWindows, type WindowInfo } from './win.window.query'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'win.window.control'
+export const id = 'point.window_control'
 export const summary = 'koffi 控制窗口：focus / move / topmost / close（focus 用 AttachThreadInput 绕前台锁）'
 
 export interface WorkArea {

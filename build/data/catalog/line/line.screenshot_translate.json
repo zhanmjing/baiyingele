@@ -1,0 +1,26 @@
+{
+  "id": "line.screenshot_translate",
+  "name": "flow.screenshot-translate",
+  "group": "Action",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "截图 → OCR → 翻译 → 浮层",
+  "instances": [
+    {
+      "id": "line.screenshot_translate.en_zh@r4",
+      "name": "screenshot-en-zh",
+      "rev": 4,
+      "status": "active",
+      "detail": "en→zh；overlay=true"
+    },
+    {
+      "id": "line.screenshot_translate.ja_zh@r2",
+      "name": "screenshot-ja-zh",
+      "rev": 2,
+      "status": "active",
+      "detail": "ja→zh；overlay=false"
+    }
+  ]
+}

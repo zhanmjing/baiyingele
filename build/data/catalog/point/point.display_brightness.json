@@ -1,0 +1,26 @@
+{
+  "id": "point.display_brightness",
+  "name": "控制亮度",
+  "group": "settings",
+  "version": "0.9.0",
+  "status": "draft",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "内屏走 WMI、外屏走 DDC/CI；不支持时明确失败，不用假值。",
+  "instances": [
+    {
+      "id": "point.display_brightness.bright_60@r1",
+      "name": "内屏亮度 60%",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"action\":\"set\",\"value\":60,\"step\":10,\"monitor\":\"internal\",\"method\":\"auto\"}"
+    },
+    {
+      "id": "point.display_brightness.bright_up@r1",
+      "name": "亮度 +10",
+      "rev": 1,
+      "status": "draft",
+      "detail": "{\"action\":\"up\",\"value\":60,\"step\":10,\"monitor\":\"internal\",\"method\":\"auto\"}"
+    }
+  ]
+}

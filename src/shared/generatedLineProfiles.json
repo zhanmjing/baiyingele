@@ -1,6 +1,6 @@
 {
-  "flow.screenshot-translate": {
-    "classId": "flow.screenshot-translate",
+  "line.screenshot_translate": {
+    "classId": "line.screenshot_translate",
     "nodes": [
       {
         "id": "capture",
@@ -10,8 +10,8 @@
         "h": 82,
         "label": "截屏",
         "kind": "point",
-        "pointClass": "win.screen.capture",
-        "pointInstance": "win.screen.capture.i-region@r1",
+        "pointClass": "point.screen_capture",
+        "pointInstance": "point.screen_capture.region@r1",
         "role": "region",
         "rewrittenFrom": "cap.region"
       },
@@ -23,8 +23,8 @@
         "h": 82,
         "label": "OCR",
         "kind": "point",
-        "pointClass": "win.ocr.read",
-        "pointInstance": "win.ocr.read.i-ocr-auto@r1",
+        "pointClass": "point.ocr_read",
+        "pointInstance": "point.ocr_read.auto@r1",
         "role": "$sourceLang",
         "rewrittenFrom": "ocr.zh.screen"
       },
@@ -36,8 +36,8 @@
         "h": 82,
         "label": "翻译",
         "kind": "point",
-        "pointClass": "translate.text",
-        "pointInstance": "translate.text.i-en2zh@r1",
+        "pointClass": "point.translate_text",
+        "pointInstance": "point.translate_text.en2zh@r1",
         "role": "$sourceLang → $targetLang",
         "rewrittenFrom": "trans.en2zh"
       },
@@ -49,8 +49,8 @@
         "h": 82,
         "label": "结果通知",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "rewrittenFrom": "overlay.toast"
       }
@@ -73,8 +73,8 @@
       }
     ]
   },
-  "flow.clipboard-to-file": {
-    "classId": "flow.clipboard-to-file",
+  "line.clipboard_to_file": {
+    "classId": "line.clipboard_to_file",
     "nodes": [
       {
         "id": "clip",
@@ -84,8 +84,8 @@
         "h": 82,
         "label": "读剪贴板",
         "kind": "point",
-        "pointClass": "win.clipboard.get",
-        "pointInstance": "win.clipboard.get.i-clip-text@r1",
+        "pointClass": "point.clipboard_get",
+        "pointInstance": "point.clipboard_get.clip_text@r1",
         "role": "format = text",
         "mapping": {}
       },
@@ -97,8 +97,8 @@
         "h": 82,
         "label": "套用模板",
         "kind": "point",
-        "pointClass": "text.template",
-        "pointInstance": "text.template.i-markdown@r1",
+        "pointClass": "point.text_template",
+        "pointInstance": "point.text_template.markdown@r1",
         "role": "template = markdown",
         "mapping": {
           "input": "$input"
@@ -112,8 +112,8 @@
         "h": 82,
         "label": "写文件",
         "kind": "point",
-        "pointClass": "file.write",
-        "pointInstance": "file.write.i-append@r1",
+        "pointClass": "point.file_write",
+        "pointInstance": "point.file_write.append@r1",
         "role": "$path, append=$append",
         "mapping": {
           "text": "$input",
@@ -129,8 +129,8 @@
         "h": 82,
         "label": "通知",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "success",
         "mapping": {
           "body": "$input"
@@ -155,8 +155,8 @@
       }
     ]
   },
-  "flow.open-external-site": {
-    "classId": "flow.open-external-site",
+  "line.open_external_site": {
+    "classId": "line.open_external_site",
     "nodes": [
       {
         "id": "vpn",
@@ -166,8 +166,8 @@
         "h": 82,
         "label": "VPN 保障",
         "kind": "subflow",
-        "pointClass": "flow.ensure-vpn",
-        "pointInstance": "inst.ensure-vpn-ask@r2",
+        "pointClass": "line.ensure_vpn",
+        "pointInstance": "line.ensure_vpn.ask@r2",
         "role": "vpnRequirement"
       },
       {
@@ -178,8 +178,8 @@
         "h": 82,
         "label": "可达性检查",
         "kind": "point",
-        "pointClass": "win.http.request",
-        "pointInstance": "win.http.request.i-http-github@r1",
+        "pointClass": "point.http_request",
+        "pointInstance": "point.http_request.github@r1",
         "role": "host = url.host",
         "rewrittenFrom": "net.reachable.github"
       },
@@ -191,8 +191,8 @@
         "h": 82,
         "label": "打开 URL",
         "kind": "point",
-        "pointClass": "win.open",
-        "pointInstance": "win.open.i-open-github@r1",
+        "pointClass": "point.open",
+        "pointInstance": "point.open.github@r1",
         "role": "url, kind=url",
         "rewrittenFrom": "open.browser.github"
       },
@@ -204,8 +204,8 @@
         "h": 82,
         "label": "通知",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "success",
         "rewrittenFrom": "notify.system"
       }
@@ -228,8 +228,8 @@
       }
     ]
   },
-  "flow.ensure-vpn": {
-    "classId": "flow.ensure-vpn",
+  "line.ensure_vpn": {
+    "classId": "line.ensure_vpn",
     "nodes": [
       {
         "id": "probe",
@@ -239,8 +239,8 @@
         "h": 64,
         "label": "探测网络",
         "kind": "point",
-        "pointClass": "win.http.request",
-        "pointInstance": "win.http.request.i-http-github@r1",
+        "pointClass": "point.http_request",
+        "pointInstance": "point.http_request.github@r1",
         "role": "probe",
         "mapping": {
           "url": "$args.url"
@@ -265,8 +265,8 @@
         "h": 64,
         "label": "已就绪提示",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "VPN 检查",
@@ -281,8 +281,8 @@
         "h": 64,
         "label": "请手动开启",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "VPN 检查",
@@ -308,8 +308,8 @@
       }
     ]
   },
-  "flow.ensure-app": {
-    "classId": "flow.ensure-app",
+  "line.ensure_app": {
+    "classId": "line.ensure_app",
     "nodes": [
       {
         "id": "list",
@@ -319,8 +319,8 @@
         "h": 64,
         "label": "列出窗口",
         "kind": "point",
-        "pointClass": "win.window.query",
-        "pointInstance": "win.window.query.i-list-windows@r1",
+        "pointClass": "point.window_query",
+        "pointInstance": "point.window_query.list_windows@r1",
         "role": "query",
         "mapping": {
           "selector": "$args.selector"
@@ -334,8 +334,8 @@
         "h": 64,
         "label": "整理结果",
         "kind": "point",
-        "pointClass": "text.template",
-        "pointInstance": "text.template.i-plain@r1",
+        "pointClass": "point.text_template",
+        "pointInstance": "point.text_template.plain@r1",
         "role": "transform",
         "mapping": {
           "input": "$input"
@@ -349,8 +349,8 @@
         "h": 64,
         "label": "结果通知",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "应用检查",
@@ -371,8 +371,8 @@
       }
     ]
   },
-  "flow.ensure-service": {
-    "classId": "flow.ensure-service",
+  "line.ensure_service": {
+    "classId": "line.ensure_service",
     "nodes": [
       {
         "id": "probe",
@@ -382,8 +382,8 @@
         "h": 64,
         "label": "健康检查",
         "kind": "point",
-        "pointClass": "win.http.request",
-        "pointInstance": "win.http.request.i-http-github@r1",
+        "pointClass": "point.http_request",
+        "pointInstance": "point.http_request.github@r1",
         "role": "probe",
         "mapping": {
           "url": "$args.url"
@@ -408,8 +408,8 @@
         "h": 64,
         "label": "服务正常",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "服务检查",
@@ -424,8 +424,8 @@
         "h": 64,
         "label": "服务异常",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "服务检查",
@@ -451,8 +451,8 @@
       }
     ]
   },
-  "flow.ensure-download": {
-    "classId": "flow.ensure-download",
+  "line.ensure_download": {
+    "classId": "line.ensure_download",
     "nodes": [
       {
         "id": "open",
@@ -462,8 +462,8 @@
         "h": 64,
         "label": "打开下载目录",
         "kind": "point",
-        "pointClass": "win.open",
-        "pointInstance": "win.open.i-open-downloads@r1",
+        "pointClass": "point.open",
+        "pointInstance": "point.open.downloads@r1",
         "role": "open",
         "mapping": {
           "target": "$args.path"
@@ -477,8 +477,8 @@
         "h": 64,
         "label": "已打开",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "下载",
@@ -494,8 +494,8 @@
       }
     ]
   },
-  "flow.open-app": {
-    "classId": "flow.open-app",
+  "line.open_app": {
+    "classId": "line.open_app",
     "nodes": [
       {
         "id": "launch",
@@ -505,8 +505,8 @@
         "h": 64,
         "label": "启动应用",
         "kind": "point",
-        "pointClass": "win.open",
-        "pointInstance": "win.open.i-open-project@r1",
+        "pointClass": "point.open",
+        "pointInstance": "point.open.project@r1",
         "role": "open",
         "mapping": {
           "target": "$args.target",
@@ -521,8 +521,8 @@
         "h": 64,
         "label": "已启动",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "打开应用",
@@ -538,8 +538,8 @@
       }
     ]
   },
-  "flow.open-workspace": {
-    "classId": "flow.open-workspace",
+  "line.open_workspace": {
+    "classId": "line.open_workspace",
     "nodes": [
       {
         "id": "editor",
@@ -549,8 +549,8 @@
         "h": 64,
         "label": "打开编辑器",
         "kind": "point",
-        "pointClass": "win.open",
-        "pointInstance": "win.open.i-open-project@r1",
+        "pointClass": "point.open",
+        "pointInstance": "point.open.project@r1",
         "role": "open",
         "mapping": {
           "target": "$args.folder"
@@ -564,8 +564,8 @@
         "h": 64,
         "label": "打开下载目录",
         "kind": "point",
-        "pointClass": "win.open",
-        "pointInstance": "win.open.i-open-downloads@r1",
+        "pointClass": "point.open",
+        "pointInstance": "point.open.downloads@r1",
         "role": "open"
       },
       {
@@ -576,8 +576,8 @@
         "h": 64,
         "label": "工作区就绪",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "工作区",
@@ -598,8 +598,8 @@
       }
     ]
   },
-  "flow.http-extract": {
-    "classId": "flow.http-extract",
+  "line.http_extract": {
+    "classId": "line.http_extract",
     "nodes": [
       {
         "id": "fetch",
@@ -609,8 +609,8 @@
         "h": 64,
         "label": "发送请求",
         "kind": "point",
-        "pointClass": "win.http.request",
-        "pointInstance": "win.http.request.i-http-github@r1",
+        "pointClass": "point.http_request",
+        "pointInstance": "point.http_request.github@r1",
         "role": "fetch",
         "mapping": {
           "url": "$args.url",
@@ -625,8 +625,8 @@
         "h": 64,
         "label": "套用模板",
         "kind": "point",
-        "pointClass": "text.template",
-        "pointInstance": "text.template.i-plain@r1",
+        "pointClass": "point.text_template",
+        "pointInstance": "point.text_template.plain@r1",
         "role": "transform",
         "mapping": {
           "input": "$input"
@@ -640,8 +640,8 @@
         "h": 64,
         "label": "推送结果",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "HTTP 提取",
@@ -662,8 +662,8 @@
       }
     ]
   },
-  "flow.ai-rewrite": {
-    "classId": "flow.ai-rewrite",
+  "line.ai_rewrite": {
+    "classId": "line.ai_rewrite",
     "nodes": [
       {
         "id": "rewrite",
@@ -673,8 +673,8 @@
         "h": 64,
         "label": "改写文本",
         "kind": "point",
-        "pointClass": "translate.text",
-        "pointInstance": "translate.text.i-auto@r1",
+        "pointClass": "point.translate_text",
+        "pointInstance": "point.translate_text.auto@r1",
         "role": "transform",
         "mapping": {
           "text": "$input",
@@ -689,8 +689,8 @@
         "h": 64,
         "label": "写入剪贴板",
         "kind": "point",
-        "pointClass": "clipboard.write",
-        "pointInstance": "clipboard.write.i-text@r1",
+        "pointClass": "point.clipboard_write",
+        "pointInstance": "point.clipboard_write.text@r1",
         "role": "output",
         "mapping": {
           "text": "$input"
@@ -704,8 +704,8 @@
         "h": 64,
         "label": "改写完成",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "AI 改写",
@@ -726,8 +726,8 @@
       }
     ]
   },
-  "flow.batch-archive": {
-    "classId": "flow.batch-archive",
+  "line.batch_archive": {
+    "classId": "line.batch_archive",
     "nodes": [
       {
         "id": "scan",
@@ -737,8 +737,8 @@
         "h": 64,
         "label": "扫描目录",
         "kind": "point",
-        "pointClass": "file.scan",
-        "pointInstance": "file.scan.i-recursive@r1",
+        "pointClass": "point.file_scan",
+        "pointInstance": "point.file_scan.recursive@r1",
         "role": "scan",
         "mapping": {
           "root": "$args.path",
@@ -764,8 +764,8 @@
         "h": 64,
         "label": "归档一项",
         "kind": "point",
-        "pointClass": "file.move",
-        "pointInstance": "file.move.i-archive@r1",
+        "pointClass": "point.file_move",
+        "pointInstance": "point.file_move.archive@r1",
         "role": "move",
         "mapping": {
           "from": "$input",
@@ -780,8 +780,8 @@
         "h": 64,
         "label": "归档完成",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "批量归档",
@@ -811,8 +811,8 @@
       }
     ]
   },
-  "flow.approval-action": {
-    "classId": "flow.approval-action",
+  "line.approval_action": {
+    "classId": "line.approval_action",
     "nodes": [
       {
         "id": "approve",
@@ -822,8 +822,8 @@
         "h": 64,
         "label": "人工确认",
         "kind": "point",
-        "pointClass": "ui.form",
-        "pointInstance": "ui.form.i-form-confirm@r1",
+        "pointClass": "point.ui_form",
+        "pointInstance": "point.ui_form.confirm@r1",
         "role": "approval",
         "mapping": {
           "title": "$args.title"
@@ -859,8 +859,8 @@
         "h": 64,
         "label": "已取消提示",
         "kind": "point",
-        "pointClass": "notify.toast",
-        "pointInstance": "notify.toast.i-system@r1",
+        "pointClass": "point.notify_toast",
+        "pointInstance": "point.notify_toast.system@r1",
         "role": "notify",
         "mapping": {
           "title": "审批",

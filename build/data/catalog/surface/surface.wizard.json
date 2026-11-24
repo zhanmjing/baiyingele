@@ -9,14 +9,14 @@
   "summary": "多步引导；新建流程、绑定槽位、首次配置。",
   "instances": [
     {
-      "id": "surface.wizard.new-flow",
+      "id": "surface.wizard.new_flow@r1",
       "name": "新建流程",
       "rev": 1,
       "status": "active",
       "detail": "选模板 → 绑槽位 → 试运行 · modal"
     },
     {
-      "id": "surface.wizard.vpn-setup",
+      "id": "surface.wizard.vpn_setup@r1",
       "name": "VPN 首次配置",
       "rev": 1,
       "status": "active",

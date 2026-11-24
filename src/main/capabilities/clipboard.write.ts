@@ -1,7 +1,7 @@
 import { clipboard } from 'electron'
 import { elapsed, errorMessage, type Capability } from './_shared'
 
-export const id = 'clipboard.write'
+export const id = 'point.clipboard_write'
 export const summary = 'Electron clipboard.writeText（写后回读校验）'
 
 /**

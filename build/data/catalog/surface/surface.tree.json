@@ -9,14 +9,14 @@
   "summary": "层级导航；Domain → PointClass、FlowClass → 节点。",
   "instances": [
     {
-      "id": "surface.point-domains",
+      "id": "surface.tree.point_domains@r2",
       "name": "点 Domain 树",
       "rev": 2,
       "status": "active",
       "detail": "15 domain → 38 类 · sidebar"
     },
     {
-      "id": "surface.flow-outline",
+      "id": "surface.tree.flow_outline@r1",
       "name": "流程大纲",
       "rev": 1,
       "status": "active",

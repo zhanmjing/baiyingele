@@ -1,0 +1,26 @@
+{
+  "id": "body.quick_launch",
+  "name": "快速启动",
+  "group": "window",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "CLaunch 式启动坞 / 命令面板。",
+  "instances": [
+    {
+      "name": "dock",
+      "rev": 1,
+      "status": "active",
+      "detail": "tabs=5 · pageSize=10",
+      "id": "body.quick_launch.dock@r1"
+    },
+    {
+      "name": "palette",
+      "rev": 1,
+      "status": "active",
+      "detail": "mode=palette · fuzzy=true",
+      "id": "body.quick_launch.palette@r1"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process'
 import { shell } from 'electron'
 import { elapsed, errorMessage, expandPath, type Capability } from './_shared'
 
-export const id = 'win.open'
+export const id = 'point.open'
 export const summary = 'Electron shell.openExternal / openPath；带 app 时走 spawn'
 
 /**

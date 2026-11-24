@@ -2,7 +2,7 @@ import { copyFile, mkdir, rename, unlink } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { elapsed, errorMessage, expandPath, pathExists, type Capability } from './_shared'
 
-export const id = 'file.move'
+export const id = 'point.file_move'
 export const summary = 'node:fs rename（EXDEV 回落 copy+unlink）；支持 to 指定文件名或 toDir 搬进目录'
 
 /**

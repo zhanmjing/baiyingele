@@ -9,21 +9,21 @@
   "summary": "查看/编辑选中对象的属性；点类、点实例、槽位、运行节点。",
   "instances": [
     {
-      "id": "surface.inspector.point",
+      "id": "surface.inspector.point@r4",
       "name": "点检查器",
       "rev": 4,
       "status": "active",
       "detail": "PointClass / PointInstance 契约与参数 · sidebar"
     },
     {
-      "id": "surface.inspector.slot-vpn",
+      "id": "surface.inspector.slot_vpn@r2",
       "name": "VPN 槽位检查器",
       "rev": 2,
       "status": "active",
       "detail": "slot.vpn 的 accepts / default / bound · sidebar"
     },
     {
-      "id": "surface.inspector.run-node",
+      "id": "surface.inspector.run_node@r1",
       "name": "运行节点检查器",
       "rev": 1,
       "status": "active",

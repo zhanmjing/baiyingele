@@ -9,21 +9,21 @@
   "summary": "指标、状态、健康度；系统总览、VPN 状态。",
   "instances": [
     {
-      "id": "surface.dashboard.system",
+      "id": "surface.dashboard.system@r2",
       "name": "系统总览",
       "rev": 2,
       "status": "active",
       "detail": "运行数 / 成功率 / 成本 · main"
     },
     {
-      "id": "surface.dashboard.vpn",
+      "id": "surface.dashboard.vpn@r1",
       "name": "VPN 健康",
       "rev": 1,
       "status": "active",
       "detail": "VPN 状态 / 连接耗时 / 失败 · main"
     },
     {
-      "id": "surface.system-monitor",
+      "id": "surface.dashboard.system_monitor@r2",
       "name": "系统状态总览",
       "rev": 2,
       "status": "active",
