@@ -3,7 +3,12 @@
     "pattern": "LDR",
     "name": "打开 GitHub",
     "kind": "flow",
-    "target": "line.open_external_site.github@r1",
+    "target": {
+      "layer": "line",
+      "name": "open_external_site",
+      "instance": "github",
+      "rev": 1
+    },
     "effect": "L2",
     "desc": "确保 VPN → 可达性 → 打开 URL → 通知"
   },
@@ -11,7 +16,13 @@
     "pattern": "UD",
     "name": "检测 VPN 状态",
     "kind": "point",
-    "target": "point.vpn.default_status@r1",
+    "target": {
+      "layer": "point",
+      "name": "vpn",
+      "instance": "default_status",
+      "rev": null,
+      "dangling": true
+    },
     "effect": "L0",
     "desc": "读取进程/窗口/隧道状态，不做修改"
   },
@@ -19,7 +30,12 @@
     "pattern": "RL",
     "name": "开发工作区",
     "kind": "flow",
-    "target": "line.open_workspace.dev@r3",
+    "target": {
+      "layer": "line",
+      "name": "open_workspace",
+      "instance": "dev",
+      "rev": 3
+    },
     "effect": "L1",
     "desc": "VS Code + 终端 + 双屏布局"
   },
@@ -27,7 +43,13 @@
     "pattern": "DR",
     "name": "打开终端",
     "kind": "point",
-    "target": "point.open.terminal@r1",
+    "target": {
+      "layer": "point",
+      "name": "open",
+      "instance": "terminal",
+      "rev": null,
+      "dangling": true
+    },
     "effect": "L1",
     "desc": "打开默认终端"
   },
@@ -35,7 +57,12 @@
     "pattern": "DLU",
     "name": "确保 VPN",
     "kind": "flow",
-    "target": "line.ensure_vpn.ask@r2",
+    "target": {
+      "layer": "line",
+      "name": "ensure_vpn",
+      "instance": "ask",
+      "rev": 2
+    },
     "effect": "L2",
     "desc": "检测 → 启动/询问 → 等待 → 连接"
   }

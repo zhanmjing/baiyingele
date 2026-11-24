@@ -1,6 +1,6 @@
 {
   "id": "line.ensure_vpn",
-  "name": "flow.ensure-vpn",
+  "name": "ensure_vpn",
   "group": "Guard",
   "version": "1.0.0",
   "status": "active",

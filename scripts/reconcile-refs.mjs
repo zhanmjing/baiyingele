@@ -14,7 +14,7 @@
  *   node scripts/reconcile-refs.mjs --write    同时写出 requirements.generated.json
  *   node scripts/reconcile-refs.mjs --apply    按 aliases.json 改写引用（会改文件）
  */
-import { classIdOf, instanceIdOf, isExprRef } from '../src/shared/atomId.ts'
+import { classIdOf, instanceIdOf, isExprRef, refBaseId } from '../src/shared/atomId.ts'
 import { createRequire } from 'node:module'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -113,11 +113,12 @@ function collectRefs(lineProfiles, bodyProfiles, surface) {
 
   for (const tile of surface.dockTiles ?? []) {
     if (!tile.target) continue
+    if (isExprRef(tile.target)) continue
     refs.push({
       where: 'dock.tile.target',
       owner: tile.id,
-      expectedLayer: 'any',
-      ref: tile.target,
+      expectedLayer: tile.target?.layer ?? 'any',
+      ref: instanceIdOf(tile.target) ?? refBaseId(tile.target),
       kind: 'instance',
       required: true,
       role: tile.name,
@@ -127,11 +128,12 @@ function collectRefs(lineProfiles, bodyProfiles, surface) {
 
   for (const gesture of surface.gestures ?? []) {
     if (!gesture.target) continue
+    if (isExprRef(gesture.target)) continue
     refs.push({
       where: 'gesture.target',
       owner: gesture.pattern,
-      expectedLayer: 'any',
-      ref: gesture.target,
+      expectedLayer: gesture.target?.layer ?? 'any',
+      ref: instanceIdOf(gesture.target) ?? refBaseId(gesture.target),
       kind: 'instance',
       required: true,
       role: gesture.name,

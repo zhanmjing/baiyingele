@@ -1,6 +1,6 @@
 {
   "id": "line.ensure_download",
-  "name": "flow.ensure-download",
+  "name": "ensure_download",
   "group": "Guard",
   "version": "1.0.0",
   "status": "active",

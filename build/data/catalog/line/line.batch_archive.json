@@ -1,6 +1,6 @@
 {
   "id": "line.batch_archive",
-  "name": "flow.batch-archive",
+  "name": "batch_archive",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

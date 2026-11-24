@@ -1,6 +1,6 @@
 {
   "id": "line.open_workspace",
-  "name": "flow.open-workspace",
+  "name": "open_workspace",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

@@ -1,6 +1,6 @@
 {
   "id": "line.clipboard_to_file",
-  "name": "flow.clipboard-to-file",
+  "name": "clipboard_to_file",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

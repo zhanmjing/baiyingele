@@ -1355,7 +1355,7 @@
   "line": [
     {
       "id": "line.ensure_vpn",
-      "name": "flow.ensure-vpn",
+      "name": "ensure_vpn",
       "family": "Guard",
       "priority": "P1",
       "effect": "L1",
@@ -1416,7 +1416,7 @@
     },
     {
       "id": "line.ensure_app",
-      "name": "flow.ensure-app",
+      "name": "ensure_app",
       "family": "Guard",
       "priority": "P1",
       "effect": "L1",
@@ -1457,7 +1457,7 @@
     },
     {
       "id": "line.ensure_service",
-      "name": "flow.ensure-service",
+      "name": "ensure_service",
       "family": "Guard",
       "priority": "P1",
       "effect": "L1",
@@ -1498,7 +1498,7 @@
     },
     {
       "id": "line.ensure_download",
-      "name": "flow.ensure-download",
+      "name": "ensure_download",
       "family": "Guard",
       "priority": "P1",
       "effect": "L1",
@@ -1539,7 +1539,7 @@
     },
     {
       "id": "line.open_external_site",
-      "name": "flow.open-external-site",
+      "name": "open_external_site",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1600,7 +1600,7 @@
     },
     {
       "id": "line.open_app",
-      "name": "flow.open-app",
+      "name": "open_app",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1641,7 +1641,7 @@
     },
     {
       "id": "line.open_workspace",
-      "name": "flow.open-workspace",
+      "name": "open_workspace",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1682,7 +1682,7 @@
     },
     {
       "id": "line.clipboard_to_file",
-      "name": "flow.clipboard-to-file",
+      "name": "clipboard_to_file",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1723,7 +1723,7 @@
     },
     {
       "id": "line.screenshot_translate",
-      "name": "flow.screenshot-translate",
+      "name": "screenshot_translate",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1764,7 +1764,7 @@
     },
     {
       "id": "line.http_extract",
-      "name": "flow.http-extract",
+      "name": "http_extract",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1805,7 +1805,7 @@
     },
     {
       "id": "line.ai_rewrite",
-      "name": "flow.ai-rewrite",
+      "name": "ai_rewrite",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1856,7 +1856,7 @@
     },
     {
       "id": "line.batch_archive",
-      "name": "flow.batch-archive",
+      "name": "batch_archive",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",
@@ -1897,7 +1897,7 @@
     },
     {
       "id": "line.approval_action",
-      "name": "flow.approval-action",
+      "name": "approval_action",
       "family": "Action",
       "priority": "P1",
       "effect": "L1",

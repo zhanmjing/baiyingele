@@ -1,6 +1,6 @@
 {
   "id": "line.approval_action",
-  "name": "flow.approval-action",
+  "name": "approval_action",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

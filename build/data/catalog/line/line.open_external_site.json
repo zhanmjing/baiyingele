@@ -1,6 +1,6 @@
 {
   "id": "line.open_external_site",
-  "name": "flow.open-external-site",
+  "name": "open_external_site",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

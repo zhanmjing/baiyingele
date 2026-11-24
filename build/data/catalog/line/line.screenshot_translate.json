@@ -1,6 +1,6 @@
 {
   "id": "line.screenshot_translate",
-  "name": "flow.screenshot-translate",
+  "name": "screenshot_translate",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

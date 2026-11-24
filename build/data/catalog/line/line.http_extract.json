@@ -1,6 +1,6 @@
 {
   "id": "line.http_extract",
-  "name": "flow.http-extract",
+  "name": "http_extract",
   "group": "Action",
   "version": "1.0.0",
   "status": "active",

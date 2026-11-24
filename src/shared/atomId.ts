@@ -246,3 +246,24 @@ export function instanceIdOf(ref: AnyInstanceRef | null | undefined): string | n
   if (isInstanceRef(ref)) return makeInstanceId(ref)
   return null
 }
+
+/**
+ * 悬空引用的「基 id」：`<layer>.<name>.<instance>`（不带 @rN）。
+ *
+ * 悬空引用是 `{ ..., rev: null, dangling: true }` —— 目标还不存在，
+ * 但它必须能被需求生成器看见，否则缺口会静默消失。
+ * `instanceIdOf` 对这种引用返回 null（它不是合法 InstanceRef），
+ * 所以单独给一个函数，调用方按需使用。
+ */
+export function danglingBaseId(ref: Partial<InstanceRef> & { layer?: string; name?: string; instance?: string } | null | undefined): string | null {
+  if (!ref || !ref.layer || !ref.name || !ref.instance) return null
+  return `${ref.layer}.${ref.name}.${ref.instance}`
+}
+
+/** 任意引用 → 用于「查存在性」的基 id（带不带版本都能给出） */
+export function refBaseId(ref: AnyInstanceRef | null | undefined): string | null {
+  if (!ref) return null
+  if (typeof ref === 'string') return ref.replace(/@r\d+$/, '')
+  if (isExprRef(ref)) return null
+  return danglingBaseId(ref as InstanceRef)
+}

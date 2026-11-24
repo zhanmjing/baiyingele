@@ -996,7 +996,9 @@ async function main() {
   for (const seed of surfaceSeed.gestures) {
     const kind = seed.targetKind ?? (seed.kind === 'flow' ? 'line' : 'point')
     const targetStore = kind === 'line' ? lnForTrigger : ptForTrigger
-    assert.ok(targetStore.instance(seed.target), `种子手势 ${seed.pattern} 的目标不存在: ${seed.target}`)
+    const seedTargetId = instanceIdOf(seed.target) ?? ''
+    assert.ok(seedTargetId, `种子手势 ${seed.pattern} 的目标不是合法实例引用: ${JSON.stringify(seed.target)}`)
+    assert.ok(targetStore.instance(seedTargetId), `种子手势 ${seed.pattern} 的目标不存在: ${seedTargetId}`)
   }
   console.log(`  种子手势 ${surfaceSeed.gestures.length} 个，目标全部可解析`)
 

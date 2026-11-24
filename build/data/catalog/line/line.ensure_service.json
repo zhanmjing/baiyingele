@@ -1,6 +1,6 @@
 {
   "id": "line.ensure_service",
-  "name": "flow.ensure-service",
+  "name": "ensure_service",
   "group": "Guard",
   "version": "1.0.0",
   "status": "active",

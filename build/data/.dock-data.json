@@ -30,7 +30,12 @@
       "kind": "flow",
       "icon": "GH",
       "hotkey": "1",
-      "target": "line.open_external_site.github@r1",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "github",
+        "rev": 1
+      },
       "effect": "L2"
     },
     {
@@ -41,7 +46,12 @@
       "kind": "flow",
       "icon": "▶",
       "hotkey": "2",
-      "target": "line.open_external_site.youtube@r3",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "youtube",
+        "rev": 3
+      },
       "effect": "L2"
     },
     {
@@ -52,7 +62,12 @@
       "kind": "flow",
       "icon": "VPN",
       "hotkey": "3",
-      "target": "line.ensure_vpn.ask@r2",
+      "target": {
+        "layer": "line",
+        "name": "ensure_vpn",
+        "instance": "ask",
+        "rev": 2
+      },
       "effect": "L2"
     },
     {
@@ -63,7 +78,12 @@
       "kind": "flow",
       "icon": "VS",
       "hotkey": "4",
-      "target": "line.open_app.vscode_project@r2",
+      "target": {
+        "layer": "line",
+        "name": "open_app",
+        "instance": "vscode_project",
+        "rev": 2
+      },
       "effect": "L1"
     },
     {
@@ -74,7 +94,13 @@
       "kind": "point",
       "icon": ">_",
       "hotkey": "5",
-      "target": "point.open.terminal@r1",
+      "target": {
+        "layer": "point",
+        "name": "open",
+        "instance": "terminal",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L1"
     },
     {
@@ -85,7 +111,12 @@
       "kind": "flow",
       "icon": "文",
       "hotkey": "6",
-      "target": "line.screenshot_translate.en_zh@r4",
+      "target": {
+        "layer": "line",
+        "name": "screenshot_translate",
+        "instance": "en_zh",
+        "rev": 4
+      },
       "effect": "L1"
     },
     {
@@ -96,7 +127,12 @@
       "kind": "flow",
       "icon": "¥",
       "hotkey": "7",
-      "target": "line.batch_archive.invoice_company@r6",
+      "target": {
+        "layer": "line",
+        "name": "batch_archive",
+        "instance": "invoice_company",
+        "rev": 6
+      },
       "effect": "L1"
     },
     {
@@ -107,7 +143,12 @@
       "kind": "flow",
       "icon": "▤",
       "hotkey": "8",
-      "target": "line.clipboard_to_file.inbox@r3",
+      "target": {
+        "layer": "line",
+        "name": "clipboard_to_file",
+        "instance": "inbox",
+        "rev": 3
+      },
       "effect": "L1"
     },
     {
@@ -118,7 +159,13 @@
       "kind": "point",
       "icon": "◉",
       "hotkey": "9",
-      "target": "point.sys.metrics_snapshot@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "metrics_snapshot",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -129,7 +176,13 @@
       "kind": "point",
       "icon": "⚙",
       "hotkey": "0",
-      "target": "point.settings.open@r1",
+      "target": {
+        "layer": "point",
+        "name": "settings",
+        "instance": "open",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -140,7 +193,12 @@
       "kind": "flow",
       "icon": "G",
       "hotkey": "",
-      "target": "line.open_external_site.google@r1",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "google",
+        "rev": 1
+      },
       "effect": "L2"
     },
     {
@@ -151,7 +209,13 @@
       "kind": "flow",
       "icon": "AI",
       "hotkey": "",
-      "target": "line.inst.site_openai@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_openai",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -162,7 +226,12 @@
       "kind": "flow",
       "icon": "GH",
       "hotkey": "1",
-      "target": "line.open_external_site.github@r1",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "github",
+        "rev": 1
+      },
       "effect": "L2"
     },
     {
@@ -173,7 +242,12 @@
       "kind": "flow",
       "icon": "VS",
       "hotkey": "2",
-      "target": "line.open_app.vscode_project@r2",
+      "target": {
+        "layer": "line",
+        "name": "open_app",
+        "instance": "vscode_project",
+        "rev": 2
+      },
       "effect": "L1"
     },
     {
@@ -184,7 +258,13 @@
       "kind": "point",
       "icon": ">_",
       "hotkey": "3",
-      "target": "point.open.terminal@r1",
+      "target": {
+        "layer": "point",
+        "name": "open",
+        "instance": "terminal",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L1"
     },
     {
@@ -195,7 +275,12 @@
       "kind": "flow",
       "icon": "{}",
       "hotkey": "4",
-      "target": "line.http_extract.github_status@r2",
+      "target": {
+        "layer": "line",
+        "name": "http_extract",
+        "instance": "github_status",
+        "rev": 2
+      },
       "effect": "L1"
     },
     {
@@ -206,7 +291,13 @@
       "kind": "point",
       "icon": "{}",
       "hotkey": "5",
-      "target": "point.json.format@r1",
+      "target": {
+        "layer": "point",
+        "name": "json",
+        "instance": "format",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -217,7 +308,13 @@
       "kind": "point",
       "icon": ".*",
       "hotkey": "6",
-      "target": "point.text.regex@r1",
+      "target": {
+        "layer": "point",
+        "name": "text",
+        "instance": "regex",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -228,7 +325,12 @@
       "kind": "flow",
       "icon": "DK",
       "hotkey": "7",
-      "target": "line.ensure_service.docker@r1",
+      "target": {
+        "layer": "line",
+        "name": "ensure_service",
+        "instance": "docker",
+        "rev": 1
+      },
       "effect": "L1"
     },
     {
@@ -239,7 +341,13 @@
       "kind": "point",
       "icon": "≡",
       "hotkey": "8",
-      "target": "point.flow.run_logs@r1",
+      "target": {
+        "layer": "point",
+        "name": "flow",
+        "instance": "run_logs",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -250,7 +358,13 @@
       "kind": "point",
       "icon": "CPU",
       "hotkey": "1",
-      "target": "point.sys.cpu_stats@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "cpu_stats",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -261,7 +375,13 @@
       "kind": "point",
       "icon": "GPU",
       "hotkey": "2",
-      "target": "point.sys.gpu_stats@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "gpu_stats",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -272,7 +392,13 @@
       "kind": "point",
       "icon": "RAM",
       "hotkey": "3",
-      "target": "point.sys.memory_stats@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "memory_stats",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -283,7 +409,13 @@
       "kind": "point",
       "icon": "NET",
       "hotkey": "4",
-      "target": "point.sys.network_stats@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "network_stats",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -294,7 +426,13 @@
       "kind": "point",
       "icon": "DSK",
       "hotkey": "5",
-      "target": "point.sys.disk_stats@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "disk_stats",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -305,7 +443,13 @@
       "kind": "point",
       "icon": "UP",
       "hotkey": "6",
-      "target": "point.sys.uptime@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "uptime",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -316,7 +460,13 @@
       "kind": "point",
       "icon": "°C",
       "hotkey": "7",
-      "target": "point.sys.sensors_temp@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "sensors_temp",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -327,7 +477,13 @@
       "kind": "point",
       "icon": "TOP",
       "hotkey": "8",
-      "target": "point.sys.process_top@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "process_top",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -338,7 +494,13 @@
       "kind": "point",
       "icon": "SVC",
       "hotkey": "9",
-      "target": "point.service.status@r1",
+      "target": {
+        "layer": "point",
+        "name": "service",
+        "instance": "status",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -349,7 +511,13 @@
       "kind": "point",
       "icon": "PWR",
       "hotkey": "0",
-      "target": "point.sys.power_status@r1",
+      "target": {
+        "layer": "point",
+        "name": "sys",
+        "instance": "power_status",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -360,7 +528,13 @@
       "kind": "point",
       "icon": "OCR",
       "hotkey": "1",
-      "target": "point.ocr.read@r1",
+      "target": {
+        "layer": "point",
+        "name": "ocr",
+        "instance": "read",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -371,7 +545,13 @@
       "kind": "point",
       "icon": "文",
       "hotkey": "2",
-      "target": "point.translate.text@r1",
+      "target": {
+        "layer": "point",
+        "name": "translate",
+        "instance": "text",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L1"
     },
     {
@@ -382,7 +562,13 @@
       "kind": "point",
       "icon": "▤",
       "hotkey": "3",
-      "target": "point.input.clipboard@r1",
+      "target": {
+        "layer": "point",
+        "name": "input",
+        "instance": "clipboard",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -393,7 +579,13 @@
       "kind": "point",
       "icon": "✎",
       "hotkey": "4",
-      "target": "point.file.write@r1",
+      "target": {
+        "layer": "point",
+        "name": "file",
+        "instance": "write",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L1"
     },
     {
@@ -404,7 +596,13 @@
       "kind": "point",
       "icon": "#",
       "hotkey": "5",
-      "target": "point.hash.sha256@r1",
+      "target": {
+        "layer": "point",
+        "name": "hash",
+        "instance": "sha256",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -415,7 +613,13 @@
       "kind": "point",
       "icon": "ZIP",
       "hotkey": "6",
-      "target": "point.file.zip@r1",
+      "target": {
+        "layer": "point",
+        "name": "file",
+        "instance": "zip",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L1"
     },
     {
@@ -426,7 +630,13 @@
       "kind": "point",
       "icon": "◐",
       "hotkey": "7",
-      "target": "point.screen.color@r1",
+      "target": {
+        "layer": "point",
+        "name": "screen",
+        "instance": "color",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -437,7 +647,13 @@
       "kind": "point",
       "icon": "◷",
       "hotkey": "8",
-      "target": "point.timer.start@r1",
+      "target": {
+        "layer": "point",
+        "name": "timer",
+        "instance": "start",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L0"
     },
     {
@@ -448,7 +664,12 @@
       "kind": "flow",
       "icon": "GH",
       "hotkey": "1",
-      "target": "line.open_external_site.github@r1",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "github",
+        "rev": 1
+      },
       "effect": "L2"
     },
     {
@@ -459,7 +680,12 @@
       "kind": "flow",
       "icon": "▶",
       "hotkey": "2",
-      "target": "line.open_external_site.youtube@r3",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "youtube",
+        "rev": 3
+      },
       "effect": "L2"
     },
     {
@@ -470,7 +696,12 @@
       "kind": "flow",
       "icon": "G",
       "hotkey": "3",
-      "target": "line.open_external_site.google@r1",
+      "target": {
+        "layer": "line",
+        "name": "open_external_site",
+        "instance": "google",
+        "rev": 1
+      },
       "effect": "L2"
     },
     {
@@ -481,7 +712,13 @@
       "kind": "flow",
       "icon": "AI",
       "hotkey": "4",
-      "target": "line.inst.site_openai@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_openai",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -492,7 +729,13 @@
       "kind": "flow",
       "icon": "X",
       "hotkey": "5",
-      "target": "line.inst.site_x@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_x",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -503,7 +746,13 @@
       "kind": "flow",
       "icon": "SO",
       "hotkey": "6",
-      "target": "line.inst.site_so@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_so",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -514,7 +763,13 @@
       "kind": "flow",
       "icon": "B",
       "hotkey": "7",
-      "target": "line.inst.site_bili@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_bili",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -525,7 +780,13 @@
       "kind": "flow",
       "icon": "R",
       "hotkey": "8",
-      "target": "line.inst.site_reddit@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_reddit",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -536,7 +797,13 @@
       "kind": "flow",
       "icon": "M",
       "hotkey": "9",
-      "target": "line.inst.site_gmail@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_gmail",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     },
     {
@@ -547,7 +814,13 @@
       "kind": "flow",
       "icon": "⌖",
       "hotkey": "0",
-      "target": "line.inst.site_maps@r1",
+      "target": {
+        "layer": "line",
+        "name": "inst",
+        "instance": "site_maps",
+        "rev": null,
+        "dangling": true
+      },
       "effect": "L2"
     }
   ]

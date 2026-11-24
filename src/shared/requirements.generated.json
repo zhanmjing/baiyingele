@@ -10,9 +10,9 @@
   },
   "requirements": [
     {
-      "id": "req:point.line.inst.site_openai@r1.instance",
+      "id": "req:point.line.inst.site_openai.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_openai@r1",
+      "capability": "point:line.inst.site_openai",
       "type": "instance",
       "requiredBy": [
         {
@@ -30,9 +30,9 @@
       ]
     },
     {
-      "id": "req:point.point.open.terminal@r1.instance",
+      "id": "req:point.point.open.terminal.instance",
       "layer": "point",
-      "capability": "point:point.open.terminal@r1",
+      "capability": "point:point.open.terminal",
       "type": "instance",
       "requiredBy": [
         {
@@ -386,9 +386,9 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_bili@r1.instance",
+      "id": "req:point.line.inst.site_bili.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_bili@r1",
+      "capability": "point:line.inst.site_bili",
       "type": "instance",
       "requiredBy": [
         {
@@ -400,9 +400,9 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_gmail@r1.instance",
+      "id": "req:point.line.inst.site_gmail.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_gmail@r1",
+      "capability": "point:line.inst.site_gmail",
       "type": "instance",
       "requiredBy": [
         {
@@ -414,9 +414,9 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_maps@r1.instance",
+      "id": "req:point.line.inst.site_maps.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_maps@r1",
+      "capability": "point:line.inst.site_maps",
       "type": "instance",
       "requiredBy": [
         {
@@ -428,9 +428,9 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_reddit@r1.instance",
+      "id": "req:point.line.inst.site_reddit.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_reddit@r1",
+      "capability": "point:line.inst.site_reddit",
       "type": "instance",
       "requiredBy": [
         {
@@ -442,9 +442,9 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_so@r1.instance",
+      "id": "req:point.line.inst.site_so.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_so@r1",
+      "capability": "point:line.inst.site_so",
       "type": "instance",
       "requiredBy": [
         {
@@ -456,9 +456,9 @@
       ]
     },
     {
-      "id": "req:point.line.inst.site_x@r1.instance",
+      "id": "req:point.line.inst.site_x.instance",
       "layer": "point",
-      "capability": "point:line.inst.site_x@r1",
+      "capability": "point:line.inst.site_x",
       "type": "instance",
       "requiredBy": [
         {
@@ -666,9 +666,9 @@
       ]
     },
     {
-      "id": "req:point.point.file.write@r1.instance",
+      "id": "req:point.point.file.write.instance",
       "layer": "point",
-      "capability": "point:point.file.write@r1",
+      "capability": "point:point.file.write",
       "type": "instance",
       "requiredBy": [
         {
@@ -680,9 +680,9 @@
       ]
     },
     {
-      "id": "req:point.point.file.zip@r1.instance",
+      "id": "req:point.point.file.zip.instance",
       "layer": "point",
-      "capability": "point:point.file.zip@r1",
+      "capability": "point:point.file.zip",
       "type": "instance",
       "requiredBy": [
         {
@@ -694,9 +694,9 @@
       ]
     },
     {
-      "id": "req:point.point.flow.run_logs@r1.instance",
+      "id": "req:point.point.flow.run_logs.instance",
       "layer": "point",
-      "capability": "point:point.flow.run_logs@r1",
+      "capability": "point:point.flow.run_logs",
       "type": "instance",
       "requiredBy": [
         {
@@ -722,9 +722,9 @@
       ]
     },
     {
-      "id": "req:point.point.hash.sha256@r1.instance",
+      "id": "req:point.point.hash.sha256.instance",
       "layer": "point",
-      "capability": "point:point.hash.sha256@r1",
+      "capability": "point:point.hash.sha256",
       "type": "instance",
       "requiredBy": [
         {
@@ -820,9 +820,9 @@
       ]
     },
     {
-      "id": "req:point.point.input.clipboard@r1.instance",
+      "id": "req:point.point.input.clipboard.instance",
       "layer": "point",
-      "capability": "point:point.input.clipboard@r1",
+      "capability": "point:point.input.clipboard",
       "type": "instance",
       "requiredBy": [
         {
@@ -848,9 +848,9 @@
       ]
     },
     {
-      "id": "req:point.point.json.format@r1.instance",
+      "id": "req:point.point.json.format.instance",
       "layer": "point",
-      "capability": "point:point.json.format@r1",
+      "capability": "point:point.json.format",
       "type": "instance",
       "requiredBy": [
         {
@@ -946,9 +946,9 @@
       ]
     },
     {
-      "id": "req:point.point.ocr.read@r1.instance",
+      "id": "req:point.point.ocr.read.instance",
       "layer": "point",
-      "capability": "point:point.ocr.read@r1",
+      "capability": "point:point.ocr.read",
       "type": "instance",
       "requiredBy": [
         {
@@ -1156,9 +1156,9 @@
       ]
     },
     {
-      "id": "req:point.point.screen.color@r1.instance",
+      "id": "req:point.point.screen.color.instance",
       "layer": "point",
-      "capability": "point:point.screen.color@r1",
+      "capability": "point:point.screen.color",
       "type": "instance",
       "requiredBy": [
         {
@@ -1198,9 +1198,9 @@
       ]
     },
     {
-      "id": "req:point.point.service.status@r1.instance",
+      "id": "req:point.point.service.status.instance",
       "layer": "point",
-      "capability": "point:point.service.status@r1",
+      "capability": "point:point.service.status",
       "type": "instance",
       "requiredBy": [
         {
@@ -1212,9 +1212,9 @@
       ]
     },
     {
-      "id": "req:point.point.settings.open@r1.instance",
+      "id": "req:point.point.settings.open.instance",
       "layer": "point",
-      "capability": "point:point.settings.open@r1",
+      "capability": "point:point.settings.open",
       "type": "instance",
       "requiredBy": [
         {
@@ -1296,9 +1296,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.cpu_stats@r1.instance",
+      "id": "req:point.point.sys.cpu_stats.instance",
       "layer": "point",
-      "capability": "point:point.sys.cpu_stats@r1",
+      "capability": "point:point.sys.cpu_stats",
       "type": "instance",
       "requiredBy": [
         {
@@ -1310,9 +1310,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.disk_stats@r1.instance",
+      "id": "req:point.point.sys.disk_stats.instance",
       "layer": "point",
-      "capability": "point:point.sys.disk_stats@r1",
+      "capability": "point:point.sys.disk_stats",
       "type": "instance",
       "requiredBy": [
         {
@@ -1324,9 +1324,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.gpu_stats@r1.instance",
+      "id": "req:point.point.sys.gpu_stats.instance",
       "layer": "point",
-      "capability": "point:point.sys.gpu_stats@r1",
+      "capability": "point:point.sys.gpu_stats",
       "type": "instance",
       "requiredBy": [
         {
@@ -1338,9 +1338,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.memory_stats@r1.instance",
+      "id": "req:point.point.sys.memory_stats.instance",
       "layer": "point",
-      "capability": "point:point.sys.memory_stats@r1",
+      "capability": "point:point.sys.memory_stats",
       "type": "instance",
       "requiredBy": [
         {
@@ -1352,9 +1352,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.metrics_snapshot@r1.instance",
+      "id": "req:point.point.sys.metrics_snapshot.instance",
       "layer": "point",
-      "capability": "point:point.sys.metrics_snapshot@r1",
+      "capability": "point:point.sys.metrics_snapshot",
       "type": "instance",
       "requiredBy": [
         {
@@ -1366,9 +1366,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.network_stats@r1.instance",
+      "id": "req:point.point.sys.network_stats.instance",
       "layer": "point",
-      "capability": "point:point.sys.network_stats@r1",
+      "capability": "point:point.sys.network_stats",
       "type": "instance",
       "requiredBy": [
         {
@@ -1380,9 +1380,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.power_status@r1.instance",
+      "id": "req:point.point.sys.power_status.instance",
       "layer": "point",
-      "capability": "point:point.sys.power_status@r1",
+      "capability": "point:point.sys.power_status",
       "type": "instance",
       "requiredBy": [
         {
@@ -1394,9 +1394,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.process_top@r1.instance",
+      "id": "req:point.point.sys.process_top.instance",
       "layer": "point",
-      "capability": "point:point.sys.process_top@r1",
+      "capability": "point:point.sys.process_top",
       "type": "instance",
       "requiredBy": [
         {
@@ -1408,9 +1408,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.sensors_temp@r1.instance",
+      "id": "req:point.point.sys.sensors_temp.instance",
       "layer": "point",
-      "capability": "point:point.sys.sensors_temp@r1",
+      "capability": "point:point.sys.sensors_temp",
       "type": "instance",
       "requiredBy": [
         {
@@ -1422,9 +1422,9 @@
       ]
     },
     {
-      "id": "req:point.point.sys.uptime@r1.instance",
+      "id": "req:point.point.sys.uptime.instance",
       "layer": "point",
-      "capability": "point:point.sys.uptime@r1",
+      "capability": "point:point.sys.uptime",
       "type": "instance",
       "requiredBy": [
         {
@@ -1478,9 +1478,9 @@
       ]
     },
     {
-      "id": "req:point.point.text.regex@r1.instance",
+      "id": "req:point.point.text.regex.instance",
       "layer": "point",
-      "capability": "point:point.text.regex@r1",
+      "capability": "point:point.text.regex",
       "type": "instance",
       "requiredBy": [
         {
@@ -1506,9 +1506,9 @@
       ]
     },
     {
-      "id": "req:point.point.timer.start@r1.instance",
+      "id": "req:point.point.timer.start.instance",
       "layer": "point",
-      "capability": "point:point.timer.start@r1",
+      "capability": "point:point.timer.start",
       "type": "instance",
       "requiredBy": [
         {
@@ -1520,9 +1520,9 @@
       ]
     },
     {
-      "id": "req:point.point.translate.text@r1.instance",
+      "id": "req:point.point.translate.text.instance",
       "layer": "point",
-      "capability": "point:point.translate.text@r1",
+      "capability": "point:point.translate.text",
       "type": "instance",
       "requiredBy": [
         {
