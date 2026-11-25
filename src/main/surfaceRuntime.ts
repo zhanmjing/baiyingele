@@ -204,10 +204,18 @@ export function planRender(
  * planRender 保持纯函数（只声明「要读什么」），这里才真的去读 ——
  * 这样声明逻辑可以单测，读数据逻辑可以换假 reader 单测。
  */
+export interface ResolveOptions {
+  /** 本次运行的参数，params 类型直接从这取 */
+  params?: Record<string, unknown>
+  /** 需要外部访问的 source 才交给它（run / registry） */
+  read?: SlotReader
+}
+
 export async function resolveSlots(
   slots: SurfaceSlot[],
-  read: SlotReader | undefined
+  options: ResolveOptions = {}
 ): Promise<RenderedSlot[]> {
+  const { params = {}, read } = options
   return Promise.all(
     slots.map(async (slot): Promise<RenderedSlot> => {
       const base = { slotId: slot.id, role: slot.role, label: slot.label }
@@ -220,6 +228,21 @@ export async function resolveSlots(
       if (invalid) {
         return { ...base, status: 'error', reason: `source 非法：${invalid}`, source }
       }
+      // static 和 params 不需要外部访问，本地就能解析
+      if (source.kind === 'static') {
+        return { ...base, status: source.value ? 'ready' : 'empty', value: source.value, source }
+      }
+      if (source.kind === 'params') {
+        const value = params[source.key]
+        if (value === undefined) {
+          return { ...base, status: 'missing', reason: `参数 ${source.key} 不存在`, source }
+        }
+        if (value === '' || value === null) {
+          return { ...base, status: 'empty', reason: `参数 ${source.key} 是空值`, source }
+        }
+        return { ...base, status: 'ready', value, source }
+      }
+      // run / registry 需要外部数据
       if (!read) {
         return { ...base, status: 'missing', reason: `没有注入取数器（${describeSlotSource(source)}）`, source }
       }
@@ -255,7 +278,7 @@ export function createSurfaceRunner(deps: SurfaceDeps): InstanceRunner {
 
     const gapText = result.gaps.length ? ` · 缺口 ${result.gaps.length} 个：${result.gaps.slice(0, 3).map((g) => g.slot).join('、')}` : ''
     // 四态必须分开计数，不能合并成一个「失败数」
-    const resolved = await resolveSlots(result.slots, deps.read)
+    const resolved = await resolveSlots(result.slots, { params: ctx.instance.params, read: deps.read })
     const counts = { ready: 0, empty: 0, missing: 0, error: 0 }
     for (const slot of resolved) counts[slot.status] += 1
     const slotText = resolved.length

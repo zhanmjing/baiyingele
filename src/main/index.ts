@@ -224,11 +224,52 @@ app.whenReady().then(() => {
    * 面层：渲染。面层不执行、不产生副作用，runSurface 的产物是
    * 「本该渲染成什么」的描述（kind: 'render'），不是执行结果。
    */
+  /**
+   * 面层取数器。只处理需要外部访问的两种 source：
+   *   run       → 该层的运行记录
+   *   registry  → 目录里的类声明
+   * static / params 由 resolveSlots 本地解析，不走这里。
+   *
+   * 「没有」和「坏了」必须分开：查不到是 empty/missing，store 抛异常才是 error。
+   */
+  const readSlotSource = async (source: { kind: string; layer?: string; classId?: string; limit?: number }) => {
+    if (source.kind === 'run') {
+      const layer = source.layer as keyof typeof LAYER_DEFS
+      if (!LAYER_DEFS[layer]) return { status: 'error' as const, reason: `未知的层 ${String(source.layer)}` }
+      try {
+        const runs = store(layer).runs(source.limit ?? 20)
+        return runs.length
+          ? { status: 'ready' as const, value: runs }
+          : { status: 'empty' as const, reason: `${String(source.layer)} 层还没有运行记录` }
+      } catch (error) {
+        return { status: 'error' as const, reason: `读取 ${String(source.layer)} 运行记录失败：${String(error)}` }
+      }
+    }
+    if (source.kind === 'registry') {
+      if (source.classId) {
+        const cls = Object.values(LAYER_DEFS)
+          .flatMap((def) => def.classes)
+          .find((item) => item.id === source.classId)
+        return cls
+          ? { status: 'ready' as const, value: cls }
+          : { status: 'missing' as const, reason: `目录里没有 ${source.classId}` }
+      }
+      const layer = source.layer as keyof typeof LAYER_DEFS
+      if (!LAYER_DEFS[layer]) return { status: 'error' as const, reason: `未知的层 ${String(source.layer)}` }
+      const classes = LAYER_DEFS[layer].classes
+      return classes.length
+        ? { status: 'ready' as const, value: classes }
+        : { status: 'empty' as const, reason: `${String(source.layer)} 层目录是空的` }
+    }
+    return { status: 'error' as const, reason: `取数器不处理 ${source.kind}` }
+  }
+
   const surfaceRunner = createSurfaceRunner({
     hasClass: (layer, name) => {
       const def = LAYER_DEFS[layer as keyof typeof LAYER_DEFS]
       return !!def?.classes.some((cls) => cls.id === `${layer}.${name}`)
     },
+    read: readSlotSource as never,
     declaredRegionKeys: (classId) => {
       const cls = LAYER_DEFS.surface.classes.find((item) => item.id === classId)
       return (cls?.params ?? []).map((p) => p.key)

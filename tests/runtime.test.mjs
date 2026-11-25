@@ -503,24 +503,46 @@ test('surfaceRuntime.resolveSlots：ready/empty/missing/error 四态必须分开
     { id: 'a', role: 'field', label: '有值', source: { kind: 'static', value: 'x' } },
     { id: 'b', role: 'field', label: '空', source: { kind: 'run', layer: 'line' } },
     { id: 'c', role: 'field', label: '缺', source: { kind: 'registry', layer: 'point' } },
-    { id: 'd', role: 'field', label: '错', source: { kind: 'params', key: 'k' } },
+    // 用 registry 触发异常：params 现在本地解析，走不到 reader
+    { id: 'd', role: 'field', label: '错', source: { kind: 'registry', classId: 'point.boom' } },
     { id: 'e', role: 'field', label: '没声明' }
   ]
   const read = async (source) => {
-    if (source.kind === 'static') return { status: 'ready', value: source.value }
     if (source.kind === 'run') return { status: 'empty', reason: '还没跑过' }
-    if (source.kind === 'registry') return { status: 'missing', reason: '目录里没有' }
-    throw new Error('磁盘读失败')
+    if (source.kind === 'registry') {
+      if (source.classId === 'point.boom') throw new Error('磁盘读失败')
+      return { status: 'missing', reason: '目录里没有' }
+    }
+    throw new Error('不该走到这里：static / params 应该本地解析')
   }
-  const out = await resolveSlots(slots, read)
+  const out = await resolveSlots(slots, { read })
   assert.deepStrictEqual(out.map((s) => s.status), ['ready', 'empty', 'missing', 'error', 'missing'])
   assert.strictEqual(out[0].value, 'x')
   assert.match(out[1].reason, /还没跑过/)
   assert.match(out[3].reason, /磁盘读失败/)
   assert.match(out[4].reason, /没有声明 source/)
 
-  // 没注入 reader 时必须是 missing 且说明原因，不能默默当空
-  const noReader = await resolveSlots([slots[0]], undefined)
+  // 没注入 reader 时，需要外部数据的 source 必须是 missing 且说明原因，不能默默当空
+  const noReader = await resolveSlots([{ id: 'r', role: 'x', label: 'r', source: { kind: 'run', layer: 'line' } }], {})
   assert.strictEqual(noReader[0].status, 'missing')
   assert.match(noReader[0].reason, /没有注入取数器/)
+})
+
+test('surfaceRuntime.resolveSlots：static / params 本地解析，不依赖注入', async () => {
+  const { resolveSlots } = load('main/surfaceRuntime.js')
+  const slots = [
+    { id: 's1', role: 'field', label: '字面量', source: { kind: 'static', value: '标题' } },
+    { id: 's2', role: 'field', label: '空字面量', source: { kind: 'static', value: '' } },
+    { id: 's3', role: 'field', label: '参数有值', source: { kind: 'params', key: 'vpn' } },
+    { id: 's4', role: 'field', label: '参数缺失', source: { kind: 'params', key: 'nope' } },
+    { id: 's5', role: 'field', label: '参数为空', source: { kind: 'params', key: 'blank' } }
+  ]
+  const out = await resolveSlots(slots, { params: { vpn: 'on', blank: '' } })
+  assert.deepStrictEqual(out.map((s) => s.status), ['ready', 'empty', 'ready', 'missing', 'empty'])
+  assert.strictEqual(out[2].value, 'on')
+  assert.match(out[3].reason, /参数 nope 不存在/)
+
+  const external = await resolveSlots([{ id: 'r', role: 'x', label: 'r', source: { kind: 'run', layer: 'line' } }], {})
+  assert.strictEqual(external[0].status, 'missing')
+  assert.match(external[0].reason, /没有注入取数器/)
 })
