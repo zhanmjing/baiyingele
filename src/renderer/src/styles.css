@@ -2557,3 +2557,6 @@ a { color: inherit; }
   position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%);
   font-size: 15px; font-weight: 600; border-radius: 8px; padding: 7px 16px; white-space: nowrap;
 }
+
+/* 浮层窗口：整页透明，不能有任何底色 */
+html.overlay-mode, body.overlay-mode { background: transparent !important; }

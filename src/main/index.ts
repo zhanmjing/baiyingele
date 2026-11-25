@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import { existsSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import type { RunHistoryItem } from '../shared/runHistory'
@@ -18,6 +18,7 @@ import { resolveForm, setFormSink } from './classes/point/ui_form'
 import { setRunHistorySource } from './classes/field/observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
+import { createGestureOverlayWindow, sendToOverlay, resizeOverlayToPrimary } from './gestureOverlayWindow'
 import { computeTrail } from './classes/surface/gesture_trail'
 import { computeHint } from './classes/surface/gesture_hint'
 import { lineProfiles } from '../shared/lineCatalog'
@@ -219,13 +220,15 @@ app.whenReady().then(() => {
       if (!force && now - lastTrailSent < 33) return
       lastTrailSent = now
       const trail = computeTrail({ points: points as never, directions, recognized, instanceId: 'surface.gesture_trail.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } })
-      mainWindow.webContents.send('gesture:trail', trail)
+      // 优先发到独立透明浮层；没起来才回落主窗口（这样开发时也能看见）
+      if (!sendToOverlay('gesture:trail', trail)) mainWindow.webContents.send('gesture:trail', trail)
     }
 
     /** 把提示推给渲染层（surface.gesture_hint） */
     const pushHint = (name: string, modifier?: string) => {
       if (!mainWindow || mainWindow.isDestroyed()) return
-      mainWindow.webContents.send('gesture:hint', computeHint({ name, modifier, instanceId: 'surface.gesture_hint.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } }))
+      const hint = computeHint({ name, modifier, instanceId: 'surface.gesture_hint.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } })
+      if (!sendToOverlay('gesture:hint', hint)) mainWindow.webContents.send('gesture:hint', hint)
     }
 
     const start = () =>
@@ -280,6 +283,11 @@ app.whenReady().then(() => {
 
   // 钩子失败不阻塞启动 —— 没有鼠标钩子，热键和手动派发仍可用
   const hookStatus = startGestureHook()
+
+  // 独立透明浮层窗口：这样在别的程序里画手势也能看见
+  // 开发态用 devServerUrl，打包后用 loadFile
+  createGestureOverlayWindow(process.env['ELECTRON_RENDERER_URL'])
+  app.on('browser-window-created', () => resizeOverlayToPrimary())
 
   /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */
   const fieldRunner: InstanceRunner = async (context) => {

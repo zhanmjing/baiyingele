@@ -1796,3 +1796,31 @@ test('浮层接线：主进程要推 trail 和 hint，渲染层要挂载', () =>
   const app = readFileSync(join(process.cwd(), 'src/renderer/src/App.tsx'), 'utf8')
   assert.match(app, /<GestureOverlay \/>/, 'App 要挂载浮层')
 })
+
+test('浮层窗口：必须透明、无边框、置顶、穿透、不进任务栏', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/gestureOverlayWindow.ts'), 'utf8')
+  for (const key of ['transparent: true', 'frame: false', 'hasShadow: false', 'skipTaskbar: true', 'focusable: false', 'alwaysOnTop: true']) {
+    assert.ok(source.includes(key), `浮层窗口必须有 ${key}`)
+  }
+  assert.match(source, /setAlwaysOnTop\(true, 'screen-saver'\)/, '要盖住全屏应用')
+  assert.match(source, /setIgnoreMouseEvents\(true/, '必须鼠标穿透')
+  assert.match(source, /showInactive\(\)/, '不能抢焦点')
+})
+
+test('浮层窗口：同一渲染入口用 ?overlay=1 区分，只画浮层', () => {
+  const win = readFileSync(join(process.cwd(), 'src/main/gestureOverlayWindow.ts'), 'utf8')
+  assert.match(win, /\?overlay=1/, 'dev 用 query 区分')
+  assert.match(win, /search: 'overlay=1'/, '打包后用 search 区分')
+
+  const entry = readFileSync(join(process.cwd(), 'src/renderer/src/main.tsx'), 'utf8')
+  assert.match(entry, /get\('overlay'\) === '1'/, '渲染入口要识别浮层模式')
+  assert.match(entry, /isOverlay \? <GestureOverlay \/> : <App \/>/, '浮层模式只渲染 GestureOverlay')
+  assert.match(entry, /background = 'transparent'/, '浮层页必须整页透明')
+})
+
+test('浮层窗口：主进程优先推浮层，回落主窗口', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(main, /createGestureOverlayWindow/, '要创建浮层窗口')
+  assert.match(main, /sendToOverlay\('gesture:trail'/, '轨迹推给浮层')
+  assert.match(main, /sendToOverlay\('gesture:hint'/, '提示推给浮层')
+})
