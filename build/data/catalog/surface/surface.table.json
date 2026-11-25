@@ -13,21 +13,21 @@
       "name": "点目录",
       "rev": 5,
       "status": "active",
-      "detail": "{\"detail\":\"38 个点类 / 实例列表 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"38 个点类\",\"order\":1},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"实例列表\",\"order\":2}],\"slotCount\":2}"
+      "detail": "{\"detail\":\"38 个点类 / 实例列表 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"38 个点类\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"实例列表\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}"
     },
     {
       "id": "surface.table.flow_instances@r3",
       "name": "线实例列表",
       "rev": 3,
       "status": "active",
-      "detail": "{\"detail\":\"FlowInstance 目录 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"FlowInstance 目录\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"FlowInstance 目录 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"FlowInstance 目录\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":1}"
     },
     {
       "id": "surface.table.run_history_table@r2",
       "name": "运行列表",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"FlowRun / PointRun 表格 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"FlowRun\",\"order\":1},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"PointRun 表格\",\"order\":2}],\"slotCount\":2}"
+      "detail": "{\"detail\":\"LineRun / PointRun 表格 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"LineRun\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"PointRun 表格\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}"
     }
   ]
 }

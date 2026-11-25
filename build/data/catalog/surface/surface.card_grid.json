@@ -13,21 +13,21 @@
       "name": "站点启动器",
       "rev": 3,
       "status": "active",
-      "detail": "{\"detail\":\"YouTube / GitHub / Google / 内网 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"YouTube\",\"order\":1},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"GitHub\",\"order\":2},{\"id\":\"card-3\",\"role\":\"card\",\"label\":\"Google\",\"order\":3},{\"id\":\"card-4\",\"role\":\"card\",\"label\":\"内网\",\"order\":4}],\"slotCount\":4}"
+      "detail": "{\"detail\":\"YouTube / GitHub / Google / 内网 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"YouTube\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"GitHub\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-3\",\"role\":\"card\",\"label\":\"Google\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-4\",\"role\":\"card\",\"label\":\"内网\",\"order\":4,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}}],\"slotCount\":4}"
     },
     {
       "id": "surface.card_grid.body_market@r1",
       "name": "Body 市场",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"安装 body / 模板 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"安装 body\",\"order\":1},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"模板\",\"order\":2}],\"slotCount\":2}"
+      "detail": "{\"detail\":\"安装 body / 模板 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"安装 body\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"模板\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}}],\"slotCount\":2}"
     },
     {
       "id": "surface.card_grid.flow_gallery@r2",
       "name": "流程模板",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"FlowClass 模板库 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"FlowClass 模板库\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"FlowClass 模板库 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"FlowClass 模板库\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}}],\"slotCount\":1}"
     }
   ]
 }

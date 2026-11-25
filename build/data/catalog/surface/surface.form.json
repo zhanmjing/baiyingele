@@ -13,28 +13,28 @@
       "name": "VPN 设置",
       "rev": 3,
       "status": "active",
-      "detail": "{\"detail\":\"默认 VPN / 自动打开 / 自动连接 / 超时 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"默认 VPN\",\"order\":1},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"自动打开\",\"order\":2},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"自动连接\",\"order\":3},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"超时\",\"order\":4}],\"slotCount\":4}"
+      "detail": "{\"detail\":\"默认 VPN / 自动打开 / 自动连接 / 超时 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"默认 VPN\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"默认_VPN\"}},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"自动打开\",\"order\":2,\"source\":{\"kind\":\"params\",\"key\":\"自动打开\"}},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"自动连接\",\"order\":3,\"source\":{\"kind\":\"params\",\"key\":\"自动连接\"}},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"超时\",\"order\":4,\"source\":{\"kind\":\"params\",\"key\":\"超时\"}}],\"slotCount\":4}"
     },
     {
       "id": "surface.form.settings_general@r2",
       "name": "通用设置",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"主题 / 语言 / 启动行为 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"主题\",\"order\":1},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"语言\",\"order\":2},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"启动行为\",\"order\":3}],\"slotCount\":3}"
+      "detail": "{\"detail\":\"主题 / 语言 / 启动行为 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"主题\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"主题\"}},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"语言\",\"order\":2,\"source\":{\"kind\":\"params\",\"key\":\"语言\"}},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"启动行为\",\"order\":3,\"source\":{\"kind\":\"params\",\"key\":\"启动行为\"}}],\"slotCount\":3}"
     },
     {
       "id": "surface.form.point_params@r1",
       "name": "点实例参数",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"编辑 PointInstance 的参数与 revision · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"编辑 PointInstance 的参数与 revision\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"编辑 PointInstance 的参数与 revision · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"编辑 PointInstance 的参数与 revision\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"编辑_PointInstance_的参数与_revision\"}}],\"slotCount\":1}"
     },
     {
       "id": "surface.form.settings_system_monitor@r2",
       "name": "系统监控设置",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"采样间隔\",\"order\":1},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"历史窗口\",\"order\":2},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"阈值\",\"order\":3},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"单位\",\"order\":4},{\"id\":\"field-5\",\"role\":\"field\",\"label\":\"悬浮窗\",\"order\":5}],\"slotCount\":5}"
+      "detail": "{\"detail\":\"采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"采样间隔\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"采样间隔\"}},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"历史窗口\",\"order\":2,\"source\":{\"kind\":\"params\",\"key\":\"历史窗口\"}},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"阈值\",\"order\":3,\"source\":{\"kind\":\"params\",\"key\":\"阈值\"}},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"单位\",\"order\":4,\"source\":{\"kind\":\"params\",\"key\":\"单位\"}},{\"id\":\"field-5\",\"role\":\"field\",\"label\":\"悬浮窗\",\"order\":5,\"source\":{\"kind\":\"params\",\"key\":\"悬浮窗\"}}],\"slotCount\":5}"
     }
   ]
 }

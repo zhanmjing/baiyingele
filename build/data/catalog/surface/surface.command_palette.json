@@ -13,14 +13,14 @@
       "name": "全局命令面板",
       "rev": 4,
       "status": "active",
-      "detail": "{\"detail\":\"搜索 Flow / Point / 设置 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索 Flow\",\"order\":1},{\"id\":\"result-group-2\",\"role\":\"result-group\",\"label\":\"Point\",\"order\":2},{\"id\":\"result-group-3\",\"role\":\"result-group\",\"label\":\"设置\",\"order\":3}],\"slotCount\":3}"
+      "detail": "{\"detail\":\"搜索 Flow / Point / 设置 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索 Flow\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"result-group-2\",\"role\":\"result-group\",\"label\":\"Point\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"result-group-3\",\"role\":\"result-group\",\"label\":\"设置\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":3}"
     },
     {
       "id": "surface.command_palette.points@r2",
       "name": "点实例面板",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"搜索并运行点实例 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索并运行点实例\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"搜索并运行点实例 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索并运行点实例\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":1}"
     }
   ]
 }

@@ -13,14 +13,14 @@
       "name": "流程版本 diff",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"FlowClass v1 vs v2 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"FlowClass v1 vs v2\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"FlowClass v1 vs v2 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"FlowClass v1 vs v2\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":1}"
     },
     {
       "id": "surface.diff.instance_revision@r1",
       "name": "实例 revision diff",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"绑定/参数变化 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"绑定\",\"order\":1},{\"id\":\"diff-pane-2\",\"role\":\"diff-pane\",\"label\":\"参数变化\",\"order\":2}],\"slotCount\":2}"
+      "detail": "{\"detail\":\"绑定/参数变化 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"绑定\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"diff-pane-2\",\"role\":\"diff-pane\",\"label\":\"参数变化\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":2}"
     }
   ]
 }

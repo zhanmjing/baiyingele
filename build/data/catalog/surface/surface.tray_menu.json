@@ -13,21 +13,21 @@
       "name": "快捷动作",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"收藏的 FlowInstance · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"收藏的 FlowInstance\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"收藏的 FlowInstance · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"收藏的 FlowInstance\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}}],\"slotCount\":1}"
     },
     {
       "id": "surface.tray_menu.vpn@r1",
       "name": "VPN 托盘菜单",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"打开 / 连接 / 状态 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"打开\",\"order\":1},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"连接\",\"order\":2},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"状态\",\"order\":3}],\"slotCount\":3}"
+      "detail": "{\"detail\":\"打开 / 连接 / 状态 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"打开\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"连接\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"状态\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}}],\"slotCount\":3}"
     },
     {
       "id": "surface.tray_menu.system_status@r1",
       "name": "系统状态托盘",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"CPU/GPU/内存/网速文本摘要 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"CPU\",\"order\":1},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"GPU\",\"order\":2},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"内存\",\"order\":3},{\"id\":\"menu-item-4\",\"role\":\"menu-item\",\"label\":\"网速文本摘要\",\"order\":4}],\"slotCount\":4}"
+      "detail": "{\"detail\":\"CPU/GPU/内存/网速文本摘要 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"CPU\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"GPU\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"内存\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-4\",\"role\":\"menu-item\",\"label\":\"网速文本摘要\",\"order\":4,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}}],\"slotCount\":4}"
     }
   ]
 }

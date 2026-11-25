@@ -13,14 +13,14 @@
       "name": "线层编辑器",
       "rev": 6,
       "status": "active",
-      "detail": "{\"detail\":\"FlowClass 图 / 槽位绑定 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"FlowClass 图\",\"order\":1},{\"id\":\"layer-2\",\"role\":\"layer\",\"label\":\"槽位绑定\",\"order\":2}],\"slotCount\":2}"
+      "detail": "{\"detail\":\"FlowClass 图 / 槽位绑定 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"FlowClass 图\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"FlowClass 图\"}},{\"id\":\"layer-2\",\"role\":\"layer\",\"label\":\"槽位绑定\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"槽位绑定\"}}],\"slotCount\":2}"
     },
     {
       "id": "surface.canvas.body_composer@r1",
       "name": "Body 组合器",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"面 + 线 + 权限打包 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"面 + 线 + 权限打包\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"面 + 线 + 权限打包 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"面 + 线 + 权限打包\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"面 + 线 + 权限打包\"}}],\"slotCount\":1}"
     }
   ]
 }

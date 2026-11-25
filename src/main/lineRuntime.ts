@@ -1,7 +1,7 @@
 /**
  * 线层执行器：把 LineClass 的数据流图跑起来。
  *
- * 设计依据 ATOM-UNIFIED-MODEL：FlowRun 由若干 slotRun 组成，每个 slotRun
+ * 设计依据 ATOM-UNIFIED-MODEL：LineRun 由若干 slotRun 组成，每个 slotRun
  * 对应一次真实的 PointRun。
  *
  * **执行模型：信号传播，不是「拓扑排序后全跑一遍」。**

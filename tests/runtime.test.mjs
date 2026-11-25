@@ -74,7 +74,7 @@ test('surfaceRuntime：挂载位解析（settings 不是挂载位）', () => {
   assert.strictEqual(surfRt.parseMount(null), null)
 })
 
-test('surfaceRuntime：pattern 缺 regions 必须报缺口；panel 页面存在与缺失混合', () => {
+test('surfaceRuntime：pattern 缺 regions 必须报缺口；panel 页面存在与缺失混合', async () => {
   const surfRt = load('main/surfaceRuntime.js')
   const deps = {
     hasClass: (l, n) => ['surface.inspector', 'surface.form'].includes(`${l}.${n}`),
@@ -98,7 +98,8 @@ test('surfaceRuntime：pattern 缺 regions 必须报缺口；panel 页面存在�
   assert.strictEqual(pan.gaps.length, 1)
   assert.ok(pan.intents.includes('open:2 个应用'))
 
-  const out = surfRt.createSurfaceRunner(deps)(mockContext('surface.panel', { pages: [{ layer: 'surface', name: 'nope' }] }))
+  // runner 现在是 async：要取数就得 await
+  const out = await surfRt.createSurfaceRunner(deps)(mockContext('surface.panel', { pages: [{ layer: 'surface', name: 'nope' }] }))
   assert.strictEqual(out.status, 'warn')
   assert.strictEqual(out.evidence.kind, 'render', 'runSurface 的 kind 必须是 render')
 })
@@ -306,7 +307,7 @@ test('field.recommend：先修失败，再固化重复，样本太少时明说�
 
 // ── 场层：解释 ────────────────────────────────────────────────
 test('field.explain：把证据翻成人话，缺证据时明说缺什么', () => {
-  const { explainPointRun, explainSuggestion, explainFlowRun, explainPermission } = load('main/capabilities/field.explain.js')
+  const { explainPointRun, explainSuggestion, explainLineRun, explainPermission } = load('main/capabilities/field.explain.js')
 
   const run = explainPointRun({ classId: 'point.file_read', status: 'warn', output: '只读到 0 字节', elapsedMs: 42 })
   assert.match(run.headline, /只读到 0 字节/)
@@ -321,14 +322,14 @@ test('field.explain：把证据翻成人话，缺证据时明说缺什么', () =
   const lowConf = explainSuggestion({ suggestion: { action: 'x', target: 'y', confidence: 0.3 } })
   assert.ok(lowConf.points.some((p) => p.includes('置信度偏低')), '低置信度必须提醒')
 
-  const flow = explainFlowRun({ nodes: [{ id: 'a', status: 'ok' }, { id: 'b', status: 'warn', output: '超时' }], halted: 'b' })
+  const flow = explainLineRun({ nodes: [{ id: 'a', status: 'ok' }, { id: 'b', status: 'warn', output: '超时' }], halted: 'b' })
   assert.match(flow.headline, /共 2 个节点/)
   assert.ok(flow.points.some((p) => p.includes('流程在 b 处停下')))
 
   // 没有证据 → 明说缺什么，不编
   assert.ok(explainSuggestion({}).missing.includes('suggestion'))
   assert.ok(explainPermission({}).missing.includes('permission'))
-  assert.deepStrictEqual(explainFlowRun({}).missing, ['nodes'])
+  assert.deepStrictEqual(explainLineRun({}).missing, ['nodes'])
   // 通配权限要直说不合适
   assert.ok(explainPermission({ permission: 'filesystem:*', usedBy: 'ocr' }).points.some((p) => p.includes('通配权限')))
 })
@@ -446,4 +447,80 @@ test('decideLanding：必须吃 autonomy，不吃 effect', () => {
   // 传 L 码必须被拒绝，而不是悄悄当成 A3 —— 这就是当年能跑的那个 bug 的护栏
   assert.strictEqual(decideLanding('L0', { layer: 'point', target: 'params', ref: 'x' }).action, 'refuse', 'L 码必须按未知自主度拒绝')
   assert.match(decideLanding('L0', { layer: 'point', target: 'params', ref: 'x' }).reason, /未知自主度/)
+})
+
+// ── 面层数据契约：槽位来源与四态 ────────────────────────────────
+test('slotSource：四种 kind 的校验规则', () => {
+  const { validateSlotSource, describeSlotSource } = load('shared/slotSource.js')
+
+  assert.strictEqual(validateSlotSource({ kind: 'run', layer: 'line', limit: 20 }), null)
+  assert.match(validateSlotSource({ kind: 'run', layer: 'nope' }), /五层之一/)
+  assert.match(validateSlotSource({ kind: 'run', layer: 'line', limit: -1 }), /正数/)
+
+  assert.strictEqual(validateSlotSource({ kind: 'registry', layer: 'point' }), null)
+  assert.strictEqual(validateSlotSource({ kind: 'registry', classId: 'point.ocr' }), null)
+  assert.match(validateSlotSource({ kind: 'registry' }), /至少要给/)
+  assert.match(validateSlotSource({ kind: 'registry', layer: 'point', classId: 'line.x' }), /不一致/)
+
+  assert.strictEqual(validateSlotSource({ kind: 'params', key: 'vpn.default' }), null)
+  assert.match(validateSlotSource({ kind: 'params', key: '  ' }), /非空/)
+
+  assert.strictEqual(validateSlotSource({ kind: 'static', value: '标题' }), null)
+  assert.match(validateSlotSource({ kind: 'static', value: 1 }), /字符串/)
+
+  assert.match(validateSlotSource({ kind: 'weird' }), /未知/)
+  assert.match(validateSlotSource(null), /对象/)
+
+  assert.strictEqual(describeSlotSource({ kind: 'run', layer: 'line', limit: 20 }), 'run:line×20')
+  assert.strictEqual(describeSlotSource({ kind: 'registry', layer: 'point' }), 'registry:point.*')
+})
+
+test('surfaceRuntime：46 个槽位都有 source，且全部合法', () => {
+  const { validateSlotSource } = load('shared/slotSource.js')
+  const rows = []
+  for (const cls of catalogs.surface) {
+    if (cls.id === 'surface.panel') continue
+    for (const inst of cls.instances) {
+      for (const slot of inst.params?.slots ?? []) rows.push({ cls: cls.id, slot })
+    }
+  }
+  assert.ok(rows.length >= 40, `槽位数应该有几十个，实际 ${rows.length}`)
+
+  const noSource = rows.filter((r) => !r.slot.source).map((r) => `${r.cls}:${r.slot.id}`)
+  assert.deepStrictEqual(noSource, [], `这些槽位没有声明 source: ${noSource.slice(0, 5).join(',')}`)
+
+  const invalid = rows.map((r) => ({ id: `${r.cls}:${r.slot.id}`, err: validateSlotSource(r.slot.source) })).filter((r) => r.err)
+  assert.deepStrictEqual(invalid, [], `source 非法: ${JSON.stringify(invalid.slice(0, 3))}`)
+
+  // 四种 kind 都应该被真实用到（否则说明分类是空谈）
+  const kinds = new Set(rows.map((r) => r.slot.source.kind))
+  assert.deepStrictEqual([...kinds].sort(), ['params', 'registry', 'run', 'static'], `四种 kind 都该用到，实际: ${[...kinds]}`)
+})
+
+test('surfaceRuntime.resolveSlots：ready/empty/missing/error 四态必须分开', async () => {
+  const { resolveSlots } = load('main/surfaceRuntime.js')
+  const slots = [
+    { id: 'a', role: 'field', label: '有值', source: { kind: 'static', value: 'x' } },
+    { id: 'b', role: 'field', label: '空', source: { kind: 'run', layer: 'line' } },
+    { id: 'c', role: 'field', label: '缺', source: { kind: 'registry', layer: 'point' } },
+    { id: 'd', role: 'field', label: '错', source: { kind: 'params', key: 'k' } },
+    { id: 'e', role: 'field', label: '没声明' }
+  ]
+  const read = async (source) => {
+    if (source.kind === 'static') return { status: 'ready', value: source.value }
+    if (source.kind === 'run') return { status: 'empty', reason: '还没跑过' }
+    if (source.kind === 'registry') return { status: 'missing', reason: '目录里没有' }
+    throw new Error('磁盘读失败')
+  }
+  const out = await resolveSlots(slots, read)
+  assert.deepStrictEqual(out.map((s) => s.status), ['ready', 'empty', 'missing', 'error', 'missing'])
+  assert.strictEqual(out[0].value, 'x')
+  assert.match(out[1].reason, /还没跑过/)
+  assert.match(out[3].reason, /磁盘读失败/)
+  assert.match(out[4].reason, /没有声明 source/)
+
+  // 没注入 reader 时必须是 missing 且说明原因，不能默默当空
+  const noReader = await resolveSlots([slots[0]], undefined)
+  assert.strictEqual(noReader[0].status, 'missing')
+  assert.match(noReader[0].reason, /没有注入取数器/)
 })

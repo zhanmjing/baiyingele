@@ -13,14 +13,14 @@
       "name": "点 Domain 树",
       "rev": 2,
       "status": "active",
-      "detail": "{\"detail\":\"15 domain → 38 类 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1-1\",\"role\":\"node\",\"label\":\"15 domain\",\"order\":1},{\"id\":\"node-1-2\",\"role\":\"node\",\"label\":\"38 类\",\"order\":2}],\"slotCount\":2}"
+      "detail": "{\"detail\":\"15 domain → 38 类 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1-1\",\"role\":\"node\",\"label\":\"15 domain\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"node-1-2\",\"role\":\"node\",\"label\":\"38 类\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}"
     },
     {
       "id": "surface.tree.flow_outline@r1",
       "name": "流程大纲",
       "rev": 1,
       "status": "active",
-      "detail": "{\"detail\":\"FlowClass 节点树 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1\",\"role\":\"node\",\"label\":\"FlowClass 节点树\",\"order\":1}],\"slotCount\":1}"
+      "detail": "{\"detail\":\"FlowClass 节点树 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1\",\"role\":\"node\",\"label\":\"FlowClass 节点树\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":1}"
     }
   ]
 }

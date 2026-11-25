@@ -1972,7 +1972,7 @@
           "name": "VPN 设置",
           "rev": 3,
           "status": "active",
-          "description": "{\"detail\":\"默认 VPN / 自动打开 / 自动连接 / 超时 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"默认 VPN\",\"order\":1},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"自动打开\",\"order\":2},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"自动连接\",\"order\":3},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"超时\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"默认 VPN / 自动打开 / 自动连接 / 超时 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"默认 VPN\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"默认_VPN\"}},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"自动打开\",\"order\":2,\"source\":{\"kind\":\"params\",\"key\":\"自动打开\"}},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"自动连接\",\"order\":3,\"source\":{\"kind\":\"params\",\"key\":\"自动连接\"}},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"超时\",\"order\":4,\"source\":{\"kind\":\"params\",\"key\":\"超时\"}}],\"slotCount\":4}",
           "params": {
             "detail": "默认 VPN / 自动打开 / 自动连接 / 超时 · settings",
             "mount": "settings",
@@ -1981,25 +1981,41 @@
                 "id": "field-1",
                 "role": "field",
                 "label": "默认 VPN",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "params",
+                  "key": "默认_VPN"
+                }
               },
               {
                 "id": "field-2",
                 "role": "field",
                 "label": "自动打开",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "params",
+                  "key": "自动打开"
+                }
               },
               {
                 "id": "field-3",
                 "role": "field",
                 "label": "自动连接",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "params",
+                  "key": "自动连接"
+                }
               },
               {
                 "id": "field-4",
                 "role": "field",
                 "label": "超时",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "params",
+                  "key": "超时"
+                }
               }
             ],
             "slotCount": 4
@@ -2010,7 +2026,7 @@
           "name": "通用设置",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"主题 / 语言 / 启动行为 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"主题\",\"order\":1},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"语言\",\"order\":2},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"启动行为\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"主题 / 语言 / 启动行为 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"主题\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"主题\"}},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"语言\",\"order\":2,\"source\":{\"kind\":\"params\",\"key\":\"语言\"}},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"启动行为\",\"order\":3,\"source\":{\"kind\":\"params\",\"key\":\"启动行为\"}}],\"slotCount\":3}",
           "params": {
             "detail": "主题 / 语言 / 启动行为 · settings",
             "mount": "settings",
@@ -2019,19 +2035,31 @@
                 "id": "field-1",
                 "role": "field",
                 "label": "主题",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "params",
+                  "key": "主题"
+                }
               },
               {
                 "id": "field-2",
                 "role": "field",
                 "label": "语言",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "params",
+                  "key": "语言"
+                }
               },
               {
                 "id": "field-3",
                 "role": "field",
                 "label": "启动行为",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "params",
+                  "key": "启动行为"
+                }
               }
             ],
             "slotCount": 3
@@ -2042,7 +2070,7 @@
           "name": "点实例参数",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"编辑 PointInstance 的参数与 revision · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"编辑 PointInstance 的参数与 revision\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"编辑 PointInstance 的参数与 revision · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"编辑 PointInstance 的参数与 revision\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"编辑_PointInstance_的参数与_revision\"}}],\"slotCount\":1}",
           "params": {
             "detail": "编辑 PointInstance 的参数与 revision · sidebar",
             "mount": "sidebar",
@@ -2051,7 +2079,11 @@
                 "id": "field-1",
                 "role": "field",
                 "label": "编辑 PointInstance 的参数与 revision",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "params",
+                  "key": "编辑_PointInstance_的参数与_revision"
+                }
               }
             ],
             "slotCount": 1
@@ -2062,7 +2094,7 @@
           "name": "系统监控设置",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"采样间隔\",\"order\":1},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"历史窗口\",\"order\":2},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"阈值\",\"order\":3},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"单位\",\"order\":4},{\"id\":\"field-5\",\"role\":\"field\",\"label\":\"悬浮窗\",\"order\":5}],\"slotCount\":5}",
+          "description": "{\"detail\":\"采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings\",\"mount\":\"settings\",\"slots\":[{\"id\":\"field-1\",\"role\":\"field\",\"label\":\"采样间隔\",\"order\":1,\"source\":{\"kind\":\"params\",\"key\":\"采样间隔\"}},{\"id\":\"field-2\",\"role\":\"field\",\"label\":\"历史窗口\",\"order\":2,\"source\":{\"kind\":\"params\",\"key\":\"历史窗口\"}},{\"id\":\"field-3\",\"role\":\"field\",\"label\":\"阈值\",\"order\":3,\"source\":{\"kind\":\"params\",\"key\":\"阈值\"}},{\"id\":\"field-4\",\"role\":\"field\",\"label\":\"单位\",\"order\":4,\"source\":{\"kind\":\"params\",\"key\":\"单位\"}},{\"id\":\"field-5\",\"role\":\"field\",\"label\":\"悬浮窗\",\"order\":5,\"source\":{\"kind\":\"params\",\"key\":\"悬浮窗\"}}],\"slotCount\":5}",
           "params": {
             "detail": "采样间隔 / 历史窗口 / 阈值 / 单位 / 悬浮窗 · settings",
             "mount": "settings",
@@ -2071,31 +2103,51 @@
                 "id": "field-1",
                 "role": "field",
                 "label": "采样间隔",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "params",
+                  "key": "采样间隔"
+                }
               },
               {
                 "id": "field-2",
                 "role": "field",
                 "label": "历史窗口",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "params",
+                  "key": "历史窗口"
+                }
               },
               {
                 "id": "field-3",
                 "role": "field",
                 "label": "阈值",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "params",
+                  "key": "阈值"
+                }
               },
               {
                 "id": "field-4",
                 "role": "field",
                 "label": "单位",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "params",
+                  "key": "单位"
+                }
               },
               {
                 "id": "field-5",
                 "role": "field",
                 "label": "悬浮窗",
-                "order": 5
+                "order": 5,
+                "source": {
+                  "kind": "params",
+                  "key": "悬浮窗"
+                }
               }
             ],
             "slotCount": 5
@@ -2127,7 +2179,7 @@
           "name": "新建流程",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"选模板 → 绑槽位 → 试运行 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"step-1-1\",\"role\":\"step\",\"label\":\"选模板\",\"order\":1},{\"id\":\"step-1-2\",\"role\":\"step\",\"label\":\"绑槽位\",\"order\":2},{\"id\":\"step-1-3\",\"role\":\"step\",\"label\":\"试运行\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"选模板 → 绑槽位 → 试运行 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"step-1-1\",\"role\":\"step\",\"label\":\"选模板\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"选模板\"}},{\"id\":\"step-1-2\",\"role\":\"step\",\"label\":\"绑槽位\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"绑槽位\"}},{\"id\":\"step-1-3\",\"role\":\"step\",\"label\":\"试运行\",\"order\":3,\"source\":{\"kind\":\"static\",\"value\":\"试运行\"}}],\"slotCount\":3}",
           "params": {
             "detail": "选模板 → 绑槽位 → 试运行 · modal",
             "mount": "modal",
@@ -2136,19 +2188,31 @@
                 "id": "step-1-1",
                 "role": "step",
                 "label": "选模板",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "选模板"
+                }
               },
               {
                 "id": "step-1-2",
                 "role": "step",
                 "label": "绑槽位",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "static",
+                  "value": "绑槽位"
+                }
               },
               {
                 "id": "step-1-3",
                 "role": "step",
                 "label": "试运行",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "static",
+                  "value": "试运行"
+                }
               }
             ],
             "slotCount": 3
@@ -2159,7 +2223,7 @@
           "name": "VPN 首次配置",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"选软件 → 测试 → 保存 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"step-1-1\",\"role\":\"step\",\"label\":\"选软件\",\"order\":1},{\"id\":\"step-1-2\",\"role\":\"step\",\"label\":\"测试\",\"order\":2},{\"id\":\"step-1-3\",\"role\":\"step\",\"label\":\"保存\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"选软件 → 测试 → 保存 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"step-1-1\",\"role\":\"step\",\"label\":\"选软件\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"选软件\"}},{\"id\":\"step-1-2\",\"role\":\"step\",\"label\":\"测试\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"测试\"}},{\"id\":\"step-1-3\",\"role\":\"step\",\"label\":\"保存\",\"order\":3,\"source\":{\"kind\":\"static\",\"value\":\"保存\"}}],\"slotCount\":3}",
           "params": {
             "detail": "选软件 → 测试 → 保存 · modal",
             "mount": "modal",
@@ -2168,19 +2232,31 @@
                 "id": "step-1-1",
                 "role": "step",
                 "label": "选软件",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "选软件"
+                }
               },
               {
                 "id": "step-1-2",
                 "role": "step",
                 "label": "测试",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "static",
+                  "value": "测试"
+                }
               },
               {
                 "id": "step-1-3",
                 "role": "step",
                 "label": "保存",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "static",
+                  "value": "保存"
+                }
               }
             ],
             "slotCount": 3
@@ -2212,7 +2288,7 @@
           "name": "点检查器",
           "rev": 4,
           "status": "active",
-          "description": "{\"detail\":\"PointClass / PointInstance 契约与参数 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"PointClass\",\"order\":1},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"PointInstance 契约与参数\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"PointClass / PointInstance 契约与参数 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"PointClass\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"PointInstance 契约与参数\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}",
           "params": {
             "detail": "PointClass / PointInstance 契约与参数 · sidebar",
             "mount": "sidebar",
@@ -2221,13 +2297,21 @@
                 "id": "section-1",
                 "role": "section",
                 "label": "PointClass",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "section-2",
                 "role": "section",
                 "label": "PointInstance 契约与参数",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 2
@@ -2238,7 +2322,7 @@
           "name": "VPN 槽位检查器",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"slot.vpn 的 accepts / default / bound · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"slot.vpn 的 accepts\",\"order\":1},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"default\",\"order\":2},{\"id\":\"section-3\",\"role\":\"section\",\"label\":\"bound\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"slot.vpn 的 accepts / default / bound · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"slot.vpn 的 accepts\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"default\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"section-3\",\"role\":\"section\",\"label\":\"bound\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":3}",
           "params": {
             "detail": "slot.vpn 的 accepts / default / bound · sidebar",
             "mount": "sidebar",
@@ -2247,19 +2331,31 @@
                 "id": "section-1",
                 "role": "section",
                 "label": "slot.vpn 的 accepts",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "section-2",
                 "role": "section",
                 "label": "default",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "section-3",
                 "role": "section",
                 "label": "bound",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 3
@@ -2270,7 +2366,7 @@
           "name": "运行节点检查器",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"PointRun 输入/输出/耗时 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"PointRun 输入\",\"order\":1},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"输出\",\"order\":2},{\"id\":\"section-3\",\"role\":\"section\",\"label\":\"耗时\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"PointRun 输入/输出/耗时 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"PointRun 输入\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"输出\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"section-3\",\"role\":\"section\",\"label\":\"耗时\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":3}",
           "params": {
             "detail": "PointRun 输入/输出/耗时 · sidebar",
             "mount": "sidebar",
@@ -2279,19 +2375,31 @@
                 "id": "section-1",
                 "role": "section",
                 "label": "PointRun 输入",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "section-2",
                 "role": "section",
                 "label": "输出",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "section-3",
                 "role": "section",
                 "label": "耗时",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 3
@@ -2323,7 +2431,7 @@
           "name": "点目录",
           "rev": 5,
           "status": "active",
-          "description": "{\"detail\":\"38 个点类 / 实例列表 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"38 个点类\",\"order\":1},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"实例列表\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"38 个点类 / 实例列表 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"38 个点类\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"实例列表\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}",
           "params": {
             "detail": "38 个点类 / 实例列表 · main",
             "mount": "main",
@@ -2332,13 +2440,21 @@
                 "id": "column-1",
                 "role": "column",
                 "label": "38 个点类",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "column-2",
                 "role": "column",
                 "label": "实例列表",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 2
@@ -2349,7 +2465,7 @@
           "name": "线实例列表",
           "rev": 3,
           "status": "active",
-          "description": "{\"detail\":\"FlowInstance 目录 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"FlowInstance 目录\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"FlowInstance 目录 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"FlowInstance 目录\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":1}",
           "params": {
             "detail": "FlowInstance 目录 · main",
             "mount": "main",
@@ -2358,7 +2474,11 @@
                 "id": "column-1",
                 "role": "column",
                 "label": "FlowInstance 目录",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 1
@@ -2369,22 +2489,30 @@
           "name": "运行列表",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"FlowRun / PointRun 表格 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"FlowRun\",\"order\":1},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"PointRun 表格\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"LineRun / PointRun 表格 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"column-1\",\"role\":\"column\",\"label\":\"LineRun\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"column-2\",\"role\":\"column\",\"label\":\"PointRun 表格\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}",
           "params": {
-            "detail": "FlowRun / PointRun 表格 · main",
+            "detail": "LineRun / PointRun 表格 · main",
             "mount": "main",
             "slots": [
               {
                 "id": "column-1",
                 "role": "column",
-                "label": "FlowRun",
-                "order": 1
+                "label": "LineRun",
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "column-2",
                 "role": "column",
                 "label": "PointRun 表格",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 2
@@ -2416,7 +2544,7 @@
           "name": "站点启动器",
           "rev": 3,
           "status": "active",
-          "description": "{\"detail\":\"YouTube / GitHub / Google / 内网 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"YouTube\",\"order\":1},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"GitHub\",\"order\":2},{\"id\":\"card-3\",\"role\":\"card\",\"label\":\"Google\",\"order\":3},{\"id\":\"card-4\",\"role\":\"card\",\"label\":\"内网\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"YouTube / GitHub / Google / 内网 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"YouTube\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"GitHub\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-3\",\"role\":\"card\",\"label\":\"Google\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-4\",\"role\":\"card\",\"label\":\"内网\",\"order\":4,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}}],\"slotCount\":4}",
           "params": {
             "detail": "YouTube / GitHub / Google / 内网 · main",
             "mount": "main",
@@ -2425,25 +2553,41 @@
                 "id": "card-1",
                 "role": "card",
                 "label": "YouTube",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               },
               {
                 "id": "card-2",
                 "role": "card",
                 "label": "GitHub",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               },
               {
                 "id": "card-3",
                 "role": "card",
                 "label": "Google",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               },
               {
                 "id": "card-4",
                 "role": "card",
                 "label": "内网",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               }
             ],
             "slotCount": 4
@@ -2454,7 +2598,7 @@
           "name": "Body 市场",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"安装 body / 模板 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"安装 body\",\"order\":1},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"模板\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"安装 body / 模板 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"安装 body\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}},{\"id\":\"card-2\",\"role\":\"card\",\"label\":\"模板\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}}],\"slotCount\":2}",
           "params": {
             "detail": "安装 body / 模板 · main",
             "mount": "main",
@@ -2463,13 +2607,21 @@
                 "id": "card-1",
                 "role": "card",
                 "label": "安装 body",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               },
               {
                 "id": "card-2",
                 "role": "card",
                 "label": "模板",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               }
             ],
             "slotCount": 2
@@ -2480,7 +2632,7 @@
           "name": "流程模板",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"FlowClass 模板库 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"FlowClass 模板库\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"FlowClass 模板库 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"card-1\",\"role\":\"card\",\"label\":\"FlowClass 模板库\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"body\"}}],\"slotCount\":1}",
           "params": {
             "detail": "FlowClass 模板库 · main",
             "mount": "main",
@@ -2489,7 +2641,11 @@
                 "id": "card-1",
                 "role": "card",
                 "label": "FlowClass 模板库",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "body"
+                }
               }
             ],
             "slotCount": 1
@@ -2521,7 +2677,7 @@
           "name": "点 Domain 树",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"15 domain → 38 类 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1-1\",\"role\":\"node\",\"label\":\"15 domain\",\"order\":1},{\"id\":\"node-1-2\",\"role\":\"node\",\"label\":\"38 类\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"15 domain → 38 类 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1-1\",\"role\":\"node\",\"label\":\"15 domain\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"node-1-2\",\"role\":\"node\",\"label\":\"38 类\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":2}",
           "params": {
             "detail": "15 domain → 38 类 · sidebar",
             "mount": "sidebar",
@@ -2530,13 +2686,21 @@
                 "id": "node-1-1",
                 "role": "node",
                 "label": "15 domain",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "node-1-2",
                 "role": "node",
                 "label": "38 类",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 2
@@ -2547,7 +2711,7 @@
           "name": "流程大纲",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"FlowClass 节点树 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1\",\"role\":\"node\",\"label\":\"FlowClass 节点树\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"FlowClass 节点树 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"node-1\",\"role\":\"node\",\"label\":\"FlowClass 节点树\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":1}",
           "params": {
             "detail": "FlowClass 节点树 · sidebar",
             "mount": "sidebar",
@@ -2556,7 +2720,11 @@
                 "id": "node-1",
                 "role": "node",
                 "label": "FlowClass 节点树",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 1
@@ -2588,7 +2756,7 @@
           "name": "全局命令面板",
           "rev": 4,
           "status": "active",
-          "description": "{\"detail\":\"搜索 Flow / Point / 设置 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索 Flow\",\"order\":1},{\"id\":\"result-group-2\",\"role\":\"result-group\",\"label\":\"Point\",\"order\":2},{\"id\":\"result-group-3\",\"role\":\"result-group\",\"label\":\"设置\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"搜索 Flow / Point / 设置 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索 Flow\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"result-group-2\",\"role\":\"result-group\",\"label\":\"Point\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}},{\"id\":\"result-group-3\",\"role\":\"result-group\",\"label\":\"设置\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":3}",
           "params": {
             "detail": "搜索 Flow / Point / 设置 · overlay",
             "mount": "overlay",
@@ -2597,19 +2765,31 @@
                 "id": "result-group-1",
                 "role": "result-group",
                 "label": "搜索 Flow",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "result-group-2",
                 "role": "result-group",
                 "label": "Point",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               },
               {
                 "id": "result-group-3",
                 "role": "result-group",
                 "label": "设置",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 3
@@ -2620,7 +2800,7 @@
           "name": "点实例面板",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"搜索并运行点实例 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索并运行点实例\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"搜索并运行点实例 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"result-group-1\",\"role\":\"result-group\",\"label\":\"搜索并运行点实例\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"point\"}}],\"slotCount\":1}",
           "params": {
             "detail": "搜索并运行点实例 · overlay",
             "mount": "overlay",
@@ -2629,7 +2809,11 @@
                 "id": "result-group-1",
                 "role": "result-group",
                 "label": "搜索并运行点实例",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "point"
+                }
               }
             ],
             "slotCount": 1
@@ -2661,7 +2845,7 @@
           "name": "线层编辑器",
           "rev": 6,
           "status": "active",
-          "description": "{\"detail\":\"FlowClass 图 / 槽位绑定 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"FlowClass 图\",\"order\":1},{\"id\":\"layer-2\",\"role\":\"layer\",\"label\":\"槽位绑定\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"FlowClass 图 / 槽位绑定 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"FlowClass 图\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"FlowClass 图\"}},{\"id\":\"layer-2\",\"role\":\"layer\",\"label\":\"槽位绑定\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"槽位绑定\"}}],\"slotCount\":2}",
           "params": {
             "detail": "FlowClass 图 / 槽位绑定 · main",
             "mount": "main",
@@ -2670,13 +2854,21 @@
                 "id": "layer-1",
                 "role": "layer",
                 "label": "FlowClass 图",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "FlowClass 图"
+                }
               },
               {
                 "id": "layer-2",
                 "role": "layer",
                 "label": "槽位绑定",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "static",
+                  "value": "槽位绑定"
+                }
               }
             ],
             "slotCount": 2
@@ -2687,7 +2879,7 @@
           "name": "Body 组合器",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"面 + 线 + 权限打包 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"面 + 线 + 权限打包\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"面 + 线 + 权限打包 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"layer-1\",\"role\":\"layer\",\"label\":\"面 + 线 + 权限打包\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"面 + 线 + 权限打包\"}}],\"slotCount\":1}",
           "params": {
             "detail": "面 + 线 + 权限打包 · main",
             "mount": "main",
@@ -2696,7 +2888,11 @@
                 "id": "layer-1",
                 "role": "layer",
                 "label": "面 + 线 + 权限打包",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "面 + 线 + 权限打包"
+                }
               }
             ],
             "slotCount": 1
@@ -2728,7 +2924,7 @@
           "name": "系统总览",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"运行数 / 成功率 / 成本 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"运行数\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"成功率\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"成本\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"运行数 / 成功率 / 成本 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"运行数\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"成功率\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"成本\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":3}",
           "params": {
             "detail": "运行数 / 成功率 / 成本 · main",
             "mount": "main",
@@ -2737,19 +2933,34 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "运行数",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "成功率",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "成本",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 3
@@ -2760,7 +2971,7 @@
           "name": "VPN 健康",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"VPN 状态 / 连接耗时 / 失败 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"VPN 状态\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"连接耗时\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"失败\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"VPN 状态 / 连接耗时 / 失败 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"VPN 状态\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"连接耗时\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"失败\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":3}",
           "params": {
             "detail": "VPN 状态 / 连接耗时 / 失败 · main",
             "mount": "main",
@@ -2769,19 +2980,34 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "VPN 状态",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "连接耗时",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "失败",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 3
@@ -2792,7 +3018,7 @@
           "name": "系统状态总览",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"CPU\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"GPU\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"内存\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"网速\",\"order\":4},{\"id\":\"metric-5\",\"role\":\"metric\",\"label\":\"磁盘\",\"order\":5},{\"id\":\"metric-6\",\"role\":\"metric\",\"label\":\"温度；实时卡片与历史曲线\",\"order\":6}],\"slotCount\":6}",
+          "description": "{\"detail\":\"CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"CPU\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"GPU\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"内存\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"网速\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-5\",\"role\":\"metric\",\"label\":\"磁盘\",\"order\":5,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"metric-6\",\"role\":\"metric\",\"label\":\"温度；实时卡片与历史曲线\",\"order\":6,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":6}",
           "params": {
             "detail": "CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main",
             "mount": "main",
@@ -2801,37 +3027,67 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "CPU",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "GPU",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "内存",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-4",
                 "role": "metric",
                 "label": "网速",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-5",
                 "role": "metric",
                 "label": "磁盘",
-                "order": 5
+                "order": 5,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-6",
                 "role": "metric",
                 "label": "温度；实时卡片与历史曲线",
-                "order": 6
+                "order": 6,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 6
@@ -2863,16 +3119,21 @@
           "name": "流程运行历史",
           "rev": 3,
           "status": "active",
-          "description": "{\"detail\":\"FlowRun + PointRun trace · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"timeline-1\",\"role\":\"timeline\",\"label\":\"FlowRun + PointRun trace\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"LineRun + PointRun trace · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"timeline-1\",\"role\":\"timeline\",\"label\":\"LineRun + PointRun trace\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":1}",
           "params": {
-            "detail": "FlowRun + PointRun trace · main",
+            "detail": "LineRun + PointRun trace · main",
             "mount": "main",
             "slots": [
               {
                 "id": "timeline-1",
                 "role": "timeline",
-                "label": "FlowRun + PointRun trace",
-                "order": 1
+                "label": "LineRun + PointRun trace",
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 1
@@ -2883,22 +3144,32 @@
           "name": "VPN 运行历史",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"GuardResult / 子 FlowRun · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"timeline-1\",\"role\":\"timeline\",\"label\":\"GuardResult\",\"order\":1},{\"id\":\"timeline-2\",\"role\":\"timeline\",\"label\":\"子 FlowRun\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"GuardResult / 子 LineRun · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"timeline-1\",\"role\":\"timeline\",\"label\":\"GuardResult\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"timeline-2\",\"role\":\"timeline\",\"label\":\"子 LineRun\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":2}",
           "params": {
-            "detail": "GuardResult / 子 FlowRun · main",
+            "detail": "GuardResult / 子 LineRun · main",
             "mount": "main",
             "slots": [
               {
                 "id": "timeline-1",
                 "role": "timeline",
                 "label": "GuardResult",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "timeline-2",
                 "role": "timeline",
-                "label": "子 FlowRun",
-                "order": 2
+                "label": "子 LineRun",
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 2
@@ -2930,7 +3201,7 @@
           "name": "流程版本 diff",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"FlowClass v1 vs v2 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"FlowClass v1 vs v2\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"FlowClass v1 vs v2 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"FlowClass v1 vs v2\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":1}",
           "params": {
             "detail": "FlowClass v1 vs v2 · main",
             "mount": "main",
@@ -2939,7 +3210,12 @@
                 "id": "diff-pane-1",
                 "role": "diff-pane",
                 "label": "FlowClass v1 vs v2",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 1
@@ -2950,7 +3226,7 @@
           "name": "实例 revision diff",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"绑定/参数变化 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"绑定\",\"order\":1},{\"id\":\"diff-pane-2\",\"role\":\"diff-pane\",\"label\":\"参数变化\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"绑定/参数变化 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"diff-pane-1\",\"role\":\"diff-pane\",\"label\":\"绑定\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"diff-pane-2\",\"role\":\"diff-pane\",\"label\":\"参数变化\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":2}",
           "params": {
             "detail": "绑定/参数变化 · main",
             "mount": "main",
@@ -2959,13 +3235,23 @@
                 "id": "diff-pane-1",
                 "role": "diff-pane",
                 "label": "绑定",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               },
               {
                 "id": "diff-pane-2",
                 "role": "diff-pane",
                 "label": "参数变化",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "line",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 2
@@ -2997,7 +3283,7 @@
           "name": "VPN 审批",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"打开 VPN / 我已手动打开 / 取消 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"打开 VPN\",\"order\":1},{\"id\":\"action-2\",\"role\":\"action\",\"label\":\"我已手动打开\",\"order\":2},{\"id\":\"action-3\",\"role\":\"action\",\"label\":\"取消\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"打开 VPN / 我已手动打开 / 取消 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"打开 VPN\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"打开 VPN\"}},{\"id\":\"action-2\",\"role\":\"action\",\"label\":\"我已手动打开\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"我已手动打开\"}},{\"id\":\"action-3\",\"role\":\"action\",\"label\":\"取消\",\"order\":3,\"source\":{\"kind\":\"static\",\"value\":\"取消\"}}],\"slotCount\":3}",
           "params": {
             "detail": "打开 VPN / 我已手动打开 / 取消 · modal",
             "mount": "modal",
@@ -3006,19 +3292,31 @@
                 "id": "action-1",
                 "role": "action",
                 "label": "打开 VPN",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "打开 VPN"
+                }
               },
               {
                 "id": "action-2",
                 "role": "action",
                 "label": "我已手动打开",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "static",
+                  "value": "我已手动打开"
+                }
               },
               {
                 "id": "action-3",
                 "role": "action",
                 "label": "取消",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "static",
+                  "value": "取消"
+                }
               }
             ],
             "slotCount": 3
@@ -3029,7 +3327,7 @@
           "name": "删除确认",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"危险操作确认 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"危险操作确认\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"危险操作确认 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"危险操作确认\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"危险操作确认\"}}],\"slotCount\":1}",
           "params": {
             "detail": "危险操作确认 · modal",
             "mount": "modal",
@@ -3038,7 +3336,11 @@
                 "id": "action-1",
                 "role": "action",
                 "label": "危险操作确认",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "危险操作确认"
+                }
               }
             ],
             "slotCount": 1
@@ -3049,7 +3351,7 @@
           "name": "部署审批",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"生产发布审批 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"生产发布审批\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"生产发布审批 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"生产发布审批\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"生产发布审批\"}}],\"slotCount\":1}",
           "params": {
             "detail": "生产发布审批 · modal",
             "mount": "modal",
@@ -3058,7 +3360,11 @@
                 "id": "action-1",
                 "role": "action",
                 "label": "生产发布审批",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "生产发布审批"
+                }
               }
             ],
             "slotCount": 1
@@ -3090,7 +3396,7 @@
           "name": "VPN 通知",
           "rev": 3,
           "status": "active",
-          "description": "{\"detail\":\"GuardResult → 下一步 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1-1\",\"role\":\"message\",\"label\":\"GuardResult\",\"order\":1},{\"id\":\"message-1-2\",\"role\":\"message\",\"label\":\"下一步\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"GuardResult → 下一步 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1-1\",\"role\":\"message\",\"label\":\"GuardResult\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}},{\"id\":\"message-1-2\",\"role\":\"message\",\"label\":\"下一步\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}}],\"slotCount\":2}",
           "params": {
             "detail": "GuardResult → 下一步 · toast",
             "mount": "toast",
@@ -3099,13 +3405,23 @@
                 "id": "message-1-1",
                 "role": "message",
                 "label": "GuardResult",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               },
               {
                 "id": "message-1-2",
                 "role": "message",
                 "label": "下一步",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 2
@@ -3116,7 +3432,7 @@
           "name": "运行通知",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"成功/失败/耗时 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"成功\",\"order\":1},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"失败\",\"order\":2},{\"id\":\"message-3\",\"role\":\"message\",\"label\":\"耗时\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"成功/失败/耗时 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"成功\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"失败\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}},{\"id\":\"message-3\",\"role\":\"message\",\"label\":\"耗时\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}}],\"slotCount\":3}",
           "params": {
             "detail": "成功/失败/耗时 · toast",
             "mount": "toast",
@@ -3125,19 +3441,34 @@
                 "id": "message-1",
                 "role": "message",
                 "label": "成功",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               },
               {
                 "id": "message-2",
                 "role": "message",
                 "label": "失败",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               },
               {
                 "id": "message-3",
                 "role": "message",
                 "label": "耗时",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 3
@@ -3148,7 +3479,7 @@
           "name": "下载通知",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"下载/校验结果 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"下载\",\"order\":1},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"校验结果\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"下载/校验结果 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"下载\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"校验结果\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}}],\"slotCount\":2}",
           "params": {
             "detail": "下载/校验结果 · tray",
             "mount": "tray",
@@ -3157,13 +3488,23 @@
                 "id": "message-1",
                 "role": "message",
                 "label": "下载",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               },
               {
                 "id": "message-2",
                 "role": "message",
                 "label": "校验结果",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 2
@@ -3174,7 +3515,7 @@
           "name": "系统阈值告警",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"CPU/GPU 温度、内存、磁盘超阈值提示 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"CPU\",\"order\":1},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"GPU 温度、内存、磁盘超阈值提示\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"CPU/GPU 温度、内存、磁盘超阈值提示 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"CPU\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"GPU 温度、内存、磁盘超阈值提示\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"field\",\"limit\":20}}],\"slotCount\":2}",
           "params": {
             "detail": "CPU/GPU 温度、内存、磁盘超阈值提示 · toast",
             "mount": "toast",
@@ -3183,13 +3524,23 @@
                 "id": "message-1",
                 "role": "message",
                 "label": "CPU",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               },
               {
                 "id": "message-2",
                 "role": "message",
                 "label": "GPU 温度、内存、磁盘超阈值提示",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "field",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 2
@@ -3221,7 +3572,7 @@
           "name": "快捷动作",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"收藏的 FlowInstance · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"收藏的 FlowInstance\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"收藏的 FlowInstance · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"收藏的 FlowInstance\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}}],\"slotCount\":1}",
           "params": {
             "detail": "收藏的 FlowInstance · tray",
             "mount": "tray",
@@ -3230,7 +3581,11 @@
                 "id": "menu-item-1",
                 "role": "menu-item",
                 "label": "收藏的 FlowInstance",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               }
             ],
             "slotCount": 1
@@ -3241,7 +3596,7 @@
           "name": "VPN 托盘菜单",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"打开 / 连接 / 状态 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"打开\",\"order\":1},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"连接\",\"order\":2},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"状态\",\"order\":3}],\"slotCount\":3}",
+          "description": "{\"detail\":\"打开 / 连接 / 状态 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"打开\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"连接\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"状态\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}}],\"slotCount\":3}",
           "params": {
             "detail": "打开 / 连接 / 状态 · tray",
             "mount": "tray",
@@ -3250,19 +3605,31 @@
                 "id": "menu-item-1",
                 "role": "menu-item",
                 "label": "打开",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               },
               {
                 "id": "menu-item-2",
                 "role": "menu-item",
                 "label": "连接",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               },
               {
                 "id": "menu-item-3",
                 "role": "menu-item",
                 "label": "状态",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               }
             ],
             "slotCount": 3
@@ -3273,7 +3640,7 @@
           "name": "系统状态托盘",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"CPU/GPU/内存/网速文本摘要 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"CPU\",\"order\":1},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"GPU\",\"order\":2},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"内存\",\"order\":3},{\"id\":\"menu-item-4\",\"role\":\"menu-item\",\"label\":\"网速文本摘要\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"CPU/GPU/内存/网速文本摘要 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"menu-item-1\",\"role\":\"menu-item\",\"label\":\"CPU\",\"order\":1,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-2\",\"role\":\"menu-item\",\"label\":\"GPU\",\"order\":2,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-3\",\"role\":\"menu-item\",\"label\":\"内存\",\"order\":3,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}},{\"id\":\"menu-item-4\",\"role\":\"menu-item\",\"label\":\"网速文本摘要\",\"order\":4,\"source\":{\"kind\":\"registry\",\"layer\":\"line\"}}],\"slotCount\":4}",
           "params": {
             "detail": "CPU/GPU/内存/网速文本摘要 · tray",
             "mount": "tray",
@@ -3282,25 +3649,41 @@
                 "id": "menu-item-1",
                 "role": "menu-item",
                 "label": "CPU",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               },
               {
                 "id": "menu-item-2",
                 "role": "menu-item",
                 "label": "GPU",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               },
               {
                 "id": "menu-item-3",
                 "role": "menu-item",
                 "label": "内存",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               },
               {
                 "id": "menu-item-4",
                 "role": "menu-item",
                 "label": "网速文本摘要",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "registry",
+                  "layer": "line"
+                }
               }
             ],
             "slotCount": 4
@@ -3332,7 +3715,7 @@
           "name": "翻译浮层",
           "rev": 2,
           "status": "active",
-          "description": "{\"detail\":\"截图翻译结果 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"截图翻译结果\",\"order\":1}],\"slotCount\":1}",
+          "description": "{\"detail\":\"截图翻译结果 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"截图翻译结果\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":1}",
           "params": {
             "detail": "截图翻译结果 · overlay",
             "mount": "overlay",
@@ -3341,7 +3724,12 @@
                 "id": "overlay-body-1",
                 "role": "overlay-body",
                 "label": "截图翻译结果",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 1
@@ -3352,7 +3740,7 @@
           "name": "VPN 状态浮层",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"连接状态/耗时 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"连接状态\",\"order\":1},{\"id\":\"overlay-body-2\",\"role\":\"overlay-body\",\"label\":\"耗时\",\"order\":2}],\"slotCount\":2}",
+          "description": "{\"detail\":\"连接状态/耗时 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"连接状态\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"overlay-body-2\",\"role\":\"overlay-body\",\"label\":\"耗时\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":2}",
           "params": {
             "detail": "连接状态/耗时 · overlay",
             "mount": "overlay",
@@ -3361,13 +3749,23 @@
                 "id": "overlay-body-1",
                 "role": "overlay-body",
                 "label": "连接状态",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "overlay-body-2",
                 "role": "overlay-body",
                 "label": "耗时",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 2
@@ -3378,7 +3776,7 @@
           "name": "系统状态浮层",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"CPU/GPU/内存/网速紧凑显示，可置顶 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"CPU\",\"order\":1},{\"id\":\"overlay-body-2\",\"role\":\"overlay-body\",\"label\":\"GPU\",\"order\":2},{\"id\":\"overlay-body-3\",\"role\":\"overlay-body\",\"label\":\"内存\",\"order\":3},{\"id\":\"overlay-body-4\",\"role\":\"overlay-body\",\"label\":\"网速紧凑显示，可置顶\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"CPU/GPU/内存/网速紧凑显示，可置顶 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"CPU\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"overlay-body-2\",\"role\":\"overlay-body\",\"label\":\"GPU\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"overlay-body-3\",\"role\":\"overlay-body\",\"label\":\"内存\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"overlay-body-4\",\"role\":\"overlay-body\",\"label\":\"网速紧凑显示，可置顶\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":4}",
           "params": {
             "detail": "CPU/GPU/内存/网速紧凑显示，可置顶 · overlay",
             "mount": "overlay",
@@ -3387,25 +3785,45 @@
                 "id": "overlay-body-1",
                 "role": "overlay-body",
                 "label": "CPU",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "overlay-body-2",
                 "role": "overlay-body",
                 "label": "GPU",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "overlay-body-3",
                 "role": "overlay-body",
                 "label": "内存",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "overlay-body-4",
                 "role": "overlay-body",
                 "label": "网速紧凑显示，可置顶",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 4
@@ -3437,7 +3855,7 @@
           "name": "CPU",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"使用率 / 温度 / 频率 / 每核负载 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"使用率\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"温度\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"频率\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"每核负载\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"使用率 / 温度 / 频率 / 每核负载 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"使用率\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"温度\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"频率\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"每核负载\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":4}",
           "params": {
             "detail": "使用率 / 温度 / 频率 / 每核负载 · main",
             "mount": "main",
@@ -3446,25 +3864,45 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "使用率",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "温度",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "频率",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-4",
                 "role": "metric",
                 "label": "每核负载",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 4
@@ -3475,7 +3913,7 @@
           "name": "GPU",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"使用率 / 温度 / VRAM / 风扇 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"使用率\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"温度\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"VRAM\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"风扇\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"使用率 / 温度 / VRAM / 风扇 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"使用率\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"温度\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"VRAM\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"风扇\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":4}",
           "params": {
             "detail": "使用率 / 温度 / VRAM / 风扇 · main",
             "mount": "main",
@@ -3484,25 +3922,45 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "使用率",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "温度",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "VRAM",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-4",
                 "role": "metric",
                 "label": "风扇",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 4
@@ -3513,7 +3971,7 @@
           "name": "内存",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"已用 / 总量 / 百分比 / Swap · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"已用\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"总量\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"百分比\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"Swap\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"已用 / 总量 / 百分比 / Swap · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"已用\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"总量\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"百分比\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"Swap\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":4}",
           "params": {
             "detail": "已用 / 总量 / 百分比 / Swap · main",
             "mount": "main",
@@ -3522,25 +3980,45 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "已用",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "总量",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "百分比",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-4",
                 "role": "metric",
                 "label": "Swap",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 4
@@ -3551,7 +4029,7 @@
           "name": "网速",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"下行 / 上行 / 总流量 / 延迟 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"下行\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"上行\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"总流量\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"延迟\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"下行 / 上行 / 总流量 / 延迟 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"下行\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"上行\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"总流量\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"延迟\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":4}",
           "params": {
             "detail": "下行 / 上行 / 总流量 / 延迟 · main",
             "mount": "main",
@@ -3560,25 +4038,45 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "下行",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "上行",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "总流量",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-4",
                 "role": "metric",
                 "label": "延迟",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 4
@@ -3589,7 +4087,7 @@
           "name": "磁盘",
           "rev": 1,
           "status": "active",
-          "description": "{\"detail\":\"已用 / 剩余 / 读写 / 温度 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"已用\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"剩余\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"读写\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"温度\",\"order\":4}],\"slotCount\":4}",
+          "description": "{\"detail\":\"已用 / 剩余 / 读写 / 温度 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"已用\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"剩余\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"读写\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"温度\",\"order\":4,\"source\":{\"kind\":\"run\",\"layer\":\"point\",\"limit\":20}}],\"slotCount\":4}",
           "params": {
             "detail": "已用 / 剩余 / 读写 / 温度 · main",
             "mount": "main",
@@ -3598,25 +4096,45 @@
                 "id": "metric-1",
                 "role": "metric",
                 "label": "已用",
-                "order": 1
+                "order": 1,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-2",
                 "role": "metric",
                 "label": "剩余",
-                "order": 2
+                "order": 2,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-3",
                 "role": "metric",
                 "label": "读写",
-                "order": 3
+                "order": 3,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               },
               {
                 "id": "metric-4",
                 "role": "metric",
                 "label": "温度",
-                "order": 4
+                "order": 4,
+                "source": {
+                  "kind": "run",
+                  "layer": "point",
+                  "limit": 20
+                }
               }
             ],
             "slotCount": 4

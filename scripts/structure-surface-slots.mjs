@@ -42,6 +42,63 @@ const ROLE_OF = {
   metric_card: 'metric'
 }
 
+/**
+ * 每种面层 kind 的槽位从哪取数（按生命周期分类，不按层分）。
+ *
+ * 决策树：
+ *   会随运行变化？     → run（再定 layer）
+ *   是目录声明？       → registry（整层 or 单类）
+ *   是本次输入？       → params
+ *   永不变化？         → static
+ *
+ * 这里的判定依据是这个面层类**语义上要展示什么**，不是凭空猜：
+ *   run_history / dashboard / diff  展示运行结果 → run
+ *   table / tree / inspector        展示目录结构 → registry
+ *   form                            展示可编辑配置 → params
+ *   wizard / dialog / canvas        展示固定文案或步骤 → static
+ */
+const SOURCE_OF_KIND = {
+  form: { kind: 'params' },
+  wizard: { kind: 'static' },
+  inspector: { kind: 'registry', layer: 'point' },
+  table: { kind: 'registry', layer: 'point' },
+  card_grid: { kind: 'registry', layer: 'body' },
+  tree: { kind: 'registry', layer: 'point' },
+  command_palette: { kind: 'registry' },
+  canvas: { kind: 'static' },
+  dashboard: { kind: 'run', layer: 'line' },
+  run_history: { kind: 'run', layer: 'line' },
+  diff: { kind: 'run', layer: 'line' },
+  dialog: { kind: 'static' },
+  notification: { kind: 'run', layer: 'field' },
+  tray_menu: { kind: 'registry', layer: 'line' },
+  hud: { kind: 'run', layer: 'point' },
+  metric_card: { kind: 'run', layer: 'point' }
+}
+
+/** 给一个槽位算出它的 source */
+function sourceOf(kind, slot) {
+  const base = SOURCE_OF_KIND[kind] ?? { kind: 'static' }
+  if (base.kind === 'params') {
+    // 字段名就是配置项名；没有真实 key 时用扁平化后的标签，语义上仍是「配置项」
+    return { kind: 'params', key: String(slot.label).trim().replace(/\s+/g, '_') }
+  }
+  if (base.kind === 'static') {
+    // 步骤/按钮的文案本来就是字面量，不是取来的
+    return { kind: 'static', value: String(slot.label) }
+  }
+  if (base.kind === 'registry' && base.layer) {
+    return { kind: 'registry', layer: base.layer }
+  }
+  if (base.kind === 'registry') {
+    return { kind: 'registry', layer: 'point' }
+  }
+  if (base.kind === 'run') {
+    return { kind: 'run', layer: base.layer, limit: 20 }
+  }
+  return { kind: 'static', value: String(slot.label) }
+}
+
 /** 从 `... · mount` 里取出挂载位并去掉它 */
 function splitMount(detail) {
   const parts = String(detail ?? '').split('·')
@@ -59,13 +116,14 @@ function slotsOf(kind, body) {
     const chain = segment.split('→').map((s) => s.trim()).filter(Boolean)
     if (chain.length > 1) {
       chain.forEach((label, stepIndex) => {
-        out.push({ id: `${role}-${index + 1}-${stepIndex + 1}`, role, label, order: out.length + 1 })
+        out.push({ id: `${role}-${index + 1}-${stepIndex + 1}`, role, label, order: out.length + 1, source: sourceOf(kind, { label }) })
       })
       return
     }
     out.push({ id: `${role}-${index + 1}`, role, label: segment, order: out.length + 1 })
   })
-  return out
+  // 每个槽位都要有数据来源 —— 没有 source 的槽位等于渲染层自己猜
+  return out.map((slot) => ({ ...slot, source: sourceOf(kind, slot) }))
 }
 
 const edits = []
@@ -81,7 +139,29 @@ for (const name of readdirSync(DIR)) {
   let changed = 0
   for (const instance of cls.instances ?? []) {
     const detail = instance.detail
-    if (typeof detail !== 'string' || detail.startsWith('{')) continue
+    if (typeof detail !== 'string') continue
+
+    // 幂等：已经结构化的只补 source，不重算槽位
+    if (detail.startsWith('{')) {
+      try {
+        const existing = JSON.parse(detail)
+        if (!Array.isArray(existing.slots)) continue
+        let touched = false
+        for (const slot of existing.slots) {
+          if (slot.source) continue
+          slot.source = sourceOf(kind, slot)
+          touched = true
+        }
+        if (touched) {
+          instance.detail = JSON.stringify(existing)
+          changed += 1
+        }
+        continue
+      } catch {
+        continue
+      }
+    }
+
     const { body, mount } = splitMount(detail)
     const slots = slotsOf(kind, body)
     instance.detail = JSON.stringify({

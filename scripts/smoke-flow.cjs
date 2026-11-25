@@ -1611,7 +1611,7 @@ async function main() {
   assert.strictEqual(pan.dataUsed.length, 2)
 
   const surfCtx = (classId, params) => ({ instance: { id: `${classId}.a@r1`, classId, name: 'a', rev: 1, status: 'active', description: '', params, createdAt: 0, updatedAt: 0 }, def: {}, pointClass: {}, params: {}, findInstance: () => undefined })
-  const surfWarnOut = surfRt.createSurfaceRunner(surfDeps)(surfCtx('surface.panel', { pages: [{ layer: 'surface', name: 'nope' }] }))
+  const surfWarnOut = await surfRt.createSurfaceRunner(surfDeps)(surfCtx('surface.panel', { pages: [{ layer: 'surface', name: 'nope' }] }))
   assert.strictEqual(surfWarnOut.status, 'warn')
   assert.match(surfWarnOut.output, /渲染 surface\.panel/)
   assert.strictEqual(surfWarnOut.evidence.kind, 'render', 'runSurface 的 kind 必须是 render')

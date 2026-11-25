@@ -77,8 +77,8 @@ export function explainPointRun(evidence: Record<string, unknown>): Explanation 
   }
 }
 
-/** explain.flow-run：逐步 trace */
-export function explainFlowRun(evidence: Record<string, unknown>): Explanation {
+/** explain.line-run：逐步 trace（mode 兼容旧的 flow） */
+export function explainLineRun(evidence: Record<string, unknown>): Explanation {
   const trace = Array.isArray(evidence.nodes) ? (evidence.nodes as Array<Record<string, unknown>>) : []
   if (!trace.length) {
     return { headline: '没有节点轨迹可解释', points: [], missing: ['nodes'] }
@@ -150,7 +150,7 @@ export const run: Capability = async (ctx) => {
 
   let result: Explanation
   if (mode.includes('suggestion')) result = explainSuggestion(evidence)
-  else if (mode.includes('flow')) result = explainFlowRun(evidence)
+  else if (mode.includes('line') || mode.includes('flow')) result = explainLineRun(evidence)
   else if (mode.includes('permission')) result = explainPermission(evidence)
   else result = explainPointRun(evidence)
 

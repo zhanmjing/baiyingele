@@ -1,4 +1,6 @@
 import type { InstanceRunner, RunOutcome } from './layerStore'
+import type { RenderedSlot, SlotSource, SlotStatus } from '../shared/slotSource'
+import { describeSlotSource, validateSlotSource } from '../shared/slotSource'
 
 /**
  * 面层执行器：渲染。
@@ -32,6 +34,8 @@ export interface SurfaceSlot {
   role: string
   label: string
   order?: number
+  /** 数据来源；没有就是没声明，按 missing 处理 */
+  source?: SlotSource
 }
 
 export interface SurfaceParamsLike {
@@ -47,7 +51,27 @@ export interface SurfaceParamsLike {
   states?: unknown
 }
 
+/** 取数结果。ready 之外都要带 reason —— 这是「没有」和「坏了」的分界。 */
+export interface SlotReadResult {
+  status: SlotStatus
+  value?: unknown
+  reason?: string
+}
+
+/**
+ * 读一个数据来源。
+ *
+ * 由主进程注入 —— 面层不该知道 store 长什么样。
+ * 这个函数**必须**把「没有」和「取失败」分开报：
+ *   该有的不存在 → missing
+ *   存在但没内容 → empty
+ *   读的过程出错 → error
+ */
+export type SlotReader = (source: SlotSource) => Promise<SlotReadResult>
+
 export interface SurfaceDeps {
+  /** 取数器；没注入时所有槽位都是 missing，且原因明确 */
+  read?: SlotReader
   /** 某层的某个类是否存在 */
   hasClass: (layer: string, name: string) => boolean
   /** 面层类 id → 该类的 params 声明（用来判断有没有声明区域） */
@@ -72,6 +96,8 @@ export interface RenderResult {
   mount: string | null
   /** 这个面声明的区域（实测多数是空数组） */
   regions: string[]
+  /** 原始槽位声明（含 source），供 resolveSlots 取数 */
+  slots: SurfaceSlot[]
   blocks: RenderBlock[]
   /** 这次渲染读了哪些数据源 */
   dataUsed: { kind: string; ref: string }[]
@@ -159,6 +185,7 @@ export function planRender(
     classId,
     instanceId,
     surfaceKind,
+    slots,
     mount:
       (typeof params.mount === 'string' && params.mount) ||
       parseMount(params.detail) ||
@@ -171,8 +198,48 @@ export function planRender(
   }
 }
 
+/**
+ * 把槽位声明解析成渲染结果。
+ *
+ * planRender 保持纯函数（只声明「要读什么」），这里才真的去读 ——
+ * 这样声明逻辑可以单测，读数据逻辑可以换假 reader 单测。
+ */
+export async function resolveSlots(
+  slots: SurfaceSlot[],
+  read: SlotReader | undefined
+): Promise<RenderedSlot[]> {
+  return Promise.all(
+    slots.map(async (slot): Promise<RenderedSlot> => {
+      const base = { slotId: slot.id, role: slot.role, label: slot.label }
+      const source = slot.source
+      if (!source) {
+        // 没有 source 就是没声明数据来源，不能默认当成空
+        return { ...base, status: 'missing', reason: '槽位没有声明 source' }
+      }
+      const invalid = validateSlotSource(source)
+      if (invalid) {
+        return { ...base, status: 'error', reason: `source 非法：${invalid}`, source }
+      }
+      if (!read) {
+        return { ...base, status: 'missing', reason: `没有注入取数器（${describeSlotSource(source)}）`, source }
+      }
+      try {
+        const result = await read(source)
+        return { ...base, ...result, source }
+      } catch (error) {
+        return {
+          ...base,
+          status: 'error',
+          reason: `取数失败：${error instanceof Error ? error.message : String(error)}`,
+          source
+        }
+      }
+    })
+  )
+}
+
 export function createSurfaceRunner(deps: SurfaceDeps): InstanceRunner {
-  return (ctx): RunOutcome => {
+  return async (ctx): Promise<RunOutcome> => {
     const startedAt = Date.now()
     const classId = ctx.instance.classId
     const result = planRender(classId, ctx.instance.id, ctx.instance.params as SurfaceParamsLike, deps)
@@ -187,14 +254,21 @@ export function createSurfaceRunner(deps: SurfaceDeps): InstanceRunner {
           : `模式 ${result.mount ?? '(未声明挂载)'} · ${result.blocks.length} 个占位块`
 
     const gapText = result.gaps.length ? ` · 缺口 ${result.gaps.length} 个：${result.gaps.slice(0, 3).map((g) => g.slot).join('、')}` : ''
+    // 四态必须分开计数，不能合并成一个「失败数」
+    const resolved = await resolveSlots(result.slots, deps.read)
+    const counts = { ready: 0, empty: 0, missing: 0, error: 0 }
+    for (const slot of resolved) counts[slot.status] += 1
+    const slotText = resolved.length
+      ? ` · 槽位 ready ${counts.ready}/empty ${counts.empty}/missing ${counts.missing}/error ${counts.error}`
+      : ''
 
     return {
       // 有缺口就不能报成功 —— 渲染不完整这件事必须让上层知道
       status: result.gaps.length ? 'warn' : 'ok',
-      output: `渲染 ${classId}：${head}${gapText}`,
+      output: `渲染 ${classId}：${head}${gapText}${slotText}`,
       value: JSON.stringify(result),
       elapsedMs,
-      evidence: { kind: 'render', ...result }
+      evidence: { kind: 'render', ...result, slots: resolved }
     }
   }
 }
