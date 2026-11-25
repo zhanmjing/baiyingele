@@ -2264,3 +2264,33 @@ test('point.open：一个路径交给 shell，不用手动指定 kind', () => {
   // 分类只用于提示，不用于分支
   assert.match(src, /kind === 'app' \? '应用'/, '分类只影响提示文案')
 })
+
+test('手势页面：身份键必须是绑定 id，不能是 pattern（方向串）', () => {
+  const src = readFileSync(join(process.cwd(), 'src/renderer/src/pages/SurfaceManagementPage.tsx'), 'utf8')
+  // pattern 只有方向串：右键↑ 与 中键↑、◑↑ 与 ◑▲↑ 的 pattern 完全相同。
+  // 拿它当唯一键会让不同手势互相覆盖 —— 界面上表现为「大量重复」。
+  assert.match(src, /key: string/, 'GestureBindingView 必须有 key')
+  assert.match(src, /key: record\.id/, 'key 取绑定 id（含按钮 + 修饰 + 作用域）')
+  assert.match(src, /label: formatGesture\(record\.gesture as never\)/, '要显示完整助记符 ◑←↓→▲')
+  // 允许的例外：localStorage 里的旧资源（resources.gestures）没有 key，只能按 pattern 兜底
+  const code = src.split('\n').filter((line) => !line.includes('resources.gestures') && !line.includes('current.gestures')).join('\n')
+  assert.ok(!/find\(\(item\) => item\.pattern === /.test(code), '选中/查找不能再按 pattern')
+  assert.ok(!/some\(\(item\) => item\.pattern === /.test(code), '重复判断不能再按 pattern（那会把不同手势误判成重复）')
+  assert.match(src, /<strong>\{item\.label\} · \{item\.name\}<\/strong>/, '列表要显示完整助记符')
+})
+
+test('手势记法：formatGesture 要包含按钮和修饰符', () => {
+  const n = load('shared/gestureNotation.js')
+  const cases = [
+    [{ button: 'right', dirs: '←↓→' }, '◑←↓→'],
+    [{ button: 'right', dirs: '←↓→', modifier: 'wheel-forward' }, '◑←↓→▲'],
+    [{ button: 'middle', dirs: '↑' }, '●↑'],
+    [{ button: 'right', dirs: '↑', modifier: 'left-down' }, '◑↑◐']
+  ]
+  const wrong = cases.filter(([triple, want]) => n.formatGesture(triple) !== want)
+  assert.deepStrictEqual(
+    wrong.map(([triple, want]) => `${JSON.stringify(triple)} → ${n.formatGesture(triple)}（期望 ${want}）`),
+    [],
+    '按钮和修饰符必须出现在助记符里，否则不同手势显示成一样'
+  )
+})

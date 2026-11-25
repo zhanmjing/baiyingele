@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { stringParams } from '../../../shared/layerTypes'
 import { refsToText, textToClassRefs, textToInstanceRefs } from '../../../shared/atomId'
+import { formatGesture } from '../../../shared/gestureNotation'
 import type { RenderedSlot } from '../../../shared/slotSource'
 import {
   ArrowUpRight,
@@ -113,6 +114,8 @@ interface TriggerRecord {
   id: string
   source: 'hotkey' | 'gesture'
   pattern: string
+  /** 三元组（按钮 + 方向串 + 修饰符）；pattern 只有方向串，不足以区分手势 */
+  gesture?: { button: string; dirs: string; modifier?: string }
   name?: string
   effect?: string
   targetKind: 'point' | 'line'
@@ -123,7 +126,19 @@ interface TriggerRecord {
   lastFiredAt: number | null
 }
 
-type GestureBindingView = GestureBinding & { id?: string }
+/**
+ * 手势绑定视图。
+ *
+ * key 用**绑定 id**（gesture:<button>:<dirs>:<modifier>@<scope>），
+ * 不要用 pattern —— pattern 只有方向串，右键 ↑ 和中键 ↑、◑↑ 和 ◑▲↑
+ * 的 pattern 完全相同，拿它当唯一键会让不同手势互相覆盖（表现为「大量重复」）。
+ */
+type GestureBindingView = GestureBinding & {
+  id?: string
+  key: string
+  /** 完整助记符：◑←↓→▲ */
+  label: string
+}
 
 interface GestureTarget {
   id: string
@@ -214,7 +229,7 @@ export function SurfaceManagementPage({
   const surfaceInstance = surfaceClass?.instances.find((item) => item.id === surfaceInstanceId) ?? null
   const panelClass = panelClasses.find((item) => item.id === panelId) ?? panelClasses[0]
   const panelInstance = panelClass?.instances.find((item) => item.label === panelInstanceLabel) ?? panelClass?.instances[0]
-  const gesture = gestureBindings.find((item) => item.pattern === gesturePattern) ?? gestureBindings[0]
+  const gesture = gestureBindings.find((item) => item.key === gesturePattern) ?? gestureBindings[0]
   const dockTab = dockTabs.find((item) => item.id === dockTabId) ?? dockTabs[0]
   const visibleTiles = dockTiles.filter((item) => item.tab === dockTab.id)
   const dockTile = visibleTiles.find((item) => item.id === dockTileId) ?? visibleTiles[0]
@@ -388,7 +403,7 @@ export function SurfaceManagementPage({
         state: item.state, data: item.data, actions: item.actions.join(', ')
       } : { label: '', content: refsToText(owner?.content), mode: owner?.modes[0] ?? 'right', width: '380', state: 'ready', data: '', actions: '' }
     } else if (kind === 'gesture') {
-      const item = mode === 'edit' ? gestureBindings.find((binding) => binding.pattern === id) : undefined
+      const item = mode === 'edit' ? gestureBindings.find((binding) => binding.key === id) : undefined
       form = item ? { pattern: item.pattern, name: item.name, kind: item.kind, target: item.target, effect: item.effect, desc: item.desc } : { pattern: '', name: '', kind: 'flow', target: '', effect: 'L1', desc: '' }
     } else if (kind === 'dock-tab') {
       const item = mode === 'edit' ? dockTabs.find((tab) => tab.id === id) : undefined
@@ -440,7 +455,7 @@ export function SurfaceManagementPage({
     } else if (resourceEditor.kind === 'gesture') {
       const pattern = value('pattern').toUpperCase()
       if (!pattern || !value('name')) { onToast('Gesture pattern 和名称必填'); return }
-      if (resourceEditor.mode === 'create' && gestureBindings.some((binding) => binding.pattern === pattern)) { onToast('Gesture pattern 已存在'); return }
+      if (resourceEditor.mode === 'create' && gestureBindings.some((binding) => binding.key === pattern)) { onToast('这个手势已经绑过了'); return }
       const item: GestureBinding = { pattern, name: value('name'), kind: value('kind') === 'point' ? 'point' : 'flow', target: value('target'), effect: value('effect') || 'L0', desc: value('desc') }
       setResources((current) => ({ ...current, gestures: resourceEditor.mode === 'edit' ? current.gestures.map((binding) => binding.pattern === resourceEditor.id ? item : binding) : [...current.gestures, item] }))
       setGesturePattern(pattern); setView('gestures')
@@ -485,8 +500,8 @@ export function SurfaceManagementPage({
     setPanelInstanceLabel(''); onToast('PanelInstance 已删除')
   }
   async function deleteGesture() {
-    if (!gesture || !window.confirm(`删除手势 ${gesture.pattern}？`)) return
-    const record = gestureBindings.find((item) => item.pattern === gesture.pattern)
+    if (!gesture || !window.confirm(`删除手势 ${gesture.label}？`)) return
+    const record = gestureBindings.find((item) => item.key === (gesture.key ?? gesture.pattern))
     if (record?.id && window.baiying?.removeTrigger) await window.baiying.removeTrigger(record.id)
     await reloadTriggers()
     setGesturePattern(''); onToast('GestureBinding 已删除')
@@ -528,7 +543,7 @@ export function SurfaceManagementPage({
   }
 
   function openGestureEditor(editPattern?: string, patternOverride?: string) {
-    const current = gestureBindings.find((item) => item.pattern === editPattern)
+    const current = gestureBindings.find((item) => item.key === editPattern)
     const target = current ? gestureTargets.find((item) => item.id === current.targetId) ?? gestureTargets.find((item) => item.atomRef === current.target) : undefined
     setGestureEditor({
       editPattern,
@@ -549,6 +564,8 @@ export function SurfaceManagementPage({
     )
     return {
       id: record.id,
+      key: record.id,
+      label: formatGesture(record.gesture as never) || record.pattern,
       pattern: record.pattern,
       name: record.name || record.pattern,
       kind: record.targetKind === 'line' ? 'flow' : 'point',
@@ -624,7 +641,8 @@ export function SurfaceManagementPage({
   /** 首次启动：把 localStorage 里的旧手势迁到主进程，之后就以主进程为准 */
   async function bootstrapGestures() {
     if (!window.baiying?.addTrigger) {
-      setGestureBindings(resources.gestures ?? [])
+      // localStorage 里的旧数据没有 key/label，用 pattern 兜底
+      setGestureBindings((resources.gestures ?? []).map((item) => ({ ...item, key: item.pattern, label: item.pattern })))
       return
     }
 
@@ -716,7 +734,7 @@ export function SurfaceManagementPage({
     const pattern = gestureEditor.pattern.trim().toUpperCase()
     if (!pattern || !gestureEditor.name.trim()) { onToast('pattern 和名称必填'); return }
     if (!target) { onToast('请选择点层或线层目标实例'); return }
-    if (gestureBindings.some((item) => item.pattern === pattern && item.pattern !== gestureEditor.editPattern)) {
+    if (gestureBindings.some((item) => item.key === pattern && item.key !== gestureEditor.editPattern)) {
       onToast('Gesture pattern 已存在')
       return
     }
@@ -724,7 +742,7 @@ export function SurfaceManagementPage({
 
     // 编辑时 pattern 或目标可能变，绑定 id 会跟着变：先删旧的
     if (gestureEditor.editPattern) {
-      const previous = gestureBindings.find((item) => item.pattern === gestureEditor.editPattern)
+      const previous = gestureBindings.find((item) => item.key === gestureEditor.editPattern)
       if (previous?.id) await window.baiying.removeTrigger(previous.id)
     }
 
@@ -820,8 +838,8 @@ export function SurfaceManagementPage({
           {view === 'gestures' && (
             <div className="surface-action-bar">
               <button className="btn primary" onClick={() => openGestureRecorder()}><Plus size={12} /> 新建手势</button>
-              <button className="btn ghost" onClick={() => gesture && openGestureEditor(gesture.pattern)} disabled={!gesture}><Pencil size={12} /> 编辑</button>
-              <button className="btn ghost" onClick={() => gesture && openGestureRecorder(gesture.pattern)} disabled={!gesture}>● 重录</button>
+              <button className="btn ghost" onClick={() => gesture && openGestureEditor(gesture.key)} disabled={!gesture}><Pencil size={12} /> 编辑</button>
+              <button className="btn ghost" onClick={() => gesture && openGestureRecorder(gesture.key)} disabled={!gesture}>● 重录</button>
               <button className="btn ghost" onClick={deleteGesture} disabled={!gesture}><X size={12} /> 删除</button>
               <button className="text-btn" onClick={resetReferenceData}>重置参考数据</button>
             </div>
@@ -993,8 +1011,8 @@ function PanelClassList({ classes, selectedId, onSelect }: { classes: PanelClass
   return <><div className="surface-pane-head"><span>PanelClass · 面板类</span><em>{classes.length}</em></div><div className="surface-list">{classes.map((item) => <button key={item.id} className={`surface-list-item ${selectedId === item.id ? 'active' : ''}`} onClick={() => onSelect(item)}><span className="surface-list-icon">{item.icon}</span><div><strong>{item.name}</strong><code>{item.id}</code></div><em>{item.instances.length}</em></button>)}</div></>
 }
 
-function GestureList({ bindings, selected, onSelect }: { bindings: GestureBinding[]; selected?: string; onSelect: (item: GestureBinding) => void }) {
-  return <><div className="surface-pane-head"><span>GestureBinding · 手势</span><em>{bindings.length}</em></div><div className="surface-list">{bindings.map((item) => <button key={item.pattern} className={`surface-list-item ${selected === item.pattern ? 'active' : ''}`} onClick={() => onSelect(item)}><span className="surface-list-icon gesture-icon">G</span><div><strong>{item.pattern} · {item.name}</strong><code>{item.target}</code></div><em>{item.effect}</em></button>)}</div></>
+function GestureList({ bindings, selected, onSelect }: { bindings: GestureBindingView[]; selected?: string; onSelect: (item: GestureBindingView) => void }) {
+  return <><div className="surface-pane-head"><span>GestureBinding · 手势</span><em>{bindings.length}</em></div><div className="surface-list">{bindings.map((item) => <button key={item.key} className={`surface-list-item ${selected === item.key ? 'active' : ''}`} onClick={() => onSelect(item)}><span className="surface-list-icon gesture-icon">G</span><div><strong>{item.label} · {item.name}</strong><code>{item.target}</code></div><em>{item.effect}</em></button>)}</div></>
 }
 
 function DockTabList({ tabs, tiles, selected, onSelect }: { tabs: DockTab[]; tiles: DockTile[]; selected?: string; onSelect: (id: string) => void }) {
@@ -1176,8 +1194,8 @@ function PanelInspector({ classItem, instance }: { classItem: PanelClass; instan
 }
 
 function GestureView({ gesture, bindings, target, targets, onOpenTarget, onSelectPattern, onToast }: {
-  gesture?: GestureBinding
-  bindings: GestureBinding[]
+  gesture?: GestureBindingView
+  bindings: GestureBindingView[]
   target?: GestureTarget
   targets: GestureTarget[]
   onOpenTarget: (target: GestureTarget) => void
@@ -1191,18 +1209,18 @@ function GestureView({ gesture, bindings, target, targets, onOpenTarget, onSelec
   const end = points[points.length - 1]
   return (
     <div className="gesture-view">
-      <div className="surface-hero"><span className="surface-hero-icon gesture">G</span><div><div className="panel-eyebrow">GESTUREBINDING · {target?.kind ?? (gesture.kind === 'point' ? 'point' : 'line')}</div><h2>{gesture.pattern} · {gesture.name}</h2><p>{gesture.desc}</p></div><div className="surface-hero-actions"><button className="btn ghost" onClick={() => onToast(`识别预览 · ${gesture.pattern} 匹配成功`)}>识别预览</button>{target && <button className="btn primary" onClick={() => onOpenTarget(target)}>打开目标 <ArrowUpRight size={11} /></button>}</div></div>
-      <div className="gesture-map-chain"><div className="gesture-map-node"><span>Gesture</span><strong>{gesture.pattern}</strong></div><i>→</i><div className={`gesture-map-node ${target?.kind ?? 'pending'}`}><span>Target Layer</span><strong>{target ? (target.kind === 'point' ? 'PointInstance' : 'LineInstance') : '未映射'}</strong></div><i>→</i><div className="gesture-map-node target"><span>AtomRef</span><strong>{target?.label ?? gesture.target}</strong></div><em className={target ? 'mapped' : 'placeholder'}>{target ? 'mapped' : 'placeholder'}</em></div>
+      <div className="surface-hero"><span className="surface-hero-icon gesture">G</span><div><div className="panel-eyebrow">GESTUREBINDING · {target?.kind ?? (gesture.kind === 'point' ? 'point' : 'line')}</div><h2>{gesture.label} · {gesture.name}</h2><p>{gesture.desc}</p></div><div className="surface-hero-actions"><button className="btn ghost" onClick={() => onToast(`识别预览 · ${gesture.label} 匹配成功`)}>识别预览</button>{target && <button className="btn primary" onClick={() => onOpenTarget(target)}>打开目标 <ArrowUpRight size={11} /></button>}</div></div>
+      <div className="gesture-map-chain"><div className="gesture-map-node"><span>Gesture</span><strong>{gesture.label}</strong></div><i>→</i><div className={`gesture-map-node ${target?.kind ?? 'pending'}`}><span>Target Layer</span><strong>{target ? (target.kind === 'point' ? 'PointInstance' : 'LineInstance') : '未映射'}</strong></div><i>→</i><div className="gesture-map-node target"><span>AtomRef</span><strong>{target?.label ?? gesture.target}</strong></div><em className={target ? 'mapped' : 'placeholder'}>{target ? 'mapped' : 'placeholder'}</em></div>
       <div className="gesture-stage">
         <div className="gesture-pad"><svg viewBox="0 0 400 280" preserveAspectRatio="none"><polyline points={polyline} fill="none" stroke="#22d3ee" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><circle cx={start[0]} cy={start[1]} r="5" fill="#22d3ee" /><circle cx={end[0]} cy={end[1]} r="5" fill="#fbbf24" /></svg><div className="gesture-pattern">{gesture.pattern}</div><span>Gesture Pad</span><em>fuzzy ≤1 segment</em></div>
-        <div className="gesture-presets">{bindings.map((item) => <button key={item.pattern} className={item.pattern === gesture.pattern ? 'active' : ''} onClick={() => onSelectPattern(item)}>{item.pattern}</button>)}</div>
+        <div className="gesture-presets">{bindings.map((item) => <button key={item.key} className={item.key === gesture.key ? 'active' : ''} onClick={() => onSelectPattern(item)}>{item.label}</button>)}</div>
         <div className="gesture-match"><span className={`line-kind-pill ${gesture.kind}`}>{gesture.kind}</span><strong>{gesture.name}</strong><code>{target?.atomRef ?? gesture.target}</code><em>{gesture.effect}</em></div>
       </div>
       <div className="gesture-binding-table">
         <div className="surface-table-head"><span>Pattern</span><span>Kind</span><span>Target / Mapping</span><span>Effect</span></div>
         {bindings.map((item) => {
           const itemTarget = targets.find((entry) => entry.id === item.targetId) ?? targets.find((entry) => entry.atomRef === item.target)
-          return <button key={item.pattern} className={`gesture-binding-row ${item.pattern === gesture.pattern ? 'active' : ''}`} onClick={() => onSelectPattern(item)}><strong>{item.pattern}</strong><span className={`line-kind-pill ${item.kind}`}>{item.kind}</span><code>{itemTarget ? `${itemTarget.label} · mapped` : `${item.target} · placeholder`}</code><em>{item.effect}</em></button>
+          return <button key={item.key} className={`gesture-binding-row ${item.key === gesture.key ? 'active' : ''}`} onClick={() => onSelectPattern(item)}><strong>{item.label}</strong><span className={`line-kind-pill ${item.kind}`}>{item.kind}</span><code>{itemTarget ? `${itemTarget.label} · mapped` : `${item.target} · placeholder`}</code><em>{item.effect}</em></button>
         })}
       </div>
     </div>
