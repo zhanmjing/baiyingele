@@ -574,3 +574,43 @@ test('新轨：清单与注册表一致，面层 17 个必须全部进清单', (
   const surfaceInManifest = catalogs.surface.filter((c) => manifest.has(c.id))
   assert.strictEqual(surfaceInManifest.length, catalogs.surface.length, '面层 17 个类必须全部进清单')
 })
+
+// ── 体层：每个体声明自己的必需角色 ──────────────────────────────
+test('body：29 个体都有实现单元，且各自声明了必需角色', () => {
+  const impls = load('main/classes/index.js').CLASS_IMPLS
+  const bodyIds = catalogs.body.map((c) => c.id).sort()
+  const missing = bodyIds.filter((id) => !impls[id])
+  assert.deepStrictEqual(missing, [], `这些体没有实现单元：${missing.join(',')}`)
+
+  for (const id of bodyIds) {
+    const mod = load(`main/classes/body/${id.split('.')[1]}.js`)
+    assert.ok(Array.isArray(mod.requires) && mod.requires.length > 0, `${id} 没声明 requires`)
+    for (const req of mod.requires) {
+      assert.ok(['ui', 'flow', 'capability', 'intel'].includes(req.role), `${id} 的角色非法：${req.role}`)
+      assert.ok(req.reason.length >= 8, `${id} 的 ${req.role} 没写清为什么需要`)
+    }
+  }
+
+  assert.strictEqual(load('main/classes/body/screenshot_translate.js').requires.length, 4, '截图翻译要四种角色')
+  assert.strictEqual(load('main/classes/body/file_preview.js').requires.length, 2)
+})
+
+test('body：零件齐但角色缺，仍然必须报不齐备', () => {
+  const { assessComposition } = load('main/bodyRuntime.js')
+  const deps = { profiles: {}, hasClass: () => true, implementedClassIds: new Set(['point.ocr_read', 'surface.form']) }
+  const result = assessComposition(
+    { composition: [{ class: { layer: 'point', name: 'ocr_read' } }, { class: { layer: 'surface', name: 'form' } }] },
+    deps,
+    [
+      { role: 'ui', reason: '需要界面承载' },
+      { role: 'capability', reason: '需要真实能力' },
+      { role: 'intel', reason: '需要判断理解' }
+    ]
+  )
+  assert.strictEqual(result.readiness.total, 5, '2 个零件 + 3 个角色 = 5 项检查')
+  assert.strictEqual(result.readiness.satisfied, 4)
+  const missingRole = result.readiness.missing.find((m) => m.reason === 'missing-role')
+  assert.ok(missingRole, '缺角色必须报 missing-role')
+  assert.strictEqual(missingRole.id, 'role:intel')
+  assert.strictEqual(result.assembly, undefined, '角色缺了就不能给装配方案')
+})

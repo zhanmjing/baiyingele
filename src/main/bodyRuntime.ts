@@ -32,6 +32,37 @@ export interface BodyProfileLike {
   manifest?: { id?: string; version?: string }
 }
 
+export interface BodyClassInput {
+  profile: BodyProfileLike
+  deps: BodyDeps
+  /** 这个体要求的角色清单（由各体自己声明） */
+  requires?: BodyRequirement[]
+}
+
+/**
+ * 一个体对「角色」的要求。
+ *
+ * 装配检查原本只查「零件存在且有实现」，但那只回答了一半：
+ * 一个 OCR 体就算零件齐了，如果里面没有任何识别能力，它照样做不了事。
+ *
+ *   ui         面层（界面承载）
+ *   flow       线层（编排）
+ *   capability 点层（能真干活的原子能力）
+ *   intel      场层（判断/理解）
+ */
+export interface BodyRequirement {
+  role: 'ui' | 'flow' | 'capability' | 'intel'
+  /** 这个体为什么需要这个角色 —— 不能省 */
+  reason: string
+}
+
+const ROLE_LAYER: Record<BodyRequirement['role'], string> = {
+  ui: 'surface',
+  flow: 'line',
+  capability: 'point',
+  intel: 'field'
+}
+
 export interface BodyDeps {
   profiles: Record<string, BodyProfileLike>
   /** 某层某类在目录里是否存在 */
@@ -45,7 +76,7 @@ export interface MissingPart {
   layer: string
   role: string
   /** 为什么缺：目录里没有这个类，还是有类但没实现 */
-  reason: 'no-class' | 'no-impl'
+  reason: 'no-class' | 'no-impl' | 'missing-role'
 }
 
 export interface AssembleResult {
@@ -67,7 +98,20 @@ function partIdOf(part: BodyCompositionPart): { id: string; layer: string } | nu
   return { id: `${layer}.${name}`, layer }
 }
 
-export function assessComposition(profile: BodyProfileLike, deps: BodyDeps): AssembleResult {
+/**
+ * 装配检查（含角色齐备）。
+ *
+ * 两段分开：
+ *   1. 零件检查 —— 每个 composition 项存在且有实现
+ *   2. 角色检查 —— 声明的必需角色（ui/flow/capability/intel）至少有一件
+ *
+ * 零件齐但角色缺（例如 OCR 体里没有任何识别能力）同样做不了事，必须报出来。
+ */
+export function assessComposition(
+  profile: BodyProfileLike,
+  deps: BodyDeps,
+  requires: BodyRequirement[] = []
+): AssembleResult {
   const parts = profile.composition ?? []
   const missing: MissingPart[] = []
   const assembly = { surfaces: [] as string[], lines: [] as string[], points: [] as string[], fields: [] as string[] }
@@ -94,8 +138,29 @@ export function assessComposition(profile: BodyProfileLike, deps: BodyDeps): Ass
     else if (layer === 'field') assembly.fields.push(id)
   }
 
+  // 角色检查：声明的必需角色必须至少有一件对应层的零件。
+  // 零件齐但角色缺（例如 OCR 体里没有任何识别能力）同样做不了事。
+  const filledRoles = new Set<string>()
+  for (const part of parts) {
+    const parsed = partIdOf(part)
+    if (!parsed) continue
+    for (const [role, layer] of Object.entries(ROLE_LAYER)) {
+      if (parsed.layer === layer) filledRoles.add(role)
+    }
+  }
+  for (const requirement of requires) {
+    if (filledRoles.has(requirement.role)) continue
+    missing.push({
+      id: `role:${requirement.role}`,
+      layer: ROLE_LAYER[requirement.role],
+      role: requirement.reason,
+      reason: 'missing-role'
+    })
+  }
+
+  const totalChecks = parts.length + requires.length
   return {
-    readiness: { total: parts.length, satisfied: parts.length - missing.length, missing },
+    readiness: { total: totalChecks, satisfied: totalChecks - missing.length, missing },
     // 齐备才给装配结果：缺零件时的「装配方案」是假方案
     ...(missing.length === 0 ? { assembly } : {}),
     blockedBy: missing.map((item) => `req.${item.id}`)
