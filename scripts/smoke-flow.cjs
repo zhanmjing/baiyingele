@@ -940,15 +940,15 @@ async function main() {
 
   const gestBinding = triggerService.add({
     source: 'gesture',
-    pattern: 'ldr',
+    pattern: '←↓→',
     targetKind: 'line',
     targetId: LINE_TARGET,
-    note: 'LDR 触发流程',
+    note: '←↓→ 触发流程',
     name: '打开 GitHub',
     effect: 'L2'
   })
   assert.strictEqual(gestBinding.ok, true, `手势绑定应成功: ${gestBinding.ok ? '' : gestBinding.message}`)
-  assert.strictEqual(gestBinding.binding.pattern, 'LDR', '手势模式应大写')
+  assert.strictEqual(gestBinding.binding.pattern, '←↓→', '手势模式应是箭头串')
   assert.strictEqual(gestBinding.binding.name, '打开 GitHub', '展示名应持久化')
   assert.strictEqual(gestBinding.binding.effect, 'L2', '副作用等级应持久化')
 
@@ -963,13 +963,13 @@ async function main() {
   assert.strictEqual(hotFired[0].source, 'hotkey')
 
   const lnRunsBefore = lnForTrigger.runs(100).length
-  const gestFired = await triggerService.dispatchGestureDirections('LDR')
+  const gestFired = await triggerService.dispatchGestureDirections('←↓→')
   assert.strictEqual(gestFired[0].status, 'ok')
   assert.strictEqual(lnForTrigger.runs(100).length, lnRunsBefore + 1, '手势目标必须真的跑了')
   assert.strictEqual(gestFired[0].source, 'gesture')
   assert.ok(gestFired[0].score >= 0.75, '手势命中应带置信度')
 
-  const fuzzy = await triggerService.dispatchGestureDirections('LDDR')
+  const fuzzy = await triggerService.dispatchGestureDirections('←↓↓→')
   assert.strictEqual(fuzzy[0].status, 'ok', `模糊匹配应命中: ${fuzzy[0].output}`)
   assert.ok(fuzzy[0].score < 1, '模糊命中置信度应小于 1')
 
@@ -981,7 +981,7 @@ async function main() {
 
   const viaTrace = await triggerService.dispatchGesturePoints(ldrTrace)
   assert.strictEqual(viaTrace.valid, true)
-  assert.strictEqual(viaTrace.directions, 'LDR', `轨迹应识别为 LDR，得到 ${viaTrace.directions}`)
+  assert.strictEqual(viaTrace.directions, '←↓→', `轨迹应识别为 ←↓→，得到 ${viaTrace.directions}`)
   assert.strictEqual(viaTrace.records[0].status, 'ok')
 
   const badTrace = await triggerService.dispatchGesturePoints([{ x: 0, y: 0 }])
@@ -1015,16 +1015,16 @@ async function main() {
   console.log(`  种子手势 ${surfaceSeed.gestures.length} 个：可执行 ${seedLive} · 悬空但有需求记录 ${seedDangling}`)
 
   // 手势去重：一个 pattern 只能有一个目标，改绑即覆盖
-  assert.strictEqual(triggerService.add({ source: 'gesture', pattern: 'LDR', targetKind: 'point', targetId: TRIGGER_TARGET, name: '改绑' }).ok, true)
-  const ldrList = triggerService.list().filter((item) => item.source === 'gesture' && item.pattern === 'LDR')
+  assert.strictEqual(triggerService.add({ source: 'gesture', pattern: '←↓→', targetKind: 'point', targetId: TRIGGER_TARGET, name: '改绑' }).ok, true)
+  const ldrList = triggerService.list().filter((item) => item.source === 'gesture' && item.pattern === '←↓→')
   assert.strictEqual(ldrList.length, 1, '同 pattern 只能有一条')
   assert.strictEqual(ldrList[0].targetId, TRIGGER_TARGET, '应覆盖成新目标')
   assert.strictEqual(ldrList[0].name, '改绑')
   // 绑定 id 现在是三元组（v3）：旧版是 'gesture:LDR'，扁平方向串会让
   // 「右键+LDR」和「右键+滚轮前+LDR」共用一个 id。加断言防止回退。
-  assert.strictEqual(ldrList[0].id, 'gesture:right:LDR')
+  assert.strictEqual(ldrList[0].id, 'gesture:right:←↓→')
   assert.strictEqual(ldrList[0].gesture.button, 'right', '三元组要带上按钮')
-  assert.strictEqual(ldrList[0].gesture.dirs, 'LDR', '三元组要带方向串')
+  assert.strictEqual(ldrList[0].gesture.dirs, '←↓→', '三元组要带方向串')
 
   assert.strictEqual(triggerService.remove(hotBinding.binding.id), true)
   assert.strictEqual(triggerService.remove(gestBinding.binding.id), true)
@@ -1050,12 +1050,13 @@ async function main() {
   }
 
   // 与 surfaceData.gesturePaths 一致
+  // 键是期望识别出的箭头串（箭头记法与 WGestures 一致，字母记法已退役）
   const PATHS = {
-    LDR: [[320, 60], [70, 60], [70, 160], [320, 160]],
-    UD: [[190, 220], [190, 55], [215, 220]],
-    RL: [[65, 150], [330, 150], [65, 150]],
-    DR: [[65, 65], [65, 225], [330, 225]],
-    DLU: [[330, 60], [330, 225], [70, 225], [70, 60]]
+    '←↓→': [[320, 60], [70, 60], [70, 160], [320, 160]],
+    '↑↓': [[190, 220], [190, 55], [215, 220]],
+    '→←': [[65, 150], [330, 150], [65, 150]],
+    '↓→': [[65, 65], [65, 225], [330, 225]],
+    '↓←↑': [[330, 60], [330, 225], [70, 225], [70, 60]]
   }
 
   for (const [name, control] of Object.entries(PATHS)) {
@@ -1083,17 +1084,17 @@ async function main() {
   // 无效输入
   assert.strictEqual(gesture.recognize([{ x: 0, y: 0 }]).reason, 'too-few-points')
   assert.strictEqual(gesture.recognize([{ x: 0, y: 0 }, { x: 5, y: 0 }]).reason, 'too-short', '太短应拒绝')
-  const fast = densify(PATHS.LDR).map((p, i) => ({ ...p, t: 1000 + Math.floor(i / 10) }))
+  const fast = densify(PATHS['←↓→']).map((p, i) => ({ ...p, t: 1000 + Math.floor(i / 10) }))
   assert.strictEqual(gesture.recognize(fast).reason, 'too-fast', '太快应拒绝')
-  const slow = densify(PATHS.LDR).map((p, i) => ({ ...p, t: 1000 + i * 100 }))
+  const slow = densify(PATHS['←↓→']).map((p, i) => ({ ...p, t: 1000 + i * 100 }))
   assert.strictEqual(gesture.recognize(slow).reason, 'too-slow', '太慢应拒绝')
 
   // 模糊匹配：多画一段仍能匹配上，并给出置信度
-  assert.ok(gesture.scorePattern('LDDR', 'LDR') >= 0.75, '多一段应仍在阈值内')
-  const bestMatch = gesture.matchPattern('LDDR', ['UD', 'LDR', 'RL'])
-  assert.strictEqual(bestMatch.pattern, 'LDR', '应挑最像的')
+  assert.ok(gesture.scorePattern('←↓↓→', '←↓→') >= 0.75, '多一段应仍在阈值内')
+  const bestMatch = gesture.matchPattern('←↓↓→', ['↑↓', '←↓→', '←→'])
+  assert.strictEqual(bestMatch.pattern, '←↓→', '应挑最像的')
   assert.ok(bestMatch.score > 0.7 && bestMatch.score < 1, '置信度应为中间值')
-  assert.strictEqual(gesture.matchPattern('RLRL', ['UD', 'LDR'], 0.9), null, '全不匹配应返回 null')
+  assert.strictEqual(gesture.matchPattern('←→←→', ['↑↓', '←↓→'], 0.9), null, '全不匹配应返回 null')
   console.log('✓ 手势识别：5 个轨迹样例 / 抖动 / 0.5x-2x 缩放 / 4 种无效输入 / 模糊匹配 都正确')
 
   // ── 7n. win.key.send：组合解析 / 事件构造 / 真实发送 ──────────

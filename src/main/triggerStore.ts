@@ -5,6 +5,7 @@
  * 这和 surface 层的 GestureBinding 是同构的（pattern → target），
  * 区别是这里的 pattern 是键盘组合，且由主进程在钩子命中时直接派发。
  */
+import { parseGesture } from '../shared/gestureNotation'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 
@@ -81,8 +82,11 @@ interface TriggerState {
   bindings: TriggerBinding[]
 }
 
-/** 方向串的合法字符（8 方向两字母，单方向一字母） */
-export const DIRS_PATTERN = /^(U|D|L|R|UR|DR|DL|UL)*$/
+/**
+ * 方向串的合法字符 —— 箭头记法，与 WGestures 一致。
+ * 字母记法有歧义：'UL' 既是「一段斜向左上」也是「先上后左」。
+ */
+export const DIRS_PATTERN = /^(↑|↗|→|↘|↓|↙|←|↖)*$/
 
 /**
  * 手势的身份键 —— 三元组是唯一身份。
@@ -115,15 +119,24 @@ export function formatGestureKey(triple: GestureTriple): string {
 export function parseGestureKey(input: string): GestureTriple | null {
   const text = String(input ?? '').trim()
   if (!text) return null
+  // 也接受 WGestures 记法（◑←↓→ / ◑↑↓▲），顺手归一化
+  if (/[◑●◐▲▼]/.test(text)) {
+    const parsed = parseGesture(text)
+    if (!parsed) return null
+    return parsed.modifier
+      ? { button: parsed.button as GestureTriggerButton, dirs: parsed.dirs, modifier: parsed.modifier as GestureModifier }
+      : { button: parsed.button as GestureTriggerButton, dirs: parsed.dirs }
+  }
+
   const parts = text.split(':')
   if (parts.length === 1) {
-    const dirs = parts[0].toUpperCase()
+    const dirs = parts[0]
     if (!dirs || !DIRS_PATTERN.test(dirs)) return null
     return { button: 'right', dirs }
   }
   const button = parts[0].toLowerCase()
   if (!['left', 'right', 'middle', 'x1', 'x2'].includes(button)) return null
-  const dirs = (parts[1] ?? '').toUpperCase()
+  const dirs = parts[1] ?? ''
   if (!DIRS_PATTERN.test(dirs)) return null
   const modifier = parts[2] || undefined
   const known = ['wheel-forward', 'wheel-backward', 'middle-down', 'left-down', 'right-down', 'x1', 'x2']

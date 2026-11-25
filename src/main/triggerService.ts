@@ -57,7 +57,8 @@ export interface TriggerServiceDeps {
 
 const MAX_FIRINGS = 50
 const GESTURE_THRESHOLD = 0.75
-const GESTURE_PATTERN = /^(U|D|L|R|UR|DR|DL|UL)+$/
+// 箭头记法（与 WGestures 一致）。字母记法 'UL' 有歧义，已退役。
+const GESTURE_PATTERN = /^(↑|↗|→|↘|↓|↙|←|↖)+$/
 
 export class TriggerService {
   private readonly firings: FiringRecord[] = []
@@ -110,7 +111,8 @@ export class TriggerService {
       if (!parsed) return { ok: false, message: `组合键无法解析：${input.pattern}` }
       pattern = parsed.label
     } else {
-      pattern = String(input.pattern ?? '').toUpperCase().replace(/\s+/g, '')
+      // 箭头没有大小写；这里只去空白，三元组解析在下面统一处理
+      pattern = String(input.pattern ?? '').replace(/\s+/g, '')
       if (!pattern || !GESTURE_PATTERN.test(pattern)) {
         return { ok: false, message: `手势模式不合法：${input.pattern}（应为方向串，如 LDR / UD / DLU）` }
       }
@@ -202,10 +204,11 @@ export class TriggerService {
     const candidates = this.deps.store
       .list()
       .filter((binding) => binding.enabled && binding.source === 'gesture')
-    const best = matchPattern(directions.toUpperCase(), candidates.map((binding) => binding.pattern), GESTURE_THRESHOLD)
-    if (!best) return this.execute([], { source: 'gesture', pattern: directions.toUpperCase() })
+    const normalized = String(directions ?? '').replace(/\s+/g, '')
+    const best = matchPattern(normalized, candidates.map((binding) => binding.pattern), GESTURE_THRESHOLD)
+    if (!best) return this.execute([], { source: 'gesture', pattern: normalized })
     const matched = candidates.filter((binding) => binding.pattern === best.pattern)
-    return this.execute(matched, { source: 'gesture', pattern: best.pattern, directions: directions.toUpperCase(), score: best.score })
+    return this.execute(matched, { source: 'gesture', pattern: best.pattern, directions: normalized, score: best.score })
   }
 
   private async execute(

@@ -1,3 +1,5 @@
+import { directionsToArrows, type Direction } from './gestureNotation'
+
 /**
  * 手势识别（纯函数，渲染层与主进程共用）。
  *
@@ -26,6 +28,7 @@ export type GestureInvalidReason =
   | 'suppressed-as-drag'
 
 export interface GestureResult {
+  /** 方向串，箭头记法（与 WGestures 一致）：'←↓→' */
   directions: string
   valid: boolean
   reason?: GestureInvalidReason
@@ -189,7 +192,8 @@ export function recognize(points: GesturePoint[], options: RecognizerOptions = {
   }
 
   const sequence = toDirectionSequence(points, config)
-  const directions = sequence.join('')
+  // 输出转箭头记法 —— 存储和比较都用它
+  const directions = directionsToArrows(sequence as Direction[])
   if (!directions) return { directions: '', valid: false, reason: 'no-direction', length, durationMs }
 
   // 拖拽抑制：单向 + 长距离 = 大概率在拖东西，不是画手势
