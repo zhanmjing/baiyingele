@@ -162,6 +162,12 @@ export function buttonName(raw: unknown): GestureButton | null {
 export interface SamplingHandlers {
   onSample: (result: SampleResult) => void
   onWheel?: (event: 'wheel-forward' | 'wheel-backward') => void
+  /**
+   * 采样进行中收到的滚轮（对应 WGestures 的 PathTrackerOnPathModifier）。
+   * 抬手时如果这手势是「允许修饰符执行」的，它必然已在滚轮那刻执行过，
+   * 抬手只调 GestureEnded() 不再执行。所以必须单独上报。
+   */
+  onWheelDuringSampling?: (event: 'wheel-forward' | 'wheel-backward') => void
 }
 
 export interface SamplingControl {
@@ -247,9 +253,14 @@ export function startSampling(
   }
 
   const onWheelHandler = (event: any) => {
-    if (state) return
     const wheel = onWheel(event)
-    if (wheel && handlers.onWheel) handlers.onWheel(wheel)
+    if (!wheel) return
+    // 采样中 → 会话路径（对应 PathTrackerOnPathModifier）
+    if (state) {
+      if (handlers.onWheelDuringSampling) handlers.onWheelDuringSampling(wheel)
+      return
+    }
+    if (handlers.onWheel) handlers.onWheel(wheel)
   }
 
   hook.on('mousedown', onDownHandler)

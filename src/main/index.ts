@@ -202,6 +202,10 @@ app.whenReady().then(() => {
     const start = () =>
       samplers.startSampling({
         onSample: (sample) => {
+          // 抬手先结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded）。
+          // 原码注释：「如果是一个允许修饰符执行的手势，显然它必然已经被执行过了，
+          // 所以不执行而直接结束」——抬手不再派发。
+          if (triggerService.endSessionOnPathEnd()) return
           if (sample.reason) return
           void triggerService
             .dispatchGesturePoints(sample.points)
@@ -209,6 +213,10 @@ app.whenReady().then(() => {
         },
         onWheel: (event) => {
           triggerService.feedSessionEvent(event)
+        },
+        // 采样中滚轮：会话优先，没有会话时如实返回 needs-directions
+        onWheelDuringSampling: (event) => {
+          triggerService.feedWheelDuringSampling(event)
         }
       })
 

@@ -1647,3 +1647,36 @@ test('会话：滚轮 100ms 节流（照 WGestures HandleModifier）', () => {
   assert.strictEqual(host.dispatch('middle-down'), 'delivered', '中键连续两次都送')
   assert.deepStrictEqual(got, ['wheel-forward', 'wheel-forward', 'middle-down', 'middle-down'])
 })
+
+test('采样：采样中滚轮走 onWheelDuringSampling，采样外走 onWheel', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/classes/point/gesture_sample.ts'), 'utf8')
+  assert.match(source, /onWheelDuringSampling/, '必须有采样中滚轮回调')
+  assert.match(source, /if \(state\) \{[\s\S]{0,160}onWheelDuringSampling/, '采样中优先走会话路径')
+  assert.match(source, /if \(handlers\.onWheel\) handlers\.onWheel\(wheel\)/, '采样外走普通滚轮')
+})
+
+test('主进程：抬手先结束会话再派发，采样中滚轮走会话路径', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(source, /if \(triggerService\.endSessionOnPathEnd\(\)\) return/, '抬手已有会话要直接结束不再派发')
+  assert.match(source, /onWheelDuringSampling:/, '采样中滚轮要接线')
+  assert.match(source, /feedWheelDuringSampling/, '要调用服务方法')
+})
+
+test('派发服务：抬手结束会话，采样中滚轮无会话时如实报 needs-directions', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-path-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const fake = { instance: () => ({ id: 'x' }), run: async () => ({ status: 'ok', output: 'ok' }) }
+  const service = new TriggerService({ store, pointStore: () => fake, lineStore: () => fake, onFired: () => {} })
+
+  assert.strictEqual(service.endSessionOnPathEnd(), false, '没会话时抬手什么都不做')
+  assert.strictEqual(service.feedWheelDuringSampling('wheel-forward'), 'needs-directions', '没会话时如实报，不假装成功')
+
+  service.add({ source: 'gesture', pattern: '↓→', targetKind: 'point', targetId: 'point.audio_volume.vol_up@r1', needsSession: true })
+  await service.dispatchGestureDirections('↓→')
+  assert.ok(service.activeSession(), '会话应该开着')
+  assert.strictEqual(service.endSessionOnPathEnd(), true, '抬手要能结束会话')
+  assert.strictEqual(service.activeSession(), null)
+  assert.strictEqual(service.endSessionOnPathEnd(), false, '再抬手就没会话了')
+})

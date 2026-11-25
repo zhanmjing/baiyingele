@@ -258,6 +258,25 @@ export class TriggerService {
     return this.sessionHost.dispatch(event)
   }
 
+  /**
+   * 采样进行中收到滚轮（对应 WGestures 的 PathTrackerOnPathModifier）。
+   * 已有会话 → 直接送（ModifierTriggered）。
+   * 没有会话 → 这是第一次滚轮，本该在这里「识别 + 执行 + 开会话」；
+   *   目前采样中还不带方向串，只能如实返回 needs-directions。
+   */
+  feedWheelDuringSampling(event: Parameters<typeof this.sessionHost.dispatch>[0]) {
+    const result = this.sessionHost.dispatch(event)
+    if (result !== 'no-session') return result
+    return 'needs-directions' as const
+  }
+
+  /** 抬手：结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded()） */
+  endSessionOnPathEnd() {
+    if (!this.sessionHost.active()) return false
+    this.sessionHost.end('path-ended')
+    return true
+  }
+
   /** 直接按方向串派发（跳过轨迹识别，便于测试） */
   async dispatchGestureDirections(directions: string): Promise<FiringRecord[]> {
     const candidates = this.deps.store
