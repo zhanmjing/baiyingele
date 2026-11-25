@@ -180,19 +180,25 @@ app.whenReady().then(() => {
     (await runCapability(context)) ?? notImplemented(context)
   const undoJournal = new UndoJournal(join(dataDir, 'field-undo.json'))
 
-  /** 手势命中后待推送的提示（onFired 时还拿不到绑定详情，延后到钩子闭包里取） */
-  let pendingHint: { bindingId: string; modifier?: string } | null = null
+  /** 触发器绑定的存储；onFired 里要用它查绑定名来推提示 */
+  const triggerBindingStore = new TriggerStore(join(dataDir, 'trigger-bindings.json'))
+
+  /** 提示推送器：startGestureHook 里注入，onFired 里调用 */
+  let hintSink: ((name: string, modifier?: string) => void) | null = null
 
   /** 触发器服务：钩子命中 → 查绑定 → 跑点/线实例 */
   const triggerService = new TriggerService({
-    store: new TriggerStore(join(dataDir, 'trigger-bindings.json')),
+    store: triggerBindingStore,
     pointStore: () => store('point'),
     lineStore: () => store('line'),
     onFired: (record) => {
       mainWindow?.webContents.send('trigger:fired', record)
-      // 手势命中 → 记下来，由 startGestureHook 里的闭包推给提示浮层
-      if (record?.source === 'gesture' && record?.bindingId) {
-        pendingHint = { bindingId: String(record.bindingId), modifier: undefined }
+      // 手势命中 → **当场**推提示。
+      // 之前挂在 onPathGrow 里消费，但派发发生在抬手/滚轮之后，
+      // 所以提示要等下一个手势才出现（这个 bug 很隐蔽）。
+      if (record?.source === 'gesture' && record?.bindingId && hintSink) {
+        const binding = triggerBindingStore.list().find((b) => b.id === record.bindingId)
+        if (binding?.name) hintSink(binding.name, binding.gesture?.modifier)
       }
     }
   })
@@ -292,12 +298,6 @@ app.whenReady().then(() => {
           // 识别成功 → 只换笔，不重发点
           if (grow.directions) pushTrailPen(grow.button || currentButton)
 
-          // 有命中待提示就推出去（提示浮层只显示意图名 + modifier 助记符）
-          if (pendingHint) {
-            const binding = triggerService.list().find((b) => b.id === pendingHint!.bindingId)
-            if (binding?.name) pushHint(binding.name, binding.gesture?.modifier)
-            pendingHint = null
-          }
         }
       })
 
@@ -306,6 +306,9 @@ app.whenReady().then(() => {
       console.warn('[gesture] 全局钩子未启动：', result.message)
       return result
     }
+    // 注入提示推送器：onFired 里要用它，而 onFired 定义在服务构造时
+    hintSink = pushHint
+
     onGestureResume(() => {
       start()
     })

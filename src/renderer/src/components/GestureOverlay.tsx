@@ -55,13 +55,24 @@ export function GestureOverlay(): React.JSX.Element | null {
     if (!ctx) return
 
     /** 画布尺寸跟随窗口；用 devicePixelRatio 保证高分屏不糊 */
+    /**
+     * canvas 后备缓冲 = **物理像素**，并且不做 dpr 变换。
+     *
+     * uiohook 给的是物理屏幕坐标，浮层窗口也铺满物理屏幕，
+     * 所以两者在同一坐标系里，直接画就行。
+     *
+     * 第一版设了 setTransform(dpr,…) 让绘制走 CSS 坐标，
+     * 结果 DPI 1.25 时整条轨迹向左上偏 —— 鼠标在 (1200,700)，
+     * 笔迹画到了 (960,560)。
+     */
     const resize = (): void => {
       const dpr = window.devicePixelRatio || 1
       canvas.width = Math.floor(window.innerWidth * dpr)
       canvas.height = Math.floor(window.innerHeight * dpr)
       canvas.style.width = `${window.innerWidth}px`
       canvas.style.height = `${window.innerHeight}px`
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      // 单位矩阵：后续所有坐标都按物理像素解释，和 uiohook 一致
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
       clear()
     }
 

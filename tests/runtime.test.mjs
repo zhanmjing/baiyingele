@@ -1918,3 +1918,26 @@ test('采样按钮要在 path-grow 时就拿到，不能等抬手', () => {
   const onSampleBlock = main.slice(main.indexOf('onSample:'), main.indexOf('onWheel:'))
   assert.ok(!onSampleBlock.includes('currentButton ='), '抬手时设按钮是错的')
 })
+
+test('浮层 canvas 必须用物理像素坐标（uiohook 给的是物理坐标）', () => {
+  const src = readFileSync(join(process.cwd(), 'src/renderer/src/components/GestureOverlay.tsx'), 'utf8')
+  // 后备缓冲按 dpr 放大 —— 这一步是对的
+  assert.match(src, /canvas\.width = Math\.floor\(window\.innerWidth \* dpr\)/, '后备缓冲要物理像素')
+  // 但绘制**不能**再缩放，否则和 uiohook 的物理坐标错位
+  assert.match(src, /ctx\.setTransform\(1, 0, 0, 1, 0, 0\)/, '必须用单位矩阵绘制')
+  assert.ok(
+    !/setTransform\(dpr, 0, 0, dpr, 0, 0\)/.test(src),
+    '不能再 setTransform(dpr,…)：DPI 1.25 时轨迹会向左上偏'
+  )
+})
+
+test('手势提示必须在派发当场推送，不能等下一个手势', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  // onFired 里直接查绑定 + 推
+  assert.match(main, /hintSink\(binding\.name, binding\.gesture\?\.modifier\)/, 'onFired 要当场推提示')
+  assert.ok(!main.includes('pendingHint'), '不能再有 pendingHint 这种延后机制')
+  // 必需在 pushHint 定义之后注入
+  const sinkIdx = main.indexOf('hintSink = pushHint')
+  const pushHintIdx = main.indexOf('const pushHint =')
+  assert.ok(pushHintIdx > 0 && sinkIdx > pushHintIdx, 'hintSink 要在 pushHint 定义之后注入')
+})
