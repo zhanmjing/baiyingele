@@ -77,11 +77,30 @@ function slug(value: string): string {
   )
 }
 
-/** 默认 runner：保留旧的模拟行为，真实实现由 capabilities.ts 注入覆盖 */
+/**
+ * @deprecated 保留导出只为兼容旧引用，**不要再用在生产路径上**。
+ *
+ * 它返回 ok + 随机耗时 —— 一个撒谎的零件。之前 main/index.ts 用
+ * `?? mockRunner(context)` 兜底，导致 field.generate 这类根本没写的类
+ * 在界面上显示「执行成功」。
+ */
 export const mockRunner: InstanceRunner = ({ def, instance }) => ({
   status: 'ok',
   output: def.outputs[instance.classId] ?? `执行完成 · ${instance.name}`,
   elapsedMs: 38 + Math.floor(Math.random() * 240)
+})
+
+/**
+ * 没注入 runner 时的默认行为：如实报未实现。
+ *
+ * 以前默认值是 mockRunner，于是「忘了传 runner」这种错误会被伪装成成功。
+ * 现在忘了传就立刻在运行结果里看得出来。
+ */
+const noRunner: InstanceRunner = ({ instance }) => ({
+  status: 'warn',
+  output: `${instance.classId} 没有注入 runner，无法执行`,
+  elapsedMs: 0,
+  evidence: { kind: 'no-runner', classId: instance.classId }
 })
 
 export class LayerStore {
@@ -107,7 +126,7 @@ export class LayerStore {
   private readonly runner: InstanceRunner
   private state: LayerStoreState
 
-  constructor(filePath: string, def: LayerDef, runner: InstanceRunner = mockRunner) {
+  constructor(filePath: string, def: LayerDef, runner: InstanceRunner = noRunner) {
     this.filePath = filePath
     this.def = def
     this.runner = runner

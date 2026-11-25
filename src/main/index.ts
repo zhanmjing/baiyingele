@@ -22,9 +22,9 @@ import { lineProfiles } from '../shared/lineCatalog'
 import { bodyProfiles } from '../shared/bodyCatalog'
 import {
   LayerStore,
-  mockRunner,
   type CreateInstanceInput,
   type InstanceRunner,
+  type RunOutcome,
   type UpdateInstanceInput
 } from './layerStore'
 
@@ -156,9 +156,23 @@ app.whenReady().then(() => {
 
   const dataDir = app.getPath('userData')
 
-  /** 点层 / 场层：有真实实现的类走 capabilities，其余回落到模拟 */
+  /**
+   * 没有实现单元时的统一回答。
+   *
+   * 以前这里是 `?? mockRunner(context)` —— mockRunner 返回 ok + 随机耗时，
+   * 于是 field.generate 这类**根本没写的类在界面上显示「执行成功」**。
+   * 一个撒谎的零件比没有零件更糟：用户会以为功能在，实际什么都没做。
+   */
+  const notImplemented = (context: Parameters<InstanceRunner>[0]): RunOutcome => ({
+    status: 'warn',
+    output: `${context.instance.classId} 还没有实现单元（${context.instance.name ?? context.instance.id}）`,
+    elapsedMs: 0,
+    evidence: { kind: 'not-implemented', classId: context.instance.classId }
+  })
+
+  /** 点层 / 场层：有实现单元就跑，没有就如实报未实现 */
   const pointRunner: InstanceRunner = async (context) =>
-    (await runCapability(context)) ?? mockRunner(context)
+    (await runCapability(context)) ?? notImplemented(context)
   const undoJournal = new UndoJournal(join(dataDir, 'field-undo.json'))
 
   /** 触发器服务：钩子命中 → 查绑定 → 跑点/线实例 */
@@ -173,7 +187,7 @@ app.whenReady().then(() => {
 
   /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */
   const fieldRunner: InstanceRunner = async (context) => {
-    const outcome = (await runCapability(context)) ?? (await mockRunner(context))
+    const outcome = (await runCapability(context)) ?? notImplemented(context)
     if (!outcome.landing) return outcome
 
     // 必须用 autonomy，不能用 effect：

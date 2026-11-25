@@ -10,6 +10,9 @@
  */
 import test from 'node:test'
 import assert from 'node:assert'
+import { mkdtempSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { tmpdir } from 'node:os'
 import { load, catalogs, bodyProfiles, lineProfiles, allClassIds, mockContext } from './_harness.mjs'
 
 // ── 体层装配检查 ──────────────────────────────────────────────
@@ -713,4 +716,46 @@ test('body.ocr：零件「有」不等于「能识别」—— 这是该类独�
     deps
   })
   assert.ok(noIntl.readiness.missing.some((m) => m.id === 'role:intel'), '通用角色检查不能被特化检查绕过')
+})
+
+test('没有实现单元的类：runCapability 必须返回 null，不能编一个 ok', async () => {
+  const { runCapability, CAPABILITIES } = load('main/capabilities/index.js')
+  const ctx = (cid) => ({
+    instance: { id: `${cid}.x@r1`, classId: cid, name: 'x', rev: 1, status: 'active', description: '', params: {}, createdAt: 0, updatedAt: 0 },
+    def: { key: cid.split('.')[0], classLabel: 'X', classes: [], outputs: {} },
+    pointClass: {},
+    params: {},
+    findInstance: () => undefined
+  })
+
+  const allIds = ['point', 'line', 'surface', 'body', 'field'].flatMap((layer) => catalogs[layer].map((c) => c.id))
+  const missing = allIds.filter((id) => !CAPABILITIES[id])
+  assert.ok(missing.length > 0, '当前应该还有没实现的类')
+
+  for (const cid of missing) {
+    assert.strictEqual(await runCapability(ctx(cid)), null, `${cid} 没实现就必须返回 null`)
+  }
+
+  for (const cid of ['point.clipboard_get', 'field.rank', 'surface.table', 'body.ocr']) {
+    assert.strictEqual(typeof CAPABILITIES[cid], 'function', `${cid} 应该有实现单元`)
+  }
+})
+
+test('主进程不再用 mockRunner 兜底（它会返回 ok + 随机耗时）', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  const calls = source
+    .split('\n')
+    .filter((line) => /mockRunner\s*\(/.test(line) && !line.trim().startsWith('*') && !line.trim().startsWith('//'))
+  assert.deepStrictEqual(calls, [], `index.ts 里不该再调用 mockRunner：${calls.join(' | ')}`)
+  assert.ok(/notImplemented/.test(source), '必须有一个统一的「未实现」回答')
+})
+
+test('LayerStore 默认 runner 必须如实报未注入，不能伪装成功', async () => {
+  const { LayerStore } = load('main/layerStore.js')
+  const store = new LayerStore(join(mkdtempSync(join(tmpdir(), 'norunner-')), 's.json'), {
+    key: 'point', classLabel: 'PointClass', classes: catalogs.point, outputs: {}
+  })
+  const run = await store.run(catalogs.point[0].instances[0].id)
+  assert.strictEqual(run.status, 'warn', '默认 runner 不该返回 ok')
+  assert.match(run.output, /没有注入 runner/)
 })
