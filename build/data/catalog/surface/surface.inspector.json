@@ -13,21 +13,21 @@
       "name": "点检查器",
       "rev": 4,
       "status": "active",
-      "detail": "PointClass / PointInstance 契约与参数 · sidebar"
+      "detail": "{\"detail\":\"PointClass / PointInstance 契约与参数 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"PointClass\",\"order\":1},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"PointInstance 契约与参数\",\"order\":2}],\"slotCount\":2}"
     },
     {
       "id": "surface.inspector.slot_vpn@r2",
       "name": "VPN 槽位检查器",
       "rev": 2,
       "status": "active",
-      "detail": "slot.vpn 的 accepts / default / bound · sidebar"
+      "detail": "{\"detail\":\"slot.vpn 的 accepts / default / bound · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"slot.vpn 的 accepts\",\"order\":1},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"default\",\"order\":2},{\"id\":\"section-3\",\"role\":\"section\",\"label\":\"bound\",\"order\":3}],\"slotCount\":3}"
     },
     {
       "id": "surface.inspector.run_node@r1",
       "name": "运行节点检查器",
       "rev": 1,
       "status": "active",
-      "detail": "PointRun 输入/输出/耗时 · sidebar"
+      "detail": "{\"detail\":\"PointRun 输入/输出/耗时 · sidebar\",\"mount\":\"sidebar\",\"slots\":[{\"id\":\"section-1\",\"role\":\"section\",\"label\":\"PointRun 输入\",\"order\":1},{\"id\":\"section-2\",\"role\":\"section\",\"label\":\"输出\",\"order\":2},{\"id\":\"section-3\",\"role\":\"section\",\"label\":\"耗时\",\"order\":3}],\"slotCount\":3}"
     }
   ]
 }

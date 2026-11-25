@@ -27,8 +27,19 @@ export interface SurfacePageRef {
   dangling?: boolean
 }
 
+export interface SurfaceSlot {
+  id: string
+  role: string
+  label: string
+  order?: number
+}
+
 export interface SurfaceParamsLike {
   detail?: unknown
+  /** 结构化槽位（scripts/structure-surface-slots.mjs 从 detail 文本推导而来） */
+  slots?: unknown
+  slotCount?: unknown
+  mount?: unknown
   modes?: unknown
   regions?: unknown
   pages?: unknown
@@ -96,15 +107,24 @@ export function planRender(
   const isPanel = classId === 'surface.panel'
   const surfaceKind: RenderResult['surfaceKind'] = isPanel ? 'panel' : 'pattern'
   const declared = deps.declaredRegionKeys?.(classId) ?? ['detail']
-  const regions = Array.isArray(params.regions) ? (params.regions as string[]) : []
+  const slots = Array.isArray(params.slots) ? (params.slots as SurfaceSlot[]) : []
+  // 有结构化槽位时，区域就是槽位角色的集合
+  const regions = slots.length
+    ? [...new Set(slots.map((slot) => slot.role))]
+    : Array.isArray(params.regions) ? (params.regions as string[]) : []
   const gaps: RenderResult['gaps'] = []
   const blocks: RenderBlock[] = []
   const dataUsed: RenderResult['dataUsed'] = []
   const intents: string[] = []
 
-  // 面层类只声明了 detail —— 没有区域和槽位结构，这是真实现状，如实报出来
-  if (!isPanel && declared.length <= 1 && declared[0] === 'detail') {
+  // 一个槽位都没有才是真缺口；有槽位就别再报「没结构」
+  if (!isPanel && !slots.length && declared.length <= 1 && declared[0] === 'detail') {
     gaps.push({ slot: 'regions', reason: '该类只声明了 detail 一个参数，没有 regions / slots 结构' })
+  }
+
+  // 结构化槽位 → 渲染块。这是真实可渲染的内容，不再是占位。
+  for (const slot of slots) {
+    blocks.push({ kind: 'page', label: slot.label, ref: slot.id, exists: true })
   }
 
   if (isPanel) {
@@ -128,8 +148,8 @@ export function planRender(
     if (apps.length) intents.push(`open:${apps.length} 个应用`)
     const modes = Array.isArray(params.modes) ? (params.modes as string[]) : []
     if (modes.length) intents.push(`mount:${modes.join('|')}`)
-  } else {
-    // 非面板：没有结构化内容可渲染，给出占位而不是假装渲染成功
+  } else if (!slots.length) {
+    // 非面板且没有槽位：只能给占位，不假装渲染成功
     const detail = typeof params.detail === 'string' ? params.detail : ''
     const described = detail.split('·')[0]?.trim()
     if (described) blocks.push({ kind: 'placeholder', label: described, ref: null, exists: false })
@@ -139,7 +159,10 @@ export function planRender(
     classId,
     instanceId,
     surfaceKind,
-    mount: parseMount(params.detail) ?? (Array.isArray(params.modes) ? String((params.modes as string[])[0] ?? '') || null : null),
+    mount:
+      (typeof params.mount === 'string' && params.mount) ||
+      parseMount(params.detail) ||
+      (Array.isArray(params.modes) ? String((params.modes as string[])[0] ?? '') || null : null),
     regions,
     blocks,
     dataUsed,
@@ -159,7 +182,9 @@ export function createSurfaceRunner(deps: SurfaceDeps): InstanceRunner {
     const head =
       result.surfaceKind === 'panel'
         ? `面板 ${result.mount ?? '(未声明挂载)'} · ${result.blocks.length} 个页面（存在 ${renderable}）`
-        : `模式 ${result.mount ?? '(未声明挂载)'} · ${result.blocks.length} 个占位块`
+        : result.regions.length
+          ? `模式 ${result.mount ?? '(未声明挂载)'} · ${result.blocks.length} 个槽位（${result.regions.join('/')}）`
+          : `模式 ${result.mount ?? '(未声明挂载)'} · ${result.blocks.length} 个占位块`
 
     const gapText = result.gaps.length ? ` · 缺口 ${result.gaps.length} 个：${result.gaps.slice(0, 3).map((g) => g.slot).join('、')}` : ''
 

@@ -380,3 +380,33 @@ test('field.personalize：样本不足不给建议，够样本才按频率推', 
   const split = Array.from({ length: 8 }, (_, i) => mk('point.c', { mode: i % 2 ? 'a' : 'b' }))
   assert.strictEqual(suggestDefaults(split), null, '参数五五开时不能当默认值')
 })
+
+// ── 面层：结构化槽位（从 detail 文本推导，不是凭空设计）────────────
+test('surfaceRuntime：16 个面层类都有结构化槽位，不再报「没结构」', () => {
+  const rt = load('main/surfaceRuntime.js')
+  const deps = { hasClass: () => true, declaredRegionKeys: () => ['detail'] }
+  const rows = catalogs.surface
+    .filter((c) => c.id !== 'surface.panel')
+    .map((c) => ({ id: c.id, plan: rt.planRender(c.id, c.instances[0].id, c.instances[0].params, deps) }))
+
+  const noSlots = rows.filter((r) => r.plan.blocks.length === 0).map((r) => r.id)
+  assert.deepStrictEqual(noSlots, [], `这些面层类还没推导出槽位: ${noSlots.join(',')}`)
+
+  const withGap = rows.filter((r) => r.plan.gaps.some((g) => g.slot === 'regions')).map((r) => r.id)
+  assert.deepStrictEqual(withGap, [], `有槽位就不该再报 regions 缺口: ${withGap.join(',')}`)
+
+  // 角色必须和该类的语义对得上，不能全是 block 兜底
+  const byId = Object.fromEntries(rows.map((r) => [r.id, r.plan]))
+  assert.deepStrictEqual(byId['surface.form'].regions, ['field'])
+  assert.deepStrictEqual(byId['surface.dialog'].regions, ['action'])
+  assert.deepStrictEqual(byId['surface.wizard'].regions, ['step'])
+  assert.deepStrictEqual(byId['surface.command_palette'].regions, ['result-group'])
+
+  // 段数 = 槽位数（form 的 detail 有 4 段）
+  assert.strictEqual(byId['surface.form'].blocks.length, 4)
+  assert.deepStrictEqual(byId['surface.form'].blocks.map((b) => b.label), ['默认 VPN', '自动打开', '自动连接', '超时'])
+
+  // 箭头表示有序序列，要拆成多个槽位
+  assert.strictEqual(byId['surface.wizard'].blocks.length, 3)
+  assert.deepStrictEqual(byId['surface.wizard'].blocks.map((b) => b.label), ['选模板', '绑槽位', '试运行'])
+})

@@ -13,21 +13,21 @@
       "name": "VPN 审批",
       "rev": 2,
       "status": "active",
-      "detail": "打开 VPN / 我已手动打开 / 取消 · modal"
+      "detail": "{\"detail\":\"打开 VPN / 我已手动打开 / 取消 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"打开 VPN\",\"order\":1},{\"id\":\"action-2\",\"role\":\"action\",\"label\":\"我已手动打开\",\"order\":2},{\"id\":\"action-3\",\"role\":\"action\",\"label\":\"取消\",\"order\":3}],\"slotCount\":3}"
     },
     {
       "id": "surface.dialog.delete_confirm@r1",
       "name": "删除确认",
       "rev": 1,
       "status": "active",
-      "detail": "危险操作确认 · modal"
+      "detail": "{\"detail\":\"危险操作确认 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"危险操作确认\",\"order\":1}],\"slotCount\":1}"
     },
     {
       "id": "surface.dialog.deploy_approval@r1",
       "name": "部署审批",
       "rev": 1,
       "status": "active",
-      "detail": "生产发布审批 · modal"
+      "detail": "{\"detail\":\"生产发布审批 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"action-1\",\"role\":\"action\",\"label\":\"生产发布审批\",\"order\":1}],\"slotCount\":1}"
     }
   ]
 }

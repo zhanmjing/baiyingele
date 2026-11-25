@@ -13,28 +13,28 @@
       "name": "VPN 通知",
       "rev": 3,
       "status": "active",
-      "detail": "GuardResult → 下一步 · toast"
+      "detail": "{\"detail\":\"GuardResult → 下一步 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1-1\",\"role\":\"message\",\"label\":\"GuardResult\",\"order\":1},{\"id\":\"message-1-2\",\"role\":\"message\",\"label\":\"下一步\",\"order\":2}],\"slotCount\":2}"
     },
     {
       "id": "surface.notification.run@r2",
       "name": "运行通知",
       "rev": 2,
       "status": "active",
-      "detail": "成功/失败/耗时 · toast"
+      "detail": "{\"detail\":\"成功/失败/耗时 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"成功\",\"order\":1},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"失败\",\"order\":2},{\"id\":\"message-3\",\"role\":\"message\",\"label\":\"耗时\",\"order\":3}],\"slotCount\":3}"
     },
     {
       "id": "surface.notification.download@r1",
       "name": "下载通知",
       "rev": 1,
       "status": "active",
-      "detail": "下载/校验结果 · tray"
+      "detail": "{\"detail\":\"下载/校验结果 · tray\",\"mount\":\"tray\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"下载\",\"order\":1},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"校验结果\",\"order\":2}],\"slotCount\":2}"
     },
     {
       "id": "surface.notification.system_threshold@r1",
       "name": "系统阈值告警",
       "rev": 1,
       "status": "active",
-      "detail": "CPU/GPU 温度、内存、磁盘超阈值提示 · toast"
+      "detail": "{\"detail\":\"CPU/GPU 温度、内存、磁盘超阈值提示 · toast\",\"mount\":\"toast\",\"slots\":[{\"id\":\"message-1\",\"role\":\"message\",\"label\":\"CPU\",\"order\":1},{\"id\":\"message-2\",\"role\":\"message\",\"label\":\"GPU 温度、内存、磁盘超阈值提示\",\"order\":2}],\"slotCount\":2}"
     }
   ]
 }

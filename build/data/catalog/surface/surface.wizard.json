@@ -13,14 +13,14 @@
       "name": "新建流程",
       "rev": 1,
       "status": "active",
-      "detail": "选模板 → 绑槽位 → 试运行 · modal"
+      "detail": "{\"detail\":\"选模板 → 绑槽位 → 试运行 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"step-1-1\",\"role\":\"step\",\"label\":\"选模板\",\"order\":1},{\"id\":\"step-1-2\",\"role\":\"step\",\"label\":\"绑槽位\",\"order\":2},{\"id\":\"step-1-3\",\"role\":\"step\",\"label\":\"试运行\",\"order\":3}],\"slotCount\":3}"
     },
     {
       "id": "surface.wizard.vpn_setup@r1",
       "name": "VPN 首次配置",
       "rev": 1,
       "status": "active",
-      "detail": "选软件 → 测试 → 保存 · modal"
+      "detail": "{\"detail\":\"选软件 → 测试 → 保存 · modal\",\"mount\":\"modal\",\"slots\":[{\"id\":\"step-1-1\",\"role\":\"step\",\"label\":\"选软件\",\"order\":1},{\"id\":\"step-1-2\",\"role\":\"step\",\"label\":\"测试\",\"order\":2},{\"id\":\"step-1-3\",\"role\":\"step\",\"label\":\"保存\",\"order\":3}],\"slotCount\":3}"
     }
   ]
 }

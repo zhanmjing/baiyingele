@@ -13,35 +13,35 @@
       "name": "CPU",
       "rev": 1,
       "status": "active",
-      "detail": "使用率 / 温度 / 频率 / 每核负载 · main"
+      "detail": "{\"detail\":\"使用率 / 温度 / 频率 / 每核负载 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"使用率\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"温度\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"频率\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"每核负载\",\"order\":4}],\"slotCount\":4}"
     },
     {
       "id": "surface.metric_card.gpu@r1",
       "name": "GPU",
       "rev": 1,
       "status": "active",
-      "detail": "使用率 / 温度 / VRAM / 风扇 · main"
+      "detail": "{\"detail\":\"使用率 / 温度 / VRAM / 风扇 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"使用率\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"温度\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"VRAM\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"风扇\",\"order\":4}],\"slotCount\":4}"
     },
     {
       "id": "surface.metric_card.memory@r1",
       "name": "内存",
       "rev": 1,
       "status": "active",
-      "detail": "已用 / 总量 / 百分比 / Swap · main"
+      "detail": "{\"detail\":\"已用 / 总量 / 百分比 / Swap · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"已用\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"总量\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"百分比\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"Swap\",\"order\":4}],\"slotCount\":4}"
     },
     {
       "id": "surface.metric_card.network@r1",
       "name": "网速",
       "rev": 1,
       "status": "active",
-      "detail": "下行 / 上行 / 总流量 / 延迟 · main"
+      "detail": "{\"detail\":\"下行 / 上行 / 总流量 / 延迟 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"下行\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"上行\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"总流量\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"延迟\",\"order\":4}],\"slotCount\":4}"
     },
     {
       "id": "surface.metric_card.disk@r1",
       "name": "磁盘",
       "rev": 1,
       "status": "active",
-      "detail": "已用 / 剩余 / 读写 / 温度 · main"
+      "detail": "{\"detail\":\"已用 / 剩余 / 读写 / 温度 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"已用\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"剩余\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"读写\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"温度\",\"order\":4}],\"slotCount\":4}"
     }
   ]
 }

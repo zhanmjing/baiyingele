@@ -13,21 +13,21 @@
       "name": "系统总览",
       "rev": 2,
       "status": "active",
-      "detail": "运行数 / 成功率 / 成本 · main"
+      "detail": "{\"detail\":\"运行数 / 成功率 / 成本 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"运行数\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"成功率\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"成本\",\"order\":3}],\"slotCount\":3}"
     },
     {
       "id": "surface.dashboard.vpn@r1",
       "name": "VPN 健康",
       "rev": 1,
       "status": "active",
-      "detail": "VPN 状态 / 连接耗时 / 失败 · main"
+      "detail": "{\"detail\":\"VPN 状态 / 连接耗时 / 失败 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"VPN 状态\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"连接耗时\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"失败\",\"order\":3}],\"slotCount\":3}"
     },
     {
       "id": "surface.dashboard.system_monitor@r2",
       "name": "系统状态总览",
       "rev": 2,
       "status": "active",
-      "detail": "CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main"
+      "detail": "{\"detail\":\"CPU / GPU / 内存 / 网速 / 磁盘 / 温度；实时卡片与历史曲线 · main\",\"mount\":\"main\",\"slots\":[{\"id\":\"metric-1\",\"role\":\"metric\",\"label\":\"CPU\",\"order\":1},{\"id\":\"metric-2\",\"role\":\"metric\",\"label\":\"GPU\",\"order\":2},{\"id\":\"metric-3\",\"role\":\"metric\",\"label\":\"内存\",\"order\":3},{\"id\":\"metric-4\",\"role\":\"metric\",\"label\":\"网速\",\"order\":4},{\"id\":\"metric-5\",\"role\":\"metric\",\"label\":\"磁盘\",\"order\":5},{\"id\":\"metric-6\",\"role\":\"metric\",\"label\":\"温度；实时卡片与历史曲线\",\"order\":6}],\"slotCount\":6}"
     }
   ]
 }

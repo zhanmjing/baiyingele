@@ -13,21 +13,21 @@
       "name": "翻译浮层",
       "rev": 2,
       "status": "active",
-      "detail": "截图翻译结果 · overlay"
+      "detail": "{\"detail\":\"截图翻译结果 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"截图翻译结果\",\"order\":1}],\"slotCount\":1}"
     },
     {
       "id": "surface.hud.vpn_status@r1",
       "name": "VPN 状态浮层",
       "rev": 1,
       "status": "active",
-      "detail": "连接状态/耗时 · overlay"
+      "detail": "{\"detail\":\"连接状态/耗时 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"连接状态\",\"order\":1},{\"id\":\"overlay-body-2\",\"role\":\"overlay-body\",\"label\":\"耗时\",\"order\":2}],\"slotCount\":2}"
     },
     {
       "id": "surface.hud.system_status@r1",
       "name": "系统状态浮层",
       "rev": 1,
       "status": "active",
-      "detail": "CPU/GPU/内存/网速紧凑显示，可置顶 · overlay"
+      "detail": "{\"detail\":\"CPU/GPU/内存/网速紧凑显示，可置顶 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"overlay-body-1\",\"role\":\"overlay-body\",\"label\":\"CPU\",\"order\":1},{\"id\":\"overlay-body-2\",\"role\":\"overlay-body\",\"label\":\"GPU\",\"order\":2},{\"id\":\"overlay-body-3\",\"role\":\"overlay-body\",\"label\":\"内存\",\"order\":3},{\"id\":\"overlay-body-4\",\"role\":\"overlay-body\",\"label\":\"网速紧凑显示，可置顶\",\"order\":4}],\"slotCount\":4}"
     }
   ]
 }
