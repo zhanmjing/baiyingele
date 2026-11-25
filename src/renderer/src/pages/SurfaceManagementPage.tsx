@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { stringParams } from '../../../shared/layerTypes'
 import { refsToText, textToClassRefs, textToInstanceRefs } from '../../../shared/atomId'
+import type { RenderedSlot } from '../../../shared/slotSource'
 import {
   ArrowUpRight,
   CircleDot,
@@ -193,6 +194,11 @@ export function SurfaceManagementPage({
   const [saving, setSaving] = useState(false)
   const [running, setRunning] = useState(false)
   const [lastRun, setLastRun] = useState<RunRecord | null>(null)
+  /**
+   * 上次 runSurface 的槽位结果。
+   * 以前这里把 result.evidence 整个丢掉，面层算出来的槽位四态全被扔了。
+   */
+  const [lastSlots, setLastSlots] = useState<RenderedSlot[]>([])
   const [resourceEditor, setResourceEditor] = useState<ResourceEditorState | null>(null)
   const [resourceForm, setResourceForm] = useState<Record<string, string>>({})
   const [gestureRecorder, setGestureRecorder] = useState<{ editPattern?: string } | null>(null)
@@ -343,6 +349,8 @@ export function SurfaceManagementPage({
         status: result.ok ? 'ok' : 'warn', output: result.output, elapsedMs: result.elapsedMs,
         at: '刚刚', createdAt: new Date(result.at).getTime()
       }
+      const slots = (result.evidence as { slots?: RenderedSlot[] } | undefined)?.slots ?? []
+      setLastSlots(slots)
       setLastRun(record)
       onRunComplete(record)
       onToast(`运行成功 · ${result.output}`)
@@ -912,7 +920,7 @@ export function SurfaceManagementPage({
         </main>
 
         <aside className="surface-inspector">
-          {view === 'surfaces' && surfaceClass ? <SurfaceInspector classItem={surfaceClass} instance={surfaceInstance} lastRun={lastRun} onRun={runSurfaceInstance} onEdit={openEdit} onDuplicate={duplicateSurface} onArchive={archiveSurface} onNew={openCreate} /> : null}
+          {view === 'surfaces' && surfaceClass ? <SurfaceInspector classItem={surfaceClass} instance={surfaceInstance} lastRun={lastRun} slots={lastSlots} onRun={runSurfaceInstance} onEdit={openEdit} onDuplicate={duplicateSurface} onArchive={archiveSurface} onNew={openCreate} /> : null}
           {view === 'panels' && panelClass ? <PanelInspector classItem={panelClass} instance={panelInstance} /> : null}
           {view === 'gestures' && gesture ? <GestureInspector gesture={gesture} target={selectedGestureTarget} onOpenTarget={openGestureTarget} /> : null}
           {view === 'dock' && dockTile ? <DockInspector tab={dockTab} tile={dockTile} /> : null}
@@ -1022,10 +1030,27 @@ function SurfaceCatalogView({ classItem, selectedInstance, lastRun, running, onS
   )
 }
 
-function SurfaceInspector({ classItem, instance, lastRun, onRun, onEdit, onDuplicate, onArchive, onNew }: {
+function slotSummary(slots: RenderedSlot[]): string {
+  const counts = { ready: 0, empty: 0, missing: 0, error: 0 }
+  for (const slot of slots) counts[slot.status] += 1
+  return `ready ${counts.ready} · empty ${counts.empty} · missing ${counts.missing} · error ${counts.error}`
+}
+
+/** 值的预览：不把整条运行记录塞进一行 */
+function slotPreview(value: unknown): string {
+  if (Array.isArray(value)) return `${value.length} 项`
+  if (value && typeof value === 'object') {
+    const keys = Object.keys(value as Record<string, unknown>)
+    return keys.length ? `{${keys.slice(0, 3).join(', ')}${keys.length > 3 ? '…' : ''}}` : '{}'
+  }
+  return String(value).slice(0, 40)
+}
+
+function SurfaceInspector({ classItem, instance, lastRun, slots, onRun, onEdit, onDuplicate, onArchive, onNew }: {
   classItem: LayerClass
   instance: LayerInstance | null
   lastRun: RunRecord | null
+  slots: RenderedSlot[]
   onRun: () => void
   onEdit: (instance: LayerInstance) => void
   onDuplicate: (instance: LayerInstance) => void
@@ -1041,6 +1066,16 @@ function SurfaceInspector({ classItem, instance, lastRun, onRun, onEdit, onDupli
     {instance ? <>
       <div className="line-insp-section"><div className="field-policy-title">参数</div>{classItem.params.map((param) => <div className="line-insp-param" key={param.key}><span>{param.label}</span><code>{String(instance.params?.[param.key] ?? '—')}</code></div>)}</div>
       <div className="line-insp-section"><div className="field-policy-title">运行</div><div className="line-run-info"><span>最近运行</span><strong>{lastRun ? `${lastRun.elapsedMs}ms · 刚刚` : '未运行'}</strong><span>状态</span><strong>{statusLabel[instance.status]}</strong></div></div>
+      {/* 槽位四态必须分开显示：把「还没数据」和「读失败」画成同一个灰块，用户就分不清 */}
+      {slots.length > 0 && <div className="line-insp-section">
+        <div className="field-policy-title">槽位 · {slotSummary(slots)}</div>
+        {slots.map((slot) => <div className={`slot-row ${slot.status}`} key={slot.slotId} title={slot.reason ?? ''}>
+          <span className={`slot-dot ${slot.status}`} />
+          <strong>{slot.label}</strong>
+          <em>{slot.role}</em>
+          <code>{slot.status}{slot.status === 'ready' ? ` · ${slotPreview(slot.value)}` : ` · ${slot.reason ?? ''}`}</code>
+        </div>)}
+      </div>}
       <div className="line-insp-actions"><button className="btn primary" onClick={onRun}>▶ 运行</button><button className="btn ghost" onClick={() => onEdit(instance)}><Pencil size={12} /> 编辑</button><button className="btn ghost" onClick={() => onDuplicate(instance)}><Copy size={12} /> 复制</button><button className="btn ghost" onClick={() => onArchive(instance)}>{instance.status === 'archived' ? '恢复' : '归档'}</button></div>
     </> : <>
       <div className="line-insp-section"><div className="field-policy-title">参数 Schema</div>{classItem.params.map((param) => <div className="line-insp-param" key={param.key}><span>{param.label}</span><code>{param.type}</code></div>)}</div>

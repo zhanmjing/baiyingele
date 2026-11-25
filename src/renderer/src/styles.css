@@ -2498,3 +2498,33 @@ a { color: inherit; }
 .corruption-link:hover {
   background: rgba(214, 132, 44, 0.22);
 }
+
+/* 槽位四态：颜色必须能区分「没数据」和「读失败」 */
+.slot-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto minmax(0, 1.4fr);
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.slot-row + .slot-row { margin-top: 2px; }
+.slot-row strong { font-weight: 600; }
+.slot-row em { font-style: normal; opacity: 0.6; font-size: 11px; }
+.slot-row code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 11px;
+  opacity: 0.85;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slot-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+.slot-row.ready   { color: #4ea36c; }
+.slot-row.empty   { color: #8a8f98; }
+.slot-row.missing { color: #d6842c; }
+.slot-row.error   { color: #cf4b4b; background: rgba(207, 75, 75, 0.08); }
