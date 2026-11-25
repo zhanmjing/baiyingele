@@ -22,6 +22,10 @@ declare global {
       simulateTrigger: (combo: string) => Promise<unknown[]>
       dispatchGesture: (points: { x: number; y: number; t?: number }[]) => Promise<unknown>
       /** 手势轨迹浮层（surface.gesture_trail） */
+  onGestureTrailStart: (callback: (payload: unknown) => void) => () => void
+  onGestureTrailPoint: (callback: (payload: unknown) => void) => () => void
+  onGestureTrailPen: (callback: (payload: unknown) => void) => () => void
+  onGestureTrailEnd: (callback: () => void) => () => void
   onGestureTrail: (callback: (trail: unknown) => void) => () => void
   /** 手势动作提示（surface.gesture_hint） */
   onGestureHint: (callback: (hint: unknown) => void) => () => void

@@ -214,22 +214,36 @@ app.whenReady().then(() => {
     let currentButton = 'right'
     let lastTrailSent = 0
 
-    /** 把轨迹推给渲染层（surface.gesture_trail）。节流到 30fps，别把 IPC 打爆。 */
-    const pushTrail = (points: unknown, directions: string, recognized: boolean, force = false, button = 'right') => {
-      if (!mainWindow || mainWindow.isDestroyed()) return
-      const now = Date.now()
-      if (!force && now - lastTrailSent < 33) return
-      lastTrailSent = now
-      // DPI 因子按主屏取：原码 widthBase = 2 * _dpiFactor
-      const dpiFactor = screen.getPrimaryDisplay().scaleFactor || 1
-      const trail = computeTrail({
-        points: points as never, directions, recognized, button, dpiFactor,
+    /**
+     * 轨迹走逐点流式：开始一次、每点一次、结束一次。
+     * WGestures 在进程内直接 _gPath.AddLine，没有 IPC。
+     * 跨进程只能把「每帧发整个数组」换成「每点发一个点」——
+     * 单点约 20 字节，整数组 500 点时约 8KB/帧，差两个数量级。
+     */
+    const trailLayers = (button: string, recognized: boolean) => {
+      const dpi = screen.getPrimaryDisplay().scaleFactor || 1
+      return computeTrail({
+        points: [], button, recognized, dpiFactor: dpi,
         instanceId: 'surface.gesture_trail.default@r1', params: {},
         deps: { hasClass: () => true, declaredRegionKeys: () => [] }
-      })
-      // 有轨迹才显示浮层，空轨迹就藏起来（照 WGestures 的 Visible 开关）
-      setOverlayVisible(trail.visible)
-      if (!sendToOverlay('gesture:trail', trail)) mainWindow.webContents.send('gesture:trail', trail)
+      }).layers
+    }
+
+    const pushTrailStart = (button: string) => {
+      setOverlayVisible(true)
+      const payload = { layers: trailLayers(button, false) }
+      if (!sendToOverlay('gesture:trail-start', payload)) mainWindow?.webContents.send('gesture:trail-start', payload)
+    }
+    const pushTrailPoint = (point: { x: number; y: number }) => {
+      if (!sendToOverlay('gesture:trail-point', point)) mainWindow?.webContents.send('gesture:trail-point', point)
+    }
+    const pushTrailPen = (button: string) => {
+      const payload = { layers: trailLayers(button, true) }
+      if (!sendToOverlay('gesture:trail-pen', payload)) mainWindow?.webContents.send('gesture:trail-pen', payload)
+    }
+    const pushTrailEnd = () => {
+      if (!sendToOverlay('gesture:trail-end', null)) mainWindow?.webContents.send('gesture:trail-end', null)
+      setOverlayVisible(false)
     }
 
     /** 把提示推给渲染层（surface.gesture_hint） */
@@ -241,10 +255,17 @@ app.whenReady().then(() => {
 
     const start = () =>
       startSampling({
+        onPathStart: (start) => {
+          currentButton = start.button
+          pushTrailStart(start.button)
+        },
+        onPathPoint: (point) => {
+          pushTrailPoint(point)
+        },
         onSample: (sample) => {
           currentDirections = ''
-          // 抬手：轨迹淡出（推送空轨迹让浮层隐藏），提示保留一会儿
-          pushTrail([], '', false, true)
+          // 抬手：清画布、收起浮层；提示由 hint 自己超时
+          pushTrailEnd()
           // 抬手先结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded）。
           // 原码注释：「如果是一个允许修饰符执行的手势，显然它必然已经被执行过了，
           // 所以不执行而直接结束」——抬手不再派发。
@@ -268,8 +289,8 @@ app.whenReady().then(() => {
           currentDirections = grow.directions
           // 按钮要在这里设：抬手时才设的话，整个手势过程中用的都是上一个手势的按钮
           if (grow.button) currentButton = grow.button
-          // 实时轨迹：识别成功后换笔（照 WGestures 的 _pathPen = _tempMainPen）
-          pushTrail(grow.points, grow.directions, grow.directions.length > 0, false, currentButton)
+          // 识别成功 → 只换笔，不重发点
+          if (grow.directions) pushTrailPen(grow.button || currentButton)
 
           // 有命中待提示就推出去（提示浮层只显示意图名 + modifier 助记符）
           if (pendingHint) {

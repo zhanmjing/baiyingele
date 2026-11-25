@@ -81,7 +81,31 @@ const api = {
   },
   resolveForm: (requestId: string, answer: unknown): Promise<{ ok: boolean; message: string }> =>
     ipcRenderer.invoke('ui:form:resolve', requestId, answer),
-  /** 手势轨迹浮层（surface.gesture_trail） */
+  /** 轨迹开始：给笔迹层，清画布 */
+  onGestureTrailStart: (callback: (payload: unknown) => void): (() => void) => {
+    const h = (_e: unknown, p: unknown): void => callback(p)
+    ipcRenderer.on('gesture:trail-start', h)
+    return () => ipcRenderer.removeListener('gesture:trail-start', h)
+  },
+  /** 单个新点（逐点流式，不再每帧发整个数组） */
+  onGestureTrailPoint: (callback: (payload: unknown) => void): (() => void) => {
+    const h = (_e: unknown, p: unknown): void => callback(p)
+    ipcRenderer.on('gesture:trail-point', h)
+    return () => ipcRenderer.removeListener('gesture:trail-point', h)
+  },
+  /** 换笔：识别成功后只换颜色，不重发点 */
+  onGestureTrailPen: (callback: (payload: unknown) => void): (() => void) => {
+    const h = (_e: unknown, p: unknown): void => callback(p)
+    ipcRenderer.on('gesture:trail-pen', h)
+    return () => ipcRenderer.removeListener('gesture:trail-pen', h)
+  },
+  /** 轨迹结束：清画布 */
+  onGestureTrailEnd: (callback: () => void): (() => void) => {
+    const h = (): void => callback()
+    ipcRenderer.on('gesture:trail-end', h)
+    return () => ipcRenderer.removeListener('gesture:trail-end', h)
+  },
+  /** 手势轨迹浮层（旧的全量接口，保留兼容） */
   onGestureTrail: (callback: (trail: unknown) => void): (() => void) => {
     const handler = (_event: unknown, trail: unknown): void => callback(trail)
     ipcRenderer.on('gesture:trail', handler)

@@ -2546,6 +2546,7 @@ a { color: inherit; }
    照 WGestures CanvasWindowGestureView：识别后换色，提示白字半透明黑底 */
 .gesture-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9000; }
 .gesture-overlay-trail { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.gesture-overlay-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .gesture-overlay-dirs {
   position: absolute; left: 50%; bottom: 48px; transform: translateX(-50%);
   font-size: 22px; letter-spacing: 4px; color: #9aa4b2;

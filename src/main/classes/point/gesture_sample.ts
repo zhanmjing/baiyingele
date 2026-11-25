@@ -175,6 +175,17 @@ export interface SamplingHandlers {
    * 那时路径还没结束，只有实时方向串。没有这个回调整，第一颗滚轮就无法配绑定。
    */
   onPathGrow?: (state: { points: GesturePoint[]; directions: string; button: string }) => void
+  /**
+   * 轨迹激活时触发一次（对应触发按钮确定的那一刻）。
+   * 浮层用它开一条新笔迹，并把按钮对应的三层笔给过去。
+   */
+  onPathStart?: (state: { button: string }) => void
+  /**
+   * 每个新点触发一次（对应 WGestures 的 _gPath.AddLine）。
+   * 只传一个点，O(1)；浮层 canvas 直接 lineTo。
+   * **不要**在这里传整个 points 数组 —— 那是第一版卡顿的原因。
+   */
+  onPathPoint?: (point: { x: number; y: number }) => void
 }
 
 export interface SamplingControl {
@@ -214,6 +225,7 @@ export function startSampling(
 
   let state: SampleState | null = null
   let lastDirections = ''
+  let lastRecognizeAt = 0
   let stayTimer: NodeJS.Timeout | null = null
 
   const clearStay = () => {
@@ -249,9 +261,27 @@ export function startSampling(
 
   const onMoveHandler = (event: any) => {
     if (!state) return
+    const wasActivated = state.activated
     const nextState = onMove(state, { x: event.x, y: event.y, t: Date.now() }, config)
     state = nextState
-    if (nextState.activated && handlers.onPathGrow) {
+    if (!nextState.activated) return
+
+    clearStay()
+    // 刚激活：开一条新笔迹（浮层据此清画布 + 定笔色）
+    if (!wasActivated) {
+      handlers.onPathStart?.({ button: nextState.button })
+    }
+    // 逐点流式：O(1)，这是「跟手」的关键
+    handlers.onPathPoint?.({ x: event.x, y: event.y })
+
+    /**
+     * 识别要节流。
+     * recognize() 是 O(点数) 的全量识别，每帧跑一次在 500 点上就是每秒 3 万次运算，
+     * 换笔这件事也不需要 60fps。50ms 一次（20fps）足够，用户看不出延迟。
+     */
+    const now = Date.now()
+    if (handlers.onPathGrow && now - lastRecognizeAt >= 50) {
+      lastRecognizeAt = now
       try {
         const grown = recognize(nextState.points ?? [])
         if (grown.valid && grown.directions !== lastDirections) {
@@ -262,7 +292,6 @@ export function startSampling(
         /* 增量识别失败不能打断采样 */
       }
     }
-    if (state.activated) clearStay()
   }
 
   const onUpHandler = (event: any) => {

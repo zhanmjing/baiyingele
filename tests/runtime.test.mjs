@@ -1684,8 +1684,10 @@ test('派发服务：抬手结束会话，采样中滚轮无会话时如实报 n
 test('采样：方向串变了才上报 onPathGrow', () => {
   const source = readFileSync(join(process.cwd(), 'src/main/classes/point/gesture_sample.ts'), 'utf8')
   assert.match(source, /onPathGrow\?:/, '必须有 path-grow 回调')
-  assert.match(source, /nextState\.activated && handlers\.onPathGrow/, '只有激活后才上报')
+  assert.match(source, /now - lastRecognizeAt >= 50/, '识别要节流到 50ms')
   assert.match(source, /grown\.directions !== lastDirections/, '方向串没变不重复上报')
+  assert.match(source, /onPathPoint\?:/, '要有逐点回调')
+  assert.match(source, /onPathStart\?:/, '要有轨迹开始回调')
 })
 
 test('主进程：实时方向串存下来并传给第一颗滚轮', () => {
@@ -1796,9 +1798,9 @@ test('surface.gesture_hint：文本 = 意图名 + 空格 + modifier 助记符（
 
 test('浮层接线：主进程要推 trail 和 hint，渲染层要挂载', () => {
   const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
-  assert.match(main, /webContents\.send\('gesture:trail'/, '主进程要推轨迹')
+  assert.match(main, /gesture:trail-point/, '主进程要逐点推')
   assert.match(main, /webContents\.send\('gesture:hint'/, '主进程要推提示')
-  assert.match(main, /lastTrailSent < 33/, '轨迹要节流到 30fps')
+  assert.match(main, /gesture:trail-start/, '要有轨迹开始通道')
 
   const preload = readFileSync(join(process.cwd(), 'src/preload/index.ts'), 'utf8')
   assert.match(preload, /ipcRenderer\.on\('gesture:trail'/, 'preload 要转发轨迹')
@@ -1832,7 +1834,7 @@ test('浮层窗口：同一渲染入口用 ?overlay=1 区分，只画浮层', ()
 test('浮层窗口：主进程优先推浮层，回落主窗口', () => {
   const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
   assert.match(main, /createGestureOverlayWindow/, '要创建浮层窗口')
-  assert.match(main, /sendToOverlay\('gesture:trail'/, '轨迹推给浮层')
+  assert.match(main, /sendToOverlay\('gesture:trail-point'/, '轨迹逐点推给浮层')
   assert.match(main, /sendToOverlay\('gesture:hint'/, '提示推给浮层')
 })
 
@@ -1859,7 +1861,8 @@ test('浮层窗口：照 CanvasWindow.cs 的样式映射，并补上 backgroundC
 
 test('主进程：轨迹可见性驱动浮层显隐', () => {
   const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
-  assert.match(main, /setOverlayVisible\(trail\.visible\)/, '浮层显隐要跟着轨迹走')
+  assert.match(main, /setOverlayVisible\(true\)/, '开始时显示')
+  assert.match(main, /setOverlayVisible\(false\)/, '结束时藏起')
 })
 
 test('surface.gesture_trail：DPI 缩放笔宽与点数上限', () => {
@@ -1892,10 +1895,10 @@ test('surface.gesture_trail：三层笔迹 阴影→白边→主笔', () => {
 test('浮层接线：画三层 + 按主屏 DPI + 传按钮', () => {
   const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
   assert.match(main, /screen\.getPrimaryDisplay\(\)\.scaleFactor/, 'DPI 按主屏取')
-  assert.match(main, /dpiFactor,/, '传给 computeTrail')
+  assert.match(main, /dpiFactor: dpi/, '传给 computeTrail')
   assert.match(main, /currentButton/, '记住触发按钮')
   const overlay = readFileSync(join(process.cwd(), 'src/renderer/src/components/GestureOverlay.tsx'), 'utf8')
-  assert.match(overlay, /trail\.layers/, '渲染层画三层')
+  assert.match(overlay, /penRef\.current\.layers/, '渲染层画三层')
 })
 
 test('main 不能用运行时 require 引相对模块（单文件打包后必然 MODULE_NOT_FOUND）', () => {
