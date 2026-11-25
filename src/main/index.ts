@@ -18,6 +18,8 @@ import { resolveForm, setFormSink } from './classes/point/ui_form'
 import { setRunHistorySource } from './classes/field/observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
+import { startSampling } from './classes/point/gesture_sample'
+import { onResume as onGestureResume } from './classes/point/gesture_pause'
 import { createGestureOverlayWindow, sendToOverlay, resizeOverlayToPrimary, setOverlayVisible } from './gestureOverlayWindow'
 import { computeTrail } from './classes/surface/gesture_trail'
 import { computeHint } from './classes/surface/gesture_hint'
@@ -206,9 +208,6 @@ app.whenReady().then(() => {
    *   3. 暂停时钩子停，恢复时重起
    */
   const startGestureHook = () => {
-    const samplers = require('./classes/point/gesture_sample') as typeof import('./classes/point/gesture_sample')
-    const pause = require('./classes/point/gesture_pause') as typeof import('./classes/point/gesture_pause')
-
     // 采样过程中的实时方向串，第一颗滚轮派发时要用
     let currentDirections = ''
     // 触发按钮决定笔色（照原码按 Button 选 _mainPen/_middleBtnPen/_xBtnPen）
@@ -241,10 +240,9 @@ app.whenReady().then(() => {
     }
 
     const start = () =>
-      samplers.startSampling({
+      startSampling({
         onSample: (sample) => {
           currentDirections = ''
-          if (sample?.button) currentButton = sample.button
           // 抬手：轨迹淡出（推送空轨迹让浮层隐藏），提示保留一会儿
           pushTrail([], '', false, true)
           // 抬手先结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded）。
@@ -268,6 +266,8 @@ app.whenReady().then(() => {
         // 实时方向串（对应 EffectivePathGrow）—— 第一颗滚轮要靠它找绑定
         onPathGrow: (grow) => {
           currentDirections = grow.directions
+          // 按钮要在这里设：抬手时才设的话，整个手势过程中用的都是上一个手势的按钮
+          if (grow.button) currentButton = grow.button
           // 实时轨迹：识别成功后换笔（照 WGestures 的 _pathPen = _tempMainPen）
           pushTrail(grow.points, grow.directions, grow.directions.length > 0, false, currentButton)
 
@@ -285,7 +285,7 @@ app.whenReady().then(() => {
       console.warn('[gesture] 全局钩子未启动：', result.message)
       return result
     }
-    pause.onResume(() => {
+    onGestureResume(() => {
       start()
     })
     return result

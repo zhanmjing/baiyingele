@@ -174,7 +174,7 @@ export interface SamplingHandlers {
    * 原码里「允许修饰符执行」的手势在滚轮那一刻就去 Find 并执行，
    * 那时路径还没结束，只有实时方向串。没有这个回调整，第一颗滚轮就无法配绑定。
    */
-  onPathGrow?: (state: { points: GesturePoint[]; directions: string }) => void
+  onPathGrow?: (state: { points: GesturePoint[]; directions: string; button: string }) => void
 }
 
 export interface SamplingControl {
@@ -256,7 +256,7 @@ export function startSampling(
         const grown = recognize(nextState.points ?? [])
         if (grown.valid && grown.directions !== lastDirections) {
           lastDirections = grown.directions
-          handlers.onPathGrow({ points: nextState.points ?? [], directions: grown.directions })
+          handlers.onPathGrow({ points: nextState.points ?? [], directions: grown.directions, button: nextState.button })
         }
       } catch {
         /* 增量识别失败不能打断采样 */

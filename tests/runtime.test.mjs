@@ -1567,10 +1567,10 @@ test('triggerService：needsSession 的绑定触发后开会话，滚轮能被�
 test('主进程：启动时必须调用 startGestureHook，失败不阻塞启动', () => {
   const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
   assert.match(source, /const hookStatus = startGestureHook\(\)/, '必须在 whenReady 里起钩子')
-  assert.match(source, /samplers\.startSampling\(/, '必须真的调用 startSampling')
+  assert.match(source, /startSampling\(\{/, '必须真的调用 startSampling（静态导入，不能 require）')
   assert.match(source, /onSample:[\s\S]{0,900}dispatchGesturePoints/, '采样结束必须派发')
   assert.match(source, /onWheel:[\s\S]{0,200}feedSessionEvent/, '滚轮必须送进会话')
-  assert.match(source, /pause\.onResume\(/, '恢复时必须重起钩子')
+  assert.match(source, /onGestureResume\(/, '恢复时必须重起钩子')
   assert.match(source, /if \(!result\.ok\)/, '钩子失败要能看见')
   assert.match(source, /gestureHook: hookStatus/, 'app:info 要暴露钩子状态')
 })
@@ -1896,4 +1896,22 @@ test('浮层接线：画三层 + 按主屏 DPI + 传按钮', () => {
   assert.match(main, /currentButton/, '记住触发按钮')
   const overlay = readFileSync(join(process.cwd(), 'src/renderer/src/components/GestureOverlay.tsx'), 'utf8')
   assert.match(overlay, /trail\.layers/, '渲染层画三层')
+})
+
+test('main 不能用运行时 require 引相对模块（单文件打包后必然 MODULE_NOT_FOUND）', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  const bad = [...main.matchAll(/require\(\s*['"]\.\.?\/[^'"]+['"]\s*\)/g)].map((m) => m[0])
+  assert.deepStrictEqual(bad, [], `单文件 main 里不能有相对 require：${bad.join(', ')}`)
+  assert.match(main, /import \{ startSampling \} from '\.\/classes\/point\/gesture_sample'/, 'startSampling 要静态导入')
+  assert.match(main, /import \{ onResume as onGestureResume \}/, 'onResume 要静态导入')
+})
+
+test('采样按钮要在 path-grow 时就拿到，不能等抬手', () => {
+  const sample = readFileSync(join(process.cwd(), 'src/main/classes/point/gesture_sample.ts'), 'utf8')
+  assert.match(sample, /onPathGrow\?:\s*\(state: \{[^}]*button: string/, 'path-grow 要带 button')
+  assert.match(sample, /button: nextState\.button/, '上报时要带当前按钮')
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(main, /onPathGrow:[\s\S]{0,300}currentButton = grow\.button/, '按钮要在 path-grow 时设')
+  const onSampleBlock = main.slice(main.indexOf('onSample:'), main.indexOf('onWheel:'))
+  assert.ok(!onSampleBlock.includes('currentButton ='), '抬手时设按钮是错的')
 })
