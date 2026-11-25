@@ -30,6 +30,7 @@
     "body.invoice_archive",
     "body.suite",
     "body.web_clipper",
-    "body.backup_sync"
+    "body.backup_sync",
+    "body.gesture_parse"
   ]
 }

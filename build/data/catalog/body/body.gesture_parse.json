@@ -1,0 +1,35 @@
+{
+  "id": "body.gesture_parse",
+  "name": "手势解析",
+  "group": "gesture",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "手势解析状态机：逐向量 4/8 向判定 + 36° 转折迟滞 + 首方向改写",
+  "instances": [
+    {
+      "id": "body.gesture_parse.eight_dir@r1",
+      "name": "八向",
+      "rev": 1,
+      "status": "active",
+      "description": "enable8Dir=true",
+      "params": {
+        "enable8Dir": true
+      }
+    },
+    {
+      "id": "body.gesture_parse.four_dir@r1",
+      "name": "四向",
+      "rev": 1,
+      "status": "active",
+      "description": "enable8Dir=false",
+      "params": {
+        "enable8Dir": false
+      }
+    }
+  ],
+  "requires": [],
+  "standalone": true,
+  "standaloneReason": "手势解析是纯状态机，不组合其他层的原子能力；判定函数在 shared/gestureParser 内，逐行移植自 GestureParser.cs"
+}

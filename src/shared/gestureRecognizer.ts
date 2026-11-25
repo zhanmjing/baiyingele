@@ -1,4 +1,5 @@
 import { DIR_ARROW, type Direction } from './gestureNotation'
+import { createParseState, parse, dirsToArrows } from './gestureParser'
 
 /**
  * 手势识别（纯函数，渲染层与主进程共用）。
@@ -140,69 +141,28 @@ export function directionOf(dx: number, dy: number): string {
  */
 export function toDirectionSequence(points: GesturePoint[], options: RecognizerOptions = {}): string[] {
   const config = { ...DEFAULT_OPTIONS, ...options }
-  const total = pathLength(points)
-  const minStep = Math.max(6, total * config.minStepRatio)
+  const arrows = runParser(points, config.eightDirections !== false)
+  // 对外仍是单码位箭头数组，调用方不用改
+  return [...arrows]
+}
 
-  const sampled: GesturePoint[] = []
-  for (const point of points) {
-    const last = sampled[sampled.length - 1]
-    if (!last || Math.hypot(point.x - last.x, point.y - last.y) >= minStep) sampled.push(point)
+/**
+ * 忠实移植的解析入口：把整条轨迹喂给 WGestures 的 Parse 状态机。
+ *
+ * 之前这里是自己写的「降采样 → 分段 → 每段投票 + switchVotes」，
+ * 和原码不是一回事（原码没有分段、没有最小段长，但有 36° 迟滞和首方向改写）。
+ * 现在全部交给 gestureParser.ts，那是对 GestureParser.cs:158-238 的逐行移植。
+ */
+export function runParser(points: GesturePoint[], enable8Dir = true): string {
+  const state = createParseState()
+  if (!points.length) return ''
+  state.startPoint = { x: points[0].x, y: points[0].y }
+  state.lastPoint = { x: points[0].x, y: points[0].y }
+  state.pointCount = 1
+  for (let i = 1; i < points.length; i++) {
+    parse(state, { x: points[i].x, y: points[i].y }, '', enable8Dir)
   }
-
-  // WGestures 的分段规则：**首段 8 向，之后一律 4 向**。
-  // 斜线只出现在开头（起笔时最准），后续段强制回到正十字，避免长轨迹上斜向抖动。
-  /**
-   * 每一步都算两种判向，之后按**段**决定用哪个。
-   *
-   * WGestures 的规则是「首段 8 向、后续段 4 向」，这里的「段」是
-   * **一段连续的同一方向**，不是第一个采样点。
-   *
-   * 之前写成 `raw.length === 0` 只让第一个采样步走 8 向，后果：
-   *   斜线起笔算出 UL，后面十几步全被 4 向压成 U，多数票把整条斜线压平；
-   *   于是 ↖ 和 ↑ 识别成同一个方向串，多个不同手势互相「重复」。
-   */
-  const steps: Array<{ d8: string; d4: string }> = []
-  for (let index = 1; index < sampled.length; index++) {
-    const dx = sampled[index].x - sampled[index - 1].x
-    const dy = sampled[index].y - sampled[index - 1].y
-    // 屏幕坐标 y 向下，判定函数吃数学坐标 —— 先 negate dy
-    const mathDy = -dy
-    steps.push({ d8: wgDir8(dx, mathDy), d4: wgDir4(dx, mathDy) })
-  }
-
-  // 用 4 向做段切分（更稳，不会因为斜向抖动把一段切成两段）
-  const runs: Array<{ d4: string; d8: string[]; count: number; arrow?: string }> = []
-  for (const step of steps) {
-    const last = runs[runs.length - 1]
-    if (last && last.d4 === step.d4) {
-      last.d8.push(step.d8)
-      last.count += 1
-    } else {
-      runs.push({ d4: step.d4, d8: [step.d8], count: 1 })
-    }
-  }
-
-  /** 一段里 8 向的众数；平票取先出现的 */
-  const modeOf = (list: string[]): string => {
-    const count = new Map<string, number>()
-    for (const item of list) count.set(item, (count.get(item) ?? 0) + 1)
-    let best = list[0] ?? ''
-    let bestCount = 0
-    for (const [key, value] of count) if (value > bestCount) { best = key; bestCount = value }
-    return best
-  }
-
-  const arrowOf: Record<string, string> = { U: '↑', UR: '↗', R: '→', DR: '↘', D: '↓', DL: '↙', L: '←', UL: '↖' }
-  for (const [index, run] of runs.entries()) {
-    const code = index === 0 && config.eightDirections ? modeOf(run.d8) : run.d4
-    run.arrow = arrowOf[code] ?? code
-  }
-
-  // switchVotes 现在作用在**段**上：一段至少这么多步才算数，滤掉拐角抖动。
-  // （runs 已经把连续同向合并了，不能再按「连续相同」数一遍）
-  const kept = runs.filter((run) => run.count >= config.switchVotes)
-  const chosen = kept.length ? kept : runs.slice(0, 1)
-  return chosen.map((run) => run.arrow ?? '?')
+  return dirsToArrows(state.dirs)
 }
 
 /** 轨迹 → 识别结果（含无效原因） */

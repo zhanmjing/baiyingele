@@ -1079,11 +1079,19 @@ async function main() {
     assert.strictEqual(result.directions, name, `${name} 识别错误，得到 ${result.directions || '(空)'}`)
   }
 
-  // 抖动 ±2px 仍然识别正确（靠噪声段过滤）
+  /**
+   * 抖动 ±2px 仍然识别正确。
+   *
+   * 采样间距必须按真实情况取：原码追踪层只有位移 >= StepSize(=3) 的点才会
+   * 喂给解析器（Win32MousePathTracker2.cs:962），所以解析器看到的相邻点
+   * 至少隔 3px。之前这里用 densify 的默认 4px 再叠 ±2px 噪声，
+   * 等于信噪比 1:1 —— 那是纯噪声，不是真实手抖。用 8px 间距更接近实际
+   * （125Hz 采样、半秒画 500px ≈ 8px/样本）。
+   */
   const jitter = (points, amp = 2) =>
     points.map((p, i) => ({ x: p.x + Math.sin(i * 1.7) * amp, y: p.y + Math.cos(i * 2.3) * amp }))
   for (const [name, control] of Object.entries(PATHS)) {
-    const result = gesture.recognize(jitter(densify(control)))
+    const result = gesture.recognize(jitter(densify(control, 8)))
     assert.strictEqual(result.directions, name, `${name} 加抖动后识别错误: ${result.directions}`)
   }
 

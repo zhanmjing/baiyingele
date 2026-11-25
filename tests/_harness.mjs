@@ -34,6 +34,7 @@ const ENTRIES = [
   'src/shared/fieldLanding.ts',
   'src/shared/gestureRecognizer.ts',
   'src/shared/gestureNotation.ts',
+  'src/shared/gestureParser.ts',
   'src/shared/commandSession.ts',
   'src/shared/formSpec.ts'
 ]

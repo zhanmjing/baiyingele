@@ -580,7 +580,7 @@ test('新轨：清单与注册表一致，面层 17 个必须全部进清单', (
 })
 
 // ── 体层：每个体声明自己的必需角色 ──────────────────────────────
-test('body：29 个体都有实现单元，且各自声明了必需角色', () => {
+test('body：31 个体都有实现单元，且各自声明了必需角色', () => {
   const impls = load('main/classes/index.js').CLASS_IMPLS
   const bodyIds = catalogs.body.map((c) => c.id).sort()
   const missing = bodyIds.filter((id) => !impls[id])
@@ -588,7 +588,12 @@ test('body：29 个体都有实现单元，且各自声明了必需角色', () =
 
   for (const id of bodyIds) {
     const mod = load(`main/classes/body/${id.split('.')[1]}.js`)
-    assert.ok(Array.isArray(mod.requires) && mod.requires.length > 0, `${id} 没声明 requires`)
+    // 体层一般是组合，要声明 requires；纯状态机类可以如实标 standalone（不许静默留空）
+    assert.ok(Array.isArray(mod.requires), `${id} 没声明 requires`)
+    assert.ok(
+      mod.requires.length > 0 || mod.standalone === true,
+      `${id} 既没有 requires 也没有标 standalone —— 不能静默留空`
+    )
     for (const req of mod.requires) {
       assert.ok(['ui', 'flow', 'capability', 'intel'].includes(req.role), `${id} 的角色非法：${req.role}`)
       assert.ok(req.reason.length >= 8, `${id} 的 ${req.role} 没写清为什么需要`)
@@ -2183,7 +2188,7 @@ test('手势识别：八个方向都要认得（对角曾被压成主方向，�
   const cases = [
     ['↑', [[0, -1]]], ['↘', [[1, 1]]], ['↓', [[0, 1]]], ['↙', [[-1, 1]]],
     ['←', [[-1, 0]]], ['↖', [[-1, -1]]], ['→', [[1, 0]]], ['↗', [[1, -1]]],
-    ['←↓→', [[-1, 0], [0, 1], [1, 0]]], ['↖→', [[-1, -1], [1, 0]]]
+    ['←↓→', [[-1, 0], [0, 1], [1, 0]]], ['↑→', [[-1, -1], [1, 0]]]
   ]
   const wrong = cases.filter(([want, segs]) => r.recognize(cat(...segs)).directions !== want)
   assert.deepStrictEqual(
@@ -2193,15 +2198,14 @@ test('手势识别：八个方向都要认得（对角曾被压成主方向，�
   )
 })
 
-test('手势识别：8 向规则作用在「段」上，不是第一个采样点', () => {
+test('手势识别：识别走忠实移植的逐向量状态机，不是自造的分段投票', () => {
   const src = readFileSync(join(process.cwd(), 'src/shared/gestureRecognizer.ts'), 'utf8')
-  // 曾经写成 `const isFirstSegment = raw.length === 0`，只有第一个采样步走 8 向，
-  // 后面的步全被 4 向压平 → 斜线变成主方向。注释里提到这个写法是正常的，只查代码。
-  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\*.*$/gm, '').replace(/\/\/.*$/gm, '')
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
   assert.ok(!/isFirstSegment\s*=\s*raw\.length\s*===\s*0/.test(code), '不能只让第一个采样步走 8 向')
-  assert.match(src, /const runs: Array<\{[^}]*count: number/, '要按段聚合（段 = 一段连续同向）')
-  assert.match(src, /index === 0 && config\.eightDirections \? modeOf\(run\.d8\) : run\.d4/, '首段用 8 向众数，其余段用 4 向')
-  assert.match(src, /runs\.filter\(\(run\) => run\.count >= config\.switchVotes\)/, 'switchVotes 要作用在段上')
+  assert.match(code, /runParser\(/, 'recognize 必须走 gestureParser 的忠实移植')
+  const parser = readFileSync(join(process.cwd(), 'src/shared/gestureParser.ts'), 'utf8')
+  assert.match(parser, /slashRange = 50/, '8 向边界用原码 slashRange=50')
+  assert.match(parser, /< 36/, '转折用原码 36° 迟滞')
 })
 
 test('主进程：IPC 发送必须防「窗口已销毁」（Object has been destroyed）', () => {
@@ -2293,4 +2297,60 @@ test('手势记法：formatGesture 要包含按钮和修饰符', () => {
     [],
     '按钮和修饰符必须出现在助记符里，否则不同手势显示成一样'
   )
+})
+
+// ── 体层手势解析：逐行移植自 GestureParser.cs ─────────────────
+test('body.gesture_parse：方向枚举顺序必须与原码一致（8 向顺时针）', () => {
+  const p = load('shared/gestureParser.js')
+  const order = ['Up', 'RightUp', 'Right', 'RightDown', 'Down', 'LeftDown', 'Left', 'LeftUp']
+  for (const [index, name] of order.entries()) {
+    assert.strictEqual(p.GestureDir[name], index, `GestureDir.${name} 必须是 ${index}（原码按顺时针编号）`)
+  }
+  assert.deepStrictEqual(order.map((n) => p.DIR_ARROW[p.GestureDir[n]]), ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖'])
+})
+
+test('body.gesture_parse：get8Dir 的 slashRange=50 不对称（主向桶窄、斜向桶宽）', () => {
+  const p = load('shared/gestureParser.js')
+  // 纯上：angle=0 → Up
+  assert.strictEqual(p.get8Dir({ x: 0, y: 1 }), p.GestureDir.Up)
+  // 22.5° 偏右上：主向桶 mod>20 就进位 → 判成 RightUp
+  assert.strictEqual(p.get8Dir({ x: 1, y: 2.414 }), p.GestureDir.RightUp, '主向桶窄：偏 22.5° 就进到斜向')
+  // 斜向桶要 mod>70 才进位，所以 67.5°（RotUp 桶里的 mod=22.5）仍是 RightUp
+  assert.strictEqual(p.get8Dir({ x: 2.414, y: 1 }), p.GestureDir.RightUp, '斜向桶宽：斜向不容易掉回主向')
+})
+
+test('body.gesture_parse：逐向量解析 + 36° 转折迟滞 + 首方向改写', () => {
+  const p = load('shared/gestureParser.js')
+  const path = (...segs) => {
+    const out = [{ x: 500, y: 500 }]
+    let cur = { ...out[0] }
+    for (const [dx, dy] of segs) for (let i = 0; i < 12; i++) { cur = { x: cur.x + dx * 8, y: cur.y + dy * 8 }; out.push({ ...cur }) }
+    return out
+  }
+  const cases = [
+    ['↑', [[0, -1]]], ['↓', [[0, 1]]], ['←', [[-1, 0]]], ['→', [[1, 0]]],
+    ['↖', [[-1, -1]]], ['↗', [[1, -1]]], ['↙', [[-1, 1]]], ['↘', [[1, 1]]],
+    ['←↓→', [[-1, 0], [0, 1], [1, 0]]],
+    ['↓↑', [[0, 1], [0, -1]]],
+    // 首段斜线 + 真转折（>36°）→ 首方向退化成 4 向：↖ 变成 ↑
+    ['↑→', [[-1, -1], [1, 0]]]
+  ]
+  const wrong = cases.filter(([want, segs]) => p.parsePath(path(...segs)) !== want)
+  assert.deepStrictEqual(
+    wrong.map(([want, segs]) => `${want}: ${p.parsePath(path(...segs))}`),
+    [],
+    '解析结果必须和原码逐向量状态机一致'
+  )
+})
+
+test('body.gesture_parse：不许再出现自己发明的分段投票（switchVotes）', () => {
+  const recognizer = readFileSync(join(process.cwd(), 'src/shared/gestureRecognizer.ts'), 'utf8')
+  const code = recognizer.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+  // 原码没有分段、没有最小段长度；这些是之前凭空加的
+  assert.ok(!/switchVotes/.test(code.slice(code.indexOf('export function toDirectionSequence'))), 'toDirectionSequence 不该再用 switchVotes（原码没有分段投票）')
+  assert.match(code, /runParser\(/, 'recognize 必须走忠实移植的 parsePath')
+  const parser = readFileSync(join(process.cwd(), 'src/shared/gestureParser.ts'), 'utf8')
+  assert.match(parser, /slashRange = 50/, '8 向要保留原码的 slashRange=50')
+  assert.match(parser, /< 36/, '转折要保留原码的 36° 迟滞')
+  assert.match(parser, /state\.dirs\[0\] = get4Dir\(state\.lastVector\)/, '真转折要把首方向改写成 4 向')
 })
