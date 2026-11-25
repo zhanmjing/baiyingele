@@ -1,0 +1,32 @@
+{
+  "id": "point.copy_selection",
+  "name": "复制选区",
+  "group": "content",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "发 Ctrl+C 复制当前选区再读剪贴板。WebSearch 的前置能力。",
+  "instances": [
+    {
+      "id": "point.copy_selection.默认@r1",
+      "name": "默认",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"settleMs\": 120}",
+      "params": {
+        "settleMs": 120
+      }
+    },
+    {
+      "id": "point.copy_selection.慢速@r1",
+      "name": "慢速",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"settleMs\": 300}",
+      "params": {
+        "settleMs": 300
+      }
+    }
+  ]
+}

@@ -1423,6 +1423,157 @@
           }
         }
       ]
+    },
+    {
+      "id": "point.shell_exec",
+      "name": "执行命令行",
+      "family": "system",
+      "priority": "P1",
+      "effect": "L3",
+      "status": "active",
+      "description": "执行命令行，支持 %WG_PROCID% / %WG_EXE% / %WG_APP% 变量替换。对应 WGestures CmdCommand。",
+      "params": [],
+      "instances": [
+        {
+          "id": "point.shell_exec.kill_当前应用@r1",
+          "name": "kill 当前应用",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.shell_exec.打开_cmd@r1",
+          "name": "打开 cmd",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.shell_exec.自定义@r1",
+          "name": "自定义",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "id": "point.send_keys",
+      "name": "发送按键序列",
+      "family": "hotkey",
+      "priority": "P1",
+      "effect": "L1",
+      "status": "active",
+      "description": "SendKeys 方言解析 + 发送（^v{enter} / %{TAB} / {sleep 500}）。对应 SendTextCommand。",
+      "params": [],
+      "instances": [
+        {
+          "id": "point.send_keys.paste_enter@r1",
+          "name": "粘贴并回车",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.send_keys.alt_tab@r1",
+          "name": "Alt+Tab",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.send_keys.custom@r1",
+          "name": "自定义",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "id": "point.gesture_pause",
+      "name": "暂停手势",
+      "family": "gesture",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "暂停/恢复手势采样。对应 PauseWGesturesCommand。",
+      "params": [],
+      "instances": [
+        {
+          "id": "point.gesture_pause.切换@r1",
+          "name": "切换",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.gesture_pause.暂停@r1",
+          "name": "暂停",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.gesture_pause.恢复@r1",
+          "name": "恢复",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "id": "point.copy_selection",
+      "name": "复制选区",
+      "family": "content",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "发 Ctrl+C 复制当前选区再读剪贴板。WebSearch 的前置能力。",
+      "params": [],
+      "instances": [
+        {
+          "id": "point.copy_selection.默认@r1",
+          "name": "默认",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.copy_selection.慢速@r1",
+          "name": "慢速",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "id": "point.task_switch",
+      "name": "任务切换",
+      "family": "system",
+      "priority": "P2",
+      "effect": "L1",
+      "status": "active",
+      "description": "任务切换：一次性 Alt+Tab 或由会话驱动连续切换。对应 TaskSwitcherCommand。",
+      "params": [],
+      "instances": [
+        {
+          "id": "point.task_switch.下一个@r1",
+          "name": "下一个",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.task_switch.上一个@r1",
+          "name": "上一个",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        }
+      ]
     }
   ],
   "line": [

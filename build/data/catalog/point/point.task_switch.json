@@ -1,0 +1,32 @@
+{
+  "id": "point.task_switch",
+  "name": "任务切换",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P2",
+  "summary": "任务切换：一次性 Alt+Tab 或由会话驱动连续切换。对应 TaskSwitcherCommand。",
+  "instances": [
+    {
+      "id": "point.task_switch.下一个@r1",
+      "name": "下一个",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"backward\": false}",
+      "params": {
+        "backward": false
+      }
+    },
+    {
+      "id": "point.task_switch.上一个@r1",
+      "name": "上一个",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"backward\": true}",
+      "params": {
+        "backward": true
+      }
+    }
+  ]
+}

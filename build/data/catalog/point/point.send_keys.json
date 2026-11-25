@@ -1,0 +1,42 @@
+{
+  "id": "point.send_keys",
+  "name": "发送按键序列",
+  "group": "hotkey",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P1",
+  "summary": "SendKeys 方言解析 + 发送（^v{enter} / %{TAB} / {sleep 500}）。对应 SendTextCommand。",
+  "instances": [
+    {
+      "id": "point.send_keys.paste_enter@r1",
+      "name": "粘贴并回车",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"text\": \"^v{enter}\"}",
+      "params": {
+        "text": "^v{enter}"
+      }
+    },
+    {
+      "id": "point.send_keys.alt_tab@r1",
+      "name": "Alt+Tab",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"text\": \"%{TAB}\"}",
+      "params": {
+        "text": "%{TAB}"
+      }
+    },
+    {
+      "id": "point.send_keys.custom@r1",
+      "name": "自定义",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"text\": \"\"}",
+      "params": {
+        "text": ""
+      }
+    }
+  ]
+}

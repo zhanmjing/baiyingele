@@ -22,6 +22,11 @@
     "point.notify_toast",
     "point.file_scan",
     "point.clipboard_write",
-    "point.translate_text"
+    "point.translate_text",
+    "point.shell_exec",
+    "point.send_keys",
+    "point.gesture_pause",
+    "point.copy_selection",
+    "point.task_switch"
   ]
 }

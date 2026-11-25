@@ -1194,3 +1194,105 @@ test('迁移脚本：产出必须自洽（箭头串 + 目标存在性标出）',
     assert.strictEqual(s.gestureKeyOf(parsed), s.gestureKeyOf(b.gesture), `${b.id} 身份键往返不一致`)
   }
 })
+
+test('shell_exec：%WG_PROCID% 必须替换，变量缺失时拒绝执行', async () => {
+  const s = load('main/classes/point/shell_exec.js')
+  const ok = s.expandVariables('taskkill /f /pid %WG_PROCID% /s localhost', { procId: 4242 })
+  assert.strictEqual(ok.code, 'taskkill /f /pid 4242 /s localhost')
+  assert.deepStrictEqual(ok.unresolved, [])
+
+  const missing = s.expandVariables('taskkill /f /pid %WG_PROCID% /s localhost', {})
+  assert.deepStrictEqual(missing.unresolved, ['%WG_PROCID%'], '必须报出未解析变量')
+  assert.strictEqual(missing.code, 'taskkill /f /pid %WG_PROCID% /s localhost', '不能替换成空串')
+
+  const refused = await s.execCommand('taskkill /f /pid %WG_PROCID%', {})
+  assert.strictEqual(refused.status, 'warn')
+  assert.match(refused.output, /无法解析的变量/)
+  assert.strictEqual((await s.execCommand('   ')).status, 'warn')
+  const done = await s.execCommand('echo hi', {})
+  assert.strictEqual(done.status, 'ok')
+  assert.match(done.output, /hi/)
+})
+
+test('send_keys：SendKeys 方言解析（^v{enter} / %{TAB} / {sleep}）', () => {
+  const s = load('main/classes/point/send_keys.js')
+  const paste = s.parseSendKeys('^v{enter}')
+  assert.strictEqual(paste.error, undefined)
+  assert.strictEqual(paste.steps.length, 2)
+  // canonicalKeyName 返回大写显示名，这是 key_send 的既有约定
+  assert.deepStrictEqual(paste.steps[0], { kind: 'keys', modifiers: ['Ctrl'], key: 'V' })
+  assert.deepStrictEqual(paste.steps[1], { kind: 'keys', modifiers: [], key: 'Enter' })
+
+  const altTab = s.parseSendKeys('%{TAB}')
+  assert.deepStrictEqual(altTab.steps[0], { kind: 'keys', modifiers: ['Alt'], key: 'Tab' })
+
+  const combo = s.parseSendKeys('^%{DELETE}')
+  assert.deepStrictEqual(combo.steps[0].modifiers, ['Ctrl', 'Alt'])
+  assert.strictEqual(combo.steps[0].key, 'Delete')
+
+  const withSleep = s.parseSendKeys('a{sleep 500}b')
+  assert.deepStrictEqual(withSleep.steps.map((x) => x.kind), ['text', 'sleep', 'text'])
+  assert.strictEqual(withSleep.steps[1].ms, 500)
+
+  assert.ok(s.parseSendKeys('{nosuchkey}').error, '未知键必须报错')
+  assert.ok(s.parseSendKeys('{enter').error, '花括号不闭合必须报错')
+})
+
+test('gesture_pause：暂停/恢复状态正确，未知 action 要报错', () => {
+  const s = load('main/classes/point/gesture_pause.js')
+  s.resetForTest()
+  assert.strictEqual(s.isPaused(), false)
+  assert.strictEqual(s.pause().paused, true)
+  assert.strictEqual(s.pause().paused, true, '重复暂停幂等')
+  assert.strictEqual(s.resume().paused, false)
+  s.toggle()
+  assert.strictEqual(s.isPaused(), true)
+  s.toggle()
+  assert.strictEqual(s.isPaused(), false)
+
+  assert.match(s.run({ params: { action: 'status' } }).output, /运行中/)
+  assert.match(s.run({ params: { action: 'pause' } }).output, /已暂停/)
+  assert.match(s.run({ params: { action: 'resume' } }).output, /已恢复/)
+  const bad = s.run({ params: { action: 'nope' } })
+  assert.strictEqual(bad.status, 'warn')
+  assert.match(bad.output, /未知 action/)
+  s.resetForTest()
+})
+
+test('copy_selection：必须先复制再等再读，不能立刻读', async () => {
+  const s = load('main/classes/point/copy_selection.js')
+  const calls = []
+  let clipboard = ''
+  const result = await s.copySelection({
+    sendCopy: () => { calls.push('copy'); clipboard = '  选中的文字  ' },
+    readClipboard: () => { calls.push('read'); return clipboard },
+    sleep: async (ms) => { calls.push(`sleep:${ms}`) }
+  })
+  assert.deepStrictEqual(calls, ['copy', 'sleep:120', 'read'], '顺序必须是复制→等→读')
+  assert.strictEqual(result.status, 'ok')
+  assert.strictEqual(result.value, '选中的文字')
+  assert.strictEqual(result.output, '已复制 5 字')
+
+  const empty = await s.copySelection({ sendCopy: () => {}, readClipboard: () => '   ', sleep: async () => {} })
+  assert.strictEqual(empty.status, 'warn')
+  assert.match(empty.output, /选区为空/)
+  assert.strictEqual((await s.run({})).status, 'warn')
+})
+
+test('task_switch：会话式切换能连续滚轮并记录格数', async () => {
+  const s = load('main/classes/point/task_switch.js')
+  const sent = []
+  const session = s.createTaskSwitchSession({ sendSwitch: (back) => sent.push(back) })
+  await session.began()
+  assert.deepStrictEqual(sent, [false])
+  assert.strictEqual(session.steps(), 1)
+
+  assert.strictEqual(session.onEvent('wheel-forward'), -1)
+  await session.step(-1)
+  assert.deepStrictEqual(sent, [false, true])
+  assert.strictEqual(session.steps(), 0)
+
+  assert.strictEqual(session.onEvent('wheel-backward'), 1)
+  assert.strictEqual(session.onEvent('x1'), null, '不关心的事件返回 null')
+  assert.match(session.ended().output, /共 0 格/)
+})

@@ -1,0 +1,42 @@
+{
+  "id": "point.gesture_pause",
+  "name": "暂停手势",
+  "group": "gesture",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "summary": "暂停/恢复手势采样。对应 PauseWGesturesCommand。",
+  "instances": [
+    {
+      "id": "point.gesture_pause.切换@r1",
+      "name": "切换",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"action\": \"toggle\"}",
+      "params": {
+        "action": "toggle"
+      }
+    },
+    {
+      "id": "point.gesture_pause.暂停@r1",
+      "name": "暂停",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"action\": \"pause\"}",
+      "params": {
+        "action": "pause"
+      }
+    },
+    {
+      "id": "point.gesture_pause.恢复@r1",
+      "name": "恢复",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"action\": \"resume\"}",
+      "params": {
+        "action": "resume"
+      }
+    }
+  ]
+}

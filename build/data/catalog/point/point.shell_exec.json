@@ -1,0 +1,45 @@
+{
+  "id": "point.shell_exec",
+  "name": "执行命令行",
+  "group": "system",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L3",
+  "priority": "P1",
+  "summary": "执行命令行，支持 %WG_PROCID% / %WG_EXE% / %WG_APP% 变量替换。对应 WGestures CmdCommand。",
+  "instances": [
+    {
+      "id": "point.shell_exec.kill_当前应用@r1",
+      "name": "kill 当前应用",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"code\": \"taskkill /f /pid %WG_PROCID% /s localhost\", \"timeoutMs\": 5000}",
+      "params": {
+        "code": "taskkill /f /pid %WG_PROCID% /s localhost",
+        "timeoutMs": 5000
+      }
+    },
+    {
+      "id": "point.shell_exec.打开_cmd@r1",
+      "name": "打开 cmd",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"code\": \"cmd /c start cmd\", \"timeoutMs\": 3000}",
+      "params": {
+        "code": "cmd /c start cmd",
+        "timeoutMs": 3000
+      }
+    },
+    {
+      "id": "point.shell_exec.自定义@r1",
+      "name": "自定义",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"code\": \"\", \"timeoutMs\": 8000}",
+      "params": {
+        "code": "",
+        "timeoutMs": 8000
+      }
+    }
+  ]
+}
