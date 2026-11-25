@@ -2239,3 +2239,14 @@ test('归档脚本：孤儿判定要有目录依据，且默认预演', () => {
   assert.match(src, /copyFileSync\(file, join\(backupDir/, '写前必须备份')
   assert.match(src, /status: 'archived'/, '归档而不是删除 —— 数据可恢复')
 })
+
+test('point.key_send：没给 target 时必须报告「发给了哪个窗口」', () => {
+  const src = readFileSync(join(process.cwd(), 'src/main/classes/point/key_send.ts'), 'utf8')
+  // SendInput 只发给前台窗口。不报告接收方的话「已发送 Ctrl+C」是个无法验证的成功——
+  // 在百应里点运行，键就发给了百应自己。
+  assert.match(src, /if \(!targetRaw && result\.ok\) \{/, '没给 target 时要单独取前台窗口')
+  assert.match(src, /前台窗口 \$\{foreground\.exeName\}/, 'output 要带上前台进程名')
+  assert.match(src, /target: receiverEvidence/, 'evidence 里也要记接收方')
+  // 给了 target 时仍走 focusWindow
+  assert.match(src, /focusWindow\(resolved\.window\.hwnd\)/, '给了 target 要先聚焦')
+})

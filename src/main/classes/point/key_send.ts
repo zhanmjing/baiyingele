@@ -1,4 +1,4 @@
-import { focusWindow, isVirtualKeyDown, sendKeyEvents, win32Available, win32LoadError, type KeyEventSpec } from '../../capabilities/_win32'
+import { focusWindow, foregroundProcess, isVirtualKeyDown, sendKeyEvents, win32Available, win32LoadError, type KeyEventSpec } from '../../capabilities/_win32'
 import { resolveTarget } from './window_control'
 import { isWindows } from '../../capabilities/_powershell'
 import { elapsed, errorMessage, type Capability } from '../../capabilities/_shared'
@@ -270,10 +270,29 @@ export const run: Capability = async (ctx) => {
     const heldNote = preHeld.size ? `（保留用户已按住的 ${preHeld.size} 个修饰键）` : ''
     const modeNote = mode === 'press' ? '' : ` · mode=${mode}`
 
+    /**
+     * 没指定 target 时，必须说清「发给了谁」。
+     *
+     * SendInput 只发给前台窗口。在百应里点「运行」，Ctrl+C 就发给百应自己的网页，
+     * 用户看到的却是「已发送 Ctrl+C」——一个无法验证的成功。
+     * 把当前前台进程写进 output，一眼就能看出是不是发错了地方。
+     */
+    let receiverNote = focusNote
+    let receiverEvidence: Record<string, unknown> | null = targetEvidence
+    if (!targetRaw && result.ok) {
+      const foreground = foregroundProcess()
+      if (foreground?.exeName) {
+        receiverNote = ` → 前台窗口 ${foreground.exeName}`
+        receiverEvidence = { process: foreground.exeName, exePath: foreground.exePath, pid: foreground.pid }
+      } else {
+        receiverNote = ' → 前台窗口（拿不到进程名）'
+      }
+    }
+
     return {
       status: result.ok ? 'ok' : 'warn',
       output: result.ok
-        ? `已发送 ${combo.label}${repeat > 1 ? ` ×${repeat}` : ''}（${result.sent} 个事件）${focusNote}${modeNote}${heldNote}`
+        ? `已发送 ${combo.label}${repeat > 1 ? ` ×${repeat}` : ''}（${result.sent} 个事件）${receiverNote}${modeNote}${heldNote}`
         : `发送失败：${result.reason}`,
       value: combo.label,
       evidence: {
@@ -284,7 +303,7 @@ export const run: Capability = async (ctx) => {
         events: events.length,
         sent: result.sent,
         preHeldModifiers: [...preHeld],
-        target: targetEvidence,
+        target: receiverEvidence,
         reason: result.reason
       },
       elapsedMs: elapsed(startedAt)
