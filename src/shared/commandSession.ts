@@ -42,10 +42,25 @@ export type SessionEndReason =
 export interface CommandSession {
   id: string
   bindingId: string
-  /** 关心的那些事件；不在集合里的不送给会话 */
+  /**
+   * 关心的那些事件；可以为空。
+   *
+   * 空集合对应 WGestures 的 observeModifiers = GestureModifier.None：
+   * TaskSwitcherCommand 开一个会话但一个滚轮都不收，只负责
+   * 「按下 Alt+Tab」和「松开 Alt」，连续切换交给系统原生。
+   *
+   * 我第一版把「开会话」和「订阅滚轮」绑成一件事，那是错的：
+   * 会话是生命周期（GestureRecognized → GestureEnded），
+   * observeModifiers 只是这个生命周期里要不要收事件。
+   */
   observes: ReadonlySet<SessionEvent>
   /** 收到关心的事件。返回 true = 继续，false = 自己结束 */
   onEvent(event: SessionEvent): boolean
+  /**
+   * 结束回调，对应 GestureEnded()。
+   * TaskSwitcherCommand 靠它松开 Alt，否则 Alt 一直按着。
+   */
+  onEnd?: (reason: SessionEndReason) => void
 }
 
 export interface SessionRecord {
@@ -60,8 +75,11 @@ export interface SessionRecord {
 
 export interface StartSessionInput {
   bindingId: string
+  /** 可以为空数组 = 不订阅任何事件（对应 GestureModifier.None） */
   observes: SessionEvent[]
   onEvent: (event: SessionEvent) => boolean
+  /** 结束回调，对应 GestureEnded() */
+  onEnd?: (reason: SessionEndReason) => void
   /** 空闲多久自动结束（毫秒）。0 = 不超时。默认 5000 */
   idleTimeoutMs?: number
   now?: () => number
@@ -82,6 +100,13 @@ export interface SessionHost {
   history(): SessionRecord[]
 }
 
+/**
+ * 滚轮节流窗口，照 WGestures Win32MousePathTracker2.cs:791：
+ *   if (now - _modifierEventHappendPrevTime > TimeSpan.FromMilliseconds(100))
+ * 高分辨率滚轮一格格发得很快，不节流会把会话刷爆。非滚轮不节流。
+ */
+export const WHEEL_THROTTLE_MS = 100
+
 export function createSessionHost(options: { historyLimit?: number } = {}): SessionHost {
   const historyLimit = options.historyLimit ?? 50
   const records: SessionRecord[] = []
@@ -89,6 +114,9 @@ export function createSessionHost(options: { historyLimit?: number } = {}): Sess
   let currentClock: (() => number) | null = null
   let idleTimeoutMs = 0
   let lastEventAt = 0
+  // 初值取 -Infinity：会话刚开时第一个滚轮必须放行
+  // （WGestures 的 _modifierEventHappendPrevTime 初值是 DateTime.MinValue）
+  let lastWheelAt = Number.NEGATIVE_INFINITY
 
   const recordOf = () => records.find((item) => item.id === current?.id)
 
@@ -98,7 +126,15 @@ export function createSessionHost(options: { historyLimit?: number } = {}): Sess
       record.endedAt = (currentClock ?? Date.now)()
       record.endReason = reason
     }
+    const closing = current
     current = null
+    if (closing?.onEnd) {
+      try {
+        closing.onEnd(reason)
+      } catch {
+        /* 结束回调抛错不能把宿主搞坏 */
+      }
+    }
   }
 
   return {
@@ -112,12 +148,14 @@ export function createSessionHost(options: { historyLimit?: number } = {}): Sess
         id: `sess.${input.bindingId}.${now()}`,
         bindingId: input.bindingId,
         observes: new Set<SessionEvent>(input.observes),
-        onEvent: input.onEvent
+        onEvent: input.onEvent,
+        onEnd: input.onEnd
       }
       current = session
       currentClock = now
       idleTimeoutMs = input.idleTimeoutMs ?? 5000
       lastEventAt = now()
+      lastWheelAt = Number.NEGATIVE_INFINITY
 
       records.unshift({
         id: session.id,
@@ -137,7 +175,14 @@ export function createSessionHost(options: { historyLimit?: number } = {}): Sess
       if (!current) return 'no-session'
       if (!current.observes.has(event)) return 'not-observed'
 
-      lastEventAt = (currentClock ?? Date.now)()
+      const clockNow = (currentClock ?? Date.now)()
+      // 滚轮 100ms 节流（照 WGestures HandleModifier）
+      if (event === 'wheel-forward' || event === 'wheel-backward') {
+        if (clockNow - lastWheelAt < WHEEL_THROTTLE_MS) return 'not-observed'
+        lastWheelAt = clockNow
+      }
+
+      lastEventAt = clockNow
       const record = recordOf()
       if (record) {
         record.events += 1

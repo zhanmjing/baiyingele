@@ -882,9 +882,12 @@ test('会话：只有被观察的事件才送达，且同一时刻只允许一�
   })
   assert.strictEqual(started.ok, true)
 
-  // 滚轮送达
+  // 滚轮送达（注意 100ms 节流：要推进时钟）
   assert.strictEqual(host.dispatch('wheel-forward'), 'delivered')
-  assert.strictEqual(host.dispatch('wheel-backward'), 'delivered')
+  clock += 50
+  assert.strictEqual(host.dispatch('wheel-backward'), 'not-observed', '100ms 内第二次滚轮被节流')
+  clock += 60
+  assert.strictEqual(host.dispatch('wheel-backward'), 'delivered', '过了 100ms 才再送')
   // 没观察的事件不送达
   assert.strictEqual(host.dispatch('x1'), 'not-observed')
   assert.deepStrictEqual(got, ['wheel-forward', 'wheel-backward'])
@@ -913,6 +916,7 @@ test('会话：onEvent 返回 false 自己结束，超时会兜底结束', () =>
     onEvent: () => false,
     now: () => clock
   })
+  clock += 200
   assert.strictEqual(host.dispatch('wheel-forward'), 'ended')
   assert.strictEqual(host.active(), null, '自己结束后不该还占着')
 
@@ -1569,4 +1573,77 @@ test('主进程：启动时必须调用 startGestureHook，失败不阻塞启动
   assert.match(source, /pause\.onResume\(/, '恢复时必须重起钩子')
   assert.match(source, /if \(!result\.ok\)/, '钩子失败要能看见')
   assert.match(source, /gestureHook: hookStatus/, 'app:info 要暴露钩子状态')
+})
+
+test('会话：observes 可以为空（对应 GestureModifier.None）', () => {
+  const { createSessionHost } = load('shared/commandSession.js')
+  const host = createSessionHost()
+  let ended = null
+  const started = host.start({
+    bindingId: 'task-switch',
+    observes: [],
+    onEvent: () => true,
+    onEnd: (reason) => { ended = reason }
+  })
+  assert.strictEqual(started.ok, true, '空 observes 也要能开会话')
+  assert.strictEqual(host.dispatch('wheel-forward'), 'not-observed')
+  assert.strictEqual(host.dispatch('middle-down'), 'not-observed')
+  host.end('path-ended')
+  assert.strictEqual(ended, 'path-ended', 'GestureEnded 必须被调用')
+  assert.strictEqual(host.active(), null)
+})
+
+test('会话：onEnd 在任何结束路径上都要被调用', () => {
+  const { createSessionHost } = load('shared/commandSession.js')
+  const reasons = []
+  let clock = 0
+
+  let host = createSessionHost()
+  host.start({ bindingId: 'a', observes: [], onEvent: () => true, onEnd: (r) => reasons.push(r), now: () => clock })
+  host.end('path-ended')
+
+  host = createSessionHost()
+  host.start({ bindingId: 'b', observes: ['wheel-forward'], onEvent: () => false, onEnd: (r) => reasons.push(r), now: () => clock })
+  clock += 500
+  host.dispatch('wheel-forward')
+
+  host = createSessionHost()
+  clock = 10_000
+  host.start({ bindingId: 'c', observes: [], onEvent: () => true, onEnd: (r) => reasons.push(r), idleTimeoutMs: 100, now: () => clock })
+  clock = 10_200
+  host.tick()
+
+  assert.deepStrictEqual(reasons, ['path-ended', 'self-closed', 'timeout'])
+})
+
+test('会话：onEnd 抛错不能把宿主搞坏', () => {
+  const { createSessionHost } = load('shared/commandSession.js')
+  const host = createSessionHost()
+  host.start({ bindingId: 'x', observes: [], onEvent: () => true, onEnd: () => { throw new Error('boom') } })
+  host.end('path-ended')
+  assert.strictEqual(host.active(), null, '结束回调抛错也要把会话清掉')
+  assert.strictEqual(host.start({ bindingId: 'y', observes: [], onEvent: () => true }).ok, true)
+})
+
+test('会话：滚轮 100ms 节流（照 WGestures HandleModifier）', () => {
+  const { createSessionHost, WHEEL_THROTTLE_MS } = load('shared/commandSession.js')
+  assert.strictEqual(WHEEL_THROTTLE_MS, 100)
+  const host = createSessionHost()
+  let clock = 0
+  const got = []
+  host.start({
+    bindingId: 'vol',
+    observes: ['wheel-forward', 'wheel-backward', 'middle-down'],
+    onEvent: (e) => { got.push(e); return true },
+    now: () => clock
+  })
+
+  assert.strictEqual(host.dispatch('wheel-forward'), 'delivered')
+  clock = 40
+  assert.strictEqual(host.dispatch('wheel-forward'), 'not-observed', '40ms 内被节流')
+  clock = 101
+  assert.strictEqual(host.dispatch('wheel-forward'), 'delivered', '过 100ms 放行')
+  assert.strictEqual(host.dispatch('middle-down'), 'delivered', '中键不节流')
+  assert.strictEqual(host.dispatch('middle-down'), 'delivered', '中键连续两次都送')
+  assert.deepStrictEqual(got, ['wheel-forward', 'wheel-forward', 'middle-down', 'middle-down'])
 })
