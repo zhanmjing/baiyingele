@@ -1984,3 +1984,20 @@ test('TriggerStore 归一化：没有 source 的绑定默认成 hotkey', () => {
   assert.strictEqual(list[0].source, 'hotkey', '缺 source 默认 hotkey —— 这就是 70 条手势变成热键的原因')
   assert.strictEqual(list[0].gesture, undefined, '非 gesture 来源不保留三元组')
 })
+
+test('手势去重：同一三元组在不同应用作用域下不能合并（70 条曾被压成 57）', () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-dedupe-'))
+  const file = join(dir, 'b.json')
+  const mk = (id, exe) => ({
+    id, source: 'gesture', pattern: '↑', enabled: true, targetKind: 'point', targetId: 'p',
+    gesture: { button: 'right', dirs: '↑' },
+    appScope: exe ? { exePath: exe, inheritGlobal: true } : undefined
+  })
+  writeFileSync(file, JSON.stringify({
+    version: 3,
+    bindings: [mk('g-global', null), mk('g-app-a', 'C:\\a.exe'), mk('g-app-b', 'D:\\b.exe')]
+  }), 'utf8')
+  const list = new TriggerStore(file).list()
+  assert.strictEqual(list.length, 3, '原码每个 ExeApp 各存一份，同手势不同应用是三条独立记录')
+})

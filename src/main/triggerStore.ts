@@ -183,8 +183,12 @@ function dedupeGestures(bindings: TriggerBinding[]): TriggerBinding[] {
   const seen = new Set<string>()
   return bindings.filter((binding) => {
     if (binding.source !== 'gesture') return true
-    // 按**三元组**去重，不是按方向串 —— 否则右键+U 会把右键+滚轮前+U 挤掉
-    const key = binding.gesture ? gestureKeyOf(binding.gesture) : `legacy:${binding.pattern}`
+    // 去重键 = 三元组 + 应用作用域。
+    // 原码每个 ExeApp 和 GlobalApp 各有一份 GestureIntentDict，
+    // 「同一手势在两个应用里」本来就是两条独立记录。只按三元组去重会合成一条
+    // —— 实测 70 条塌成 57 条。只按方向串去重也不行：右键+U 会挤掉右键+滚轮前+U。
+    const scope = binding.appScope?.exePath?.toLowerCase() ?? '@global'
+    const key = binding.gesture ? `${gestureKeyOf(binding.gesture)}@${scope}` : `legacy:${binding.pattern}@${scope}`
     if (seen.has(key)) return false
     seen.add(key)
     return true
