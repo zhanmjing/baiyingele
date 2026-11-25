@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import { GestureOverlay } from './components/GestureOverlay'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import './styles.css'
 
 /**
@@ -22,5 +23,5 @@ if (isOverlay) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>{isOverlay ? <GestureOverlay /> : <App />}</React.StrictMode>
+  <React.StrictMode>{isOverlay ? <GestureOverlay /> : <ErrorBoundary><App /></ErrorBoundary>}</React.StrictMode>
 )

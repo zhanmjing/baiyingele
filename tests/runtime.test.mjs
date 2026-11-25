@@ -1842,7 +1842,7 @@ test('浮层窗口：同一渲染入口用 ?overlay=1 区分，只画浮层', ()
 
   const entry = readFileSync(join(process.cwd(), 'src/renderer/src/main.tsx'), 'utf8')
   assert.match(entry, /get\('overlay'\) === '1'/, '渲染入口要识别浮层模式')
-  assert.match(entry, /isOverlay \? <GestureOverlay \/> : <App \/>/, '浮层模式只渲染 GestureOverlay')
+  assert.match(entry, /isOverlay \? <GestureOverlay \/> : <ErrorBoundary><App \/>/, '浮层模式只渲染 GestureOverlay，主窗口用 ErrorBoundary 包住')
   assert.match(entry, /background = 'transparent'/, '浮层页必须整页透明')
 })
 
@@ -2055,4 +2055,42 @@ test('main：手势子系统抛异常不能拖垮 IPC 注册', () => {
   if (hookIdx < handleIdx) {
     assert.match(main, /try \{\s*hookStatus = startGestureHook\(\)/, '在 IPC 之前启动就必须包 try/catch')
   }
+})
+
+// ── 线层页面白屏：profile 里的引用是对象，直接渲染会炸整棵树 ──
+test('line profile：pointClass / pointInstance 有对象形态，渲染前必须归一化', () => {
+  const profiles = JSON.parse(readFileSync(join(process.cwd(), 'src/shared/generatedLineProfiles.json'), 'utf8'))
+  let objectRefs = 0
+  for (const prof of Object.values(profiles)) {
+    for (const node of prof.nodes ?? []) {
+      if (node.pointClass && typeof node.pointClass === 'object') objectRefs++
+      if (node.pointInstance && typeof node.pointInstance === 'object') objectRefs++
+    }
+  }
+  assert.ok(objectRefs > 0, 'profile 里确实存在对象形态的引用（这是白屏的根因，不能假设它是字符串）')
+
+  const page = readFileSync(join(process.cwd(), 'src/renderer/src/pages/LineManagementPage.tsx'), 'utf8')
+  assert.match(page, /function refText\(value: unknown\): string/, '必须有引用归一化函数')
+  // 只看「直接作为子节点」的用法：>{node.pointXxx}< 或 >{node.pointXxx || ...}<
+  // 三元条件（node.pointInstance ? ...）是安全的，不算；注释先剥掉
+  const code = page.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+  const raw = [
+    ...code.matchAll(/>\s*\{(node\.pointClass)(?![^}]*refText)([^}]*)\}/g),
+    ...code.matchAll(/>\s*\{(node\.pointInstance)(?![^}]*refText)([^}]*)\}/g)
+  ].map((m) => `${m[1]}${m[2]}`)
+  assert.deepStrictEqual(
+    raw,
+    [],
+    '不能直接把 node.pointClass / node.pointInstance 当子节点渲染 —— 对象会让 React 抛错并卸载整棵树'
+  )
+  assert.ok(page.includes('refText(node.pointClass)'), 'pointClass 渲染要过 refText')
+  assert.ok(page.includes('refText(node.pointInstance)'), 'pointInstance 渲染要过 refText')
+})
+
+test('渲染失败必须被 ErrorBoundary 接住，不能整窗白屏', () => {
+  const entry = readFileSync(join(process.cwd(), 'src/renderer/src/main.tsx'), 'utf8')
+  assert.match(entry, /<ErrorBoundary>/, '根节点要包 ErrorBoundary')
+  const boundary = readFileSync(join(process.cwd(), 'src/renderer/src/components/ErrorBoundary.tsx'), 'utf8')
+  assert.match(boundary, /getDerivedStateFromError/, '要接错误')
+  assert.match(boundary, /componentStack/, '要打出组件栈，否则定位不到是哪个页面')
 })
