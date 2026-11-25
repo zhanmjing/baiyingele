@@ -1814,7 +1814,8 @@ test('surface.gesture_hint：文本 = 意图名 + 空格 + modifier 助记符（
 test('浮层接线：主进程要推 trail 和 hint，渲染层要挂载', () => {
   const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
   assert.match(main, /gesture:trail-point/, '主进程要逐点推')
-  assert.match(main, /webContents\.send\('gesture:hint'/, '主进程要推提示')
+  // 推送统一走 safeSend（防窗口销毁）
+  assert.match(main, /'gesture:hint'/, '主进程要推提示')
   assert.match(main, /gesture:trail-start/, '要有轨迹开始通道')
 
   const preload = readFileSync(join(process.cwd(), 'src/preload/index.ts'), 'utf8')
@@ -2201,4 +2202,21 @@ test('手势识别：8 向规则作用在「段」上，不是第一个采样点
   assert.match(src, /const runs: Array<\{[^}]*count: number/, '要按段聚合（段 = 一段连续同向）')
   assert.match(src, /index === 0 && config\.eightDirections \? modeOf\(run\.d8\) : run\.d4/, '首段用 8 向众数，其余段用 4 向')
   assert.match(src, /runs\.filter\(\(run\) => run\.count >= config\.switchVotes\)/, 'switchVotes 要作用在段上')
+})
+
+test('主进程：IPC 发送必须防「窗口已销毁」（Object has been destroyed）', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  const code = main.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+  const direct = [...code.matchAll(/mainWindow\??\.webContents\.send\(/g)].length
+  assert.strictEqual(direct, 1, '只有 safeSend 内部可以直接 send；其余走 safeSend')
+  assert.match(code, /mainWindow\.webContents\.isDestroyed\(\)/, '要检查 webContents.isDestroyed()')
+  assert.ok((code.match(/safeSend\(/g) ?? []).length >= 5, '事件推送都要走 safeSend')
+})
+
+test('运行结果提示必须如实反映状态，不能一律「运行成功」', () => {
+  for (const page of ['LayerManagementPage', 'LineManagementPage', 'SurfaceManagementPage']) {
+    const src = readFileSync(join(process.cwd(), `src/renderer/src/pages/${page}.tsx`), 'utf8')
+    assert.ok(!src.includes('onToast(`运行成功 · ${result.output}`)'), `${page} 不能无条件报运行成功`)
+    assert.match(src, /result\.ok \? `运行成功[^`]*` : `未完成/, `${page} 的提示要按 result.ok 分流`)
+  }
 })

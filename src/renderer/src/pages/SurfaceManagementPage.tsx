@@ -353,7 +353,8 @@ export function SurfaceManagementPage({
       setLastSlots(slots)
       setLastRun(record)
       onRunComplete(record)
-      onToast(`运行成功 · ${result.output}`)
+      // 以前无条件报「运行成功」，连 warn 也叫成功 —— 用户看到「运行成功 · 未提供 target」
+      onToast(result.ok ? `运行成功 · ${result.output}` : `未完成 · ${result.output}`)
     } catch (error) { onToast(`运行失败：${error instanceof Error ? error.message : '未知错误'}`) }
     finally { setRunning(false) }
   }

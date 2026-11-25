@@ -169,6 +169,24 @@ app.whenReady().then(() => {
    * 于是 field.generate 这类**根本没写的类在界面上显示「执行成功」**。
    * 一个撒谎的零件比没有零件更糟：用户会以为功能在，实际什么都没做。
    */
+  /**
+   * 安全发送 IPC 事件。
+   *
+   * 直接写 mainWindow?.webContents.send(...) 不够：
+   * `?.` 只挡住 null，挡不住「窗口已销毁」—— 开发态 HMR 重载、用户关窗、
+   * 应用退出时都会命中，抛 `TypeError: Object has been destroyed`，
+   * 而它发生在事件回调里，会变成主进程未捕获异常弹窗。
+   */
+  const safeSend = (channel: string, payload: unknown): void => {
+    try {
+      if (!mainWindow || mainWindow.isDestroyed()) return
+      if (mainWindow.webContents.isDestroyed()) return
+      mainWindow.webContents.send(channel, payload)
+    } catch {
+      /* 发送失败不影响业务 */
+    }
+  }
+
   const notImplemented = (context: Parameters<InstanceRunner>[0]): RunOutcome => ({
     status: 'warn',
     output: `${context.instance.classId} 还没有实现单元（${context.instance.name ?? context.instance.id}）`,
@@ -193,7 +211,7 @@ app.whenReady().then(() => {
     pointStore: () => store('point'),
     lineStore: () => store('line'),
     onFired: (record) => {
-      mainWindow?.webContents.send('trigger:fired', record)
+      safeSend('trigger:fired', record)
       // 手势命中 → **当场**推提示。
       // 之前挂在 onPathGrow 里消费，但派发发生在抬手/滚轮之后，
       // 所以提示要等下一个手势才出现（这个 bug 很隐蔽）。
@@ -241,17 +259,17 @@ app.whenReady().then(() => {
     const pushTrailStart = (button: string) => {
       setOverlayVisible(true)
       const payload = { layers: trailLayers(button, false) }
-      if (!sendToOverlay('gesture:trail-start', payload)) mainWindow?.webContents.send('gesture:trail-start', payload)
+      if (!sendToOverlay('gesture:trail-start', payload)) safeSend('gesture:trail-start', payload)
     }
     const pushTrailPoint = (point: { x: number; y: number }) => {
-      if (!sendToOverlay('gesture:trail-point', point)) mainWindow?.webContents.send('gesture:trail-point', point)
+      if (!sendToOverlay('gesture:trail-point', point)) safeSend('gesture:trail-point', point)
     }
     const pushTrailPen = (button: string) => {
       const payload = { layers: trailLayers(button, true) }
-      if (!sendToOverlay('gesture:trail-pen', payload)) mainWindow?.webContents.send('gesture:trail-pen', payload)
+      if (!sendToOverlay('gesture:trail-pen', payload)) safeSend('gesture:trail-pen', payload)
     }
     const pushTrailEnd = () => {
-      if (!sendToOverlay('gesture:trail-end', null)) mainWindow?.webContents.send('gesture:trail-end', null)
+      if (!sendToOverlay('gesture:trail-end', null)) safeSend('gesture:trail-end', null)
       setOverlayVisible(false)
     }
 
@@ -265,7 +283,7 @@ app.whenReady().then(() => {
         instanceId: 'surface.gesture_hint.default@r1', params: {},
         deps: { hasClass: () => true, declaredRegionKeys: () => [] }
       })
-      if (!sendToOverlay('gesture:hint', hint)) mainWindow?.webContents.send('gesture:hint', hint)
+      if (!sendToOverlay('gesture:hint', hint)) safeSend('gesture:hint', hint)
     }
 
     const start = () =>
@@ -564,7 +582,7 @@ app.whenReady().then(() => {
 
   // 表单能力需要一个「把请求送到界面」的通道；能力模块自己不碰 BrowserWindow
   setFormSink((request) => {
-    mainWindow?.webContents.send('ui:form:request', request)
+    safeSend('ui:form:request', request)
   })
 
   app.on('activate', () => {
