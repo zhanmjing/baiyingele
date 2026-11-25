@@ -866,3 +866,75 @@ test('body.gesture：三个必需零件都不存在时必须逐个报出来', ()
   })
   assert.ok(wrong.findings.some((f) => f.code === 'no-recognizer'), '点零件不能识别轨迹时必须报出来')
 })
+
+// ── 命令会话：手势后继续接管滚轮 ──────────────────────────────
+test('会话：只有被观察的事件才送达，且同一时刻只允许一个会话', () => {
+  const { createSessionHost } = load('shared/commandSession.js')
+  const host = createSessionHost()
+  const got = []
+  let clock = 1000
+
+  const started = host.start({
+    bindingId: 'gesture:DR→音量',
+    observes: ['wheel-forward', 'wheel-backward'],
+    onEvent: (e) => { got.push(e); return true },
+    now: () => clock
+  })
+  assert.strictEqual(started.ok, true)
+
+  // 滚轮送达
+  assert.strictEqual(host.dispatch('wheel-forward'), 'delivered')
+  assert.strictEqual(host.dispatch('wheel-backward'), 'delivered')
+  // 没观察的事件不送达
+  assert.strictEqual(host.dispatch('x1'), 'not-observed')
+  assert.deepStrictEqual(got, ['wheel-forward', 'wheel-backward'])
+
+  // 会话进行中，新手势必须被拒绝（不抢占不排队）
+  const second = host.start({ bindingId: 'gesture:U→复制', observes: [], onEvent: () => true })
+  assert.strictEqual(second.ok, false)
+  assert.strictEqual(second.reason, 'busy')
+  assert.strictEqual(second.activeBindingId, 'gesture:DR→音量', '要告诉调用方是谁占着')
+
+  host.end('path-ended')
+  assert.strictEqual(host.active(), null)
+  // 结束后可以开新的
+  assert.strictEqual(host.start({ bindingId: 'gesture:U→复制', observes: [], onEvent: () => true }).ok, true)
+})
+
+test('会话：onEvent 返回 false 自己结束，超时会兜底结束', () => {
+  const { createSessionHost } = load('shared/commandSession.js')
+  const host = createSessionHost()
+  let clock = 0
+
+  // 自己结束
+  host.start({
+    bindingId: 'b1',
+    observes: ['wheel-forward'],
+    onEvent: () => false,
+    now: () => clock
+  })
+  assert.strictEqual(host.dispatch('wheel-forward'), 'ended')
+  assert.strictEqual(host.active(), null, '自己结束后不该还占着')
+
+  // 超时兜底
+  clock = 10_000
+  host.start({ bindingId: 'b2', observes: ['wheel-forward'], onEvent: () => true, idleTimeoutMs: 500, now: () => clock })
+  clock = 10_400
+  assert.strictEqual(host.tick(), false, '未超时不该关')
+  clock = 10_600
+  assert.strictEqual(host.tick(), true, '超时必须关掉，否则滚轮被永久劫持')
+  assert.strictEqual(host.active(), null)
+
+  const records = host.history()
+  assert.deepStrictEqual(records.map((r) => r.endReason), ['timeout', 'self-closed'], '历史要记清结束原因')
+  assert.deepStrictEqual(records[1].seen, ['wheel-forward'], '要记收到过哪些事件')
+})
+
+test('会话：没有会话时 dispatch 返回 no-session，不能静默吞掉', () => {
+  const { createSessionHost } = load('shared/commandSession.js')
+  const host = createSessionHost()
+  assert.strictEqual(host.dispatch('wheel-forward'), 'no-session')
+  assert.strictEqual(host.active(), null)
+  host.end('cancelled')  // 幂等，不该抛
+  assert.strictEqual(host.active(), null)
+})

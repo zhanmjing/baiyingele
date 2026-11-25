@@ -1,0 +1,1553 @@
+{
+  "FileVersion": "3",
+  "Apps": {
+    "c:\\windows\\system32\\cmd.exe": {
+      "$type": "WGestures.App.Gui.Model.OrderableExeApp, WGestures",
+      "Order": 1,
+      "Exists": true,
+      "InheritGlobalGestures": true,
+      "ExecutablePath": "c:\\windows\\system32\\cmd.exe",
+      "Name": "cmd",
+      "GestureIntents": [
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 0,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              4,
+              2
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.WindowControlCommand, WGestures.Core",
+            "ChangeWindowStateTo": 2
+          },
+          "ExecuteOnModifier": false,
+          "Name": "关闭"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 1,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [],
+            "Modifier": 4
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.WindowControlCommand, WGestures.Core",
+            "ChangeWindowStateTo": 2
+          },
+          "ExecuteOnModifier": false,
+          "Name": "关闭"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 2,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              4,
+              6
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.WindowControlCommand, WGestures.Core",
+            "ChangeWindowStateTo": 2
+          },
+          "ExecuteOnModifier": false,
+          "Name": "Quit"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 3,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [],
+            "Modifier": 8
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              164
+            ],
+            "Keys": [
+              32,
+              69,
+              75
+            ]
+          },
+          "ExecuteOnModifier": true,
+          "Name": "标记"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 4,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              0
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              164
+            ],
+            "Keys": [
+              32,
+              69,
+              89
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "复制"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 5,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              4
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              164
+            ],
+            "Keys": [
+              32,
+              69,
+              80
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "粘贴"
+        }
+      ],
+      "IsGesturingEnabled": true
+    },
+    "c:\\windows\\system32\\dllhost.exe": {
+      "$type": "WGestures.App.Gui.Model.OrderableExeApp, WGestures",
+      "Order": 2,
+      "Exists": true,
+      "InheritGlobalGestures": true,
+      "ExecutablePath": "c:\\windows\\system32\\dllhost.exe",
+      "Name": "图片查看",
+      "GestureIntents": [
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 0,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [],
+            "Modifier": 2
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [],
+            "Keys": [
+              39
+            ]
+          },
+          "ExecuteOnModifier": true,
+          "Name": "下一张"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 1,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [],
+            "Modifier": 1
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [],
+            "Keys": [
+              37
+            ]
+          },
+          "ExecuteOnModifier": true,
+          "Name": "上一张"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 2,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              4,
+              2
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              164
+            ],
+            "Keys": [
+              115
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "关闭"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 3,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [],
+            "Modifier": 4
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              164
+            ],
+            "Keys": [
+              115
+            ]
+          },
+          "ExecuteOnModifier": true,
+          "Name": "关闭"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 4,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              2
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [],
+            "Keys": [
+              39
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "→"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 5,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              6
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [],
+            "Keys": [
+              37
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "←"
+        }
+      ],
+      "IsGesturingEnabled": true
+    },
+    "c:\\program files\\piliplus\\piliplus.exe": {
+      "$type": "WGestures.App.Gui.Model.OrderableExeApp, WGestures",
+      "Order": 3,
+      "Exists": true,
+      "InheritGlobalGestures": true,
+      "ExecutablePath": "c:\\program files\\piliplus\\piliplus.exe",
+      "Name": "piliplus",
+      "GestureIntents": [],
+      "IsGesturingEnabled": true
+    },
+    "c:\\users\\18380\\appdata\\local\\programs\\e-search\\e-search.exe": {
+      "$type": "WGestures.App.Gui.Model.OrderableExeApp, WGestures",
+      "Order": 4,
+      "Exists": true,
+      "InheritGlobalGestures": true,
+      "ExecutablePath": "c:\\users\\18380\\appdata\\local\\programs\\e-search\\e-search.exe",
+      "Name": "e-search",
+      "GestureIntents": [],
+      "IsGesturingEnabled": true
+    },
+    "c:\\users\\18380\\appdata\\local\\programs\\xmind\\xmind.exe": {
+      "$type": "WGestures.App.Gui.Model.OrderableExeApp, WGestures",
+      "Order": 5,
+      "Exists": true,
+      "InheritGlobalGestures": false,
+      "ExecutablePath": "c:\\users\\18380\\appdata\\local\\programs\\xmind\\xmind.exe",
+      "Name": "Xmind",
+      "GestureIntents": [
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 0,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              4,
+              2
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              162,
+              160
+            ],
+            "Keys": [
+              78
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "◑↓→笔记"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 1,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              0
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              162
+            ],
+            "Keys": [
+              67
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "◑↑复制"
+        },
+        {
+          "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+          "Order": 2,
+          "Gesture": {
+            "GestureButton": 1,
+            "Dirs": [
+              4
+            ],
+            "Modifier": 0
+          },
+          "Command": {
+            "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+            "Modifiers": [
+              162
+            ],
+            "Keys": [
+              86
+            ]
+          },
+          "ExecuteOnModifier": false,
+          "Name": "◑↓粘贴"
+        }
+      ],
+      "IsGesturingEnabled": false
+    }
+  },
+  "Global": {
+    "Name": "(Global)",
+    "GestureIntents": [
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 0,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            67
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "复制"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 1,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            86
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "粘贴"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 2,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            164
+          ],
+          "Keys": [
+            37
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "后退"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 3,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            164
+          ],
+          "Keys": [
+            39
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "前进"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 4,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            7
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            91
+          ],
+          "Keys": []
+        },
+        "ExecuteOnModifier": false,
+        "Name": "开始"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 5,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            3
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            91
+          ],
+          "Keys": [
+            68
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "切换到桌面"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 6,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            1
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.WindowControlCommand, WGestures.Core",
+          "ChangeWindowStateTo": 0
+        },
+        "ExecuteOnModifier": false,
+        "Name": "最大化"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 7,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            1
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            122
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "全屏"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 8,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            5
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.WindowControlCommand, WGestures.Core",
+          "ChangeWindowStateTo": 1
+        },
+        "ExecuteOnModifier": false,
+        "Name": "最小化"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 9,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            160,
+            162
+          ],
+          "Keys": [
+            9
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "上一个标签"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 10,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            9
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "下一个标签"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 11,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            88
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "剪切"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 12,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.WebSearchCommand, WGestures.Core",
+          "SearchEngineUrl": "https://www.google.com/search?q={0}",
+          "SearchEngingName": "Google",
+          "UseBrowser": null
+        },
+        "ExecuteOnModifier": false,
+        "Name": "Web搜索"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 13,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.WebSearchCommand, WGestures.Core",
+          "SearchEngineUrl": "https://bing.com/search?q={0}",
+          "SearchEngingName": "必应",
+          "UseBrowser": null
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑必应"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 14,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.SendTextCommand, WGestures.Core",
+          "Text": "^v{enter}"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "粘贴并回车"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 15,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            164
+          ],
+          "Keys": [
+            115
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "退出"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 16,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            87
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "关闭"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 17,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162,
+            160
+          ],
+          "Keys": [
+            84
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "撤销关闭标签"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 18,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            84
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "新标签"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 19,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            4
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.CmdCommand, WGestures.Core",
+          "Code": "taskkill /f /pid %WG_PROCID% /s localhost",
+          "ShowWindow": false,
+          "AutoSetWorkingDir": false
+        },
+        "ExecuteOnModifier": false,
+        "Name": "强制退出"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 20,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            2,
+            6,
+            2
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            46
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "删除"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 21,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4,
+            2,
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            13
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "Enter"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 22,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            3
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.ChangeAudioVolumeCommand, WGestures.Core",
+          "Delta": 1
+        },
+        "ExecuteOnModifier": true,
+        "Name": "音量"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 23,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            5
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.TaskSwitcherCommand, WGestures.Core"
+        },
+        "ExecuteOnModifier": true,
+        "Name": "任务选择"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 24,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            4,
+            2,
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.CmdCommand, WGestures.Core",
+          "Code": "cmd\r\n",
+          "ShowWindow": true,
+          "AutoSetWorkingDir": true
+        },
+        "ExecuteOnModifier": false,
+        "Name": "Dir"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 25,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            0,
+            2
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            116
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "刷新"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 26,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            0
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            36
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "Home"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 27,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            35
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "End"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 28,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            0,
+            2
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162,
+            160
+          ],
+          "Keys": [
+            82
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "强制刷新"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 29,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0,
+            6
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "edge"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 30,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files\\CLaunch\\CLaunch.exe"
+        },
+        "ExecuteOnModifier": true,
+        "Name": "◑↓→↑Claunch"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 31,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0,
+            2,
+            4
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.PauseWGesturesCommand, WGestures.Core"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "stop"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 32,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0,
+            2
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "google"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 33,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0,
+            2,
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files (x86)\\WGestures\\WGestures.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "wgestures"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 34,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            6
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Users\\18380\\AppData\\Local\\FastUP\\FastUP.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑→←VPN"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 35,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            91
+          ],
+          "Keys": [
+            69
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "资源"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 36,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files\\PiliPlus\\piliplus.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑→↓pili"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 37,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            91
+          ],
+          "Keys": [
+            73
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑→◐设置"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 38,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            2
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files\\FlClash\\FlClash.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑←→FLclash"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 39,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            4,
+            6
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "E:\\STEAM\\steam.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓→steam"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 40,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4,
+            2
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files\\miHoYo Launcher\\launcher.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓→▲mihoyo"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 41,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4,
+            2
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "E:\\Program Files (x86)\\WeGame\\wegame.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓→▼wegame"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 42,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            6
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files\\PikPak\\PikPak.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑→←◐pikpak"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 43,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            0,
+            4
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Program Files (x86)\\Wise\\Wise Care 365\\WiseCare365.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↑↓365"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 44,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            6
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "D:\\win11\\AyuGram\\AyuGram.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑→←▲Atelegram"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 45,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4,
+            6
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Users\\18380\\AppData\\Local\\Programs\\Cherry Studio\\Cherry Studio.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓←AI"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 46,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4,
+            6
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.GotoUrlCommand, WGestures.Core",
+          "Url": "https://chat.deepseek.com/"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓←◐DeepSeek"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 47,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4,
+            2
+          ],
+          "Modifier": 8
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Users\\18380\\AppData\\Local\\Programs\\lx-music-desktop\\lx-music-desktop.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓→◐music"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 48,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            91,
+            164
+          ],
+          "Keys": [
+            67
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "ocr"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 49,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            4
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "D:\\win11\\Umi-OCR_Paddle_v2.1.5\\Umi-OCR.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑↓▲ocr"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 50,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            4,
+            2
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            164
+          ],
+          "Keys": [
+            86
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑←↓→识别"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 51,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            1
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            187
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "◑↗▲放大"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 52,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            1
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162
+          ],
+          "Keys": [
+            189
+          ]
+        },
+        "ExecuteOnModifier": true,
+        "Name": "◑↗▼缩小"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 53,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            6,
+            4,
+            2
+          ],
+          "Modifier": 1
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.OpenFileCommand, WGestures.Core",
+          "FilePath": "C:\\Users\\18380\\AppData\\Local\\Programs\\e-search\\e-search.exe"
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑←↓→▲esearch"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 54,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            7
+          ],
+          "Modifier": 2
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [],
+          "Keys": [
+            27
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "esc"
+      },
+      {
+        "$type": "WGestures.App.Gui.Model.OrderableIntent, WGestures",
+        "Order": 55,
+        "Gesture": {
+          "GestureButton": 1,
+          "Dirs": [
+            2,
+            0,
+            6
+          ],
+          "Modifier": 0
+        },
+        "Command": {
+          "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+          "Modifiers": [
+            162,
+            160
+          ],
+          "Keys": [
+            27
+          ]
+        },
+        "ExecuteOnModifier": false,
+        "Name": "◑→↑←任务"
+      }
+    ],
+    "IsGesturingEnabled": true
+  },
+  "HotCornerCommands": [
+    {
+      "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+      "Modifiers": [
+        91
+      ],
+      "Keys": []
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+      "Modifiers": [
+        164
+      ],
+      "Keys": [
+        9
+      ]
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+      "Modifiers": [
+        91
+      ],
+      "Keys": [
+        9
+      ]
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.HotKeyCommand, WGestures.Core",
+      "Modifiers": [
+        91
+      ],
+      "Keys": [
+        68
+      ]
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.CmdCommand, WGestures.Core",
+      "Code": "::控制面板\r\ncontrol ",
+      "ShowWindow": false,
+      "AutoSetWorkingDir": false
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.CmdCommand, WGestures.Core",
+      "Code": "::锁定Windows\r\nrundll32.exe user32.dll,LockWorkStation",
+      "ShowWindow": false,
+      "AutoSetWorkingDir": false
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.CmdCommand, WGestures.Core",
+      "Code": " ::任务管理器\r\ntaskmgr",
+      "ShowWindow": false,
+      "AutoSetWorkingDir": false
+    },
+    {
+      "$type": "WGestures.Core.Commands.Impl.CmdCommand, WGestures.Core",
+      "Code": "::立即关机\r\nshutdown -s -t 0",
+      "ShowWindow": true,
+      "AutoSetWorkingDir": false
+    }
+  ]
+}
