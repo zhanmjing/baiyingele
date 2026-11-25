@@ -166,7 +166,8 @@ for (const scope of scopes) {
       gesture: triple,
       commandType: mapped.type,
       executeOnModifier: intent.ExecuteOnModifier === true,
-      scope: scope.exePath ? { exePath: scope.exePath, inheritGlobal: true } : undefined
+      // TriggerStore 只认 appScope；写成 scope 的话应用作用域会整个丢掉
+      appScope: scope.exePath ? { exePath: scope.exePath, inheritGlobal: true } : undefined
     }
 
     if (triple && mapped.capable) {
@@ -197,6 +198,11 @@ for (const scope of scopes) {
         // 绑定 id 必须带作用域：不同应用的同一手势是两条不同的绑定，
         // 不带作用域会撞成一条，70 条里丢 5 条。
         id: `gesture:${triple.button}:${triple.dirs}:${triple.modifier ?? ''}@${scopeSlug}`,
+        // 这三项少了就会被当成热键：TriggerStore 用 source === 'gesture' 判定，
+        // 缺省是 'hotkey'，于是 70 条手势全进热键通道并注册失败。
+        source: 'gesture',
+        pattern: triple.dirs,
+        enabled: true,
         targetKind: mapped.kind,
         targetId: instanceId,
         targetClass: classId,

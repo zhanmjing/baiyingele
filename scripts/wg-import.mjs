@@ -117,6 +117,22 @@ if (badInstances.length) {
   process.exit(1)
 }
 
+// 绑定必须是手势来源：缺 source 会被 TriggerStore 归一化成 hotkey，
+// 表现就是「手势数 0、热键多 70、全部注册失败」。写前必须拦住。
+const wrongSource = incomingBindings.filter((b) => b.source !== 'gesture')
+if (wrongSource.length) {
+  console.error(`\n✗ ${wrongSource.length} 个绑定 source 不是 gesture，拒绝写入：`)
+  for (const b of wrongSource.slice(0, 5)) console.error(`   ${b.id} source=${String(b.source)}`)
+  process.exit(1)
+}
+// 允许空 pattern：有 8 条手势本来就是「右键 + 滚轮」没有方向串，
+// 身份完全由 gesture.modifier 决定。空 pattern 只在也没有 modifier 时才是错。
+const noPattern = incomingBindings.filter((b) => !b.pattern && !b.gesture?.modifier)
+if (noPattern.length) {
+  console.error(`\n✗ ${noPattern.length} 个手势绑定缺 pattern，拒绝写入`)
+  process.exit(1)
+}
+
 const dangling = incomingBindings.filter((b) => !knownIds.has(b.targetId))
 if (dangling.length) {
   console.error(`\n✗ ${dangling.length} 个绑定指向不存在的实例，拒绝写入：`)

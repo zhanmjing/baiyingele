@@ -11,7 +11,7 @@
 import test from 'node:test'
 import assert from 'node:assert'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { load, catalogs, bodyProfiles, lineProfiles, allClassIds, mockContext } from './_harness.mjs'
@@ -1955,4 +1955,32 @@ test('手势提示必须在派发当场推送，不能等下一个手势', () =>
   const sinkIdx = main.indexOf('hintSink = pushHint')
   const pushHintIdx = main.indexOf('const pushHint =')
   assert.ok(pushHintIdx > 0 && sinkIdx > pushHintIdx, 'hintSink 要在 pushHint 定义之后注入')
+})
+
+test('迁移产物：每条绑定都必须带 source=gesture，否则会被当成热键', () => {
+  const path = join(process.cwd(), '.tmp/wgestures-migrated.json')
+  if (!existsSync(path)) return
+  const migrated = JSON.parse(readFileSync(path, 'utf8'))
+  const bs = migrated.bindings ?? []
+  assert.ok(bs.length > 0, '迁移产物应该有绑定')
+  const wrongSource = bs.filter((b) => b.source !== 'gesture')
+  assert.deepStrictEqual(wrongSource.map((b) => b.id), [], '缺 source 会被归一化成 hotkey：手势0、热键70、全部注册失败')
+  const unusable = bs.filter((b) => !b.pattern && !b.gesture?.modifier)
+  assert.deepStrictEqual(unusable.map((b) => b.id), [], '既没方向串也没 modifier 无法派发')
+  const scoped = bs.filter((b) => b.scope !== undefined)
+  assert.strictEqual(scoped.length, 0, '应用作用域必须用 appScope 字段名')
+})
+
+test('TriggerStore 归一化：没有 source 的绑定默认成 hotkey', () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-src-'))
+  const file = join(dir, 'b.json')
+  writeFileSync(file, JSON.stringify({
+    version: 3,
+    bindings: [{ id: 'x', pattern: '↑', targetKind: 'point', targetId: 'p', enabled: true }]
+  }), 'utf8')
+  const store = new TriggerStore(file)
+  const list = store.list()
+  assert.strictEqual(list[0].source, 'hotkey', '缺 source 默认 hotkey —— 这就是 70 条手势变成热键的原因')
+  assert.strictEqual(list[0].gesture, undefined, '非 gesture 来源不保留三元组')
 })
