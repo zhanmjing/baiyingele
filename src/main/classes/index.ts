@@ -94,16 +94,17 @@ import * as impl90 from './surface/dashboard'
 import * as impl91 from './surface/dialog'
 import * as impl92 from './surface/diff'
 import * as impl93 from './surface/form'
-import * as impl94 from './surface/hud'
-import * as impl95 from './surface/inspector'
-import * as impl96 from './surface/metric_card'
-import * as impl97 from './surface/notification'
-import * as impl98 from './surface/panel'
-import * as impl99 from './surface/run_history'
-import * as impl100 from './surface/table'
-import * as impl101 from './surface/tray_menu'
-import * as impl102 from './surface/tree'
-import * as impl103 from './surface/wizard'
+import * as impl94 from './surface/gesture_recorder'
+import * as impl95 from './surface/hud'
+import * as impl96 from './surface/inspector'
+import * as impl97 from './surface/metric_card'
+import * as impl98 from './surface/notification'
+import * as impl99 from './surface/panel'
+import * as impl100 from './surface/run_history'
+import * as impl101 from './surface/table'
+import * as impl102 from './surface/tray_menu'
+import * as impl103 from './surface/tree'
+import * as impl104 from './surface/wizard'
 
 /** classId → 实现单元。各层 runner 用它做纯分派。 */
 export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
@@ -201,14 +202,15 @@ export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
   ['surface.dialog', impl91 as unknown as ClassImpl],
   ['surface.diff', impl92 as unknown as ClassImpl],
   ['surface.form', impl93 as unknown as ClassImpl],
-  ['surface.hud', impl94 as unknown as ClassImpl],
-  ['surface.inspector', impl95 as unknown as ClassImpl],
-  ['surface.metric_card', impl96 as unknown as ClassImpl],
-  ['surface.notification', impl97 as unknown as ClassImpl],
-  ['surface.panel', impl98 as unknown as ClassImpl],
-  ['surface.run_history', impl99 as unknown as ClassImpl],
-  ['surface.table', impl100 as unknown as ClassImpl],
-  ['surface.tray_menu', impl101 as unknown as ClassImpl],
-  ['surface.tree', impl102 as unknown as ClassImpl],
-  ['surface.wizard', impl103 as unknown as ClassImpl]
+  ['surface.gesture_recorder', impl94 as unknown as ClassImpl],
+  ['surface.hud', impl95 as unknown as ClassImpl],
+  ['surface.inspector', impl96 as unknown as ClassImpl],
+  ['surface.metric_card', impl97 as unknown as ClassImpl],
+  ['surface.notification', impl98 as unknown as ClassImpl],
+  ['surface.panel', impl99 as unknown as ClassImpl],
+  ['surface.run_history', impl100 as unknown as ClassImpl],
+  ['surface.table', impl101 as unknown as ClassImpl],
+  ['surface.tray_menu', impl102 as unknown as ClassImpl],
+  ['surface.tree', impl103 as unknown as ClassImpl],
+  ['surface.wizard', impl104 as unknown as ClassImpl]
 ] as Array<[string, ClassImpl]>)

@@ -17,6 +17,7 @@
     "surface.tray_menu",
     "surface.hud",
     "surface.metric_card",
-    "surface.panel"
+    "surface.panel",
+    "surface.gesture_recorder"
   ]
 }

@@ -5877,6 +5877,115 @@
           }
         }
       ]
+    },
+    {
+      "id": "surface.gesture_recorder",
+      "name": "手势录制板",
+      "family": "gesture",
+      "priority": "P1",
+      "effect": "L0",
+      "status": "active",
+      "description": "手势录制板：实时方向串 + 合法性 + 冲突检查。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "surface.gesture_recorder.create@r1",
+          "name": "新建",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"detail\":\"录制板 / 实时方向串 / 冲突检查 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"block-1\",\"role\":\"block\",\"label\":\"录制板\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"录制板\"}},{\"id\":\"block-2\",\"role\":\"block\",\"label\":\"实时方向串\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"实时方向串\"}},{\"id\":\"block-3\",\"role\":\"block\",\"label\":\"冲突检查\",\"order\":3,\"source\":{\"kind\":\"static\",\"value\":\"冲突检查\"}}],\"slotCount\":3}",
+          "params": {
+            "detail": "录制板 / 实时方向串 / 冲突检查 · overlay",
+            "mount": "overlay",
+            "slots": [
+              {
+                "id": "block-1",
+                "role": "block",
+                "label": "录制板",
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "录制板"
+                }
+              },
+              {
+                "id": "block-2",
+                "role": "block",
+                "label": "实时方向串",
+                "order": 2,
+                "source": {
+                  "kind": "static",
+                  "value": "实时方向串"
+                }
+              },
+              {
+                "id": "block-3",
+                "role": "block",
+                "label": "冲突检查",
+                "order": 3,
+                "source": {
+                  "kind": "static",
+                  "value": "冲突检查"
+                }
+              }
+            ],
+            "slotCount": 3
+          }
+        },
+        {
+          "id": "surface.gesture_recorder.edit@r1",
+          "name": "重录",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"detail\":\"录制板 / 实时方向串 / 冲突检查 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"block-1\",\"role\":\"block\",\"label\":\"录制板\",\"order\":1,\"source\":{\"kind\":\"static\",\"value\":\"录制板\"}},{\"id\":\"block-2\",\"role\":\"block\",\"label\":\"实时方向串\",\"order\":2,\"source\":{\"kind\":\"static\",\"value\":\"实时方向串\"}},{\"id\":\"block-3\",\"role\":\"block\",\"label\":\"冲突检查\",\"order\":3,\"source\":{\"kind\":\"static\",\"value\":\"冲突检查\"}}],\"slotCount\":3}",
+          "params": {
+            "detail": "录制板 / 实时方向串 / 冲突检查 · overlay",
+            "mount": "overlay",
+            "slots": [
+              {
+                "id": "block-1",
+                "role": "block",
+                "label": "录制板",
+                "order": 1,
+                "source": {
+                  "kind": "static",
+                  "value": "录制板"
+                }
+              },
+              {
+                "id": "block-2",
+                "role": "block",
+                "label": "实时方向串",
+                "order": 2,
+                "source": {
+                  "kind": "static",
+                  "value": "实时方向串"
+                }
+              },
+              {
+                "id": "block-3",
+                "role": "block",
+                "label": "冲突检查",
+                "order": 3,
+                "source": {
+                  "kind": "static",
+                  "value": "冲突检查"
+                }
+              }
+            ],
+            "slotCount": 3
+          }
+        }
+      ]
     }
   ],
   "body": [

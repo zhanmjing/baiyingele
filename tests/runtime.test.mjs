@@ -1410,3 +1410,100 @@ test('line.gesture_dispatch：没命中要说清原因', async () => {
   assert.match(out.output, /没有匹配的绑定/)
   assert.strictEqual(out.session, null)
 })
+
+// ── 录制板：实时方向串 + 合法性 + 冲突 ───────────────────────
+test('surface.gesture_recorder：画的过程中就要有实时方向串', () => {
+  const r = load('main/classes/surface/gesture_recorder.js')
+  const path = (segs) => {
+    const out = [{ x: 0, y: 0, t: 0 }]
+    const dir = { L: [-1, 0], R: [1, 0], U: [0, -1], D: [0, 1] }
+    let x = 0, y = 0, t = 0
+    for (const s of segs) for (let i = 0; i < 8; i++) { const [dx, dy] = dir[s]; x += dx * 12; y += dy * 12; t += 20; out.push({ x, y, t }) }
+    return out
+  }
+
+  // 空
+  const idle = r.computeRecorderState({ points: [] })
+  assert.strictEqual(idle.phase, 'idle')
+  assert.strictEqual(idle.canSave, false)
+
+  // 正在画 —— 实时给方向串，但还不能存
+  const drawing = r.computeRecorderState({ points: path(['L', 'D', 'R']), drawing: true })
+  assert.strictEqual(drawing.directions, '←↓→', '画的过程中就要有方向串')
+  assert.strictEqual(drawing.phase, 'drawing')
+  assert.strictEqual(drawing.canSave, false, '还没抬笔不能存')
+
+  // 抬笔 —— 能存
+  const done = r.computeRecorderState({ points: path(['L', 'D', 'R']) })
+  assert.strictEqual(done.phase, 'done')
+  assert.strictEqual(done.valid, true)
+  assert.strictEqual(done.canSave, true)
+})
+
+test('surface.gesture_recorder：非法手势要报原因，不能只给个空串', () => {
+  const r = load('main/classes/surface/gesture_recorder.js')
+  // 太短
+  const short = r.computeRecorderState({ points: [{ x: 0, y: 0, t: 0 }, { x: 10, y: 0, t: 50 }] })
+  assert.strictEqual(short.valid, false)
+  assert.strictEqual(short.reason, 'too-short')
+  assert.strictEqual(short.canSave, false)
+
+  // 拖拽（单向长距离）
+  const drag = r.computeRecorderState({
+    points: Array.from({ length: 40 }, (_, i) => ({ x: i * 13, y: 0, t: i * 16 }))
+  })
+  assert.strictEqual(drag.reason, 'suppressed-as-drag')
+  assert.strictEqual(drag.canSave, false)
+})
+
+test('surface.gesture_recorder：与已有绑定冲突时必须拦住（改自己不算冲突）', () => {
+  const r = load('main/classes/surface/gesture_recorder.js')
+  const points = (() => {
+    const out = [{ x: 0, y: 0, t: 0 }]
+    let x = 0, y = 0, t = 0
+    for (let i = 0; i < 8; i++) { x -= 12; t += 20; out.push({ x, y, t }) }
+    for (let i = 0; i < 8; i++) { y += 12; t += 20; out.push({ x, y, t }) }
+    for (let i = 0; i < 8; i++) { x += 12; t += 20; out.push({ x, y, t }) }
+    return out
+  })()
+
+  const existing = [{ id: 'g1', name: '打开 GitHub', dirs: '←↓→' }]
+
+  // 冲突
+  const conflict = r.computeRecorderState({ points, existing })
+  assert.strictEqual(conflict.phase, 'invalid')
+  assert.strictEqual(conflict.reason, 'conflict')
+  assert.strictEqual(conflict.conflictWith, '打开 GitHub')
+  assert.strictEqual(conflict.canSave, false, '同一个手势不能绑两个目标')
+
+  // 改自己不算冲突
+  const editing = r.computeRecorderState({ points, existing, editingId: 'g1' })
+  assert.strictEqual(editing.canSave, true, '改自己的绑定不该报冲突')
+
+  // 没冲突
+  const free = r.computeRecorderState({ points, existing: [{ id: 'g2', name: '别的', dirs: '↑↓' }] })
+  assert.strictEqual(free.canSave, true)
+})
+
+test('surface.gesture_recorder：run 要给出 save/discard 意图和冲突缺口', () => {
+  const r = load('main/classes/surface/gesture_recorder.js')
+  const instance = catalogs.surface.find((c) => c.id === 'surface.gesture_recorder').instances[0]
+  const deps = { hasClass: () => true, declaredRegionKeys: () => ['detail'] }
+  const points = (() => {
+    const out = [{ x: 0, y: 0, t: 0 }]
+    let x = 0, y = 0, t = 0
+    for (let i = 0; i < 8; i++) { x -= 12; t += 20; out.push({ x, y, t }) }
+    for (let i = 0; i < 8; i++) { y += 12; t += 20; out.push({ x, y, t }) }
+    return out
+  })()
+
+  const ok = r.run({ instanceId: instance.id, params: {}, deps, points })
+  assert.ok(ok.recorder.canSave)
+  assert.ok(ok.intents.includes('save'))
+  assert.deepStrictEqual(ok.blocks, [])
+
+  const bad = r.run({ instanceId: instance.id, params: {}, deps, points, existing: [{ id: 'g', name: 'X', dirs: ok.recorder.directions }] })
+  assert.ok(!bad.recorder.canSave)
+  assert.ok(!bad.intents.includes('save'))
+  assert.ok(bad.gaps.some((g) => g.slot === 'pattern'), '冲突要体现在 gaps 里')
+})

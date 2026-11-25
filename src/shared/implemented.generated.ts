@@ -98,6 +98,7 @@ export const IMPLEMENTED_CLASS_IDS = [
   'surface.dialog',
   'surface.diff',
   'surface.form',
+  'surface.gesture_recorder',
   'surface.hud',
   'surface.inspector',
   'surface.metric_card',
@@ -162,6 +163,7 @@ export const SPECIALIZED_CLASS_IDS = [
   'point.window_control',
   'point.window_query',
   'surface.form',
+  'surface.gesture_recorder',
   'surface.table'
 ] as const
 
@@ -260,6 +262,7 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'surface.dialog': '对话框：槽位是动作按钮；主按钮只能有一个，危险动作要标红',
   'surface.diff': '差异对比：槽位是差异面板，两侧来自不同版本的 registry',
   'surface.form': '表单：槽位是可编辑字段，值来自 params；改完要能提交并校验',
+  'surface.gesture_recorder': '手势录制板：实时方向串 + 合法性 + 冲突检查',
   'surface.hud': '浮层：槽位是浮层内容，不抢焦点，可拖动',
   'surface.inspector': '检查器：槽位是只读分区，内容随选中对象切换',
   'surface.metric_card': '指标卡：槽位是同一指标的不同呈现（数值/趋势/阈值）',
