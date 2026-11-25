@@ -151,31 +151,58 @@ export function toDirectionSequence(points: GesturePoint[], options: RecognizerO
 
   // WGestures 的分段规则：**首段 8 向，之后一律 4 向**。
   // 斜线只出现在开头（起笔时最准），后续段强制回到正十字，避免长轨迹上斜向抖动。
-  const raw: string[] = []
+  /**
+   * 每一步都算两种判向，之后按**段**决定用哪个。
+   *
+   * WGestures 的规则是「首段 8 向、后续段 4 向」，这里的「段」是
+   * **一段连续的同一方向**，不是第一个采样点。
+   *
+   * 之前写成 `raw.length === 0` 只让第一个采样步走 8 向，后果：
+   *   斜线起笔算出 UL，后面十几步全被 4 向压成 U，多数票把整条斜线压平；
+   *   于是 ↖ 和 ↑ 识别成同一个方向串，多个不同手势互相「重复」。
+   */
+  const steps: Array<{ d8: string; d4: string }> = []
   for (let index = 1; index < sampled.length; index++) {
     const dx = sampled[index].x - sampled[index - 1].x
     const dy = sampled[index].y - sampled[index - 1].y
-    const isFirstSegment = raw.length === 0
     // 屏幕坐标 y 向下，判定函数吃数学坐标 —— 先 negate dy
     const mathDy = -dy
-    raw.push(isFirstSegment && config.eightDirections ? wgDir8(dx, mathDy) : wgDir4(dx, mathDy))
+    steps.push({ d8: wgDir8(dx, mathDy), d4: wgDir4(dx, mathDy) })
   }
 
-  // 只保留「连续出现 ≥ switchVotes 段」的方向，滤掉拐角处的一帧噪声
-  const stable: string[] = []
-  let run = 1
-  for (let index = 1; index < raw.length; index++) {
-    if (raw[index] === raw[index - 1]) {
-      run += 1
+  // 用 4 向做段切分（更稳，不会因为斜向抖动把一段切成两段）
+  const runs: Array<{ d4: string; d8: string[]; count: number; arrow?: string }> = []
+  for (const step of steps) {
+    const last = runs[runs.length - 1]
+    if (last && last.d4 === step.d4) {
+      last.d8.push(step.d8)
+      last.count += 1
     } else {
-      if (run >= config.switchVotes) stable.push(raw[index - 1])
-      run = 1
+      runs.push({ d4: step.d4, d8: [step.d8], count: 1 })
     }
   }
-  if (raw.length && run >= config.switchVotes) stable.push(raw[raw.length - 1])
 
-  const deduped = stable.filter((direction, index) => index === 0 || stable[index - 1] !== direction)
-  return deduped.map((direction) => DIR_ARROW[direction as Direction] ?? '?')
+  /** 一段里 8 向的众数；平票取先出现的 */
+  const modeOf = (list: string[]): string => {
+    const count = new Map<string, number>()
+    for (const item of list) count.set(item, (count.get(item) ?? 0) + 1)
+    let best = list[0] ?? ''
+    let bestCount = 0
+    for (const [key, value] of count) if (value > bestCount) { best = key; bestCount = value }
+    return best
+  }
+
+  const arrowOf: Record<string, string> = { U: '↑', UR: '↗', R: '→', DR: '↘', D: '↓', DL: '↙', L: '←', UL: '↖' }
+  for (const [index, run] of runs.entries()) {
+    const code = index === 0 && config.eightDirections ? modeOf(run.d8) : run.d4
+    run.arrow = arrowOf[code] ?? code
+  }
+
+  // switchVotes 现在作用在**段**上：一段至少这么多步才算数，滤掉拐角抖动。
+  // （runs 已经把连续同向合并了，不能再按「连续相同」数一遍）
+  const kept = runs.filter((run) => run.count >= config.switchVotes)
+  const chosen = kept.length ? kept : runs.slice(0, 1)
+  return chosen.map((run) => run.arrow ?? '?')
 }
 
 /** 轨迹 → 识别结果（含无效原因） */

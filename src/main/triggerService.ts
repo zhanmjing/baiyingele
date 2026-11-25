@@ -63,6 +63,20 @@ const GESTURE_THRESHOLD = 0.75
 // 箭头记法（与 WGestures 一致）。字母记法 'UL' 有歧义，已退役。
 const GESTURE_PATTERN = /^(↑|↗|→|↘|↓|↙|←|↖)+$/
 
+/** 派发入口的触发形式。热键与手势是两种独立功能，只共用管线不共用语义。 */
+export type TriggerTrigger =
+  | { kind: 'hotkey'; combo: string; exePath?: string }
+  | { kind: 'gesture'; points: GesturePoint[]; exePath?: string }
+
+/** 统一派发结果。手势多带 directions / session，热键只有 records。 */
+export interface DispatchOutcome {
+  valid: boolean
+  records: FiringRecord[]
+  directions?: string
+  reason?: string
+  session?: unknown
+}
+
 export class TriggerService {
   /** 命令会话宿主：整个服务只该有一个，否则会开出两个接管滚轮 */
   private sessionHost = createSessionHost()
@@ -172,14 +186,54 @@ export class TriggerService {
     return removed
   }
 
+  /**
+   * 唯一派发入口。两种触发形式，一条管线。
+   *
+   * ## 为什么统一（WGestures 原码给的形态）
+   *
+   * WGestures 把热角/边缘做成一个 8 元素槽位数组：
+   *   HotCornerCommands[0..3]  四个角
+   *   HotCornerCommands[4..7]  四条边
+   * 同一个数组、不同下标 —— 而不是「每种触发一个 dispatch 函数」。
+   * 共享点在 AbstractCommand.Execute()，查找各自做。
+   *
+   * 我们有键盘热键（WGestures 没有），所以触发器比它多一种，
+   * 但管线该是同一套：**查找各自做，之后全一样**。
+   *
+   *     resolveCandidates(trigger)   ← 唯一分叉点，只有这里知道触发形式
+   *            ↓ TriggerBinding[]
+   *     scopeCandidates()            ← 应用作用域，只写一次
+   *     execute(matches, meta)       ← 执行 + FiringRecord，只写一次
+   *
+   * 之前热键路径**完全不做作用域筛选**，是两份重复逻辑各自的缺口。
+   */
+  async dispatch(trigger: TriggerTrigger): Promise<DispatchOutcome> {
+    if (trigger.kind === 'hotkey') {
+      const records = await this.dispatchHotkey(trigger.combo, trigger.exePath)
+      // 热键没有方向串、没有会话 —— 这是它与手势的本质区别，不假装有
+      return { valid: records.some((r) => r.status === 'ok') || records.length > 0, records }
+    }
+    return this.dispatchGesturePoints(trigger.points, trigger.exePath)
+  }
+
+  /** 查找层：这是**唯一**按触发形式分叉的地方 */
+  private resolveCandidates(trigger: TriggerTrigger): { pattern: string; matched: TriggerBinding[] } | null {
+    const all = this.deps.store.list().filter((b) => b.enabled)
+    if (trigger.kind === 'hotkey') {
+      const parsed = parseCombo(trigger.combo)
+      const pattern = parsed ? parsed.label : trigger.combo
+      // 热键与手势是**互斥**的绑定来源，不能互相串
+      const matched = this.scopeCandidates(all.filter((b) => b.source === 'hotkey' && b.pattern === pattern), trigger.exePath)
+      return { pattern, matched }
+    }
+    return null // 手势的查找要识别 + 三元组 + 模糊兜底，走 dispatchGesturePoints 自己的流程
+  }
+
   /** 热键路径（模拟真实按键，走完全相同的一跳） */
-  async dispatchHotkey(combo: string): Promise<FiringRecord[]> {
-    const parsed = parseCombo(combo)
-    const pattern = parsed ? parsed.label : combo
-    const matched = this.deps.store
-      .list()
-      .filter((binding) => binding.enabled && binding.source === 'hotkey' && binding.pattern === pattern)
-    return this.execute(matched, { source: 'hotkey', pattern })
+  async dispatchHotkey(combo: string, exePath?: string): Promise<FiringRecord[]> {
+    const resolved = this.resolveCandidates({ kind: 'hotkey', combo, exePath })
+    if (!resolved) return []
+    return this.execute(resolved.matched, { source: 'hotkey', pattern: resolved.pattern })
   }
 
   /**

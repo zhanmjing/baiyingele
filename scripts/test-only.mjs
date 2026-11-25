@@ -22,7 +22,15 @@ if (!files.length) {
   process.exit(1)
 }
 try {
-  const args = pattern ? ['--test', '--test-name-pattern', pattern, ...files] : ['--test', ...files]
+  /**
+   * --test-force-exit：测试全绿但进程不退。
+   *
+   * 原因是有未释放的句柄（koffi / uiohook 这类 native 模块会留线程）。
+   * 测试本身跑完了、结论也是对的，卡在退出阶段没意义。
+   * 注意这**不会**掩盖失败：断言失败仍然是非零退出码。
+   */
+  const base = ['--test', '--test-force-exit']
+  const args = pattern ? [...base, '--test-name-pattern', pattern, ...files] : [...base, ...files]
   execFileSync(process.execPath, args, { cwd: ROOT, stdio: 'inherit' })
 } catch {
   process.exit(1)

@@ -2094,3 +2094,111 @@ test('渲染失败必须被 ErrorBoundary 接住，不能整窗白屏', () => {
   assert.match(boundary, /getDerivedStateFromError/, '要接错误')
   assert.match(boundary, /componentStack/, '要打出组件栈，否则定位不到是哪个页面')
 })
+
+// ── 派发管线统一：热键与手势是两种功能，共用一条管线 ──────────
+test('统一派发：热键与手势走同一个 dispatch，但语义不混', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-uni-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const ran = []
+  const fake = { instance: () => ({ id: 'x' }), run: async () => { ran.push(1); return { status: 'ok', output: 'ok' } } }
+  const service = new TriggerService({ store, pointStore: () => fake, lineStore: () => fake, onFired: () => {} })
+
+  service.add({ source: 'hotkey', pattern: 'Ctrl+Alt+Space', targetKind: 'point', targetId: 'point.a@r1', name: '热键' })
+  service.add({ source: 'gesture', pattern: '↑', targetKind: 'point', targetId: 'point.b@r1', name: '手势' })
+
+  // 同一个入口，两种触发
+  const up = Array.from({ length: 12 }, (_, i) => ({ x: 100, y: 100 - i * 6, t: i * 15 }))
+  const byHotkey = await service.dispatch({ kind: 'hotkey', combo: 'Ctrl+Alt+Space' })
+  const byGesture = await service.dispatch({ kind: 'gesture', points: up })
+
+  assert.ok(byHotkey.records.length > 0, '热键要能命中')
+  assert.strictEqual(byHotkey.directions, undefined, '热键没有方向串 —— 不能假装有')
+  assert.strictEqual(byHotkey.session, undefined, '热键没有会话')
+
+  assert.ok(byGesture.records.length > 0, '手势要能命中')
+  assert.strictEqual(typeof byGesture.directions, 'string', '手势要带方向串')
+  assert.ok(ran.length >= 2, '两种触发都真的执行了目标')
+})
+
+test('热键与手势绑定互不串门', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-x-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const fake = { instance: () => ({ id: 'x' }), run: async () => ({ status: 'ok', output: 'ok' }) }
+  const service = new TriggerService({ store, pointStore: () => fake, lineStore: () => fake, onFired: () => {} })
+
+  // 只有一条手势绑定；用同样的字符串当热键组合，不该命中它。
+  // 注意：未命中也会留一条 skipped 记录（这是有意的，便于排查），
+  // 所以断言的是「没有真正执行」，不是「没有记录」。
+  let ran = 0
+  const counting = { instance: () => ({ id: 'x' }), run: async () => { ran++; return { status: 'ok', output: 'ok' } } }
+  service.deps.pointStore = () => counting
+  service.add({ source: 'gesture', pattern: '↑', targetKind: 'point', targetId: 'point.b@r1' })
+  const r = await service.dispatch({ kind: 'hotkey', combo: '↑' })
+  assert.strictEqual(ran, 0, '热键查找只认 source=hotkey，不能捞到手势绑定去执行')
+  assert.ok(r.records.every((x) => x.status === 'skipped'), '未命中应是 skipped，不是 ok')
+})
+
+test('热键路径也要过应用作用域（以前完全没有）', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-hs-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const fake = { instance: () => ({ id: 'x' }), run: async () => ({ status: 'ok', output: 'ok' }) }
+  const service = new TriggerService({ store, pointStore: () => fake, lineStore: () => fake, onFired: () => {} })
+
+  service.add({ source: 'hotkey', pattern: 'Ctrl+K', targetKind: 'point', targetId: 'point.g@r1', name: '全局' })
+  service.add({
+    source: 'hotkey', pattern: 'Ctrl+K', targetKind: 'point', targetId: 'point.a@r1', name: '仅 app',
+    appScope: { exePath: 'C:\\app.exe', inheritGlobal: false }
+  })
+
+  // 在别的应用里，app.exe 那条不继承 → 应该一条都不命中
+  const other = await service.dispatch({ kind: 'hotkey', combo: 'Ctrl+K', exePath: 'D:\\other.exe' })
+  assert.strictEqual(other.records.length, 1, '没登记过的应用直接用全局')
+  // 在 app.exe 里 → 用应用级的
+  const inApp = await service.dispatch({ kind: 'hotkey', combo: 'Ctrl+K', exePath: 'C:\\APP.EXE' })
+  assert.strictEqual(inApp.records.length, 1, '应用级命中一条')
+})
+
+test('手势识别：八个方向都要认得（对角曾被压成主方向，导致大量重复）', () => {
+  const r = load('shared/gestureRecognizer.js')
+  const cat = (...segs) => {
+    const out = []
+    let t = 0
+    let cur = { x: 500, y: 500 }
+    for (const [dx, dy] of segs) {
+      for (let i = 0; i < 12; i++) {
+        cur = { x: cur.x + dx * 8, y: cur.y + dy * 8 }
+        t += 16
+        out.push({ ...cur, t })
+      }
+    }
+    return out
+  }
+  const cases = [
+    ['↑', [[0, -1]]], ['↘', [[1, 1]]], ['↓', [[0, 1]]], ['↙', [[-1, 1]]],
+    ['←', [[-1, 0]]], ['↖', [[-1, -1]]], ['→', [[1, 0]]], ['↗', [[1, -1]]],
+    ['←↓→', [[-1, 0], [0, 1], [1, 0]]], ['↖→', [[-1, -1], [1, 0]]]
+  ]
+  const wrong = cases.filter(([want, segs]) => r.recognize(cat(...segs)).directions !== want)
+  assert.deepStrictEqual(
+    wrong.map(([want, segs]) => `${want}: ${r.recognize(cat(...segs)).directions}`),
+    [],
+    '八个方向都识别错的话，不同手势会被压成同一串 —— 表现为「手势大量重复」'
+  )
+})
+
+test('手势识别：8 向规则作用在「段」上，不是第一个采样点', () => {
+  const src = readFileSync(join(process.cwd(), 'src/shared/gestureRecognizer.ts'), 'utf8')
+  // 曾经写成 `const isFirstSegment = raw.length === 0`，只有第一个采样步走 8 向，
+  // 后面的步全被 4 向压平 → 斜线变成主方向。注释里提到这个写法是正常的，只查代码。
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\*.*$/gm, '').replace(/\/\/.*$/gm, '')
+  assert.ok(!/isFirstSegment\s*=\s*raw\.length\s*===\s*0/.test(code), '不能只让第一个采样步走 8 向')
+  assert.match(src, /const runs: Array<\{[^}]*count: number/, '要按段聚合（段 = 一段连续同向）')
+  assert.match(src, /index === 0 && config\.eightDirections \? modeOf\(run\.d8\) : run\.d4/, '首段用 8 向众数，其余段用 4 向')
+  assert.match(src, /runs\.filter\(\(run\) => run\.count >= config\.switchVotes\)/, 'switchVotes 要作用在段上')
+})
