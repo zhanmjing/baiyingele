@@ -7,6 +7,8 @@ declare global {
     baiying: LayerApi & {
       getAppInfo: () => Promise<AppInfo>
       openDataDir: () => Promise<boolean>
+      /** 在文件管理器里定位并选中一个文件（只允许数据目录内） */
+      reveal: (target: string) => Promise<boolean>
       getRunHistory: (limit?: number) => Promise<RunHistoryItem[]>
       undoFieldLanding: (token: string) => Promise<{ ok: boolean; message: string }>
       getTriggers: () => Promise<{

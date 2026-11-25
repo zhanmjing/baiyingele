@@ -92,5 +92,8 @@ export type LayerApi = {
     instanceId: string
   ) => Promise<LayerInstanceRecord>
 } & {
+  /** 状态文件损坏留档的路径；没损坏就是 null */
+  [K in LayerKey as `get${Capitalize<K>}Corruption`]: () => Promise<{ backup: string } | null>
+} & {
   [K in LayerKey as `run${Capitalize<K>}`]: (payload: RunPayload) => Promise<RunResult>
 }

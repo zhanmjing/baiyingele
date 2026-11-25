@@ -164,11 +164,36 @@ export default function App() {
   const [paletteQuery, setPaletteQuery] = useState('')
   const [toast, setToast] = useState<string | null>(null)
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
+  /**
+   * 状态文件损坏留档的记录。
+   *
+   * 以前损坏只是 catch 里悄悄回退种子数据，用户丢了自建实例却完全不知道。
+   * 现在主进程会留档并把路径报上来，这里必须显示出来 —— 否则还是静默。
+   */
+  const [corruptions, setCorruptions] = useState<Array<{ layer: string; backup: string }>>([])
   const [language, setLanguage] = useState<SettingsLanguage>(readLanguage)
   const [catalog, setCatalog] = useState<Catalog>(createCatalog)
   const [runs, setRuns] = useState<RunRecord[]>([])
   const [history, setHistory] = useState<RunHistoryItem[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
+
+  useEffect(() => {
+    // 损坏是启动期一次性事实，查五次就够，不用轮询
+    const layers = ['point', 'line', 'surface', 'body', 'field'] as const
+    void Promise.all(
+      layers.map(async (layer) => {
+        try {
+          const getter = (window.baiying as unknown as Record<string, () => Promise<{ backup: string } | null>>)[
+            `get${layer[0].toUpperCase()}${layer.slice(1)}Corruption`
+          ]
+          const result = await getter?.()
+          return result ? { layer, backup: result.backup } : null
+        } catch {
+          return null
+        }
+      })
+    ).then((rows) => setCorruptions(rows.filter((row) => row !== null)))
+  }, [])
 
   useEffect(() => {
     if (!window.baiying) {
@@ -512,6 +537,29 @@ export default function App() {
     <div className="app-shell">
       <Sidebar active={section} onNavigate={navigate} counts={counts} runCount={history.length} version={appInfo?.version} language={language} />
       <div className="app-main">
+        {corruptions.length > 0 && (
+          <div className="corruption-banner" role="alert">
+            <span>
+              ⚠ {corruptions.length} 个状态文件损坏，已留档（数据没有丢，但界面已回退到种子数据）
+            </span>
+            <div className="corruption-links">
+              {corruptions.map((row) => (
+                <button
+                  key={row.layer}
+                  className="corruption-link"
+                  title={row.backup}
+                  onClick={() => {
+                    void window.baiying.reveal(row.backup).then(() => {
+                      setToast(`已在文件管理器中定位 ${row.layer} 的留档`)
+                    })
+                  }}
+                >
+                  {row.layer} · {row.backup.split(/[\\/]/).pop()}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <Topbar
           title={meta.title}
           eyebrow={meta.eyebrow}

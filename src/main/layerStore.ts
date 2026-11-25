@@ -92,6 +92,16 @@ export class LayerStore {
    * 用户自建的实例没了，界面上看不出发生过什么。损坏必须留痕。
    */
   private corruptBackup: string | null = null
+
+  /**
+   * 状态文件损坏时留档在哪。
+   *
+   * 返回 null 表示没发生过损坏。返回路径表示**这一次启动时**读到过坏文件，
+   * 界面必须把它显示出来 —— 用户有权知道自己的数据被动过。
+   */
+  corruption(): { backup: string } | null {
+    return this.corruptBackup ? { backup: this.corruptBackup } : null
+  }
   private readonly filePath: string
   private readonly def: LayerDef
   private readonly runner: InstanceRunner

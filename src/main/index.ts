@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
-import { join } from 'node:path'
+import { existsSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import type { RunHistoryItem } from '../shared/runHistory'
 import { LAYER_KEYS, type LayerKey } from '../shared/layerKeys'
 import { LAYER_DEFS } from './layerRegistry'
@@ -88,6 +89,9 @@ function registerLayerIpc(): void {
   for (const key of LAYER_KEYS) {
     ipcMain.handle(`${key}:catalog`, () => store(key).catalog())
     ipcMain.handle(`${key}:runs`, (_event, limit?: number) => store(key).runs(limit))
+
+    // 损坏状态必须能被界面读到 —— 只留档不告诉人，等于还是静默
+    ipcMain.handle(`${key}:corruption`, () => store(key).corruption())
 
     ipcMain.handle(`${key}:instance:create`, (_event, input: CreateInstanceInput) =>
       store(key).create(input)
@@ -260,6 +264,21 @@ app.whenReady().then(() => {
   ipcMain.handle('app:open-data-dir', async () => {
     const result = await shell.openPath(dataDir)
     if (result) throw new Error(result)
+    return true
+  })
+
+  /**
+   * 在文件管理器里定位一个文件。
+   *
+   * 只允许定位 dataDir 内的路径 —— 渲染层拿到的路径来自 store，
+   * 但 IPC 是公开边界，不能因为「上游可信」就放弃校验。
+   */
+  ipcMain.handle('app:reveal', (_event, target: string) => {
+    const resolved = resolve(String(target ?? ''))
+    const root = resolve(dataDir)
+    if (!resolved.startsWith(root)) throw new Error('只能定位数据目录内的文件')
+    if (!existsSync(resolved)) throw new Error(`文件已不存在：${resolved}`)
+    shell.showItemInFolder(resolved)
     return true
   })
 

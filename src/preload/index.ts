@@ -35,6 +35,8 @@ for (const key of LAYER_KEYS) {
     ipcRenderer.invoke(`${key}:catalog`)
   layerApi[`get${suffix}Runs`] = (limit = 20): Promise<PointRunRecord[]> =>
     ipcRenderer.invoke(`${key}:runs`, limit)
+  layerApi[`get${suffix}Corruption`] = (): Promise<{ backup: string } | null> =>
+    ipcRenderer.invoke(`${key}:corruption`)
   layerApi[`create${suffix}Instance`] = (input: CreateInstancePayload): Promise<PointInstanceRecord> =>
     ipcRenderer.invoke(`${key}:instance:create`, input)
   layerApi[`update${suffix}Instance`] = (
@@ -55,6 +57,8 @@ for (const key of LAYER_KEYS) {
 const api = {
   getAppInfo: (): Promise<AppInfo> => ipcRenderer.invoke('app:info'),
   openDataDir: (): Promise<boolean> => ipcRenderer.invoke('app:open-data-dir'),
+  /** 在文件管理器里定位并选中一个文件（只允许数据目录内） */
+  reveal: (target: string): Promise<boolean> => ipcRenderer.invoke('app:reveal', target),
   getRunHistory: (limit = 100): Promise<RunHistoryItem[]> =>
     ipcRenderer.invoke('runs:history', limit),
   undoFieldLanding: (token: string): Promise<{ ok: boolean; message: string }> =>
