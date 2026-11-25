@@ -4,6 +4,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'point.notify_toast'
 export const summary = 'Electron Notification'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** L1 · 系统通知 */
 export const run: Capability = async (ctx) => {
   const startedAt = Date.now()

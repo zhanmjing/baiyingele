@@ -34,6 +34,9 @@ export interface TableRender extends RenderResult {
 export const classId = 'surface.table'
 export const summary = '表格：槽位是列定义，行数据来自 registry；要能排序与分页'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export const run = defineClassImpl<SurfaceClassInput, TableRender>({
   classId,
   summary,

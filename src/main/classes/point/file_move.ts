@@ -5,6 +5,9 @@ import { elapsed, errorMessage, expandPath, pathExists, type Capability } from '
 export const classId = 'point.file_move'
 export const summary = 'node:fs rename（EXDEV 回落 copy+unlink）；支持 to 指定文件名或 toDir 搬进目录'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * L1 · 移动 / 重命名文件
  *

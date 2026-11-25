@@ -4,6 +4,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.screen_capture'
 export const summary = 'desktopCapturer 枚举屏幕源'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** L0 · 抓屏（枚举屏幕源，不保存文件） */
 export const run: Capability = async (ctx) => {
   const startedAt = Date.now()

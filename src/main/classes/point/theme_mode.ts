@@ -4,6 +4,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.theme_mode'
 export const summary = 'Windows 深浅主题：读写 HKCU Personalize 注册表键并读回校验'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export interface ThemeTargets {
   apps?: number
   system?: number

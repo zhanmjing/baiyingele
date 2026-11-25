@@ -3,6 +3,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.diagnose'
 export const summary = '故障诊断：按错误特征匹配已知原因与修法，纯规则不调用模型'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A1 · 诊断（纯规则）
  *

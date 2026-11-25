@@ -9,6 +9,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.simulate'
 export const summary = '静态推演：走一遍流程图，算出会碰哪些节点/路径/窗口和最坏副作用，但不执行'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 静态推演（dry-run / impact / rollback）
  *

@@ -5,6 +5,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'field.observe'
 export const summary = '上下文快照：前台进程/窗口/时间/空闲、剪贴板、运行历史；只读，绝不改动任何东西'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 观察（只读上下文快照）
  *

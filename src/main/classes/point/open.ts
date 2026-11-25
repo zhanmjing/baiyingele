@@ -5,6 +5,9 @@ import { elapsed, errorMessage, expandPath, type Capability } from '../../capabi
 export const classId = 'point.open'
 export const summary = 'Electron shell.openExternal / openPath；带 app 时走 spawn'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * L1 · 打开目标。
  * kind 决定处理方式：

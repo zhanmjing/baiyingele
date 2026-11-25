@@ -30,7 +30,7 @@
 import { stringParams } from '../shared/layerTypes'
 import { classifyCycles, topoOrder } from '../shared/graph'
 import { classIdOf, instanceIdOf, isExprRef } from '../shared/atomId'
-import { hasRealImpl } from '../shared/implRegistry'
+import { hasSpecialized } from '../shared/implRegistry'
 import type { LineNode, LineProfile } from '../shared/lineCatalog'
 import type { InstanceRunner, LayerStore, RunOutcome } from './layerStore'
 
@@ -470,7 +470,8 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
     })
   }
 
-  const isSimulated = !hasRealImpl(bound.classId)
+  // 「模拟」= 这个类没有自己的逻辑（只有实现单元也算模拟）
+  const isSimulated = !hasSpecialized(bound.classId)
   try {
     const { record, outcome } = await pointStore.runDetailed(bound.id, {
       input,

@@ -3,6 +3,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.critique'
 export const summary = '结构审查：流程图有没有环 / 悬空边 / 未绑定节点，体层零件齐不齐，权限有没有超范围'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 审查（纯规则，只读，不产生任何副作用）
  *

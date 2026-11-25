@@ -6,6 +6,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.window_control'
 export const summary = 'koffi 控制窗口：focus / move / topmost / close（focus 用 AttachThreadInput 绕前台锁）'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export interface WorkArea {
   x: number
   y: number

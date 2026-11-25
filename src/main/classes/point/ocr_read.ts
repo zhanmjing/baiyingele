@@ -6,6 +6,9 @@ import { elapsed, errorMessage, expandPath, type Capability } from '../../capabi
 export const classId = 'point.ocr_read'
 export const summary = '视觉模型 OCR：支持截图 / 本地图片 / 图片 URL，复用 provider 降级链'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** 视觉模型的建议上限，超过就等比缩小，避免几 MB 的 base64 把请求打爆 */
 const MAX_EDGE = 1600
 const MAX_DATA_URL_BYTES = 8 * 1024 * 1024

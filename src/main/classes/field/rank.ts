@@ -3,6 +3,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'field.rank'
 export const summary = '确定性排序：按优先度、使用频次、名称给条目排序，不调用模型'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A2 · 排序（确定性）
  *

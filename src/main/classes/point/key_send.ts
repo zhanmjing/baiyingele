@@ -6,6 +6,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.key_send'
 export const summary = 'koffi SendInput 真实发送组合键（走系统输入队列，目标程序无法区分真假）'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export type ModifierName = 'Ctrl' | 'Alt' | 'Shift' | 'Meta'
 export type KeyMode = 'press' | 'down' | 'up'
 

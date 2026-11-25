@@ -69,12 +69,15 @@ export function scanClassImpls() {
     if (!/export const run\b/.test(source) && !/export function run\b/.test(source)) {
       problems.push(`classes/${file}: 缺少 export const run`)
     }
+    // specialized=true：这个类有自己的逻辑，不只是调通用实现。
+    // 必须显式声明 —— 靠行数或调用模式猜不可靠。
+    const specialized = /export const specialized = true/.test(source)
     // classId 必须和所在层目录一致 —— 目录是 layout，classId 是语义，两者不能对不上
     const layerDir = file.split('/')[0]
     if (!classId.startsWith(`${layerDir}.`)) {
       problems.push(`classes/${file}: classId ${classId} 与所在层目录 ${layerDir}/ 不一致`)
     }
-    modules.push({ file: `classes/${file}`, classId, summary: summary ?? '' })
+    modules.push({ file: `classes/${file}`, classId, summary: summary ?? '', specialized })
   }
 
   const seen = new Map()
@@ -184,9 +187,22 @@ export async function runCapability(context: RunContext): Promise<RunOutcome | n
 export function renderManifest(modules) {
   const ids = modules.map((module) => `  '${module.id}'`).join(',\n')
   const summaries = modules.map((module) => `  '${module.id}': '${module.summary}'`).join(',\n')
+  const specializedIds = modules.filter((m) => m.specialized).map((m) => `  '${m.id}'`).join(',\n')
 
-  return `${HEADER}export const IMPLEMENTED_CLASS_IDS = [
+  return `${HEADER}/**
+ * 有实现单元的类（有文件就能跑）。
+ * 不等于「有自己的逻辑」—— 见 SPECIALIZED_CLASS_IDS。
+ */
+export const IMPLEMENTED_CLASS_IDS = [
 ${ids}
+] as const
+
+/**
+ * 有**自己的逻辑**的类：不是只调通用实现。
+ * 由文件里显式声明的 specialized = true 决定，不靠行数猜。
+ */
+export const SPECIALIZED_CLASS_IDS = [
+${specializedIds}
 ] as const
 
 export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string> = {
@@ -201,8 +217,8 @@ export function buildOutputs() {
 
   // 双轨合并：同 id 时以新轨为主（迁移期间可能两边都有）
   const merged = new Map()
-  for (const module of legacy.modules) merged.set(module.id, { id: module.id, summary: module.summary })
-  for (const module of classes.modules) merged.set(module.classId, { id: module.classId, summary: module.summary })
+  for (const module of legacy.modules) merged.set(module.id, { id: module.id, summary: module.summary, specialized: true })
+  for (const module of classes.modules) merged.set(module.classId, { id: module.classId, summary: module.summary, specialized: module.specialized })
   const all = [...merged.values()].sort((a, b) => a.id.localeCompare(b.id))
 
   return {

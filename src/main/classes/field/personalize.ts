@@ -4,6 +4,9 @@ import { readRunHistory, type RunHistoryLike } from './observe'
 export const classId = 'field.personalize'
 export const summary = '按使用频率推默认值：高频动作建议快捷键、常用面建议布局、常调参数建议默认值'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A2 · 个性化（纯频率统计，不调用模型）
  *

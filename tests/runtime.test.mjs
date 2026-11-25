@@ -759,3 +759,29 @@ test('LayerStore 默认 runner 必须如实报未注入，不能伪装成功', a
   assert.strictEqual(run.status, 'warn', '默认 runner 不该返回 ok')
   assert.match(run.output, /没有注入 runner/)
 })
+
+test('实现清单分两级：有单元 ≠ 有自己逻辑，三态覆盖全部类', () => {
+  const reg = load('shared/implRegistry.js')
+  const allIds = ['point', 'line', 'surface', 'body', 'field'].flatMap((layer) => catalogs[layer].map((c) => c.id))
+
+  const real = allIds.filter((id) => reg.implStateOf(id) === 'real')
+  const skeleton = allIds.filter((id) => reg.implStateOf(id) === 'skeleton')
+  const missing = allIds.filter((id) => reg.implStateOf(id) === 'missing')
+
+  assert.strictEqual(real.length + skeleton.length + missing.length, allIds.length, '三态必须覆盖全部类')
+  assert.strictEqual(missing.length, 8, `应该有 8 个完全没有实现单元，实际 ${missing.length}`)
+  assert.ok(skeleton.length > 0 && real.length > 0)
+
+  for (const cid of ['surface.table', 'surface.form', 'body.ocr', 'point.clipboard_get', 'field.rank']) {
+    assert.strictEqual(reg.implStateOf(cid), 'real', `${cid} 应该是真实实现`)
+  }
+  for (const cid of ['surface.dashboard', 'body.window_layout', 'line.ensure_vpn']) {
+    assert.strictEqual(reg.implStateOf(cid), 'skeleton', `${cid} 是骨架，不该算真实实现`)
+    assert.strictEqual(reg.hasImplUnit(cid), true)
+    assert.strictEqual(reg.hasSpecialized(cid), false)
+  }
+  assert.strictEqual(reg.implStateOf('field.generate'), 'missing')
+  assert.strictEqual(reg.implStateLabel('surface.table'), '真实实现')
+  assert.match(reg.implStateLabel('surface.dashboard'), /骨架/)
+  assert.strictEqual(reg.implStateLabel('field.generate'), '未实现')
+})

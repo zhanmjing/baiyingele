@@ -4,6 +4,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.translate_text'
 export const summary = '翻译文本；provider 链 本地 → 网络 → API 降级，key 走环境变量'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 const TARGET_LABEL: Record<string, string> = {
   zh: '简体中文',
   en: '英文',

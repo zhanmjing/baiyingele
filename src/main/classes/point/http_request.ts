@@ -3,6 +3,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.http_request'
 export const summary = 'fetch + 10s 超时，返回状态码与字节数'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** L1 · HTTP 请求 */
 export const run: Capability = async (ctx) => {
   const startedAt = Date.now()

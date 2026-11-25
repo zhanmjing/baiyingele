@@ -4,6 +4,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'point.clipboard_get'
 export const summary = 'Electron clipboard.readText / read'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * L0 · 读取剪贴板。
  * Electron 45 的 clipboard 已改为 W3C 风格异步 API：

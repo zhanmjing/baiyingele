@@ -4,6 +4,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'field.classify'
 export const summary = '按实例自带的候选标签做一次分类（模型调用，附 confidence 与 reason）'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** 从实例描述里取候选标签：'body.ocr · text/math/qr/table' -> 后段按 / 拆开 */
 function labelSetOf(description: string): string[] {
   const parts = String(description ?? '').split('·')

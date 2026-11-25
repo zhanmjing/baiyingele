@@ -6,6 +6,9 @@ import { lineProfiles } from '../../../shared/lineCatalog'
 export const classId = 'field.mine'
 export const summary = '历史挖掘：从运行历史与流程图里找可复用套路（连续动作 / 图结构 / 共现能力），纯规则'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A1 · 挖掘（纯规则）
  *

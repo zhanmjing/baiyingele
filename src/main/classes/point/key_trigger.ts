@@ -3,6 +3,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.key_trigger'
 export const summary = 'uiohook-napi 全局热键监听（起钩子后常驻，不同于一次性能力）'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export interface ParsedCombo {
   label: string
   /** 主键的规范名（Ctrl/Alt/Shift/Meta 之外的最后一个 token） */

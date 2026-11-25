@@ -33,6 +33,9 @@ export interface FormRender extends RenderResult {
 export const classId = 'surface.form'
 export const summary = '表单：槽位是可编辑字段，值来自 params；改完要能提交并校验'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 function isBlank(value: unknown): boolean {
   if (value === undefined || value === null) return true
   if (typeof value === 'string') return value.trim() === ''

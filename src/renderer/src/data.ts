@@ -12,7 +12,7 @@ import { lineClassesSeed } from '../../shared/lineCatalog'
 import { surfaceClassesSeed } from '../../shared/surfaceCatalog'
 import { pointClassesSeed } from '../../shared/pointCatalog'
 import type { PointInstanceSeed, PointParam } from '../../shared/pointCatalog'
-import { hasRealImpl } from '../../shared/implRegistry'
+import { hasSpecialized } from '../../shared/implRegistry'
 
 export type LayerKey = 'point' | 'line' | 'surface' | 'body' | 'field'
 
@@ -158,12 +158,12 @@ export const layerOrder: LayerKey[] = ['point', 'line', 'surface', 'body', 'fiel
 export const totalCatalog = {
   classes: Object.values(layers).reduce((sum, layer) => sum + layer.totalClasses, 0),
   instances: Object.values(layers).reduce((sum, layer) => sum + layer.totalInstances, 0),
-  /** 在 capabilities.ts 里登记了真实实现的类数量 */
+  /** 有**自己逻辑**的类数量（不含只有实现单元的骨架） */
   realClasses: [
     ...pointClassesSeed,
     ...lineClassesSeed,
     ...surfaceClassesSeed,
     ...bodyClassesSeed,
     ...fieldClassesSeed
-  ].filter((item) => hasRealImpl(item.id)).length
+  ].filter((item) => hasSpecialized(item.id)).length
 }

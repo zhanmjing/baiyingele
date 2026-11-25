@@ -4,6 +4,9 @@ import { readRunHistory, type RunHistoryLike } from './observe'
 export const classId = 'field.recommend'
 export const summary = '建议下一步：按失败率、重复度、缺口排优先级给一条具体建议，纯规则'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A1 · 建议（纯规则）
  *

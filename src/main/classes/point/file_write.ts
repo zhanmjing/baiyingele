@@ -6,6 +6,9 @@ import { elapsed, expandPath, type Capability } from '../../capabilities/_shared
 export const classId = 'point.file_write'
 export const summary = 'node:fs writeFile / appendFile（~ 展开为主目录）'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** L1 · 写文件 */
 export const run: Capability = async (ctx) => {
   const startedAt = Date.now()

@@ -3,6 +3,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.ask'
 export const summary = '生成带选项的提问：信息不足时问清、A1/A2 动作前求确认、多个匹配时让人选'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 提问（纯模板，不调用模型）
  *

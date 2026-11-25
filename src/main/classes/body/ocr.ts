@@ -26,6 +26,9 @@ const JPEG = /preview|text|hud|inspector/i
 export const classId = 'body.ocr'
 export const summary = 'OCR 体：识别 + 预处理 + 结果展示'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export const requires: BodyRequirement[] = [
   { role: 'ui', reason: '需要界面承载：结果要能看、能选中、能复制' },
   { role: 'capability', reason: '需要真实能力：最终必须落到某个识别/预处理操作上' },

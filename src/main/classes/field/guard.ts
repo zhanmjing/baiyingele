@@ -3,6 +3,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.guard'
 export const summary = '确定性风控闸门：自主度上限、副作用等级、置信度、隐私脱敏，全部给得出理由'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 风险 / 权限 / 置信度 / 隐私闸门
  *

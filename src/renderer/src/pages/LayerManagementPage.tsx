@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import type { LayerClass, LayerInstance, LayerMeta, RunRecord } from '../data'
 import { bodyProfiles, type BodyProfile } from '../../../shared/bodyCatalog'
-import { hasRealImpl, IMPL_SUMMARY, type ImplementedClassId } from '../../../shared/implRegistry'
+import { implStateOf, implStateLabel, IMPL_SUMMARY, type ImplementedClassId } from '../../../shared/implRegistry'
 import { gapSummary, isUnmet, topGaps } from '../../../shared/requirements'
 import type { InstanceDraft } from './instanceDraft'
 
@@ -379,7 +379,7 @@ function CardsView(props: {
             <button className="point-class-head" onClick={() => props.onClass(classItem)}>
               <span className="point-class-icon" style={{ color, borderColor: `${color}33`, background: `${color}12` }}>◆</span>
               <span className="point-class-main">
-                <span className="point-class-title">{classItem.name}<em className={`priority ${classItem.priority.toLowerCase()}`}>{classItem.priority}</em><em className="point-mini-badge">{classItem.effect}</em><em className={`point-mini-badge ${hasRealImpl(classItem.id) ? 'impl-real' : 'impl-mock'}`}>{hasRealImpl(classItem.id) ? '真实' : '模拟'}</em></span>
+                <span className="point-class-title">{classItem.name}<em className={`priority ${classItem.priority.toLowerCase()}`}>{classItem.priority}</em><em className="point-mini-badge">{classItem.effect}</em><em className={`point-mini-badge impl-${implStateOf(classItem.id)}`}>{implStateOf(classItem.id) === 'real' ? '真实' : implStateOf(classItem.id) === 'skeleton' ? '骨架' : '未实现'}</em></span>
                 <span className="point-class-id">{classItem.id}</span>
                 <span className="point-class-desc">{classItem.description}</span>
               </span>
@@ -564,12 +564,12 @@ function Inspector({
         <div className="point-inspector-kicker">{instance ? 'INSTANCE' : 'POINT CLASS'}</div>
         <div className="point-inspector-title">{instance ? instance.name : classItem.name}</div>
         <div className="point-inspector-id">{instance ? `${instance.id} · r${instance.rev}` : `${classItem.id} · v1.0.0`}</div>
-        <div className="point-inspector-badges"><span className={`priority ${classItem.priority.toLowerCase()}`}>{classItem.priority}</span><span className={`effect ${classItem.effect.toLowerCase()}`}>{classItem.effect}</span><span style={{ color }}>{classItem.family}</span><span className={`point-mini-badge ${hasRealImpl(classItem.id) ? 'impl-real' : 'impl-mock'}`}>{hasRealImpl(classItem.id) ? '真实实现' : '模拟实现'}</span></div>
+        <div className="point-inspector-badges"><span className={`priority ${classItem.priority.toLowerCase()}`}>{classItem.priority}</span><span className={`effect ${classItem.effect.toLowerCase()}`}>{classItem.effect}</span><span style={{ color }}>{classItem.family}</span><span className={`point-mini-badge impl-${implStateOf(classItem.id)}`}>{implStateLabel(classItem.id)}</span></div>
       </div>
       {!instance ? (
         <>
           <p className="point-inspector-desc">{classItem.description}</p>
-          <div className="point-inspector-section"><div className="point-inspector-label">契约</div><div className="kv-grid"><span>类 ID</span><strong>{classItem.id}</strong><span>家族</span><strong>{classItem.family}</strong><span>优先级</span><strong>{classItem.priority}</strong><span>副作用</span><strong>{classItem.effect}</strong><span>实例</span><strong>{classItem.instances.length}</strong><span>实现</span><strong>{hasRealImpl(classItem.id) ? IMPL_SUMMARY[classItem.id as ImplementedClassId] : '模拟 runner（无真实副作用）'}</strong></div></div>
+          <div className="point-inspector-section"><div className="point-inspector-label">契约</div><div className="kv-grid"><span>类 ID</span><strong>{classItem.id}</strong><span>家族</span><strong>{classItem.family}</strong><span>优先级</span><strong>{classItem.priority}</strong><span>副作用</span><strong>{classItem.effect}</strong><span>实例</span><strong>{classItem.instances.length}</strong><span>实现</span><strong>{implStateOf(classItem.id) === 'real' ? IMPL_SUMMARY[classItem.id as ImplementedClassId] : implStateOf(classItem.id) === 'skeleton' ? '有实现单元，但 run 走通用实现，没有这个类自己的逻辑' : '没有实现单元，运行时会如实报未实现'}</strong></div></div>
           <div className="point-inspector-section"><div className="point-inspector-label">参数 Schema</div><div className="point-schema-list">{classItem.params.map((param) => <div key={param.key}><code>{param.key}</code><span>{param.type}{param.required ? ' · required' : ''}</span></div>)}</div></div>
           <div className="point-inspector-section"><div className="point-inspector-label">实例</div>{classItem.instances.map((item) => <button className="point-inspector-instance" key={item.id} onClick={() => onEdit(classItem, item)}><span className={`point-status-dot ${item.status}`} /><strong>{item.name}</strong><em>r{item.rev}</em></button>)}</div>
           <div className="point-inspector-actions"><button className="btn primary" onClick={() => onNew(classItem)}>＋ 新建实例</button></div>

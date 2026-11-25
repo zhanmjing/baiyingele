@@ -5,6 +5,9 @@ import { lineProfiles } from '../../../shared/lineCatalog'
 export const classId = 'field.detect'
 export const summary = '从运行历史里找重复序列、异常、可自动化机会；纯规则，不调用模型'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 发现（纯规则，只读，不产生任何副作用）
  *

@@ -4,6 +4,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.clipboard_write'
 export const summary = 'Electron clipboard.writeText（写后回读校验）'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * L1 · 写剪贴板。
  * 注意 Electron 45 的 clipboard 是 W3C 异步 API：writeText 返回 Promise，readText 也返回 Promise。

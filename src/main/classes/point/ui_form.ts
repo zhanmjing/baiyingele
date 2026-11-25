@@ -10,6 +10,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'point.ui_form'
 export const summary = '向界面要用户输入并等待答复；取消/超时都返回明确状态，绝不当成成功'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export interface FormRequest {
   requestId: string
   spec: FormSpec

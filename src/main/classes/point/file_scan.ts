@@ -5,6 +5,9 @@ import { elapsed, errorMessage, expandPath, pathExists, type Capability } from '
 export const classId = 'point.file_scan'
 export const summary = 'node:fs 递归扫描；limit 封顶，不可读目录跳过并计入说明'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 function globToRegExp(pattern: string): RegExp {
   const escaped = pattern
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')

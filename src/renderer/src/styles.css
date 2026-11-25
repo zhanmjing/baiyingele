@@ -2208,11 +2208,24 @@ a { color: inherit; }
 .panel-stage-backdrop { position: absolute; inset: 0; z-index: 1; background: rgba(2,6,12,.58); backdrop-filter: blur(1.4px); }
 @media (max-width: 900px) { .panel-preview-stage { min-height: 360px; padding: 13px 11px; } .panel-stage-fake { grid-template-columns: 82px minmax(0,1fr); } .panel-fake-main { padding-left: 10px; } .panel-preview-stage .panel-preview { min-width: 0; } .stage-floating .panel-preview { transform: none; } }
 
-/* ---------- 真实 / 模拟 实现标记 ---------- */
+/* ---------- 实现状态三态：真实 / 骨架 / 未实现 ---------- */
+/* 绿 = 有自己的逻辑；琥珀 = 有实现单元但走通用实现；灰 = 什么都没有 */
 .point-mini-badge.impl-real {
   border-color: rgba(52, 211, 153, 0.45);
   background: rgba(52, 211, 153, 0.12);
   color: #34d399;
+}
+
+.point-mini-badge.impl-skeleton {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+.point-mini-badge.impl-missing {
+  border-color: rgba(148, 163, 184, 0.35);
+  background: rgba(148, 163, 184, 0.08);
+  color: #94a3b8;
 }
 
 .point-mini-badge.impl-mock {

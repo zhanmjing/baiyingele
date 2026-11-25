@@ -4,6 +4,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.display_brightness'
 export const summary = 'WMI 控制内屏亮度（WmiSetBrightness），写完读回校验；外接屏需 DDC/CI'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 export type BrightnessAction = 'get' | 'set' | 'up' | 'down'
 
 function clampPercent(value: number): number {

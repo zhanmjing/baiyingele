@@ -4,6 +4,9 @@ import fullCatalogs from '../../../shared/generatedFullCatalogs.json'
 export const classId = 'field.route'
 export const summary = '路由决策：本地/云端/回退的模型选择、能力/流程/体的工具选择、文件与触发器到体实例'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A2 · 路由（确定性规则，不调用模型）
  *

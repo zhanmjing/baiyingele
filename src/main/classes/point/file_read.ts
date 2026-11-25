@@ -4,6 +4,9 @@ import { elapsed, errorMessage, expandPath, type Capability } from '../../capabi
 export const classId = 'point.file_read'
 export const summary = 'node:fs 读取，超过 maxBytes 截断；目录或缺失按 warn 处理'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /** L0 · 读文件 */
 export const run: Capability = async (ctx) => {
   const startedAt = Date.now()

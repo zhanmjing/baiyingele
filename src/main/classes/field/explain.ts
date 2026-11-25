@@ -3,6 +3,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.explain'
 export const summary = '把结构化证据翻成人话：建议为什么这么给、这次运行发生了什么、权限为什么要、流程每一步干了啥'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A0 · 解释（纯模板，只读，不调用模型）
  *

@@ -4,6 +4,9 @@ import { elapsed, type Capability } from '../../capabilities/_shared'
 export const classId = 'field.prefill'
 export const summary = '参数预填：按实例配置的 target/param 从剪贴板取值，产出落点建议'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 /**
  * A2 · 参数预填。
  * 只负责「建议什么值、落到哪」，真正的写入与撤销由 fieldRuntime 按自主度决定——

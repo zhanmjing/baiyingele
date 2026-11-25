@@ -14,6 +14,9 @@ import { elapsed, errorMessage, type Capability } from '../../capabilities/_shar
 export const classId = 'point.audio_volume'
 export const summary = 'CoreAudio (IAudioEndpointVolume) 精确控制主音量与静音，写完读回校验'
 
+/** 这个类有自己的逻辑，不是只调通用实现 —— 清单靠它区分「真实实现」和「骨架」 */
+export const specialized = true
+
 const CLSID_MMDEVICE_ENUMERATOR = 'BCDE0395-E52F-467C-8E3D-C4579291692E'
 const IID_IMMDEVICE_ENUMERATOR = 'A95664D2-9614-4F35-A746-DE8DB63617E6'
 const IID_IAUDIO_ENDPOINT_VOLUME = '5CDF2C82-841E-4546-9722-0CF74078229A'
