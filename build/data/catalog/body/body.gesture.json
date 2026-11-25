@@ -1,0 +1,33 @@
+{
+  "id": "body.gesture",
+  "name": "手势识别",
+  "group": "input",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L1",
+  "priority": "P0",
+  "summary": "鼠标轨迹 → 方向串 → 匹配绑定 → 派发到点/线实例。",
+  "instances": [
+    {
+      "name": "right",
+      "rev": 1,
+      "status": "active",
+      "detail": "button=right · dirs8=true · dragSuppress=400",
+      "id": "body.gesture.right@r1"
+    },
+    {
+      "name": "middle",
+      "rev": 1,
+      "status": "active",
+      "detail": "button=middle · dirs8=true · dragSuppress=400",
+      "id": "body.gesture.middle@r1"
+    },
+    {
+      "name": "left",
+      "rev": 1,
+      "status": "active",
+      "detail": "button=left · dirs8=false · dragSuppress=0",
+      "id": "body.gesture.left@r1"
+    }
+  ]
+}

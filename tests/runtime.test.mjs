@@ -785,3 +785,84 @@ test('实现清单分两级：有单元 ≠ 有自己逻辑，三态覆盖全部
   assert.match(reg.implStateLabel('surface.dashboard'), /骨架/)
   assert.strictEqual(reg.implStateLabel('field.generate'), '未实现')
 })
+
+test('手势识别：长距离单向移动必须判为拖拽，不能触发手势', () => {
+  const g = load('shared/gestureRecognizer.js')
+  const line = (n, step) => Array.from({ length: n }, (_, i) => ({ x: i * step, y: 0, t: i * 16 }))
+
+  const drag = g.recognize(line(40, 13))
+  assert.strictEqual(drag.valid, false, '长距离单向必须无效')
+  assert.strictEqual(drag.reason, 'suppressed-as-drag')
+  assert.strictEqual(drag.directions, 'R', '方向仍要算出来，只是不算有效手势')
+
+  const short = g.recognize(line(6, 8))
+  assert.strictEqual(short.valid, true, '短距离单向仍是合法手势')
+  assert.strictEqual(short.directions, 'R')
+
+  const off = g.recognize(line(40, 13), { dragSuppressPx: 0 })
+  assert.strictEqual(off.valid, true, 'dragSuppressPx=0 时应放行')
+})
+
+test('手势识别：minSegments 能要求多段，避免单笔误触', () => {
+  const g = load('shared/gestureRecognizer.js')
+  const pts = (segs) => {
+    const out = [{ x: 0, y: 0, t: 0 }]
+    const d = { L: [-1, 0], R: [1, 0], U: [0, -1], D: [0, 1] }
+    let x = 0, y = 0, t = 0
+    for (const s of segs) for (let i = 0; i < 6; i++) { const [dx, dy] = d[s]; x += dx * 10; y += dy * 10; t += 20; out.push({ x, y, t }) }
+    return out
+  }
+  assert.strictEqual(g.recognize(pts(['R'])).valid, true, '默认单段可以')
+  assert.strictEqual(g.recognize(pts(['R']), { minSegments: 2 }).reason, 'too-few-segments')
+  assert.strictEqual(g.recognize(pts(['L', 'D']), { minSegments: 2 }).valid, true, '两段满足要求')
+})
+
+test('body.gesture：三个必需零件都不存在时必须逐个报出来', () => {
+  const gesture = load('main/classes/body/gesture.js')
+  assert.strictEqual(gesture.classId, 'body.gesture')
+  assert.strictEqual(gesture.requires.length, 3, '手势只要求 ui/flow/capability 三种角色')
+
+  const deps = { profiles: {}, hasClass: () => false, implementedClassIds: new Set() }
+  const out = gesture.run({ profile: load('shared/bodyCatalog.js').bodyProfiles['body.gesture'], deps })
+
+  const codes = out.findings.map((f) => f.code)
+  // 声明里**有**识别器和派发器（名字对得上），所以不该报 no-recognizer / no-dispatcher；
+  // 该报的是「这个名字的零件在目录里不存在」。
+  assert.ok(codes.includes('missing-part:point.gesture.recognize'), '必须报识别零件不存在')
+  assert.ok(codes.includes('missing-part:line.gesture.dispatch'), '必须报派发零件不存在')
+  assert.ok(codes.includes('missing-part:surface.gesture.recorder'), '必须报录制面不存在')
+  assert.ok(!codes.includes('no-recognizer'), '声明了识别器就不该报「没有识别器」')
+  assert.ok(!codes.includes('no-dispatcher'), '声明了派发器就不该报「没有派发器」')
+  assert.strictEqual(out.parts.length, 3)
+  assert.ok(out.parts.every((p) => p.present === false), '这 3 个零件目前都不存在')
+  assert.strictEqual(out.parts.filter((p) => p.required).length, 3)
+  assert.ok(out.readiness.missing.length >= 3, '角色缺失也要报')
+
+  const okDeps = { profiles: {}, hasClass: () => true, implementedClassIds: new Set() }
+  const ok = gesture.run({ profile: load('shared/bodyCatalog.js').bodyProfiles['body.gesture'], deps: okDeps })
+  // 零件齐了，但组合里没有场层零件 → 只剩一条消歧提示（这是加分项提示，不是缺陷）
+  assert.deepStrictEqual(ok.findings.map((f) => f.code), ['no-disambiguation'], '零件齐时只该剩消歧提示')
+
+  // 补上场层零件后完全干净
+  const withIntel = gesture.run({
+    profile: { composition: [
+      { layer: 'point', ref: 'gesture.recognize', role: '识别', required: true },
+      { layer: 'line', ref: 'gesture.dispatch', role: '派发', required: true },
+      { layer: 'surface', ref: 'gesture.recorder', role: '录制板', required: true },
+      { layer: 'field', ref: 'field.rank', role: '同分排序', required: false }
+    ] },
+    deps: okDeps
+  })
+  assert.deepStrictEqual(withIntel.findings, [], '四层零件齐全时不该有任何问题')
+
+  // 换成一个不认识轨迹的点零件 → 这次才该报 no-recognizer
+  const wrong = gesture.run({
+    profile: { composition: [
+      { layer: 'point', ref: 'clipboard.read', role: '读剪贴板', required: true },
+      { layer: 'line', ref: 'gesture.dispatch', role: '派发', required: true },
+      { layer: 'surface', ref: 'gesture.recorder', role: '录制板', required: true }
+    ] },
+    deps: okDeps
+  })
+  assert.ok(wrong.findings.some((f) => f.code === 'no-recognizer'), '点零件不能识别轨迹时必须报出来')
+})

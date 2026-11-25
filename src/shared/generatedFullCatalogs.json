@@ -6746,6 +6746,57 @@
       ]
     },
     {
+      "id": "body.gesture",
+      "name": "手势识别",
+      "family": "input",
+      "priority": "P0",
+      "effect": "L1",
+      "status": "active",
+      "description": "鼠标轨迹 → 方向串 → 匹配绑定 → 派发到点/线实例。",
+      "params": [
+        {
+          "key": "detail",
+          "label": "配置摘要",
+          "type": "text",
+          "required": false,
+          "description": "实例配置摘要",
+          "defaultValue": ""
+        }
+      ],
+      "instances": [
+        {
+          "id": "body.gesture.right@r1",
+          "name": "right",
+          "rev": 1,
+          "status": "active",
+          "description": "button=right · dirs8=true · dragSuppress=400",
+          "params": {
+            "detail": "button=right · dirs8=true · dragSuppress=400"
+          }
+        },
+        {
+          "id": "body.gesture.middle@r1",
+          "name": "middle",
+          "rev": 1,
+          "status": "active",
+          "description": "button=middle · dirs8=true · dragSuppress=400",
+          "params": {
+            "detail": "button=middle · dirs8=true · dragSuppress=400"
+          }
+        },
+        {
+          "id": "body.gesture.left@r1",
+          "name": "left",
+          "rev": 1,
+          "status": "active",
+          "description": "button=left · dirs8=false · dragSuppress=0",
+          "params": {
+            "detail": "button=left · dirs8=false · dragSuppress=0"
+          }
+        }
+      ]
+    },
+    {
       "id": "body.screenshot_translate",
       "name": "截图翻译",
       "family": "ai",

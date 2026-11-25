@@ -17,6 +17,7 @@ export const IMPLEMENTED_CLASS_IDS = [
   'body.file_locksmith',
   'body.file_organizer',
   'body.file_preview',
+  'body.gesture',
   'body.hosts_editor',
   'body.image_resizer',
   'body.invoice_archive',
@@ -106,6 +107,7 @@ export const IMPLEMENTED_CLASS_IDS = [
  * 由文件里显式声明的 specialized = true 决定，不靠行数猜。
  */
 export const SPECIALIZED_CLASS_IDS = [
+  'body.gesture',
   'body.ocr',
   'field.ask',
   'field.classify',
@@ -161,6 +163,7 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'body.file_locksmith': '文件占用排查：找出占用文件的进程与句柄',
   'body.file_organizer': '文件整理：按类型/日期整理下载与截图，去重',
   'body.file_preview': '文件预览：统一窗口看文本/图片/PDF/音视频',
+  'body.gesture': '手势识别体：采样 → 识别 → 绑定匹配 → 派发',
   'body.hosts_editor': 'hosts 编辑：本地 hosts 编辑、备份、diff',
   'body.image_resizer': '图片批量缩放：预设化输出，批量处理',
   'body.invoice_archive': '发票归档：OCR → 解析 → 规则 → 归档',

@@ -23,6 +23,7 @@
     "body.hosts_editor",
     "body.env_vars",
     "body.external_access",
+    "body.gesture",
     "body.screenshot_translate",
     "body.ai_rewrite",
     "body.meeting_notes",

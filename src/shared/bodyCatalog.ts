@@ -72,6 +72,23 @@ const bodyProfileOverrides: Record<string, BodyProfile> = {
     },
     lifecycle: { stage: 'update-available', installedAt: '2026-10-28', lastChecked: '5 分钟前', previousVersion: '1.1.6' }
   },
+  'body.gesture': {
+    classId: 'body.gesture',
+    composition: [
+      // 这三个 id 目前**都不存在于目录里** —— 这正是这个体要暴露的缺口。
+      // 体层重构的前提是先有点层识别类和线层派发类，否则体只是空壳。
+      { layer: 'point', ref: 'gesture.recognize', role: '轨迹 → 方向串', required: true },
+      { layer: 'line', ref: 'gesture.dispatch', role: '识别 → 匹配绑定 → 派发', required: true },
+      { layer: 'surface', ref: 'gesture.recorder', role: '录制板 + 绑定管理', required: true }
+    ],
+    manifest: {
+      id: 'body.gesture', version: '0.1.0', channel: 'dev',
+      entry: 'body://gesture/index.html', publisher: 'Baiying Labs', signature: 'unsigned',
+      digest: 'sha256:pending', permissions: ['input.global-hook', 'ui.overlay'],
+      resources: { cpu: '1 vCPU', memory: '48 MB', disk: '4 MB' }
+    },
+    lifecycle: { stage: 'draft', installedAt: '2026-02-14', lastChecked: '未检查' }
+  },
   'body.batch_rename': {
     classId: 'body.batch_rename',
     composition: [

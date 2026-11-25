@@ -16,7 +16,14 @@ export interface GesturePoint {
   t?: number
 }
 
-export type GestureInvalidReason = 'too-few-points' | 'too-short' | 'too-fast' | 'too-slow' | 'no-direction'
+export type GestureInvalidReason =
+  | 'too-few-points'
+  | 'too-short'
+  | 'too-fast'
+  | 'too-slow'
+  | 'no-direction'
+  | 'too-few-segments'
+  | 'suppressed-as-drag'
 
 export interface GestureResult {
   directions: string
@@ -38,6 +45,15 @@ export interface RecognizerOptions {
   minStepRatio?: number
   /** 一个方向至少连续出现几段才算数（默认 2） */
   switchVotes?: number
+  /** 方向数少于此值视为无效（默认 1，即不限制） */
+  minSegments?: number
+  /**
+   * 拖拽抑制：单个方向且总位移超过此值时判为「拖拽」而不是手势（默认 400，0 = 关闭）。
+   *
+   * 为什么必须有：拖窗口、拉滚动条都是长距离单向移动，
+   * 如果绑了 R / L 这类单方向手势，拖拽会误触发动作。
+   */
+  dragSuppressPx?: number
 }
 
 const DEFAULT_OPTIONS: Required<RecognizerOptions> = {
@@ -45,7 +61,9 @@ const DEFAULT_OPTIONS: Required<RecognizerOptions> = {
   minDurationMs: 80,
   maxDurationMs: 3000,
   minStepRatio: 0.02,
-  switchVotes: 2
+  switchVotes: 2,
+  minSegments: 1,
+  dragSuppressPx: 400
 }
 
 export function pathLength(points: GesturePoint[]): number {
@@ -119,8 +137,19 @@ export function recognize(points: GesturePoint[], options: RecognizerOptions = {
     return { directions: '', valid: false, reason: 'too-slow', length, durationMs }
   }
 
-  const directions = toDirectionSequence(points, config).join('')
+  const sequence = toDirectionSequence(points, config)
+  const directions = sequence.join('')
   if (!directions) return { directions: '', valid: false, reason: 'no-direction', length, durationMs }
+
+  // 拖拽抑制：单向 + 长距离 = 大概率在拖东西，不是画手势
+  if (config.dragSuppressPx > 0 && sequence.length <= 1 && length >= config.dragSuppressPx) {
+    return { directions, valid: false, reason: 'suppressed-as-drag', length, durationMs }
+  }
+
+  if (sequence.length < config.minSegments) {
+    return { directions, valid: false, reason: 'too-few-segments', length, durationMs }
+  }
+
   return { directions, valid: true, length, durationMs }
 }
 

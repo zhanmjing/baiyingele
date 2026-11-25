@@ -13,88 +13,89 @@ import * as impl9 from './body/external_access'
 import * as impl10 from './body/file_locksmith'
 import * as impl11 from './body/file_organizer'
 import * as impl12 from './body/file_preview'
-import * as impl13 from './body/hosts_editor'
-import * as impl14 from './body/image_resizer'
-import * as impl15 from './body/invoice_archive'
-import * as impl16 from './body/media_converter'
-import * as impl17 from './body/meeting_notes'
-import * as impl18 from './body/ocr'
-import * as impl19 from './body/pdf_toolkit'
-import * as impl20 from './body/quick_launch'
-import * as impl21 from './body/screen_ruler'
-import * as impl22 from './body/screenshot_translate'
-import * as impl23 from './body/service_health'
-import * as impl24 from './body/suite'
-import * as impl25 from './body/system_monitor'
-import * as impl26 from './body/web_clipper'
-import * as impl27 from './body/window_layout'
-import * as impl28 from './body/workspace'
-import * as impl29 from './field/ask'
-import * as impl30 from './field/classify'
-import * as impl31 from './field/critique'
-import * as impl32 from './field/detect'
-import * as impl33 from './field/diagnose'
-import * as impl34 from './field/explain'
-import * as impl35 from './field/guard'
-import * as impl36 from './field/mine'
-import * as impl37 from './field/observe'
-import * as impl38 from './field/personalize'
-import * as impl39 from './field/prefill'
-import * as impl40 from './field/rank'
-import * as impl41 from './field/recommend'
-import * as impl42 from './field/route'
-import * as impl43 from './field/simulate'
-import * as impl44 from './line/ai_rewrite'
-import * as impl45 from './line/approval_action'
-import * as impl46 from './line/batch_archive'
-import * as impl47 from './line/clipboard_to_file'
-import * as impl48 from './line/ensure_app'
-import * as impl49 from './line/ensure_download'
-import * as impl50 from './line/ensure_service'
-import * as impl51 from './line/ensure_vpn'
-import * as impl52 from './line/http_extract'
-import * as impl53 from './line/open_app'
-import * as impl54 from './line/open_external_site'
-import * as impl55 from './line/open_workspace'
-import * as impl56 from './line/screenshot_translate'
-import * as impl57 from './point/audio_volume'
-import * as impl58 from './point/clipboard_get'
-import * as impl59 from './point/clipboard_write'
-import * as impl60 from './point/display_brightness'
-import * as impl61 from './point/file_move'
-import * as impl62 from './point/file_read'
-import * as impl63 from './point/file_scan'
-import * as impl64 from './point/file_write'
-import * as impl65 from './point/http_request'
-import * as impl66 from './point/key_send'
-import * as impl67 from './point/key_trigger'
-import * as impl68 from './point/notify_toast'
-import * as impl69 from './point/ocr_read'
-import * as impl70 from './point/open'
-import * as impl71 from './point/screen_capture'
-import * as impl72 from './point/text_template'
-import * as impl73 from './point/theme_mode'
-import * as impl74 from './point/translate_text'
-import * as impl75 from './point/ui_form'
-import * as impl76 from './point/window_control'
-import * as impl77 from './point/window_query'
-import * as impl78 from './surface/canvas'
-import * as impl79 from './surface/card_grid'
-import * as impl80 from './surface/command_palette'
-import * as impl81 from './surface/dashboard'
-import * as impl82 from './surface/dialog'
-import * as impl83 from './surface/diff'
-import * as impl84 from './surface/form'
-import * as impl85 from './surface/hud'
-import * as impl86 from './surface/inspector'
-import * as impl87 from './surface/metric_card'
-import * as impl88 from './surface/notification'
-import * as impl89 from './surface/panel'
-import * as impl90 from './surface/run_history'
-import * as impl91 from './surface/table'
-import * as impl92 from './surface/tray_menu'
-import * as impl93 from './surface/tree'
-import * as impl94 from './surface/wizard'
+import * as impl13 from './body/gesture'
+import * as impl14 from './body/hosts_editor'
+import * as impl15 from './body/image_resizer'
+import * as impl16 from './body/invoice_archive'
+import * as impl17 from './body/media_converter'
+import * as impl18 from './body/meeting_notes'
+import * as impl19 from './body/ocr'
+import * as impl20 from './body/pdf_toolkit'
+import * as impl21 from './body/quick_launch'
+import * as impl22 from './body/screen_ruler'
+import * as impl23 from './body/screenshot_translate'
+import * as impl24 from './body/service_health'
+import * as impl25 from './body/suite'
+import * as impl26 from './body/system_monitor'
+import * as impl27 from './body/web_clipper'
+import * as impl28 from './body/window_layout'
+import * as impl29 from './body/workspace'
+import * as impl30 from './field/ask'
+import * as impl31 from './field/classify'
+import * as impl32 from './field/critique'
+import * as impl33 from './field/detect'
+import * as impl34 from './field/diagnose'
+import * as impl35 from './field/explain'
+import * as impl36 from './field/guard'
+import * as impl37 from './field/mine'
+import * as impl38 from './field/observe'
+import * as impl39 from './field/personalize'
+import * as impl40 from './field/prefill'
+import * as impl41 from './field/rank'
+import * as impl42 from './field/recommend'
+import * as impl43 from './field/route'
+import * as impl44 from './field/simulate'
+import * as impl45 from './line/ai_rewrite'
+import * as impl46 from './line/approval_action'
+import * as impl47 from './line/batch_archive'
+import * as impl48 from './line/clipboard_to_file'
+import * as impl49 from './line/ensure_app'
+import * as impl50 from './line/ensure_download'
+import * as impl51 from './line/ensure_service'
+import * as impl52 from './line/ensure_vpn'
+import * as impl53 from './line/http_extract'
+import * as impl54 from './line/open_app'
+import * as impl55 from './line/open_external_site'
+import * as impl56 from './line/open_workspace'
+import * as impl57 from './line/screenshot_translate'
+import * as impl58 from './point/audio_volume'
+import * as impl59 from './point/clipboard_get'
+import * as impl60 from './point/clipboard_write'
+import * as impl61 from './point/display_brightness'
+import * as impl62 from './point/file_move'
+import * as impl63 from './point/file_read'
+import * as impl64 from './point/file_scan'
+import * as impl65 from './point/file_write'
+import * as impl66 from './point/http_request'
+import * as impl67 from './point/key_send'
+import * as impl68 from './point/key_trigger'
+import * as impl69 from './point/notify_toast'
+import * as impl70 from './point/ocr_read'
+import * as impl71 from './point/open'
+import * as impl72 from './point/screen_capture'
+import * as impl73 from './point/text_template'
+import * as impl74 from './point/theme_mode'
+import * as impl75 from './point/translate_text'
+import * as impl76 from './point/ui_form'
+import * as impl77 from './point/window_control'
+import * as impl78 from './point/window_query'
+import * as impl79 from './surface/canvas'
+import * as impl80 from './surface/card_grid'
+import * as impl81 from './surface/command_palette'
+import * as impl82 from './surface/dashboard'
+import * as impl83 from './surface/dialog'
+import * as impl84 from './surface/diff'
+import * as impl85 from './surface/form'
+import * as impl86 from './surface/hud'
+import * as impl87 from './surface/inspector'
+import * as impl88 from './surface/metric_card'
+import * as impl89 from './surface/notification'
+import * as impl90 from './surface/panel'
+import * as impl91 from './surface/run_history'
+import * as impl92 from './surface/table'
+import * as impl93 from './surface/tray_menu'
+import * as impl94 from './surface/tree'
+import * as impl95 from './surface/wizard'
 
 /** classId → 实现单元。各层 runner 用它做纯分派。 */
 export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
@@ -111,86 +112,87 @@ export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
   ['body.file_locksmith', impl10 as unknown as ClassImpl],
   ['body.file_organizer', impl11 as unknown as ClassImpl],
   ['body.file_preview', impl12 as unknown as ClassImpl],
-  ['body.hosts_editor', impl13 as unknown as ClassImpl],
-  ['body.image_resizer', impl14 as unknown as ClassImpl],
-  ['body.invoice_archive', impl15 as unknown as ClassImpl],
-  ['body.media_converter', impl16 as unknown as ClassImpl],
-  ['body.meeting_notes', impl17 as unknown as ClassImpl],
-  ['body.ocr', impl18 as unknown as ClassImpl],
-  ['body.pdf_toolkit', impl19 as unknown as ClassImpl],
-  ['body.quick_launch', impl20 as unknown as ClassImpl],
-  ['body.screen_ruler', impl21 as unknown as ClassImpl],
-  ['body.screenshot_translate', impl22 as unknown as ClassImpl],
-  ['body.service_health', impl23 as unknown as ClassImpl],
-  ['body.suite', impl24 as unknown as ClassImpl],
-  ['body.system_monitor', impl25 as unknown as ClassImpl],
-  ['body.web_clipper', impl26 as unknown as ClassImpl],
-  ['body.window_layout', impl27 as unknown as ClassImpl],
-  ['body.workspace', impl28 as unknown as ClassImpl],
-  ['field.ask', impl29 as unknown as ClassImpl],
-  ['field.classify', impl30 as unknown as ClassImpl],
-  ['field.critique', impl31 as unknown as ClassImpl],
-  ['field.detect', impl32 as unknown as ClassImpl],
-  ['field.diagnose', impl33 as unknown as ClassImpl],
-  ['field.explain', impl34 as unknown as ClassImpl],
-  ['field.guard', impl35 as unknown as ClassImpl],
-  ['field.mine', impl36 as unknown as ClassImpl],
-  ['field.observe', impl37 as unknown as ClassImpl],
-  ['field.personalize', impl38 as unknown as ClassImpl],
-  ['field.prefill', impl39 as unknown as ClassImpl],
-  ['field.rank', impl40 as unknown as ClassImpl],
-  ['field.recommend', impl41 as unknown as ClassImpl],
-  ['field.route', impl42 as unknown as ClassImpl],
-  ['field.simulate', impl43 as unknown as ClassImpl],
-  ['line.ai_rewrite', impl44 as unknown as ClassImpl],
-  ['line.approval_action', impl45 as unknown as ClassImpl],
-  ['line.batch_archive', impl46 as unknown as ClassImpl],
-  ['line.clipboard_to_file', impl47 as unknown as ClassImpl],
-  ['line.ensure_app', impl48 as unknown as ClassImpl],
-  ['line.ensure_download', impl49 as unknown as ClassImpl],
-  ['line.ensure_service', impl50 as unknown as ClassImpl],
-  ['line.ensure_vpn', impl51 as unknown as ClassImpl],
-  ['line.http_extract', impl52 as unknown as ClassImpl],
-  ['line.open_app', impl53 as unknown as ClassImpl],
-  ['line.open_external_site', impl54 as unknown as ClassImpl],
-  ['line.open_workspace', impl55 as unknown as ClassImpl],
-  ['line.screenshot_translate', impl56 as unknown as ClassImpl],
-  ['point.audio_volume', impl57 as unknown as ClassImpl],
-  ['point.clipboard_get', impl58 as unknown as ClassImpl],
-  ['point.clipboard_write', impl59 as unknown as ClassImpl],
-  ['point.display_brightness', impl60 as unknown as ClassImpl],
-  ['point.file_move', impl61 as unknown as ClassImpl],
-  ['point.file_read', impl62 as unknown as ClassImpl],
-  ['point.file_scan', impl63 as unknown as ClassImpl],
-  ['point.file_write', impl64 as unknown as ClassImpl],
-  ['point.http_request', impl65 as unknown as ClassImpl],
-  ['point.key_send', impl66 as unknown as ClassImpl],
-  ['point.key_trigger', impl67 as unknown as ClassImpl],
-  ['point.notify_toast', impl68 as unknown as ClassImpl],
-  ['point.ocr_read', impl69 as unknown as ClassImpl],
-  ['point.open', impl70 as unknown as ClassImpl],
-  ['point.screen_capture', impl71 as unknown as ClassImpl],
-  ['point.text_template', impl72 as unknown as ClassImpl],
-  ['point.theme_mode', impl73 as unknown as ClassImpl],
-  ['point.translate_text', impl74 as unknown as ClassImpl],
-  ['point.ui_form', impl75 as unknown as ClassImpl],
-  ['point.window_control', impl76 as unknown as ClassImpl],
-  ['point.window_query', impl77 as unknown as ClassImpl],
-  ['surface.canvas', impl78 as unknown as ClassImpl],
-  ['surface.card_grid', impl79 as unknown as ClassImpl],
-  ['surface.command_palette', impl80 as unknown as ClassImpl],
-  ['surface.dashboard', impl81 as unknown as ClassImpl],
-  ['surface.dialog', impl82 as unknown as ClassImpl],
-  ['surface.diff', impl83 as unknown as ClassImpl],
-  ['surface.form', impl84 as unknown as ClassImpl],
-  ['surface.hud', impl85 as unknown as ClassImpl],
-  ['surface.inspector', impl86 as unknown as ClassImpl],
-  ['surface.metric_card', impl87 as unknown as ClassImpl],
-  ['surface.notification', impl88 as unknown as ClassImpl],
-  ['surface.panel', impl89 as unknown as ClassImpl],
-  ['surface.run_history', impl90 as unknown as ClassImpl],
-  ['surface.table', impl91 as unknown as ClassImpl],
-  ['surface.tray_menu', impl92 as unknown as ClassImpl],
-  ['surface.tree', impl93 as unknown as ClassImpl],
-  ['surface.wizard', impl94 as unknown as ClassImpl]
+  ['body.gesture', impl13 as unknown as ClassImpl],
+  ['body.hosts_editor', impl14 as unknown as ClassImpl],
+  ['body.image_resizer', impl15 as unknown as ClassImpl],
+  ['body.invoice_archive', impl16 as unknown as ClassImpl],
+  ['body.media_converter', impl17 as unknown as ClassImpl],
+  ['body.meeting_notes', impl18 as unknown as ClassImpl],
+  ['body.ocr', impl19 as unknown as ClassImpl],
+  ['body.pdf_toolkit', impl20 as unknown as ClassImpl],
+  ['body.quick_launch', impl21 as unknown as ClassImpl],
+  ['body.screen_ruler', impl22 as unknown as ClassImpl],
+  ['body.screenshot_translate', impl23 as unknown as ClassImpl],
+  ['body.service_health', impl24 as unknown as ClassImpl],
+  ['body.suite', impl25 as unknown as ClassImpl],
+  ['body.system_monitor', impl26 as unknown as ClassImpl],
+  ['body.web_clipper', impl27 as unknown as ClassImpl],
+  ['body.window_layout', impl28 as unknown as ClassImpl],
+  ['body.workspace', impl29 as unknown as ClassImpl],
+  ['field.ask', impl30 as unknown as ClassImpl],
+  ['field.classify', impl31 as unknown as ClassImpl],
+  ['field.critique', impl32 as unknown as ClassImpl],
+  ['field.detect', impl33 as unknown as ClassImpl],
+  ['field.diagnose', impl34 as unknown as ClassImpl],
+  ['field.explain', impl35 as unknown as ClassImpl],
+  ['field.guard', impl36 as unknown as ClassImpl],
+  ['field.mine', impl37 as unknown as ClassImpl],
+  ['field.observe', impl38 as unknown as ClassImpl],
+  ['field.personalize', impl39 as unknown as ClassImpl],
+  ['field.prefill', impl40 as unknown as ClassImpl],
+  ['field.rank', impl41 as unknown as ClassImpl],
+  ['field.recommend', impl42 as unknown as ClassImpl],
+  ['field.route', impl43 as unknown as ClassImpl],
+  ['field.simulate', impl44 as unknown as ClassImpl],
+  ['line.ai_rewrite', impl45 as unknown as ClassImpl],
+  ['line.approval_action', impl46 as unknown as ClassImpl],
+  ['line.batch_archive', impl47 as unknown as ClassImpl],
+  ['line.clipboard_to_file', impl48 as unknown as ClassImpl],
+  ['line.ensure_app', impl49 as unknown as ClassImpl],
+  ['line.ensure_download', impl50 as unknown as ClassImpl],
+  ['line.ensure_service', impl51 as unknown as ClassImpl],
+  ['line.ensure_vpn', impl52 as unknown as ClassImpl],
+  ['line.http_extract', impl53 as unknown as ClassImpl],
+  ['line.open_app', impl54 as unknown as ClassImpl],
+  ['line.open_external_site', impl55 as unknown as ClassImpl],
+  ['line.open_workspace', impl56 as unknown as ClassImpl],
+  ['line.screenshot_translate', impl57 as unknown as ClassImpl],
+  ['point.audio_volume', impl58 as unknown as ClassImpl],
+  ['point.clipboard_get', impl59 as unknown as ClassImpl],
+  ['point.clipboard_write', impl60 as unknown as ClassImpl],
+  ['point.display_brightness', impl61 as unknown as ClassImpl],
+  ['point.file_move', impl62 as unknown as ClassImpl],
+  ['point.file_read', impl63 as unknown as ClassImpl],
+  ['point.file_scan', impl64 as unknown as ClassImpl],
+  ['point.file_write', impl65 as unknown as ClassImpl],
+  ['point.http_request', impl66 as unknown as ClassImpl],
+  ['point.key_send', impl67 as unknown as ClassImpl],
+  ['point.key_trigger', impl68 as unknown as ClassImpl],
+  ['point.notify_toast', impl69 as unknown as ClassImpl],
+  ['point.ocr_read', impl70 as unknown as ClassImpl],
+  ['point.open', impl71 as unknown as ClassImpl],
+  ['point.screen_capture', impl72 as unknown as ClassImpl],
+  ['point.text_template', impl73 as unknown as ClassImpl],
+  ['point.theme_mode', impl74 as unknown as ClassImpl],
+  ['point.translate_text', impl75 as unknown as ClassImpl],
+  ['point.ui_form', impl76 as unknown as ClassImpl],
+  ['point.window_control', impl77 as unknown as ClassImpl],
+  ['point.window_query', impl78 as unknown as ClassImpl],
+  ['surface.canvas', impl79 as unknown as ClassImpl],
+  ['surface.card_grid', impl80 as unknown as ClassImpl],
+  ['surface.command_palette', impl81 as unknown as ClassImpl],
+  ['surface.dashboard', impl82 as unknown as ClassImpl],
+  ['surface.dialog', impl83 as unknown as ClassImpl],
+  ['surface.diff', impl84 as unknown as ClassImpl],
+  ['surface.form', impl85 as unknown as ClassImpl],
+  ['surface.hud', impl86 as unknown as ClassImpl],
+  ['surface.inspector', impl87 as unknown as ClassImpl],
+  ['surface.metric_card', impl88 as unknown as ClassImpl],
+  ['surface.notification', impl89 as unknown as ClassImpl],
+  ['surface.panel', impl90 as unknown as ClassImpl],
+  ['surface.run_history', impl91 as unknown as ClassImpl],
+  ['surface.table', impl92 as unknown as ClassImpl],
+  ['surface.tray_menu', impl93 as unknown as ClassImpl],
+  ['surface.tree', impl94 as unknown as ClassImpl],
+  ['surface.wizard', impl95 as unknown as ClassImpl]
 ] as Array<[string, ClassImpl]>)
