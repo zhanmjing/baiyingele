@@ -614,3 +614,103 @@ test('body：零件齐但角色缺，仍然必须报不齐备', () => {
   assert.strictEqual(missingRole.id, 'role:intel')
   assert.strictEqual(result.assembly, undefined, '角色缺了就不能给装配方案')
 })
+
+// ── 面层特化：surface.table 从「列块」变成「列 + 行」────────────
+test('surface.table：槽位当列、registry 当行，截断要如实报总数', async () => {
+  const table = load('main/classes/surface/table.js')
+  const instance = catalogs.surface.find((c) => c.id === 'surface.table').instances[0]
+  const deps = {
+    hasClass: () => true,
+    declaredRegionKeys: () => ['detail'],
+    read: async (source) => {
+      if (source.kind !== 'registry') return { status: 'missing', reason: '不该走这里' }
+      return { status: 'ready', value: Array.from({ length: 450 }, (_, i) => ({ id: `p${i}`, name: `n${i}` })) }
+    }
+  }
+
+  const out = await table.run({ instanceId: instance.id, params: instance.params, deps })
+  assert.ok(out.table, '必须产出 table')
+  assert.strictEqual(out.table.columns.length, 2, 'surface.table 的 detail 有 2 段 → 2 列')
+  assert.strictEqual(out.table.total, 450, '总数要如实报 450')
+  assert.strictEqual(out.table.rows.length, 200, '最多渲染 200 行')
+  assert.strictEqual(out.table.truncated, true, '被截断必须标记')
+  assert.ok(out.intents.some((i) => i.startsWith('page:')), '截断时要有翻页意图')
+  assert.deepStrictEqual(out.blocks, [], '列 + 行模式下不该再留占位块')
+
+  const emptyDeps = { ...deps, read: async () => ({ status: 'empty', reason: '没有记录' }) }
+  const empty = await table.run({ instanceId: instance.id, params: instance.params, deps: emptyDeps })
+  assert.strictEqual(empty.table.total, 0)
+  assert.strictEqual(empty.gaps.length, 0, '空表不该算缺口')
+
+  const failDeps = { ...deps, read: async () => ({ status: 'error', reason: '磁盘读失败' }) }
+  const failed = await table.run({ instanceId: instance.id, params: instance.params, deps: failDeps })
+  assert.strictEqual(failed.table, undefined, '取数失败不该给出 table')
+  assert.ok(failed.gaps.some((g) => g.slot === 'rows'), '取数失败必须报 rows 缺口')
+})
+
+test('surface.form：字段取值 / 必填校验 / 不能提交时给出人话原因', async () => {
+  const form = load('main/classes/surface/form.js')
+  const instance = catalogs.surface.find((c) => c.id === 'surface.form').instances[0]
+  const deps = { hasClass: () => true, declaredRegionKeys: () => ['detail'] }
+
+  const blank = await form.run({
+    instanceId: instance.id,
+    params: { ...instance.params, required: '默认_VPN,自动打开' },
+    deps
+  })
+  assert.ok(blank.form, '必须产出 form')
+  assert.strictEqual(blank.form.fields.length, 4, 'surface.form 的 detail 有 4 段 → 4 个字段')
+  assert.strictEqual(blank.form.canSubmit, false)
+  assert.ok(blank.form.blockers.length >= 2, '两个必填项都应该报')
+  assert.ok(blank.form.blockers.some((b) => b.includes('必填')))
+  assert.deepStrictEqual(blank.blocks, [], '字段模式下不该留占位块')
+
+  const filled = await form.run({
+    instanceId: instance.id,
+    params: { ...instance.params, required: '默认_VPN', 默认_VPN: '开' },
+    deps
+  })
+  assert.strictEqual(filled.form.canSubmit, true, `该能提交，阻塞项：${filled.form.blockers.join('；')}`)
+  assert.ok(filled.intents.includes('submit'))
+  assert.ok(filled.intents.includes('reset'))
+
+  const noRequired = await form.run({ instanceId: instance.id, params: instance.params, deps })
+  assert.strictEqual(noRequired.form.canSubmit, false)
+  assert.ok(noRequired.form.blockers.some((b) => b.includes('没有声明 required')))
+  assert.ok(!noRequired.intents.includes('reset'), '不能提交时不该给 reset 意图')
+})
+
+test('body.ocr：零件「有」不等于「能识别」—— 这是该类独有的检查', () => {
+  const ocr = load('main/classes/body/ocr.js')
+  const deps = { profiles: {}, hasClass: () => true, implementedClassIds: new Set(['point.clipboard_get', 'point.ocr_read', 'surface.form', 'surface.file_preview', 'field.classify']) }
+
+  const wrongCap = ocr.run({
+    profile: { composition: [
+      { class: { layer: 'point', name: 'clipboard_get' } },
+      { class: { layer: 'surface', name: 'form' } },
+      { class: { layer: 'field', name: 'classify' } }
+    ] },
+    deps
+  })
+  assert.ok(wrongCap.findings.some((f) => f.code === 'no-recognizer'), '剪贴板能力不该被当成识别能力')
+
+  const good = ocr.run({
+    profile: { composition: [
+      { class: { layer: 'point', name: 'ocr_read' } },
+      { class: { layer: 'surface', name: 'file_preview' } },
+      { class: { layer: 'field', name: 'classify' } }
+    ] },
+    deps
+  })
+  assert.deepStrictEqual(good.findings, [], `不该有问题，实际：${JSON.stringify(good.findings)}`)
+  assert.strictEqual(good.readiness.missing.length, 0, '零件和角色都齐')
+
+  const noIntl = ocr.run({
+    profile: { composition: [
+      { class: { layer: 'point', name: 'ocr_read' } },
+      { class: { layer: 'surface', name: 'file_preview' } }
+    ] },
+    deps
+  })
+  assert.ok(noIntl.readiness.missing.some((m) => m.id === 'role:intel'), '通用角色检查不能被特化检查绕过')
+})
