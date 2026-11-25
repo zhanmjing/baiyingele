@@ -118,12 +118,27 @@ export function onUp(state: SampleState, event: { t: number }): SampleResult {
   return base
 }
 
-/** 滚轮 → 会话事件 */
+/**
+ * 滚轮 → 会话事件。
+ *
+ * 符号是反的（实机测出来的）。WGestures 用原始 Windows delta
+ * （Win32MousePathTracker2.cs:502）：delta > 0 即 WheelForward。
+ * 而 uiohook 的 rotation 符号与之相反：
+ *   mouse_event(WHEEL, +120) → rotation = -1
+ *   mouse_event(WHEEL, -120) → rotation = +1
+ * 所以这里反着判才对。
+ */
 export function onWheel(event: { rotation: number }): 'wheel-forward' | 'wheel-backward' | null {
-  if (event.rotation > 0) return 'wheel-forward'
-  if (event.rotation < 0) return 'wheel-backward'
+  if (event.rotation < 0) return 'wheel-forward'
+  if (event.rotation > 0) return 'wheel-backward'
   return null
 }
+
+/**
+ * 会话结束后这段时间内滚轮不往目标窗口漏。
+ * 照 WGestures Win32MousePathTracker2.cs:504 的 300ms 延迟。
+ */
+export const WHEEL_SWALLOW_MS = 300
 
 /** uiohook 的 button 数字 → 名字。未知返回 null */
 export function buttonName(raw: unknown): GestureButton | null {

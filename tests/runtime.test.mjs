@@ -996,8 +996,9 @@ test('gesture_sample：按钮名与滚轮方向映射正确', () => {
   assert.strictEqual(s.buttonName(5), 'x2')
   assert.strictEqual(s.buttonName(99), null, '未知按钮要返回 null，不能瞎猜')
 
-  assert.strictEqual(s.onWheel({ rotation: 1 }), 'wheel-forward')
-  assert.strictEqual(s.onWheel({ rotation: -1 }), 'wheel-backward')
+  // uiohook rotation 与 Windows delta 符号相反
+  assert.strictEqual(s.onWheel({ rotation: -1 }), 'wheel-forward')
+  assert.strictEqual(s.onWheel({ rotation: 1 }), 'wheel-backward')
   assert.strictEqual(s.onWheel({ rotation: 0 }), null)
 })
 
