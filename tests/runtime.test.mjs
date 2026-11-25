@@ -1296,3 +1296,31 @@ test('task_switch：会话式切换能连续滚轮并记录格数', async () => 
   assert.strictEqual(session.onEvent('x1'), null, '不关心的事件返回 null')
   assert.match(session.ended().output, /共 0 格/)
 })
+
+test('迁移产物：实例与绑定一一对齐，参数翻成目标类真正吃的格式', () => {
+  const out = execFileSync(process.execPath, [join(process.cwd(), 'scripts/migrate-wgestures.mjs'), '--write'], { encoding: 'utf8' })
+  const m = JSON.parse(readFileSync(join(process.cwd(), '.tmp/wgestures-migrated.json'), 'utf8'))
+
+  const ids = new Set(m.instances.map((i) => i.instanceId))
+  const missing = m.bindings.filter((b) => !ids.has(b.targetId))
+  assert.deepStrictEqual(missing.map((b) => b.id), [], '绑定目标必须都在 instances 里')
+  assert.strictEqual(m.instances.length, m.bindings.length, '一条手势一个实例')
+  assert.strictEqual(ids.size, m.instances.length, '实例 id 不能重复')
+
+  const keyInstances = m.instances.filter((i) => i.classId === 'point.key_send')
+  assert.ok(keyInstances.length > 30, `key_send 应占多数，实际 ${keyInstances.length}`)
+  for (const i of keyInstances) {
+    assert.strictEqual(typeof i.params.keys, 'string', `${i.instanceId} 的 keys 必须是字符串`)
+    assert.ok(i.params.keys.length > 0)
+  }
+
+  for (const i of m.instances) {
+    // 形态：<层>.<类>.<实例>@r<rev>
+    assert.match(i.instanceId, /^[a-z]+\.[a-z0-9_]+\.[a-z0-9_]+@r\d+$/, `实例 id 不合法：${i.instanceId}`)
+  }
+
+  assert.match(out, /要新建 \d+ 个点层实例/)
+  assert.match(out, /目标实例还不存在/)
+  assert.strictEqual(m.pending.length, 1, `应只剩 1 条阻塞，实际 ${m.pending.length}`)
+  assert.match(m.pending[0].reason, /参数翻不出来/)
+})

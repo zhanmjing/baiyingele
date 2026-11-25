@@ -42,6 +42,19 @@ const realInstances = new Set(
 )
 const instanceClassOf = (id) => id.split('.').slice(0, 2).join('.')
 
+/** 从三元组生成稳定的实例名段（只允许小写字母数字下划线） */
+function slugOf(triple, scopeSlug) {
+  const mod = triple.modifier ? `_${triple.modifier.replace(/-/g, '_')}` : ''
+  const dirs = triple.dirs ? `_${triple.dirs}` : ''
+  const base = `${triple.button}${dirs}${mod}`
+  const ascii = base.replace(/↑/g, 'u').replace(/↗/g, 'ur').replace(/→/g, 'r')
+    .replace(/↘/g, 'dr').replace(/↓/g, 'd').replace(/↙/g, 'dl')
+    .replace(/←/g, 'l').replace(/↖/g, 'ul')
+  const clean = ascii.replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') || 'g'
+  // 同一三元组会在多个作用域重复出现（全局 + 各应用），必须带作用域区分
+  return scopeSlug && scopeSlug !== 'global' ? `${scopeSlug}_${clean}` : clean
+}
+
 // 箭头记法，与 WGestures Gesture.dirs[] 索引一一对应（0=↑ … 7=↖）
 const DIRS = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖']
 const BUTTONS = { 0: null, 1: 'right', 2: 'middle', 4: 'x1', 8: 'x2' }
@@ -50,6 +63,42 @@ const MODIFIERS = {
   8: 'left-down', 16: 'right-down', 32: 'x1', 64: 'x2'
 }
 const WINDOW_OPS = ['MAXIMIZE_RESTORE', 'MINIMIZE', 'CLOSE', 'TOP_MOST', 'DOCK_LEFT', 'DOCK_RIGHT']
+
+/**
+ * 虚拟键码 → 组合键名。
+ * WGestures 存原始 VK 数组（Keys:[67], Modifiers:[162]），
+ * point.key_send 吃 'Ctrl+C' 字符串。不转换的话 String([67]) = '67'，会发出乱码键。
+ */
+const VK_MODIFIER = { 160: 'Shift', 161: 'Shift', 162: 'Ctrl', 163: 'Ctrl', 164: 'Alt', 165: 'Alt', 91: 'Meta', 92: 'Meta' }
+const VK_KEY = {
+  8: 'Backspace', 9: 'Tab', 13: 'Enter', 27: 'Escape', 32: 'Space',
+  33: 'PageUp', 34: 'PageDown', 35: 'End', 36: 'Home',
+  37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down',
+  45: 'Insert', 46: 'Delete',
+  48: '0', 49: '1', 50: '2', 51: '3', 52: '4', 53: '5', 54: '6', 55: '7', 56: '8', 57: '9',
+  65: 'A', 66: 'B', 67: 'C', 68: 'D', 69: 'E', 70: 'F', 71: 'G', 72: 'H', 73: 'I',
+  74: 'J', 75: 'K', 76: 'L', 77: 'M', 78: 'N', 79: 'O', 80: 'P', 81: 'Q', 82: 'R',
+  83: 'S', 84: 'T', 85: 'U', 86: 'V', 87: 'W', 88: 'X', 89: 'Y', 90: 'Z',
+  112: 'F1', 113: 'F2', 114: 'F3', 115: 'F4', 116: 'F5', 117: 'F6',
+  118: 'F7', 119: 'F8', 120: 'F9', 121: 'F10', 122: 'F11', 123: 'F12',
+  186: ';', 187: '=', 188: ',', 189: '-', 190: '.', 191: '/', 192: '`',
+  219: '[', 220: '\\', 221: ']', 222: "'"
+}
+
+function comboOf(detail) {
+  const mods = [...new Set((detail.modifiers ?? []).map((m) => VK_MODIFIER[m]).filter(Boolean))]
+  const keys = (detail.keys ?? []).map((k) => VK_KEY[k]).filter(Boolean)
+  if (!keys.length) return null
+  return [...mods, keys[0]].join('+')
+}
+
+function paramsFor(classId, detail) {
+  if (classId === 'point.key_send') {
+    const combo = comboOf(detail)
+    return combo ? { keys: combo, mode: 'press', repeat: '1' } : null
+  }
+  return detail
+}
 
 function mapCommand(command) {
   const type = String(command.$type ?? '').split(',')[0].split('.').pop()
@@ -65,15 +114,15 @@ function mapCommand(command) {
     case 'ChangeAudioVolumeCommand':
       return { type, capable: true, kind: 'point', instance: 'point.audio_volume.up@r1', detail: { delta: command.Delta }, needsSession: true }
     case 'WebSearchCommand':
-      return { type, capable: false, needs: '缺 point.copy_selection（先复制选区再搜）', detail: { url: command.SearchEngineUrl } }
+      return { type, capable: true, kind: 'point', instance: 'point.copy_selection.default@r1', detail: { url: command.SearchEngineUrl } }
     case 'SendTextCommand':
-      return { type, capable: false, needs: '缺 SendKeys 方言翻译器（^v{enter}）', detail: { text: command.Text } }
+      return { type, capable: true, kind: 'point', instance: 'point.send_keys.custom@r1', detail: { text: command.Text } }
     case 'CmdCommand':
-      return { type, capable: false, needs: '缺 point.shell_exec（含 %WG_PROCID% 替换）', detail: { code: command.Code } }
+      return { type, capable: true, kind: 'point', instance: 'point.shell_exec.custom@r1', detail: { code: command.Code } }
     case 'TaskSwitcherCommand':
-      return { type, capable: false, needs: '缺 point.task_switch', detail: {}, needsSession: true }
+      return { type, capable: true, kind: 'point', instance: 'point.task_switch.next@r1', detail: {}, needsSession: true }
     case 'PauseWGesturesCommand':
-      return { type, capable: false, needs: '缺 point.gesture_pause', detail: {} }
+      return { type, capable: true, kind: 'point', instance: 'point.gesture_pause.toggle@r1', detail: { action: 'toggle' } }
     default:
       return { type, capable: false, needs: `未知命令类型 ${type}`, detail: {} }
   }
@@ -90,6 +139,7 @@ function tripleOf(gesture) {
 
 const data = JSON.parse(readFileSync(SRC, 'utf8'))
 const bindings = []
+const instances = []
 const pending = []
 const byCommand = {}
 let total = 0
@@ -101,7 +151,9 @@ for (const app of Object.values(data.Apps)) {
 }
 
 const scopeRows = []
+let scopeIndex = 0
 for (const scope of scopes) {
+  scopeIndex += 1
   const row = { name: scope.name, total: scope.intents.length, migratable: 0, blocked: 0 }
   for (const intent of scope.intents) {
     total += 1
@@ -118,13 +170,34 @@ for (const scope of scopes) {
     }
 
     if (triple && mapped.capable) {
-      const targetExists = realInstances.has(mapped.instance)
+      // 一条手势建一个实例：参数属于绑定，不属于可复用原子能力
+      // 作用域序号而不是名字：中文应用名会被压成下划线，仍然撞车
+      const scopeSlug = scope.exePath ? `s${scopeIndex}` : 'global'
+      const slug = slugOf(triple, scopeSlug)
+      const classId = instanceClassOf(mapped.instance)
+      const instanceId = `${classId}.${slug}@r1`
+      const params = paramsFor(classId, mapped.detail)
+      if (params === null) {
+        // 参数翻不出来这条就落不了地 —— 实例也别建
+        pending.push({ ...base, reason: `${classId} 的参数翻不出来` })
+        row.blocked += 1
+        continue
+      }
+      instances.push({
+        classId,
+        instanceId,
+        name: String(intent.Name ?? slug).trim() || slug,
+        params,
+        paramsOk: params !== null,
+        from: 'wgestures'
+      })
+      const targetExists = realInstances.has(instanceId)
       bindings.push({
         ...base,
         id: `gesture:${triple.button}:${triple.dirs}:${triple.modifier ?? ''}`,
         targetKind: mapped.kind,
-        targetId: mapped.instance,
-        targetClass: instanceClassOf(mapped.instance),
+        targetId: instanceId,
+        targetClass: classId,
         targetExists,
         detail: mapped.detail,
         needsSession: mapped.needsSession === true
@@ -144,7 +217,7 @@ console.log(`总手势 ${total} 条 · 能落地 ${bindings.length} · 被阻塞
 if (missingTargets) {
   console.log(`\n⚠ 能落地的 ${bindings.length} 条里，${missingTargets} 条的目标实例还不存在`)
   console.log('  WGestures 把命令参数内联在命令对象里，我们的绑定指向预配置实例，')
-  console.log('  所以每条通常都要先建一个点层实例（参数见 bindings[].detail）。')
+  console.log(`  要新建 ${instances.length} 个点层实例（见 instances[]，参数已带上）。`)
 }
 console.log('')
 console.log('按作用域：')
@@ -165,6 +238,6 @@ if (pending.length) {
 }
 if (process.argv.includes('--write')) {
   mkdirSync(dirname(OUT), { recursive: true })
-  writeFileSync(OUT, JSON.stringify({ report: { total, migratable: bindings.length, blocked: pending.length, byCommand, scopes: scopeRows }, bindings, pending }, null, 2), 'utf8')
+  writeFileSync(OUT, JSON.stringify({ report: { total, migratable: bindings.length, blocked: pending.length, newInstances: instances.length, byCommand, scopes: scopeRows }, instances, bindings, pending }, null, 2), 'utf8')
   console.log(`\n已写入 ${OUT}`)
 }
