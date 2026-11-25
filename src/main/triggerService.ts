@@ -11,7 +11,7 @@
 import { onFiring, parseCombo, registerCombo, registeredCombos } from './classes/point/key_trigger'
 import { matchPattern, recognize, type GesturePoint } from '../shared/gestureRecognizer'
 import type { LayerStore } from './layerStore'
-import type { TriggerBinding, TriggerSource, TriggerStore, TriggerTargetKind } from './triggerStore'
+import { formatGestureKey, parseGestureKey, type GestureTriple, type TriggerBinding, type TriggerSource, type TriggerStore, type TriggerTargetKind } from './triggerStore'
 
 export interface FiringRecord {
   at: number
@@ -29,7 +29,14 @@ export interface FiringRecord {
 
 export interface AddTriggerInput {
   source: TriggerSource
+  /** 文本形式。手势可以是 'LDR' / 'right:U' / 'right:U:wheel-forward' */
   pattern: string
+  /** 手势三元组；不填就从 pattern 解析 */
+  gesture?: GestureTriple
+  /** 只在按住 modifier 时执行（WGestures ExecuteOnModifier） */
+  executeOnModifier?: boolean
+  /** 应用作用域；不填 = 全局 */
+  appScope?: { exePath: string; inheritGlobal: boolean }
   targetKind: TriggerTargetKind
   targetId: string
   note?: string
@@ -114,13 +121,26 @@ export class TriggerService {
       return { ok: false, message: `目标实例不存在：${input.targetKind}:${input.targetId}` }
     }
 
-    // 手势：一个 pattern 只能有一个目标，改绑时直接覆盖；热键允许多目标
+    // 手势：一个三元组只能有一个目标，改绑时直接覆盖；热键允许多目标
+    // id 用三元组而不是方向串 —— 否则右键+U 和 右键+滚轮前+U 会共用一个 id
+    const triple =
+      input.source === 'gesture'
+        ? (input.gesture as GestureTriple | undefined) ?? parseGestureKey(String(input.pattern ?? ''))
+        : null
+    if (input.source === 'gesture' && !triple) {
+      return { ok: false, message: `手势三元组无法解析：${input.pattern}` }
+    }
     const bindingId =
-      input.source === 'gesture' ? `gesture:${pattern}` : `${input.source}:${pattern}→${input.targetId}`
+      input.source === 'gesture' && triple
+        ? `gesture:${formatGestureKey(triple)}`
+        : `${input.source}:${pattern}→${input.targetId}`
     const binding = this.deps.store.upsert({
       id: bindingId,
       source: input.source,
       pattern,
+      gesture: triple ?? undefined,
+      executeOnModifier: input.executeOnModifier === true,
+      appScope: input.appScope,
       targetKind: input.targetKind,
       targetId: input.targetId,
       enabled: input.enabled ?? true,

@@ -109,7 +109,7 @@ test('surfaceRuntime：pattern 缺 regions 必须报缺口；panel 页面存在�
 
 // ── 场层：确定性排序 ──────────────────────────────────────────
 test('field.rank：P0 优先 / 同优先度按使用次数 / 字典序兜底 / 结果可复现', () => {
-  const { rankItems } = load('main/capabilities/field.rank.js')
+  const { rankItems } = load('main/classes/field/rank.js')
   const ranked = rankItems([
     { id: 'c', name: 'C', priority: 'P2', usage: 9 },
     { id: 'a', name: 'A', priority: 'P0' },
@@ -125,7 +125,7 @@ test('field.rank：P0 优先 / 同优先度按使用次数 / 字典序兜底 / �
 
 // ── 场层：信号发现 ────────────────────────────────────────────
 test('field.detect：重复序列识别 / 只出现一次不报 / 失败集中被报出', () => {
-  const { detectRepetition, detectAnomaly } = load('main/capabilities/field.detect.js')
+  const { detectRepetition, detectAnomaly } = load('main/classes/field/detect.js')
   const mkRun = (classId, status, ms, at) => ({ id: `${classId}@${at}`, classId, status, elapsedMs: ms, createdAt: at })
   const seq = []
   let t = 1
@@ -142,7 +142,7 @@ test('field.detect：重复序列识别 / 只出现一次不报 / 失败集中�
 
 // ── 场层：结构审查 ────────────────────────────────────────────
 test('field.critique：环检测（两节点 / 自环 / DAG 无环）', () => {
-  const { findCycles } = load('main/capabilities/field.critique.js')
+  const { findCycles } = load('main/classes/field/critique.js')
   const mkNode = (id, kind, extra) => ({ id, kind, label: id, ...extra })
   assert.strictEqual(findCycles([mkNode('a'), mkNode('b')], [{ from: 'a', to: 'b' }, { from: 'b', to: 'a' }]).length, 1)
   assert.strictEqual(findCycles([mkNode('a')], [{ from: 'a', to: 'a' }]).length, 1)
@@ -150,7 +150,7 @@ test('field.critique：环检测（两节点 / 自环 / DAG 无环）', () => {
 })
 
 test('field.critique：悬空边 / 未绑定 / 缺实现 / 合法 foreach 不误报 / 未知 gate 报错', () => {
-  const { critiqueFlow } = load('main/capabilities/field.critique.js')
+  const { critiqueFlow } = load('main/classes/field/critique.js')
   const deps = {
     profiles: {},
     bodyProfiles: {},
@@ -190,7 +190,7 @@ test('field.critique：悬空边 / 未绑定 / 缺实现 / 合法 foreach 不误
 
 // ── 场层：路由决策 ────────────────────────────────────────────
 test('field.route：本地/云端/回退（按长度与推理迹象）', () => {
-  const route = load('main/capabilities/field.route.js')
+  const route = load('main/classes/field/route.js')
   const endpoints = { localEndpoint: 'http://local', cloudEndpoint: 'https://cloud' }
 
   const short = route.routeModel('总结一下这段文字', endpoints)
@@ -212,7 +212,7 @@ test('field.route：本地/云端/回退（按长度与推理迹象）', () => {
 })
 
 test('field.route：body 按扩展名 / 网址 / 整理意图', () => {
-  const route = load('main/capabilities/field.route.js')
+  const route = load('main/classes/field/route.js')
   const lookup = { hasClass: (l, n) => `${l}.${n}` === 'body.ocr' || `${l}.${n}` === 'body.media_converter' || `${l}.${n}` === 'body.file_preview' || `${l}.${n}` === 'body.file_organizer' }
 
   assert.strictEqual(route.routeBody('把 photo.png 里的文字提出来', lookup).target, 'body.ocr')
@@ -223,7 +223,7 @@ test('field.route：body 按扩展名 / 网址 / 整理意图', () => {
 })
 
 test('field.route：判断不了必须 warn，不能返回一个默认目标', async () => {
-  const route = load('main/capabilities/field.route.js')
+  const route = load('main/classes/field/route.js')
   const out = await route.run(mockContext('field.route', { mode: 'body' }))
   assert.strictEqual(out.status, 'warn')
   assert.match(out.output, /无法路由/)
@@ -231,7 +231,7 @@ test('field.route：判断不了必须 warn，不能返回一个默认目标', a
 })
 
 test('field.route：evidence.kind 恒为 route，不被目标类型覆盖', async () => {
-  const route = load('main/capabilities/field.route.js')
+  const route = load('main/classes/field/route.js')
   const out = await route.run({ ...mockContext('field.route', { mode: 'model' }), input: '总结', params: { mode: 'model', localEndpoint: 'http://local' } })
   assert.strictEqual(out.evidence.kind, 'route', 'evidence.kind 必须是语义标记')
   assert.strictEqual(out.evidence.targetKind, 'local', '目标类型放在 targetKind')
@@ -239,7 +239,7 @@ test('field.route：evidence.kind 恒为 route，不被目标类型覆盖', asyn
 
 // ── 场层：故障诊断 ────────────────────────────────────────────
 test('field.diagnose：按错误特征给出原因与修法，判断不了就说判断不了', () => {
-  const { diagnoseText } = load('main/capabilities/field.diagnose.js')
+  const { diagnoseText } = load('main/classes/field/diagnose.js')
 
   const enoent = diagnoseText("Error: ENOENT: no such file or directory, open 'a.txt'")
   assert.match(enoent.cause, /路径或目标不存在/)
@@ -262,7 +262,7 @@ test('field.diagnose：按错误特征给出原因与修法，判断不了就说
 
 // ── 场层：历史挖掘 ────────────────────────────────────────────
 test('field.mine：结构相同的流程图能被分组（真实数据里 10/13 有同伴）', () => {
-  const { groupByShape, flowShape, coOccurrence } = load('main/capabilities/field.mine.js')
+  const { groupByShape, flowShape, coOccurrence } = load('main/classes/field/mine.js')
 
   assert.strictEqual(flowShape({ nodes: [{ kind: 'point' }, { kind: 'gate' }], edges: [{}] }), 'point>gate|1')
 
@@ -288,7 +288,7 @@ test('field.mine：结构相同的流程图能被分组（真实数据里 10/13 
 
 // ── 场层：建议下一步 ──────────────────────────────────────────
 test('field.recommend：先修失败，再固化重复，样本太少时明说不可靠', () => {
-  const { suggestNext } = load('main/capabilities/field.recommend.js')
+  const { suggestNext } = load('main/classes/field/recommend.js')
   const mk = (classId, status) => ({ id: `${classId}:${status}:${Math.random()}`, classId, status, elapsedMs: 10, createdAt: 0 })
 
   assert.strictEqual(suggestNext([]), null, '没有历史就没有建议')
@@ -310,7 +310,7 @@ test('field.recommend：先修失败，再固化重复，样本太少时明说�
 
 // ── 场层：解释 ────────────────────────────────────────────────
 test('field.explain：把证据翻成人话，缺证据时明说缺什么', () => {
-  const { explainPointRun, explainSuggestion, explainLineRun, explainPermission } = load('main/capabilities/field.explain.js')
+  const { explainPointRun, explainSuggestion, explainLineRun, explainPermission } = load('main/classes/field/explain.js')
 
   const run = explainPointRun({ classId: 'point.file_read', status: 'warn', output: '只读到 0 字节', elapsedMs: 42 })
   assert.match(run.headline, /只读到 0 字节/)
@@ -339,7 +339,7 @@ test('field.explain：把证据翻成人话，缺证据时明说缺什么', () =
 
 // ── 场层：提问 ────────────────────────────────────────────────
 test('field.ask：确认 / 澄清（维度与候选值不能错位）/ 多选', () => {
-  const { askConfirm, askClarify, askChoose } = load('main/capabilities/field.ask.js')
+  const { askConfirm, askClarify, askChoose } = load('main/classes/field/ask.js')
 
   const confirm = askConfirm('归档 12 个文件', { target: 'D:\\archive', reversible: false })
   assert.match(confirm.question, /归档 12 个文件/)
@@ -362,7 +362,7 @@ test('field.ask：确认 / 澄清（维度与候选值不能错位）/ 多选', 
 
 // ── 场层：个性化 ──────────────────────────────────────────────
 test('field.personalize：样本不足不给建议，够样本才按频率推', () => {
-  const { suggestShortcut, suggestLayout, suggestDefaults } = load('main/capabilities/field.personalize.js')
+  const { suggestShortcut, suggestLayout, suggestDefaults } = load('main/classes/field/personalize.js')
   const mk = (classId, params) => ({ id: `${classId}:${Math.random()}`, classId, status: 'ok', elapsedMs: 10, createdAt: 0, params })
 
   assert.strictEqual(suggestShortcut([mk('point.a')]), null, '1 条记录就推快捷键是瞎猜')
@@ -1023,4 +1023,95 @@ test('gesture_sample：采样结果能直接喂给识别器（端到端）', () 
   const recognized = g.recognize(sample.points)
   assert.strictEqual(recognized.valid, true, `采样结果应能识别，实际 ${recognized.reason}`)
   assert.strictEqual(recognized.directions, 'LDR', `识别出 ${recognized.directions}`)
+})
+
+test('三元组：右键+U 和 右键+滚轮前+U 必须是两个不同手势', () => {
+  const s = load('main/triggerStore.js')
+  const plain = s.parseGestureKey('right:U')
+  const wheel = s.parseGestureKey('right:U:wheel-forward')
+  assert.deepStrictEqual(plain, { button: 'right', dirs: 'U', modifier: undefined })
+  assert.deepStrictEqual(wheel, { button: 'right', dirs: 'U', modifier: 'wheel-forward' })
+  assert.strictEqual(plain.dirs, wheel.dirs, '方向串相同')
+  assert.notStrictEqual(s.gestureKeyOf(plain), s.gestureKeyOf(wheel), '三元组身份必须区分开')
+
+  const chord = s.parseGestureKey('right::left-down')
+  assert.deepStrictEqual(chord, { button: 'right', dirs: '', modifier: 'left-down' })
+  assert.deepStrictEqual(s.parseGestureKey('LDR'), { button: 'right', dirs: 'LDR' })
+})
+
+test('三元组：非法输入必须拒绝，不能瞎猜', () => {
+  const s = load('main/triggerStore.js')
+  assert.strictEqual(s.parseGestureKey(''), null)
+  assert.strictEqual(s.parseGestureKey('XYZ'), null)
+  assert.strictEqual(s.parseGestureKey('nope:U'), null)
+  assert.strictEqual(s.parseGestureKey('right:U:wheel-sideways'), null)
+  assert.strictEqual(s.parseGestureKey('right::'), null, '没方向又没 modifier 不是手势')
+})
+
+test('三元组：备份里 71 条能全部转出互不相同的三元组', () => {
+  const s = load('main/triggerStore.js')
+  const data = JSON.parse(readFileSync(join(process.cwd(), 'docs/wgestures-1.8.5.0.gestures.json'), 'utf8'))
+  const DIRS = ['U', 'UR', 'R', 'DR', 'D', 'DL', 'L', 'UL']
+  const BUTTONS = { 1: 'right', 2: 'middle', 4: 'x1', 8: 'x2' }
+  const MODIFIERS = { 1: 'wheel-forward', 2: 'wheel-backward', 4: 'middle-down', 8: 'left-down', 16: 'right-down', 32: 'x1', 64: 'x2' }
+
+  const all = [...data.Global.GestureIntents, ...Object.values(data.Apps).flatMap((a) => a.GestureIntents)]
+  assert.strictEqual(all.length, 71)
+
+  const tripleOf = (intent) => {
+    const g = intent.Gesture
+    return {
+      button: BUTTONS[g.GestureButton],
+      dirs: g.Dirs.map((d) => DIRS[d]).join(''),
+      modifier: MODIFIERS[g.Modifier]
+    }
+  }
+
+  const scopes = [['Global', data.Global.GestureIntents], ...Object.values(data.Apps).map((a) => [a.Name, a.GestureIntents])]
+  let withModifier = 0
+  const collisions = []
+  const uniqueAcrossScopes = new Set()
+
+  for (const [name, intents] of scopes) {
+    const seen = new Map()
+    for (const intent of intents) {
+      const triple = tripleOf(intent)
+      assert.ok(triple.button, `按钮 ${intent.Gesture.GestureButton} 无法映射`)
+      assert.ok(triple.dirs || triple.modifier)
+      if (triple.modifier) withModifier += 1
+      const key = s.gestureKeyOf(triple)
+      uniqueAcrossScopes.add(key)
+      if (seen.has(key)) collisions.push({ scope: name, key, a: seen.get(key), b: intent.Name, dirs: intent.Gesture.Dirs })
+      else seen.set(key, intent.Name)
+    }
+  }
+  assert.strictEqual(withModifier, 36, `带 modifier 应有 36 条，实际 ${withModifier}`)
+
+  // ── 已知缺陷：方向记法有歧义 ──────────────────────────────
+  // Dirs:[7]（斜向左上，一段）和 Dirs:[0,6]（先上后左，两段）都渲染成 "UL"。
+  // 这是 WGestures 记法本身的坑（它的 Rust 版文档就警告过：
+  //  「对角线用 NE/NW/SE/SW，不用 LD/RU 这类会与单字母序列歧义的写法」）。
+  // 我们的 parseGestureKey / DIRS_PATTERN 继承了这个歧义 —— 必须改成段间带分隔符。
+  assert.strictEqual(collisions.length, 4, `应有 4 组歧义撞车：${JSON.stringify(collisions.map((c) => c.key))}`)
+  const keys = collisions.map((c) => c.key)
+  assert.ok(keys.includes('right:UL:'), 'UL 撞车：开始(斜) vs edge(上+左)')
+  assert.ok(keys.includes('right:UR:'), 'UR 撞车：最大化(斜) vs google(上+右)')
+  assert.ok(keys.includes('right:DL:'), 'DL 撞车：最小化(斜) vs AI(下+左)')
+  // 段结构不同 = 真不同手势：按 Dirs 数组去重应得 58 个；
+  // 但按我们现在的**字符串键**只剩 53 个 —— 差的 5 个就是被记法歧义吃掉的手势。
+  // 这就是必须改成「段间带分隔符」的硬证据，不是风格问题。
+  const structural = new Set()
+  for (const [scope, intents] of scopes) {
+    for (const intent of intents) {
+      const g = intent.Gesture
+      structural.add(`${g.GestureButton}|${g.Dirs.join(',')}|${g.Modifier}${scope ? '' : ''}`)
+    }
+  }
+  assert.strictEqual(structural.size, 58, `按段结构应有 58 个不同手势，实际 ${structural.size}`)
+  assert.strictEqual(uniqueAcrossScopes.size, 53, `按字符串键只剩 53 个，实际 ${uniqueAcrossScopes.size}`)
+  assert.strictEqual(structural.size - uniqueAcrossScopes.size, 5, '5 个手势被记法歧义吃掉')
+
+  // 证明撞车：去掉 modifier 后唯一键会大幅减少
+  const flat = new Set(all.map((i) => i.Gesture.Dirs.map((d) => DIRS[d]).join('')))
+  assert.ok(flat.size < 30, `扁平方向串只剩 ${flat.size} 个不同值`)
 })
