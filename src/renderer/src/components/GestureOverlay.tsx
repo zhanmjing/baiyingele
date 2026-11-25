@@ -17,10 +17,13 @@ import { useEffect, useRef, useState } from 'react'
  */
 
 interface TrailPoint { x: number; y: number }
+interface TrailStroke { color: string; width: number; opacity: number }
 interface Trail {
   polyline: TrailPoint[]
   recognized: boolean
   pen: { color: string; width: number; opacity: number }
+  /** 阴影 → 白边 → 主笔，按顺序画 */
+  layers: TrailStroke[]
   directions: string
   visible: boolean
 }
@@ -71,15 +74,19 @@ export function GestureOverlay(): React.JSX.Element | null {
     <div className="gesture-overlay" aria-hidden>
       {trail && trail.polyline.length > 0 && (
         <svg className="gesture-overlay-trail">
-          <polyline
-            points={points}
-            fill="none"
-            stroke={trail.pen.color}
-            strokeWidth={trail.pen.width}
-            strokeOpacity={trail.pen.opacity}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          {/* 三层：阴影 → 白边 → 主笔（照 _shadowPen/_borderPen/_mainPen） */}
+          {(trail.layers ?? [{ color: trail.pen.color, width: trail.pen.width, opacity: trail.pen.opacity }]).map((layer, i) => (
+            <polyline
+              key={`stroke-${i}`}
+              points={points}
+              fill="none"
+              stroke={layer.color}
+              strokeWidth={layer.width}
+              strokeOpacity={layer.opacity}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
           {last && <circle cx={last.x} cy={last.y} r={trail.pen.width} fill={trail.pen.color} fillOpacity={trail.pen.opacity} />}
         </svg>
       )}

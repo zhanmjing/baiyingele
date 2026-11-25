@@ -211,15 +211,23 @@ app.whenReady().then(() => {
 
     // 采样过程中的实时方向串，第一颗滚轮派发时要用
     let currentDirections = ''
+    // 触发按钮决定笔色（照原码按 Button 选 _mainPen/_middleBtnPen/_xBtnPen）
+    let currentButton = 'right'
     let lastTrailSent = 0
 
     /** 把轨迹推给渲染层（surface.gesture_trail）。节流到 30fps，别把 IPC 打爆。 */
-    const pushTrail = (points: unknown, directions: string, recognized: boolean, force = false) => {
+    const pushTrail = (points: unknown, directions: string, recognized: boolean, force = false, button = 'right') => {
       if (!mainWindow || mainWindow.isDestroyed()) return
       const now = Date.now()
       if (!force && now - lastTrailSent < 33) return
       lastTrailSent = now
-      const trail = computeTrail({ points: points as never, directions, recognized, instanceId: 'surface.gesture_trail.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } })
+      // DPI 因子按主屏取：原码 widthBase = 2 * _dpiFactor
+      const dpiFactor = screen.getPrimaryDisplay().scaleFactor || 1
+      const trail = computeTrail({
+        points: points as never, directions, recognized, button, dpiFactor,
+        instanceId: 'surface.gesture_trail.default@r1', params: {},
+        deps: { hasClass: () => true, declaredRegionKeys: () => [] }
+      })
       // 有轨迹才显示浮层，空轨迹就藏起来（照 WGestures 的 Visible 开关）
       setOverlayVisible(trail.visible)
       if (!sendToOverlay('gesture:trail', trail)) mainWindow.webContents.send('gesture:trail', trail)
@@ -236,6 +244,7 @@ app.whenReady().then(() => {
       samplers.startSampling({
         onSample: (sample) => {
           currentDirections = ''
+          if (sample?.button) currentButton = sample.button
           // 抬手：轨迹淡出（推送空轨迹让浮层隐藏），提示保留一会儿
           pushTrail([], '', false, true)
           // 抬手先结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded）。
@@ -260,7 +269,7 @@ app.whenReady().then(() => {
         onPathGrow: (grow) => {
           currentDirections = grow.directions
           // 实时轨迹：识别成功后换笔（照 WGestures 的 _pathPen = _tempMainPen）
-          pushTrail(grow.points, grow.directions, grow.directions.length > 0)
+          pushTrail(grow.points, grow.directions, grow.directions.length > 0, false, currentButton)
 
           // 有命中待提示就推出去（提示浮层只显示意图名 + modifier 助记符）
           if (pendingHint) {

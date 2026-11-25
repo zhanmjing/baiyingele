@@ -1764,7 +1764,7 @@ test('surface.gesture_trail：点太多要抽稀，但必须保留最后一点',
   const t = load('main/classes/surface/gesture_trail.js')
   const pts = Array.from({ length: 2000 }, (_, i) => ({ x: i, y: i, t: i }))
   const r = t.computeTrail({ points: pts })
-  assert.ok(r.polyline.length <= 402, `抽稀后不该超过 402 点，实际 ${r.polyline.length}`)
+  assert.ok(r.polyline.length <= 514, `抽稀上限照原码是 512，实际 ${r.polyline.length}`)
   assert.ok(r.polyline.length > 100, '也不能抽太狠')
   const last = r.polyline[r.polyline.length - 1]
   assert.deepStrictEqual({ x: last.x, y: last.y }, { x: 1999, y: 1999 }, '最后一点必须保留')
@@ -1860,4 +1860,40 @@ test('浮层窗口：照 CanvasWindow.cs 的样式映射，并补上 backgroundC
 test('主进程：轨迹可见性驱动浮层显隐', () => {
   const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
   assert.match(main, /setOverlayVisible\(trail\.visible\)/, '浮层显隐要跟着轨迹走')
+})
+
+test('surface.gesture_trail：DPI 缩放笔宽与点数上限', () => {
+  const t = load('main/classes/surface/gesture_trail.js')
+  const pts = Array.from({ length: 3000 }, (_, i) => ({ x: i, y: 0, t: i }))
+  const d1 = t.computeTrail({ points: pts, button: 'right', recognized: true, dpiFactor: 1 })
+  assert.strictEqual(d1.pen.width, 2, 'DPI 1 主笔 2px')
+  assert.ok(d1.polyline.length <= 514, 'DPI 1 上限 512')
+  const d2 = t.computeTrail({ points: pts, button: 'right', recognized: true, dpiFactor: 2 })
+  assert.strictEqual(d2.pen.width, 4, 'DPI 2 主笔 4px')
+  assert.ok(d2.polyline.length > d1.polyline.length, '高 DPI 保留更多点')
+  assert.strictEqual(t.computeTrail({ points: pts, dpiFactor: 0 }).pen.width, 2, 'DPI 0 视为无效 → 回落 1')
+  assert.strictEqual(t.computeTrail({ points: pts, dpiFactor: 99 }).pen.width, 8, 'DPI 99 夹到 4')
+})
+
+test('surface.gesture_trail：三层笔迹 阴影→白边→主笔', () => {
+  const t = load('main/classes/surface/gesture_trail.js')
+  const r = t.computeTrail({ points: [{ x: 0, y: 0, t: 0 }, { x: 10, y: 10, t: 10 }], button: 'right', recognized: true, dpiFactor: 1 })
+  assert.strictEqual(r.layers.length, 3)
+  assert.strictEqual(r.layers[0].color, '#000000')
+  assert.strictEqual(r.layers[0].width, 6, '阴影 = 2×3')
+  assert.ok(r.layers[0].opacity < 0.2)
+  assert.strictEqual(r.layers[1].color, '#ffffff')
+  assert.strictEqual(r.layers[1].width, 5, '白边 = 2×2.5')
+  assert.strictEqual(r.layers[2].color, '#32c864')
+  assert.ok(r.layers[0].width > r.layers[1].width)
+  assert.ok(r.layers[1].width > r.layers[2].width)
+})
+
+test('浮层接线：画三层 + 按主屏 DPI + 传按钮', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(main, /screen\.getPrimaryDisplay\(\)\.scaleFactor/, 'DPI 按主屏取')
+  assert.match(main, /dpiFactor,/, '传给 computeTrail')
+  assert.match(main, /currentButton/, '记住触发按钮')
+  const overlay = readFileSync(join(process.cwd(), 'src/renderer/src/components/GestureOverlay.tsx'), 'utf8')
+  assert.match(overlay, /trail\.layers/, '渲染层画三层')
 })

@@ -65,13 +65,25 @@ export const DEFAULT_TRAIL_STYLE: TrailStyle = {
   recognized: BUTTON_PEN.right
 }
 
+/** 一条笔迹层：渲染层按顺序画 shadow → border → main */
+export interface TrailStroke {
+  color: string
+  /** 已按 DPI 缩放后的宽度 */
+  width: number
+  opacity: number
+}
+
 export interface TrailRender {
   /** 折线点（屏幕坐标，原样给渲染层，不做缩放假设） */
   polyline: Array<{ x: number; y: number }>
   /** 是否已被识别（决定用哪支笔） */
   recognized: boolean
-  /** 当前笔 */
+  /** 当前笔（已按 DPI 缩放） */
   pen: { color: string; width: number; opacity: number }
+  /** 三层笔迹：阴影 → 白边 → 主笔，顺序由渲染层保证 */
+  layers: TrailStroke[]
+  /** 本次用的 DPI 因子 */
+  dpiFactor: number
   /** 实时方向串（画在轨迹旁边） */
   directions: string
   /** 点了多少个 */
@@ -87,6 +99,12 @@ export interface TrailInput extends SurfaceClassInput {
   recognized?: boolean
   /** 触发按钮；决定识别后用什么颜色（照原码按按钮选笔） */
   button?: string
+  /**
+   * 屏幕 DPI 因子（1 / 1.25 / 1.5 / 2 …）。
+   * 原码：var widthBase = 2 * _dpiFactor;   _pathMaxPointCount = 512 * _dpiFactor;
+   * 不缩放的话高分屏上笔会细得看不见、点数上限也不够。
+   */
+  dpiFactor?: number
   style?: Partial<TrailStyle>
 }
 
@@ -99,12 +117,27 @@ export function computeTrail(input: TrailInput): TrailRender {
     recognized: { ...buttonPen, ...(input.style?.recognized ?? {}) }
   }
   const recognized = input.recognized === true
+  // DPI 因子：夹在 0.5–4，防止异常值把笔宽算成 0 或巨粗
+  // 非正数/NaN 一律当 1：算出 0.5 会让主笔变成 1px，高分屏上等于看不见
+  const rawDpi = Number(input.dpiFactor)
+  const dpi = Number.isFinite(rawDpi) && rawDpi > 0 ? Math.min(Math.max(rawDpi, 0.5), 4) : 1
+  const pen = recognized ? style.recognized : style.idle
+  // 原码 widthBase = 2 * dpiFactor；_borderPen ×2.5；_shadowPen ×3
+  const layers: TrailStroke[] = [
+    { color: SHADOW_PEN.color, width: Math.round(pen.width * 3 * dpi), opacity: SHADOW_PEN.opacity },
+    { color: BORDER_PEN.color, width: Math.round(pen.width * 2.5 * dpi), opacity: BORDER_PEN.opacity },
+    { color: pen.color, width: Math.round(pen.width * dpi), opacity: pen.opacity }
+  ]
+  // 原码 _pathMaxPointCount = 512 * dpiFactor
+  const maxPoints = Math.max(64, Math.round(MAX_POINTS_BASE * dpi))
 
   if (!points.length) {
     return {
       polyline: [],
       recognized: false,
-      pen: style.idle,
+      pen: { ...pen, width: Math.round(pen.width * dpi) },
+      layers,
+      dpiFactor: dpi,
       directions: '',
       pointCount: 0,
       // 空轨迹给一个退化包围盒，渲染层据此直接隐藏
@@ -117,8 +150,8 @@ export function computeTrail(input: TrailInput): TrailRender {
   let minY = Infinity
   let maxX = -Infinity
   let maxY = -Infinity
-  // 点太多时抽稀，避免浮层每帧画几千个点
-  const step = points.length > 400 ? Math.ceil(points.length / 400) : 1
+  // 点太多时抽稀。上限照原码 512 * dpiFactor，不能写死 400。
+  const step = points.length > maxPoints ? Math.ceil(points.length / maxPoints) : 1
   const polyline: Array<{ x: number; y: number }> = []
   for (let i = 0; i < points.length; i += step) {
     const p = points[i]
@@ -137,7 +170,9 @@ export function computeTrail(input: TrailInput): TrailRender {
   return {
     polyline,
     recognized,
-    pen: recognized ? style.recognized : style.idle,
+    pen: { ...pen, width: Math.round(pen.width * dpi) },
+    layers,
+    dpiFactor: dpi,
     directions: input.directions ?? '',
     pointCount: points.length,
     bounds: { minX, minY, maxX, maxY },
