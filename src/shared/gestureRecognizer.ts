@@ -45,6 +45,8 @@ export interface RecognizerOptions {
   minStepRatio?: number
   /** 一个方向至少连续出现几段才算数（默认 2） */
   switchVotes?: number
+  /** 首段是否允许斜向（默认 true，等同 GestureParserEnable8DirGesture） */
+  eightDirections?: boolean
   /** 方向数少于此值视为无效（默认 1，即不限制） */
   minSegments?: number
   /**
@@ -62,6 +64,7 @@ const DEFAULT_OPTIONS: Required<RecognizerOptions> = {
   maxDurationMs: 3000,
   minStepRatio: 0.02,
   switchVotes: 2,
+  eightDirections: true,
   minSegments: 1,
   dragSuppressPx: 400
 }
@@ -74,7 +77,48 @@ export function pathLength(points: GesturePoint[]): number {
   return total
 }
 
-/** 8 方向分桶，按 45° 划分 */
+/**
+ * 4 方向判定 —— 照抄 WGestures GestureParser.Get4DirectionDir。
+ * 只比绝对值大小，不算角度。
+ *
+ * **入参是数学坐标（y 向上）**。屏幕坐标要先 negate dy ——
+ * WGestures 在 GestureParser.cs:165 就是这么做的：
+ *   new Point(loc.X - last.X, -loc.Y + last.Y)
+ */
+export function wgDir4(dx: number, dy: number): string {
+  if (dx >= 0 && dy >= 0) return dx > dy ? 'R' : 'U'
+  if (dx <= 0 && dy >= 0) return -dx > dy ? 'L' : 'U'
+  if (dx <= 0 && dy <= 0) return -dx > -dy ? 'L' : 'D'
+  return dx > -dy ? 'R' : 'D'
+}
+
+/**
+ * 8 方向判定 —— 照抄 WGestures GestureParser.Get8DirectionDir。
+ *
+ * 关键是 slashRange 滞回带：45° 边界附近不立刻翻向，
+ * 免得手在斜线上微抖就被判成两个方向。
+ *
+ * 原实现：n = floor(angle/45)，slashRange = 50，
+ *   if ((n 偶 && mod > 45-25) || (n 奇 && mod > 45+25)) n++
+ * 正向扇形 mod>20 就进下一格，斜向扇形要 mod>70。
+ */
+export function wgDir8(dx: number, dy: number, slashRange = 50): string {
+  const NAMES = ['U', 'UR', 'R', 'DR', 'D', 'DL', 'L', 'UL']
+  // 从正上方顺时针量角（数学坐标下 (0,1) 是正上方）
+  let angle = (Math.atan2(dx, dy) * 180) / Math.PI
+  if (angle < 0) angle += 360
+  const mod = angle % 90
+  let n = Math.floor(angle / 45)
+  const nIsEven = (n & 1) === 0
+  const half = slashRange / 2
+  if ((nIsEven && mod > 45 - half) || (!nIsEven && mod > 45 + half)) {
+    n += 1
+    if (n === 8) n = 0
+  }
+  return NAMES[n] ?? 'U'
+}
+
+/** 8 方向分桶，按 45° 划分（旧接口，无滞回） */
 export function directionOf(dx: number, dy: number): string {
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI
   if (angle >= -22.5 && angle < 22.5) return 'R'
@@ -99,9 +143,16 @@ export function toDirectionSequence(points: GesturePoint[], options: RecognizerO
     if (!last || Math.hypot(point.x - last.x, point.y - last.y) >= minStep) sampled.push(point)
   }
 
+  // WGestures 的分段规则：**首段 8 向，之后一律 4 向**。
+  // 斜线只出现在开头（起笔时最准），后续段强制回到正十字，避免长轨迹上斜向抖动。
   const raw: string[] = []
   for (let index = 1; index < sampled.length; index++) {
-    raw.push(directionOf(sampled[index].x - sampled[index - 1].x, sampled[index].y - sampled[index - 1].y))
+    const dx = sampled[index].x - sampled[index - 1].x
+    const dy = sampled[index].y - sampled[index - 1].y
+    const isFirstSegment = raw.length === 0
+    // 屏幕坐标 y 向下，判定函数吃数学坐标 —— 先 negate dy
+    const mathDy = -dy
+    raw.push(isFirstSegment && config.eightDirections ? wgDir8(dx, mathDy) : wgDir4(dx, mathDy))
   }
 
   // 只保留「连续出现 ≥ switchVotes 段」的方向，滤掉拐角处的一帧噪声

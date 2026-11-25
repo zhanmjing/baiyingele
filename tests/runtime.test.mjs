@@ -1115,3 +1115,59 @@ test('三元组：备份里 71 条能全部转出互不相同的三元组', () =
   const flat = new Set(all.map((i) => i.Gesture.Dirs.map((d) => DIRS[d]).join('')))
   assert.ok(flat.size < 30, `扁平方向串只剩 ${flat.size} 个不同值`)
 })
+
+test('记法：箭头是单码位，斜线与两段直角不再撞车', () => {
+  const n = load('shared/gestureNotation.js')
+  const diagonal = n.parseGesture('◑↖')
+  const twoSegments = n.parseGesture('◑↑←')
+  assert.deepStrictEqual(diagonal, { button: 'right', dirs: '↖' })
+  assert.deepStrictEqual(twoSegments, { button: 'right', dirs: '↑←' })
+  assert.notStrictEqual(diagonal.dirs, twoSegments.dirs, '箭头串必须不同')
+
+  assert.strictEqual(n.arrowsToDirections('↖').join(''), 'UL')
+  assert.strictEqual(n.arrowsToDirections('↑←').join(''), 'UL', '方向名层面仍相同')
+  assert.strictEqual(n.directionsToArrows(['UL']), '↖')
+  assert.strictEqual(n.directionsToArrows(['U', 'L']), '↑←')
+})
+
+test('记法：助记符与 WGestures 完全一致', () => {
+  const n = load('shared/gestureNotation.js')
+  assert.strictEqual(n.BUTTON_MNEMONIC.right, '◑')
+  assert.strictEqual(n.BUTTON_MNEMONIC.middle, '●')
+  assert.strictEqual(n.BUTTON_MNEMONIC.x1, 'X1')
+  assert.strictEqual(n.MODIFIER_MNEMONIC['wheel-forward'], '▲')
+  assert.strictEqual(n.MODIFIER_MNEMONIC['wheel-backward'], '▼')
+  assert.strictEqual(n.MODIFIER_MNEMONIC['left-down'], '◐')
+  assert.strictEqual(n.MODIFIER_MNEMONIC['right-down'], '◑')
+
+  assert.strictEqual(n.formatGesture({ button: 'right', dirs: '←↓→' }), '◑←↓→')
+  assert.strictEqual(n.formatGesture({ button: 'right', dirs: '↑↓', modifier: 'wheel-forward' }), '◑↑↓▲')
+  assert.strictEqual(n.formatGesture({ button: 'right', dirs: '', modifier: 'left-down' }), '◑◐')
+
+  for (const text of ['◑←↓→', '◑↑↓▲', '◑◐', '◑↖', '◑↑←']) {
+    const parsed = n.parseGesture(text)
+    assert.ok(parsed, `应能解析 ${text}`)
+    assert.strictEqual(n.formatGesture(parsed), text, `${text} 往返应一致`)
+  }
+})
+
+test('算法：首段 8 向、后续 4 向（照 WGestures）', () => {
+  const g = load('shared/gestureRecognizer.js')
+  // 判定函数吃**数学坐标**（y 向上），和 WGestures 一致。
+  // 屏幕坐标（y 向下）要先 negate dy —— 见 GestureParser.cs:165。
+  assert.strictEqual(g.wgDir4(10, 3), 'R', '右')
+  assert.strictEqual(g.wgDir4(3, -10), 'D', '屏幕向下 = 数学 dy 为负')
+  assert.strictEqual(g.wgDir4(-10, 3), 'L', '左')
+  assert.strictEqual(g.wgDir4(-3, 10), 'U', '屏幕上 = 数学 dy 为正')
+
+  assert.strictEqual(g.wgDir8(10, 10), 'UR', '右上（数学）')
+  assert.strictEqual(g.wgDir8(-10, 10), 'UL', '左上（数学）')
+  assert.strictEqual(g.wgDir8(0, 10), 'U')
+  assert.strictEqual(g.wgDir8(10, 0), 'R')
+  assert.strictEqual(g.wgDir8(-10, -10), 'DL', '左下（数学）')
+
+  const diag = [{ x: 0, y: 0, t: 0 }, { x: 20, y: -20, t: 40 }, { x: 40, y: -40, t: 80 }]
+  const with8 = g.recognize(diag, { switchVotes: 1, dragSuppressPx: 0 })
+  assert.strictEqual(with8.valid, true)
+  assert.ok(with8.directions.includes('UR') || with8.directions.includes('U') || with8.directions.includes('R'))
+})
