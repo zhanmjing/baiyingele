@@ -264,10 +264,35 @@ export class TriggerService {
    * 没有会话 → 这是第一次滚轮，本该在这里「识别 + 执行 + 开会话」；
    *   目前采样中还不带方向串，只能如实返回 needs-directions。
    */
-  feedWheelDuringSampling(event: Parameters<typeof this.sessionHost.dispatch>[0]) {
-    const result = this.sessionHost.dispatch(event)
-    if (result !== 'no-session') return result
-    return 'needs-directions' as const
+  async feedWheelDuringSampling(
+    event: Parameters<typeof this.sessionHost.dispatch>[0],
+    directions?: string
+  ): Promise<'delivered' | 'not-observed' | 'ended' | 'needs-directions' | 'no-binding'> {
+    // ① 已有会话 → 直接送（ModifierTriggered）
+    const existing = this.sessionHost.dispatch(event)
+    if (existing !== 'no-session') return existing
+
+    // ② 没有会话 → 这是第一颗滚轮，照原码在这里「找意图 + 执行 + 开会话」
+    if (!directions) return 'needs-directions'
+
+    const candidates = this.deps.store
+      .list()
+      .filter((b) => b.enabled && b.source === 'gesture' && b.gesture)
+    // 三元组要全对上：方向串 + 这颗滚轮作为 modifier
+    const matched = candidates.filter(
+      (b) => b.gesture!.dirs === directions && b.gesture!.modifier === event
+    )
+    if (!matched.length) return 'no-binding'
+
+    const records = await this.execute(matched, {
+      source: 'gesture',
+      pattern: directions,
+      directions,
+      score: 1
+    })
+    this.openSessionIfNeeded(matched)
+    const failed = records.some((r) => r.status !== 'ok')
+    return failed ? 'not-observed' : 'delivered'
   }
 
   /** 抬手：结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded()） */

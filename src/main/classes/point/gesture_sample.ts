@@ -1,4 +1,5 @@
 import { elapsed } from '../../capabilities/_shared'
+import { recognize, type GesturePoint } from '../../../shared/gestureRecognizer'
 
 /**
  * point.gesture_sample —— 全局鼠标采样
@@ -168,6 +169,12 @@ export interface SamplingHandlers {
    * 抬手只调 GestureEnded() 不再执行。所以必须单独上报。
    */
   onWheelDuringSampling?: (event: 'wheel-forward' | 'wheel-backward') => void
+  /**
+   * 采样过程中方向串变了就上报（对应 WGestures 的 EffectivePathGrow）。
+   * 原码里「允许修饰符执行」的手势在滚轮那一刻就去 Find 并执行，
+   * 那时路径还没结束，只有实时方向串。没有这个回调整，第一颗滚轮就无法配绑定。
+   */
+  onPathGrow?: (state: { points: GesturePoint[]; directions: string }) => void
 }
 
 export interface SamplingControl {
@@ -206,6 +213,7 @@ export function startSampling(
   }
 
   let state: SampleState | null = null
+  let lastDirections = ''
   let stayTimer: NodeJS.Timeout | null = null
 
   const clearStay = () => {
@@ -241,7 +249,19 @@ export function startSampling(
 
   const onMoveHandler = (event: any) => {
     if (!state) return
-    state = onMove(state, { x: event.x, y: event.y, t: Date.now() }, config)
+    const nextState = onMove(state, { x: event.x, y: event.y, t: Date.now() }, config)
+    state = nextState
+    if (nextState.activated && handlers.onPathGrow) {
+      try {
+        const grown = recognize(nextState.points ?? [])
+        if (grown.valid && grown.directions !== lastDirections) {
+          lastDirections = grown.directions
+          handlers.onPathGrow({ points: nextState.points ?? [], directions: grown.directions })
+        }
+      } catch {
+        /* 增量识别失败不能打断采样 */
+      }
+    }
     if (state.activated) clearStay()
   }
 

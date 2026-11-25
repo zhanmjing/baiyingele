@@ -1671,7 +1671,7 @@ test('派发服务：抬手结束会话，采样中滚轮无会话时如实报 n
   const service = new TriggerService({ store, pointStore: () => fake, lineStore: () => fake, onFired: () => {} })
 
   assert.strictEqual(service.endSessionOnPathEnd(), false, '没会话时抬手什么都不做')
-  assert.strictEqual(service.feedWheelDuringSampling('wheel-forward'), 'needs-directions', '没会话时如实报，不假装成功')
+  assert.strictEqual(await service.feedWheelDuringSampling('wheel-forward'), 'needs-directions', '没会话时如实报，不假装成功')
 
   service.add({ source: 'gesture', pattern: '↓→', targetKind: 'point', targetId: 'point.audio_volume.vol_up@r1', needsSession: true })
   await service.dispatchGestureDirections('↓→')
@@ -1679,4 +1679,44 @@ test('派发服务：抬手结束会话，采样中滚轮无会话时如实报 n
   assert.strictEqual(service.endSessionOnPathEnd(), true, '抬手要能结束会话')
   assert.strictEqual(service.activeSession(), null)
   assert.strictEqual(service.endSessionOnPathEnd(), false, '再抬手就没会话了')
+})
+
+test('采样：方向串变了才上报 onPathGrow', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/classes/point/gesture_sample.ts'), 'utf8')
+  assert.match(source, /onPathGrow\?:/, '必须有 path-grow 回调')
+  assert.match(source, /nextState\.activated && handlers\.onPathGrow/, '只有激活后才上报')
+  assert.match(source, /grown\.directions !== lastDirections/, '方向串没变不重复上报')
+})
+
+test('主进程：实时方向串存下来并传给第一颗滚轮', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(source, /let currentDirections = ''/, '要保存实时方向串')
+  assert.match(source, /onPathGrow:[\s\S]{0,120}currentDirections = grow\.directions/, 'path-grow 要写进 currentDirections')
+  assert.match(source, /feedWheelDuringSampling\(event, currentDirections\)/, '滚轮派发要带上方向串')
+})
+
+test('派发服务：第一颗滚轮用方向串加 modifier 精确匹配并执行', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-fw-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const ran = []
+  const fake = { instance: () => ({ id: 'x' }), run: async () => { ran.push(1); return { status: 'ok', output: 'ok' } } }
+  const service = new TriggerService({ store, pointStore: () => fake, lineStore: () => fake, onFired: () => {} })
+
+  service.add({
+    source: 'gesture', pattern: '↓→', targetKind: 'point',
+    targetId: 'point.audio_volume.vol_up@r1', name: '音量', needsSession: true,
+    gesture: { button: 'right', dirs: '↓→', modifier: 'wheel-forward' }
+  })
+
+  assert.strictEqual(await service.feedWheelDuringSampling('wheel-forward'), 'needs-directions', '没方向串如实报')
+  assert.strictEqual(ran.length, 0, '没方向串不能瞎执行')
+
+  assert.strictEqual(await service.feedWheelDuringSampling('wheel-forward', '↓→'), 'delivered', '第一颗滚轮就该执行')
+  assert.strictEqual(ran.length, 1)
+  assert.ok(service.activeSession(), '执行后会话开着')
+
+  service.endSessionOnPathEnd()
+  assert.strictEqual(await service.feedWheelDuringSampling('wheel-backward', '↓→'), 'no-binding', 'modifier 不同不该命中')
 })

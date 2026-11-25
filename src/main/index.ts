@@ -199,9 +199,13 @@ app.whenReady().then(() => {
     const samplers = require('./classes/point/gesture_sample') as typeof import('./classes/point/gesture_sample')
     const pause = require('./classes/point/gesture_pause') as typeof import('./classes/point/gesture_pause')
 
+    // 采样过程中的实时方向串，第一颗滚轮派发时要用
+    let currentDirections = ''
+
     const start = () =>
       samplers.startSampling({
         onSample: (sample) => {
+          currentDirections = ''
           // 抬手先结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded）。
           // 原码注释：「如果是一个允许修饰符执行的手势，显然它必然已经被执行过了，
           // 所以不执行而直接结束」——抬手不再派发。
@@ -214,9 +218,15 @@ app.whenReady().then(() => {
         onWheel: (event) => {
           triggerService.feedSessionEvent(event)
         },
-        // 采样中滚轮：会话优先，没有会话时如实返回 needs-directions
+        // 采样中滚轮：有会话直接送；没有会话就用实时方向串派发（照原码在滚轮那刻执行）
         onWheelDuringSampling: (event) => {
-          triggerService.feedWheelDuringSampling(event)
+          void triggerService
+            .feedWheelDuringSampling(event, currentDirections)
+            .catch((error) => console.warn('[gesture] 滚轮会话失败', error))
+        },
+        // 实时方向串（对应 EffectivePathGrow）—— 第一颗滚轮要靠它找绑定
+        onPathGrow: (grow) => {
+          currentDirections = grow.directions
         }
       })
 
