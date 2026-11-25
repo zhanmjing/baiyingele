@@ -1,0 +1,45 @@
+{
+  "id": "point.gesture_recognize",
+  "name": "手势识别",
+  "group": "gesture",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "轨迹 → 箭头方向串（WGestures 4/8 向算法 + 拖拽抑制）。",
+  "instances": [
+    {
+      "id": "point.gesture_recognize.standard@r1",
+      "name": "标准",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"dragSuppressPx\": 400, \"eightDirections\": true}",
+      "params": {
+        "dragSuppressPx": 400,
+        "eightDirections": true
+      }
+    },
+    {
+      "id": "point.gesture_recognize.strict@r1",
+      "name": "严格",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"minLength\": 60, \"minSegments\": 2, \"dragSuppressPx\": 300}",
+      "params": {
+        "minLength": 60,
+        "minSegments": 2,
+        "dragSuppressPx": 300
+      }
+    },
+    {
+      "id": "point.gesture_recognize.four_dir@r1",
+      "name": "仅四向",
+      "rev": 1,
+      "status": "active",
+      "description": "{\"eightDirections\": false}",
+      "params": {
+        "eightDirections": false
+      }
+    }
+  ]
+}

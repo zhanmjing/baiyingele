@@ -27,6 +27,7 @@
     "point.send_keys",
     "point.gesture_pause",
     "point.copy_selection",
-    "point.task_switch"
+    "point.task_switch",
+    "point.gesture_recognize"
   ]
 }

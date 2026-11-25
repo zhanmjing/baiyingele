@@ -1574,6 +1574,39 @@
           "params": {}
         }
       ]
+    },
+    {
+      "id": "point.gesture_recognize",
+      "name": "手势识别",
+      "family": "gesture",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "轨迹 → 箭头方向串（WGestures 4/8 向算法 + 拖拽抑制）。",
+      "params": [],
+      "instances": [
+        {
+          "id": "point.gesture_recognize.standard@r1",
+          "name": "标准",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.gesture_recognize.strict@r1",
+          "name": "严格",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        },
+        {
+          "id": "point.gesture_recognize.four_dir@r1",
+          "name": "仅四向",
+          "rev": 1,
+          "status": "active",
+          "params": {}
+        }
+      ]
     }
   ],
   "line": [

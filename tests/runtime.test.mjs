@@ -1324,3 +1324,89 @@ test('迁移产物：实例与绑定一一对齐，参数翻成目标类真正�
   assert.strictEqual(m.pending.length, 1, `应只剩 1 条阻塞，实际 ${m.pending.length}`)
   assert.match(m.pending[0].reason, /参数翻不出来/)
 })
+
+test('line.gesture_dispatch：方向串 + modifier 都要对上', () => {
+  const d = load('main/classes/line/gesture_dispatch.js')
+  const bindings = [
+    { id: 'g1', enabled: true, targetKind: 'point', targetId: 'p1', name: '复制', gesture: { button: 'right', dirs: '↑' } },
+    { id: 'g2', enabled: true, targetKind: 'point', targetId: 'p2', name: '剪切', gesture: { button: 'right', dirs: '↑', modifier: 'wheel-forward' } }
+  ]
+  assert.deepStrictEqual(d.matchBindings(bindings, { directions: '↑' }).matched.map((b) => b.name), ['复制'])
+  assert.deepStrictEqual(d.matchBindings(bindings, { directions: '↑', modifier: 'wheel-forward' }).matched.map((b) => b.name), ['剪切'], 'modifier 不同是不同手势')
+  assert.strictEqual(d.matchBindings(bindings, { directions: '↓' }).reason, 'no-binding')
+  assert.strictEqual(d.matchBindings(bindings, { directions: '' }).reason, 'no-directions')
+  assert.strictEqual(d.matchBindings([{ ...bindings[0], enabled: false }], { directions: '↑' }).reason, 'no-binding')
+})
+
+test('line.gesture_dispatch：应用级优先，按 inheritGlobal 决定回落', () => {
+  const d = load('main/classes/line/gesture_dispatch.js')
+  const bindings = [
+    { id: 'global', enabled: true, targetKind: 'point', targetId: 'p', name: '全局', gesture: { button: 'right', dirs: '↑' } },
+    { id: 'app', enabled: true, targetKind: 'point', targetId: 'p', name: '应用', gesture: { button: 'right', dirs: '↑' }, appScope: { exePath: 'C:\\x.exe', inheritGlobal: true } }
+  ]
+  assert.deepStrictEqual(d.matchBindings(bindings, { directions: '↑', exePath: 'c:\\X.EXE' }).matched.map((b) => b.name), ['应用'], 'exePath 大小写无关')
+  assert.deepStrictEqual(d.matchBindings(bindings, { directions: '↑', exePath: 'D:\\y.exe' }).matched.map((b) => b.name), ['全局'], 'inheritGlobal 为真应回落')
+
+  // 没登记过的应用 → 直接用全局（WGestures: exeApp == null 的分支）
+  assert.deepStrictEqual(
+    d.matchBindings(bindings, { directions: '↑', exePath: 'Z:\\never.exe' }).matched.map((b) => b.name),
+    ['全局'],
+    '没登记过的应用直接用全局'
+  )
+
+  // 当前应用**自己**声明不继承，且该手势在应用级没有 → 不回落
+  const noInherit = d.matchBindings(
+    [
+      { ...bindings[0], gesture: { button: 'right', dirs: '↓' } },   // 全局是 ↓，不是 ↑
+      { id: 'app2', enabled: true, targetKind: 'point', targetId: 'p', name: '应用别的手势', gesture: { button: 'right', dirs: '→' },
+        appScope: { exePath: 'C:\\x.exe', inheritGlobal: false } }
+    ],
+    { directions: '↑', exePath: 'C:\\x.exe' }
+  )
+  assert.deepStrictEqual(noInherit.matched, [], '当前应用声明不继承，且应用级没这个手势 → 不回落')
+  assert.strictEqual(noInherit.reason, 'no-binding')
+})
+
+test('line.gesture_dispatch：需要会话的命令返回 session，一次性返回 null', async () => {
+  const d = load('main/classes/line/gesture_dispatch.js')
+  const host = d.createDispatchSessionHost()
+  const executed = []
+  const run = async (needsSession) => d.dispatchGesture({
+    bindings: [{ id: 'g1', enabled: true, targetKind: 'point', targetId: 'p', name: '音量', gesture: { button: 'right', dirs: '↓→' } }],
+    context: { directions: '↓→' },
+    execute: async (b) => { executed.push(b.id); return { ok: true, output: 'ok' } },
+    needsSession,
+    host
+  })
+
+  const once = await run(() => null)
+  assert.strictEqual(once.status, 'ok')
+  assert.strictEqual(once.session, null, '一次性命令不该开会话')
+  assert.deepStrictEqual(executed, ['g1'])
+
+  const got = []
+  const withSession = await run(() => ({ observes: ['wheel-forward', 'wheel-backward'], onEvent: (e) => { got.push(e); return true } }))
+  assert.ok(withSession.session, '需要会话的命令必须返回 session')
+  assert.match(withSession.output, /已开会话/)
+  assert.strictEqual(host.dispatch('wheel-forward'), 'delivered')
+  assert.deepStrictEqual(got, ['wheel-forward'], '会话要接上滚轮')
+
+  const busy = await run(() => ({ observes: ['wheel-forward'], onEvent: () => true }))
+  assert.strictEqual(busy.status, 'warn')
+  assert.strictEqual(busy.reason, 'ambiguous')
+  assert.match(busy.output, /已有会话在接管滚轮/)
+})
+
+test('line.gesture_dispatch：没命中要说清原因', async () => {
+  const d = load('main/classes/line/gesture_dispatch.js')
+  const out = await d.dispatchGesture({
+    bindings: [], context: { directions: '←↓→' },
+    execute: async () => ({ ok: true, output: '' }),
+    needsSession: () => null,
+    host: d.createDispatchSessionHost()
+  })
+  assert.strictEqual(out.status, 'warn')
+  assert.strictEqual(out.reason, 'no-binding')
+  assert.match(out.output, /没有匹配的绑定/)
+  assert.strictEqual(out.session, null)
+})
