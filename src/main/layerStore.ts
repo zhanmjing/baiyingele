@@ -328,7 +328,38 @@ export class LayerStore {
     if (!instance) throw new Error(`实例不存在: ${instanceId}`)
     if (instance.status === 'archived') throw new Error(`实例已归档: ${instance.name}`)
     const pointClass = this.pointClass(instance.classId)
-    if (!pointClass) throw new Error(`未知 ${this.def.classLabel}: ${instance.classId}`)
+
+    /**
+     * 类不在目录里时**不许抛异常**。
+     *
+     * 存储里可能有历史残留实例（classId 来自旧轨，比如 win.key.send），
+     * 以前这里直接 throw，UI 点「运行」会炸成未捕获异常弹窗，
+     * 而用户看到的只是一次点击。
+     *
+     * 抛异常和「如实报未实现」的区别在于：前者把一次业务失败升级成应用级故障。
+     */
+    if (!pointClass) {
+      const started = Date.now()
+      const outcome: RunOutcome = {
+        status: 'warn',
+        output: `${this.def.classLabel} ${instance.classId} 不在目录中（可能是历史残留实例），无法执行`,
+        elapsedMs: 0,
+        evidence: { kind: 'unknown-class', classId: instance.classId }
+      }
+      const record: PointRunRecord = {
+        id: `run-${started}-${Math.floor(Math.random() * 900 + 100)}`,
+        classId: instance.classId,
+        instanceId: instance.id,
+        status: outcome.status,
+        output: outcome.output,
+        elapsedMs: outcome.elapsedMs,
+        createdAt: started,
+        ...(outcome.evidence ? { evidence: outcome.evidence } : {})
+      }
+      this.state.runs = [record, ...this.state.runs].slice(0, 200)
+      this.save()
+      return { record, outcome }
+    }
 
     const started = Date.now()
     const outcome = await this.runner({

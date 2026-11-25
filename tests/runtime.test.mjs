@@ -2220,3 +2220,22 @@ test('运行结果提示必须如实反映状态，不能一律「运行成功�
     assert.match(src, /result\.ok \? `运行成功[^`]*` : `未完成/, `${page} 的提示要按 result.ok 分流`)
   }
 })
+
+test('LayerStore：未知 classId 必须返回 warn，不能抛异常', () => {
+  const src = readFileSync(join(process.cwd(), 'src/main/layerStore.ts'), 'utf8')
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+  // 曾经写的是 throw new Error(`未知 ${...}`)，UI 点一下运行就是未捕获异常弹窗
+  // create() 里对未知类抛异常是对的（那是无效输入）；
+  // 只有**运行**路径不许抛 —— 一次业务失败不该升级成应用级故障。
+  const runBlock = code.slice(code.indexOf('async runDetailed'))
+  assert.ok(!/if \(!pointClass\) throw/.test(runBlock), 'runDetailed 里未知类不许 throw')
+  assert.match(code, /kind: 'unknown-class'/, '要给出可识别的 evidence')
+})
+
+test('归档脚本：孤儿判定要有目录依据，且默认预演', () => {
+  const src = readFileSync(join(process.cwd(), 'scripts/archive-orphans.mjs'), 'utf8')
+  assert.match(src, /generatedFullCatalogs\.json/, '孤儿判定必须对着目录，不能凭主意')
+  assert.match(src, /const WRITE = process\.argv\.includes\('--write'\)/, '默认预演')
+  assert.match(src, /copyFileSync\(file, join\(backupDir/, '写前必须备份')
+  assert.match(src, /status: 'archived'/, '归档而不是删除 —— 数据可恢复')
+})
