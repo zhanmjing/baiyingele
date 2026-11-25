@@ -18,6 +18,8 @@
     "surface.hud",
     "surface.metric_card",
     "surface.panel",
-    "surface.gesture_recorder"
+    "surface.gesture_recorder",
+    "surface.gesture_trail",
+    "surface.gesture_hint"
   ]
 }

@@ -18,6 +18,8 @@ import { resolveForm, setFormSink } from './classes/point/ui_form'
 import { setRunHistorySource } from './classes/field/observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
+import { computeTrail } from './classes/surface/gesture_trail'
+import { computeHint } from './classes/surface/gesture_hint'
 import { lineProfiles } from '../shared/lineCatalog'
 import { bodyProfiles } from '../shared/bodyCatalog'
 import {
@@ -175,6 +177,9 @@ app.whenReady().then(() => {
     (await runCapability(context)) ?? notImplemented(context)
   const undoJournal = new UndoJournal(join(dataDir, 'field-undo.json'))
 
+  /** 手势命中后待推送的提示（onFired 时还拿不到绑定详情，延后到钩子闭包里取） */
+  let pendingHint: { bindingId: string; modifier?: string } | null = null
+
   /** 触发器服务：钩子命中 → 查绑定 → 跑点/线实例 */
   const triggerService = new TriggerService({
     store: new TriggerStore(join(dataDir, 'trigger-bindings.json')),
@@ -182,6 +187,10 @@ app.whenReady().then(() => {
     lineStore: () => store('line'),
     onFired: (record) => {
       mainWindow?.webContents.send('trigger:fired', record)
+      // 手势命中 → 记下来，由 startGestureHook 里的闭包推给提示浮层
+      if (record?.source === 'gesture' && record?.bindingId) {
+        pendingHint = { bindingId: String(record.bindingId), modifier: undefined }
+      }
     }
   })
 
@@ -201,11 +210,30 @@ app.whenReady().then(() => {
 
     // 采样过程中的实时方向串，第一颗滚轮派发时要用
     let currentDirections = ''
+    let lastTrailSent = 0
+
+    /** 把轨迹推给渲染层（surface.gesture_trail）。节流到 30fps，别把 IPC 打爆。 */
+    const pushTrail = (points: unknown, directions: string, recognized: boolean, force = false) => {
+      if (!mainWindow || mainWindow.isDestroyed()) return
+      const now = Date.now()
+      if (!force && now - lastTrailSent < 33) return
+      lastTrailSent = now
+      const trail = computeTrail({ points: points as never, directions, recognized, instanceId: 'surface.gesture_trail.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } })
+      mainWindow.webContents.send('gesture:trail', trail)
+    }
+
+    /** 把提示推给渲染层（surface.gesture_hint） */
+    const pushHint = (name: string, modifier?: string) => {
+      if (!mainWindow || mainWindow.isDestroyed()) return
+      mainWindow.webContents.send('gesture:hint', computeHint({ name, modifier, instanceId: 'surface.gesture_hint.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } }))
+    }
 
     const start = () =>
       samplers.startSampling({
         onSample: (sample) => {
           currentDirections = ''
+          // 抬手：轨迹淡出（推送空轨迹让浮层隐藏），提示保留一会儿
+          pushTrail([], '', false, true)
           // 抬手先结束会话（对应 PathTrackerOnPathEnd 里的 GestureEnded）。
           // 原码注释：「如果是一个允许修饰符执行的手势，显然它必然已经被执行过了，
           // 所以不执行而直接结束」——抬手不再派发。
@@ -227,6 +255,15 @@ app.whenReady().then(() => {
         // 实时方向串（对应 EffectivePathGrow）—— 第一颗滚轮要靠它找绑定
         onPathGrow: (grow) => {
           currentDirections = grow.directions
+          // 实时轨迹：识别成功后换笔（照 WGestures 的 _pathPen = _tempMainPen）
+          pushTrail(grow.points, grow.directions, grow.directions.length > 0)
+
+          // 有命中待提示就推出去（提示浮层只显示意图名 + modifier 助记符）
+          if (pendingHint) {
+            const binding = triggerService.list().find((b) => b.id === pendingHint!.bindingId)
+            if (binding?.name) pushHint(binding.name, binding.gesture?.modifier)
+            pendingHint = null
+          }
         }
       })
 

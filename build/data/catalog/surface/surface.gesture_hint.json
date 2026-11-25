@@ -1,0 +1,33 @@
+{
+  "id": "surface.gesture_hint",
+  "name": "手势提示",
+  "group": "gesture",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "description": "意图名 / 修饰助记符 · overlay",
+  "summary": "手势浮层。",
+  "params": [
+    {
+      "key": "detail",
+      "label": "配置摘要",
+      "type": "text",
+      "required": false,
+      "description": "实例配置摘要",
+      "defaultValue": ""
+    }
+  ],
+  "instances": [
+    {
+      "id": "surface.gesture_hint.default@r1",
+      "name": "默认",
+      "rev": 1,
+      "status": "active",
+      "detail": "{\"detail\":\"意图名 / 修饰助记符 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"gesture-label-1\",\"role\":\"gesture-label\",\"label\":\"意图名\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"gesture-label-2\",\"role\":\"gesture-label\",\"label\":\"修饰助记符\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":2}",
+      "params": {
+        "detail": "意图名 / 修饰助记符 · overlay"
+      }
+    }
+  ]
+}

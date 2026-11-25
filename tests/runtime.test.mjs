@@ -1568,7 +1568,7 @@ test('主进程：启动时必须调用 startGestureHook，失败不阻塞启动
   const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
   assert.match(source, /const hookStatus = startGestureHook\(\)/, '必须在 whenReady 里起钩子')
   assert.match(source, /samplers\.startSampling\(/, '必须真的调用 startSampling')
-  assert.match(source, /onSample:[\s\S]{0,400}dispatchGesturePoints/, '采样结束必须派发')
+  assert.match(source, /onSample:[\s\S]{0,900}dispatchGesturePoints/, '采样结束必须派发')
   assert.match(source, /onWheel:[\s\S]{0,200}feedSessionEvent/, '滚轮必须送进会话')
   assert.match(source, /pause\.onResume\(/, '恢复时必须重起钩子')
   assert.match(source, /if \(!result\.ok\)/, '钩子失败要能看见')
@@ -1719,4 +1719,80 @@ test('派发服务：第一颗滚轮用方向串加 modifier 精确匹配并执�
 
   service.endSessionOnPathEnd()
   assert.strictEqual(await service.feedWheelDuringSampling('wheel-backward', '↓→'), 'no-binding', 'modifier 不同不该命中')
+})
+
+// ── 两个浮层面层类：轨迹 + 提示 ─────────────────────────────
+test('surface.gesture_trail：识别成功后换笔，空轨迹不可见', () => {
+  const t = load('main/classes/surface/gesture_trail.js')
+  const pts = [
+    { x: 0, y: 0, t: 0 }, { x: -40, y: 0, t: 20 }, { x: -80, y: 0, t: 40 },
+    { x: -80, y: 40, t: 60 }, { x: -80, y: 80, t: 80 }
+  ]
+
+  const idle = t.computeTrail({ points: pts, directions: '←↓', recognized: false })
+  assert.strictEqual(idle.visible, true)
+  assert.strictEqual(idle.recognized, false)
+  assert.strictEqual(idle.pen.color, t.DEFAULT_TRAIL_STYLE.idle.color, '未识别用灰笔')
+
+  const hit = t.computeTrail({ points: pts, directions: '←↓', recognized: true })
+  assert.strictEqual(hit.recognized, true)
+  assert.strictEqual(hit.pen.color, t.DEFAULT_TRAIL_STYLE.recognized.color, '识别后换绿笔')
+  assert.ok(hit.pen.width > t.DEFAULT_TRAIL_STYLE.idle.width, '识别后更粗')
+
+  // 包围盒够包住所有点
+  assert.strictEqual(hit.bounds.minX, -80)
+  assert.strictEqual(hit.bounds.maxY, 80)
+
+  // 空轨迹
+  const empty = t.computeTrail({ points: [] })
+  assert.strictEqual(empty.visible, false)
+  assert.deepStrictEqual(empty.polyline, [])
+})
+
+test('surface.gesture_trail：点太多要抽稀，但必须保留最后一点', () => {
+  const t = load('main/classes/surface/gesture_trail.js')
+  const pts = Array.from({ length: 2000 }, (_, i) => ({ x: i, y: i, t: i }))
+  const r = t.computeTrail({ points: pts })
+  assert.ok(r.polyline.length <= 402, `抽稀后不该超过 402 点，实际 ${r.polyline.length}`)
+  assert.ok(r.polyline.length > 100, '也不能抽太狠')
+  const last = r.polyline[r.polyline.length - 1]
+  assert.deepStrictEqual({ x: last.x, y: last.y }, { x: 1999, y: 1999 }, '最后一点必须保留')
+  assert.strictEqual(r.pointCount, 2000, '原始点数要如实报告')
+})
+
+test('surface.gesture_hint：文本 = 意图名 + 空格 + modifier 助记符（照原码拼法）', () => {
+  const h = load('main/classes/surface/gesture_hint.js')
+
+  // 有 modifier
+  const withMod = h.formatHintText('音量', 'wheel-forward')
+  assert.strictEqual(withMod.text, `音量 ${withMod.modifierText}`)
+  assert.ok(withMod.modifierText.length > 0, 'modifier 要有助记符')
+
+  // 没有 modifier → 不补空格
+  assert.strictEqual(h.formatHintText('复制').text, '复制')
+  assert.strictEqual(h.formatHintText('复制').modifierText, '')
+
+  // 空名字 → 不显示
+  assert.strictEqual(h.computeHint({ name: '' }).visible, false)
+  assert.strictEqual(h.computeHint({}).text, '')
+
+  // 颜色照原码：白字 + 半透明黑底
+  const hint = h.computeHint({ name: '音量', modifier: 'wheel-backward' })
+  assert.strictEqual(hint.color, '#ffffff', '白字')
+  assert.match(hint.background, /rgba\(0, 0, 0, 0\.4/, '半透明黑底（120/255≈0.47）')
+  assert.strictEqual(hint.visible, true)
+})
+
+test('浮层接线：主进程要推 trail 和 hint，渲染层要挂载', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(main, /webContents\.send\('gesture:trail'/, '主进程要推轨迹')
+  assert.match(main, /webContents\.send\('gesture:hint'/, '主进程要推提示')
+  assert.match(main, /lastTrailSent < 33/, '轨迹要节流到 30fps')
+
+  const preload = readFileSync(join(process.cwd(), 'src/preload/index.ts'), 'utf8')
+  assert.match(preload, /ipcRenderer\.on\('gesture:trail'/, 'preload 要转发轨迹')
+  assert.match(preload, /ipcRenderer\.on\('gesture:hint'/, 'preload 要转发提示')
+
+  const app = readFileSync(join(process.cwd(), 'src/renderer/src/App.tsx'), 'utf8')
+  assert.match(app, /<GestureOverlay \/>/, 'App 要挂载浮层')
 })

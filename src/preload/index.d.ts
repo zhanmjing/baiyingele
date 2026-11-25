@@ -21,7 +21,11 @@ declare global {
       removeTrigger: (id: string) => Promise<boolean>
       simulateTrigger: (combo: string) => Promise<unknown[]>
       dispatchGesture: (points: { x: number; y: number; t?: number }[]) => Promise<unknown>
-      onTriggerFired: (callback: (record: unknown) => void) => () => void
+      /** 手势轨迹浮层（surface.gesture_trail） */
+  onGestureTrail: (callback: (trail: unknown) => void) => () => void
+  /** 手势动作提示（surface.gesture_hint） */
+  onGestureHint: (callback: (hint: unknown) => void) => () => void
+  onTriggerFired: (callback: (record: unknown) => void) => () => void
       onFormRequest: (callback: (request: unknown) => void) => () => void
       resolveForm: (requestId: string, answer: unknown) => Promise<{ ok: boolean; message: string }>
     }

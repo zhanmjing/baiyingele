@@ -1,3 +1,4 @@
+import { GestureOverlay } from './components/GestureOverlay'
 import { useEffect, useMemo, useState } from 'react'
 import { Command, CornerDownLeft, Search, X } from 'lucide-react'
 import { Sidebar, type Section } from './components/Sidebar'
@@ -676,6 +677,8 @@ export default function App() {
           </div>
         </div>
       )}
+      {/* 手势浮层：轨迹 + 动作提示，任何页面都在最上层 */}
+      <GestureOverlay />
     </div>
   )
 }

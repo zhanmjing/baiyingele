@@ -2541,3 +2541,19 @@ a { color: inherit; }
 .slot-row.empty   { color: #8a8f98; }
 .slot-row.missing { color: #d6842c; }
 .slot-row.error   { color: #cf4b4b; background: rgba(207, 75, 75, 0.08); }
+
+/* ── 手势浮层（surface.gesture_trail / surface.gesture_hint）──
+   照 WGestures CanvasWindowGestureView：识别后换色，提示白字半透明黑底 */
+.gesture-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9000; }
+.gesture-overlay-trail { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.gesture-overlay-dirs {
+  position: absolute; left: 50%; bottom: 48px; transform: translateX(-50%);
+  font-size: 22px; letter-spacing: 4px; color: #9aa4b2;
+  background: rgba(0, 0, 0, 0.47); border-radius: 8px; padding: 6px 14px;
+  transition: color 120ms ease;
+}
+.gesture-overlay-dirs.is-recognized { color: #4ade80; }
+.gesture-overlay-hint {
+  position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%);
+  font-size: 15px; font-weight: 600; border-radius: 8px; padding: 7px 16px; white-space: nowrap;
+}

@@ -81,6 +81,18 @@ const api = {
   },
   resolveForm: (requestId: string, answer: unknown): Promise<{ ok: boolean; message: string }> =>
     ipcRenderer.invoke('ui:form:resolve', requestId, answer),
+  /** 手势轨迹浮层（surface.gesture_trail） */
+  onGestureTrail: (callback: (trail: unknown) => void): (() => void) => {
+    const handler = (_event: unknown, trail: unknown): void => callback(trail)
+    ipcRenderer.on('gesture:trail', handler)
+    return () => ipcRenderer.removeListener('gesture:trail', handler)
+  },
+  /** 手势动作提示（surface.gesture_hint） */
+  onGestureHint: (callback: (hint: unknown) => void): (() => void) => {
+    const handler = (_event: unknown, hint: unknown): void => callback(hint)
+    ipcRenderer.on('gesture:hint', handler)
+    return () => ipcRenderer.removeListener('gesture:hint', handler)
+  },
   onTriggerFired: (callback: (record: unknown) => void): (() => void) => {
     const handler = (_event: unknown, record: unknown): void => callback(record)
     ipcRenderer.on('trigger:fired', handler)

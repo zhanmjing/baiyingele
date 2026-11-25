@@ -41,7 +41,9 @@ const ROLE_OF = {
   hud: 'overlay-body',
   metric_card: 'metric',
   // 手势录制板：整块可以画的手势垫
-  gesture_recorder: 'gesture-pad'
+  gesture_recorder: 'gesture-pad',
+  gesture_trail: 'gesture-path',
+  gesture_hint: 'gesture-label'
 }
 
 /**
@@ -77,7 +79,9 @@ const SOURCE_OF_KIND = {
   hud: { kind: 'run', layer: 'point' },
   metric_card: { kind: 'run', layer: 'point' },
   // 录制板：实时方向串来自 run；冲突检查要看 registry（已有绑定）
-  gesture_recorder: { kind: 'run', layer: 'line' }
+  gesture_recorder: { kind: 'run', layer: 'line' },
+  gesture_trail: { kind: 'run', layer: 'line' },
+  gesture_hint: { kind: 'run', layer: 'line' }
 }
 
 /** 给一个槽位算出它的 source */

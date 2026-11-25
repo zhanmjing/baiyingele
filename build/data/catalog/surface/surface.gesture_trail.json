@@ -1,0 +1,33 @@
+{
+  "id": "surface.gesture_trail",
+  "name": "手势轨迹",
+  "group": "gesture",
+  "version": "1.0.0",
+  "status": "active",
+  "effect": "L0",
+  "priority": "P1",
+  "description": "绘制板 / 实时折线 / 识别换色 · overlay",
+  "summary": "手势浮层。",
+  "params": [
+    {
+      "key": "detail",
+      "label": "配置摘要",
+      "type": "text",
+      "required": false,
+      "description": "实例配置摘要",
+      "defaultValue": ""
+    }
+  ],
+  "instances": [
+    {
+      "id": "surface.gesture_trail.default@r1",
+      "name": "默认",
+      "rev": 1,
+      "status": "active",
+      "detail": "{\"detail\":\"绘制板 / 实时折线 / 识别换色 · overlay\",\"mount\":\"overlay\",\"slots\":[{\"id\":\"gesture-path-1\",\"role\":\"gesture-path\",\"label\":\"绘制板\",\"order\":1,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"gesture-path-2\",\"role\":\"gesture-path\",\"label\":\"实时折线\",\"order\":2,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}},{\"id\":\"gesture-path-3\",\"role\":\"gesture-path\",\"label\":\"识别换色\",\"order\":3,\"source\":{\"kind\":\"run\",\"layer\":\"line\",\"limit\":20}}],\"slotCount\":3}",
+      "params": {
+        "detail": "绘制板 / 实时折线 / 识别换色 · overlay"
+      }
+    }
+  ]
+}
