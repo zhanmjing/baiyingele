@@ -34,6 +34,21 @@ import { hasRealImpl } from '../shared/implRegistry'
 import type { LineNode, LineProfile } from '../shared/lineCatalog'
 import type { InstanceRunner, LayerStore, RunOutcome } from './layerStore'
 
+/**
+ * 线层实现单元的输入。
+ * 一类一个文件之后，每张图收这个、返回 RunLineResult。
+ * 声明里的 gates 是这张图用到的 gate 类型。
+ */
+export interface LineClassInput {
+  profile: LineProfile
+  description: string
+  /** 这次运行的输入 */
+  input: string
+  deps: LineDeps
+  depth?: number
+  stack?: string[]
+}
+
 export interface LineDeps {
   profiles: Record<string, LineProfile>
   /** 延迟取点层 store，避免构造顺序耦合 */
@@ -533,7 +548,7 @@ async function runForEach(
   })
 }
 
-interface RunLineOptions {
+export interface RunLineOptions {
   profile: LineProfile
   classId: string
   description: string
@@ -543,7 +558,7 @@ interface RunLineOptions {
   stack: string[]
 }
 
-interface RunLineResult {
+export interface RunLineResult {
   outcome: RunOutcome
   trace: LineNodeResult[]
   real: number
@@ -554,7 +569,7 @@ interface RunLineResult {
   halted: string | null
 }
 
-async function runLineInstance(options: RunLineOptions): Promise<RunLineResult> {
+export async function runLineInstance(options: RunLineOptions): Promise<RunLineResult> {
   const { profile, description, deps, depth, stack } = options
   const startedAt = Date.now()
   const args = parseLineArgs(description)

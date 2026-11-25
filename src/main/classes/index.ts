@@ -29,23 +29,36 @@ import * as impl25 from './body/system_monitor'
 import * as impl26 from './body/web_clipper'
 import * as impl27 from './body/window_layout'
 import * as impl28 from './body/workspace'
-import * as impl29 from './surface/canvas'
-import * as impl30 from './surface/card_grid'
-import * as impl31 from './surface/command_palette'
-import * as impl32 from './surface/dashboard'
-import * as impl33 from './surface/dialog'
-import * as impl34 from './surface/diff'
-import * as impl35 from './surface/form'
-import * as impl36 from './surface/hud'
-import * as impl37 from './surface/inspector'
-import * as impl38 from './surface/metric_card'
-import * as impl39 from './surface/notification'
-import * as impl40 from './surface/panel'
-import * as impl41 from './surface/run_history'
-import * as impl42 from './surface/table'
-import * as impl43 from './surface/tray_menu'
-import * as impl44 from './surface/tree'
-import * as impl45 from './surface/wizard'
+import * as impl29 from './line/ai_rewrite'
+import * as impl30 from './line/approval_action'
+import * as impl31 from './line/batch_archive'
+import * as impl32 from './line/clipboard_to_file'
+import * as impl33 from './line/ensure_app'
+import * as impl34 from './line/ensure_download'
+import * as impl35 from './line/ensure_service'
+import * as impl36 from './line/ensure_vpn'
+import * as impl37 from './line/http_extract'
+import * as impl38 from './line/open_app'
+import * as impl39 from './line/open_external_site'
+import * as impl40 from './line/open_workspace'
+import * as impl41 from './line/screenshot_translate'
+import * as impl42 from './surface/canvas'
+import * as impl43 from './surface/card_grid'
+import * as impl44 from './surface/command_palette'
+import * as impl45 from './surface/dashboard'
+import * as impl46 from './surface/dialog'
+import * as impl47 from './surface/diff'
+import * as impl48 from './surface/form'
+import * as impl49 from './surface/hud'
+import * as impl50 from './surface/inspector'
+import * as impl51 from './surface/metric_card'
+import * as impl52 from './surface/notification'
+import * as impl53 from './surface/panel'
+import * as impl54 from './surface/run_history'
+import * as impl55 from './surface/table'
+import * as impl56 from './surface/tray_menu'
+import * as impl57 from './surface/tree'
+import * as impl58 from './surface/wizard'
 
 /** classId → 实现单元。各层 runner 用它做纯分派。 */
 export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
@@ -78,21 +91,34 @@ export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
   ['body.web_clipper', impl26 as unknown as ClassImpl],
   ['body.window_layout', impl27 as unknown as ClassImpl],
   ['body.workspace', impl28 as unknown as ClassImpl],
-  ['surface.canvas', impl29 as unknown as ClassImpl],
-  ['surface.card_grid', impl30 as unknown as ClassImpl],
-  ['surface.command_palette', impl31 as unknown as ClassImpl],
-  ['surface.dashboard', impl32 as unknown as ClassImpl],
-  ['surface.dialog', impl33 as unknown as ClassImpl],
-  ['surface.diff', impl34 as unknown as ClassImpl],
-  ['surface.form', impl35 as unknown as ClassImpl],
-  ['surface.hud', impl36 as unknown as ClassImpl],
-  ['surface.inspector', impl37 as unknown as ClassImpl],
-  ['surface.metric_card', impl38 as unknown as ClassImpl],
-  ['surface.notification', impl39 as unknown as ClassImpl],
-  ['surface.panel', impl40 as unknown as ClassImpl],
-  ['surface.run_history', impl41 as unknown as ClassImpl],
-  ['surface.table', impl42 as unknown as ClassImpl],
-  ['surface.tray_menu', impl43 as unknown as ClassImpl],
-  ['surface.tree', impl44 as unknown as ClassImpl],
-  ['surface.wizard', impl45 as unknown as ClassImpl]
+  ['line.ai_rewrite', impl29 as unknown as ClassImpl],
+  ['line.approval_action', impl30 as unknown as ClassImpl],
+  ['line.batch_archive', impl31 as unknown as ClassImpl],
+  ['line.clipboard_to_file', impl32 as unknown as ClassImpl],
+  ['line.ensure_app', impl33 as unknown as ClassImpl],
+  ['line.ensure_download', impl34 as unknown as ClassImpl],
+  ['line.ensure_service', impl35 as unknown as ClassImpl],
+  ['line.ensure_vpn', impl36 as unknown as ClassImpl],
+  ['line.http_extract', impl37 as unknown as ClassImpl],
+  ['line.open_app', impl38 as unknown as ClassImpl],
+  ['line.open_external_site', impl39 as unknown as ClassImpl],
+  ['line.open_workspace', impl40 as unknown as ClassImpl],
+  ['line.screenshot_translate', impl41 as unknown as ClassImpl],
+  ['surface.canvas', impl42 as unknown as ClassImpl],
+  ['surface.card_grid', impl43 as unknown as ClassImpl],
+  ['surface.command_palette', impl44 as unknown as ClassImpl],
+  ['surface.dashboard', impl45 as unknown as ClassImpl],
+  ['surface.dialog', impl46 as unknown as ClassImpl],
+  ['surface.diff', impl47 as unknown as ClassImpl],
+  ['surface.form', impl48 as unknown as ClassImpl],
+  ['surface.hud', impl49 as unknown as ClassImpl],
+  ['surface.inspector', impl50 as unknown as ClassImpl],
+  ['surface.metric_card', impl51 as unknown as ClassImpl],
+  ['surface.notification', impl52 as unknown as ClassImpl],
+  ['surface.panel', impl53 as unknown as ClassImpl],
+  ['surface.run_history', impl54 as unknown as ClassImpl],
+  ['surface.table', impl55 as unknown as ClassImpl],
+  ['surface.tray_menu', impl56 as unknown as ClassImpl],
+  ['surface.tree', impl57 as unknown as ClassImpl],
+  ['surface.wizard', impl58 as unknown as ClassImpl]
 ] as Array<[string, ClassImpl]>)
