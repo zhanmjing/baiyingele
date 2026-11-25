@@ -66,36 +66,37 @@ import * as impl62 from './point/file_move'
 import * as impl63 from './point/file_read'
 import * as impl64 from './point/file_scan'
 import * as impl65 from './point/file_write'
-import * as impl66 from './point/http_request'
-import * as impl67 from './point/key_send'
-import * as impl68 from './point/key_trigger'
-import * as impl69 from './point/notify_toast'
-import * as impl70 from './point/ocr_read'
-import * as impl71 from './point/open'
-import * as impl72 from './point/screen_capture'
-import * as impl73 from './point/text_template'
-import * as impl74 from './point/theme_mode'
-import * as impl75 from './point/translate_text'
-import * as impl76 from './point/ui_form'
-import * as impl77 from './point/window_control'
-import * as impl78 from './point/window_query'
-import * as impl79 from './surface/canvas'
-import * as impl80 from './surface/card_grid'
-import * as impl81 from './surface/command_palette'
-import * as impl82 from './surface/dashboard'
-import * as impl83 from './surface/dialog'
-import * as impl84 from './surface/diff'
-import * as impl85 from './surface/form'
-import * as impl86 from './surface/hud'
-import * as impl87 from './surface/inspector'
-import * as impl88 from './surface/metric_card'
-import * as impl89 from './surface/notification'
-import * as impl90 from './surface/panel'
-import * as impl91 from './surface/run_history'
-import * as impl92 from './surface/table'
-import * as impl93 from './surface/tray_menu'
-import * as impl94 from './surface/tree'
-import * as impl95 from './surface/wizard'
+import * as impl66 from './point/gesture_sample'
+import * as impl67 from './point/http_request'
+import * as impl68 from './point/key_send'
+import * as impl69 from './point/key_trigger'
+import * as impl70 from './point/notify_toast'
+import * as impl71 from './point/ocr_read'
+import * as impl72 from './point/open'
+import * as impl73 from './point/screen_capture'
+import * as impl74 from './point/text_template'
+import * as impl75 from './point/theme_mode'
+import * as impl76 from './point/translate_text'
+import * as impl77 from './point/ui_form'
+import * as impl78 from './point/window_control'
+import * as impl79 from './point/window_query'
+import * as impl80 from './surface/canvas'
+import * as impl81 from './surface/card_grid'
+import * as impl82 from './surface/command_palette'
+import * as impl83 from './surface/dashboard'
+import * as impl84 from './surface/dialog'
+import * as impl85 from './surface/diff'
+import * as impl86 from './surface/form'
+import * as impl87 from './surface/hud'
+import * as impl88 from './surface/inspector'
+import * as impl89 from './surface/metric_card'
+import * as impl90 from './surface/notification'
+import * as impl91 from './surface/panel'
+import * as impl92 from './surface/run_history'
+import * as impl93 from './surface/table'
+import * as impl94 from './surface/tray_menu'
+import * as impl95 from './surface/tree'
+import * as impl96 from './surface/wizard'
 
 /** classId → 实现单元。各层 runner 用它做纯分派。 */
 export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
@@ -165,34 +166,35 @@ export const CLASS_IMPLS: Record<string, ClassImpl> = Object.fromEntries([
   ['point.file_read', impl63 as unknown as ClassImpl],
   ['point.file_scan', impl64 as unknown as ClassImpl],
   ['point.file_write', impl65 as unknown as ClassImpl],
-  ['point.http_request', impl66 as unknown as ClassImpl],
-  ['point.key_send', impl67 as unknown as ClassImpl],
-  ['point.key_trigger', impl68 as unknown as ClassImpl],
-  ['point.notify_toast', impl69 as unknown as ClassImpl],
-  ['point.ocr_read', impl70 as unknown as ClassImpl],
-  ['point.open', impl71 as unknown as ClassImpl],
-  ['point.screen_capture', impl72 as unknown as ClassImpl],
-  ['point.text_template', impl73 as unknown as ClassImpl],
-  ['point.theme_mode', impl74 as unknown as ClassImpl],
-  ['point.translate_text', impl75 as unknown as ClassImpl],
-  ['point.ui_form', impl76 as unknown as ClassImpl],
-  ['point.window_control', impl77 as unknown as ClassImpl],
-  ['point.window_query', impl78 as unknown as ClassImpl],
-  ['surface.canvas', impl79 as unknown as ClassImpl],
-  ['surface.card_grid', impl80 as unknown as ClassImpl],
-  ['surface.command_palette', impl81 as unknown as ClassImpl],
-  ['surface.dashboard', impl82 as unknown as ClassImpl],
-  ['surface.dialog', impl83 as unknown as ClassImpl],
-  ['surface.diff', impl84 as unknown as ClassImpl],
-  ['surface.form', impl85 as unknown as ClassImpl],
-  ['surface.hud', impl86 as unknown as ClassImpl],
-  ['surface.inspector', impl87 as unknown as ClassImpl],
-  ['surface.metric_card', impl88 as unknown as ClassImpl],
-  ['surface.notification', impl89 as unknown as ClassImpl],
-  ['surface.panel', impl90 as unknown as ClassImpl],
-  ['surface.run_history', impl91 as unknown as ClassImpl],
-  ['surface.table', impl92 as unknown as ClassImpl],
-  ['surface.tray_menu', impl93 as unknown as ClassImpl],
-  ['surface.tree', impl94 as unknown as ClassImpl],
-  ['surface.wizard', impl95 as unknown as ClassImpl]
+  ['point.gesture_sample', impl66 as unknown as ClassImpl],
+  ['point.http_request', impl67 as unknown as ClassImpl],
+  ['point.key_send', impl68 as unknown as ClassImpl],
+  ['point.key_trigger', impl69 as unknown as ClassImpl],
+  ['point.notify_toast', impl70 as unknown as ClassImpl],
+  ['point.ocr_read', impl71 as unknown as ClassImpl],
+  ['point.open', impl72 as unknown as ClassImpl],
+  ['point.screen_capture', impl73 as unknown as ClassImpl],
+  ['point.text_template', impl74 as unknown as ClassImpl],
+  ['point.theme_mode', impl75 as unknown as ClassImpl],
+  ['point.translate_text', impl76 as unknown as ClassImpl],
+  ['point.ui_form', impl77 as unknown as ClassImpl],
+  ['point.window_control', impl78 as unknown as ClassImpl],
+  ['point.window_query', impl79 as unknown as ClassImpl],
+  ['surface.canvas', impl80 as unknown as ClassImpl],
+  ['surface.card_grid', impl81 as unknown as ClassImpl],
+  ['surface.command_palette', impl82 as unknown as ClassImpl],
+  ['surface.dashboard', impl83 as unknown as ClassImpl],
+  ['surface.dialog', impl84 as unknown as ClassImpl],
+  ['surface.diff', impl85 as unknown as ClassImpl],
+  ['surface.form', impl86 as unknown as ClassImpl],
+  ['surface.hud', impl87 as unknown as ClassImpl],
+  ['surface.inspector', impl88 as unknown as ClassImpl],
+  ['surface.metric_card', impl89 as unknown as ClassImpl],
+  ['surface.notification', impl90 as unknown as ClassImpl],
+  ['surface.panel', impl91 as unknown as ClassImpl],
+  ['surface.run_history', impl92 as unknown as ClassImpl],
+  ['surface.table', impl93 as unknown as ClassImpl],
+  ['surface.tray_menu', impl94 as unknown as ClassImpl],
+  ['surface.tree', impl95 as unknown as ClassImpl],
+  ['surface.wizard', impl96 as unknown as ClassImpl]
 ] as Array<[string, ClassImpl]>)

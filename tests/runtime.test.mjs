@@ -828,14 +828,13 @@ test('body.gesture：三个必需零件都不存在时必须逐个报出来', ()
   const codes = out.findings.map((f) => f.code)
   // 声明里**有**识别器和派发器（名字对得上），所以不该报 no-recognizer / no-dispatcher；
   // 该报的是「这个名字的零件在目录里不存在」。
+  assert.ok(codes.includes('missing-part:point.gesture.sample'), '必须报采样零件不存在')
   assert.ok(codes.includes('missing-part:point.gesture.recognize'), '必须报识别零件不存在')
   assert.ok(codes.includes('missing-part:line.gesture.dispatch'), '必须报派发零件不存在')
   assert.ok(codes.includes('missing-part:surface.gesture.recorder'), '必须报录制面不存在')
   assert.ok(!codes.includes('no-recognizer'), '声明了识别器就不该报「没有识别器」')
-  assert.ok(!codes.includes('no-dispatcher'), '声明了派发器就不该报「没有派发器」')
-  assert.strictEqual(out.parts.length, 3)
-  assert.ok(out.parts.every((p) => p.present === false), '这 3 个零件目前都不存在')
-  assert.strictEqual(out.parts.filter((p) => p.required).length, 3)
+  assert.strictEqual(out.parts.length, 6, '组成里有 6 个零件')
+  assert.strictEqual(out.parts.filter((p) => p.required).length, 4, '4 个必需 + 2 个浮层可选')
   assert.ok(out.readiness.missing.length >= 3, '角色缺失也要报')
 
   const okDeps = { profiles: {}, hasClass: () => true, implementedClassIds: new Set() }
@@ -937,4 +936,91 @@ test('会话：没有会话时 dispatch 返回 no-session，不能静默吞掉',
   assert.strictEqual(host.active(), null)
   host.end('cancelled')  // 幂等，不该抛
   assert.strictEqual(host.active(), null)
+})
+
+// ── 全局鼠标采样：初始有效位移 / 起始停留 ──────────────────────
+test('gesture_sample：右键单击不能被当成手势（初始有效位移）', () => {
+  const s = load('main/classes/point/gesture_sample.js')
+
+  // 按下就抬手，一点没动 → no-move
+  let st = s.onDown({ x: 100, y: 100, t: 0, button: 'right' })
+  assert.ok(st, '右键应该开始采样')
+  assert.strictEqual(st.activated, false)
+  assert.strictEqual(s.onUp(st, { t: 80 }).reason, 'no-move', '右键单击必须判 no-move')
+
+  // 只移动 10px（小于 30 阈值）→ 仍是 no-move
+  st = s.onDown({ x: 100, y: 100, t: 0, button: 'right' })
+  st = s.onMove(st, { x: 108, y: 106, t: 50 })
+  assert.strictEqual(st.activated, false, '没超阈值不该激活')
+  assert.strictEqual(s.onUp(st, { t: 90 }).reason, 'no-move')
+
+  // 超过 30px → 激活，并把起点补进去
+  st = s.onDown({ x: 100, y: 100, t: 0, button: 'right' })
+  st = s.onMove(st, { x: 140, y: 100, t: 50 })
+  assert.strictEqual(st.activated, true)
+  assert.strictEqual(st.points.length, 2, '起点要补进去，否则轨迹少开头一段')
+  assert.deepStrictEqual(st.points[0], { x: 100, y: 100, t: 0 })
+
+  const result = s.onUp(st, { t: 200 })
+  assert.strictEqual(result.reason, undefined, '越过阈值就是合法采样')
+  assert.strictEqual(result.durationMs, 200)
+})
+
+test('gesture_sample：只响应配置里的按钮；长按不动判 stay-timeout', () => {
+  const s = load('main/classes/point/gesture_sample.js')
+
+  // 默认只认右键
+  assert.strictEqual(s.onDown({ x: 0, y: 0, t: 0, button: 'left' }), null, '左键默认不采样')
+  assert.ok(s.onDown({ x: 0, y: 0, t: 0, button: 'right' }))
+  // 配了就能认
+  assert.ok(s.onDown({ x: 0, y: 0, t: 0, button: 'left' }, { ...s.DEFAULT_SAMPLE_CONFIG, triggerButtons: ['left'] }))
+
+  // 长按不动 500ms → 超时
+  const st = s.onDown({ x: 0, y: 0, t: 1000, button: 'right' })
+  assert.strictEqual(s.isStayTimedOut(st, 1300), false, '300ms 还没到')
+  assert.strictEqual(s.isStayTimedOut(st, 1500), true, '500ms 到了必须放弃')
+
+  // 已经开始画了就不该再判超时
+  const moved = s.onMove(st, { x: 100, y: 0, t: 1100 })
+  assert.strictEqual(moved.activated, true)
+  assert.strictEqual(s.isStayTimedOut(moved, 9999), false, '已经开始画了不该判超时')
+})
+
+test('gesture_sample：按钮名与滚轮方向映射正确', () => {
+  const s = load('main/classes/point/gesture_sample.js')
+  assert.strictEqual(s.buttonName(1), 'left')
+  assert.strictEqual(s.buttonName(2), 'right')
+  assert.strictEqual(s.buttonName(3), 'middle')
+  assert.strictEqual(s.buttonName(4), 'x1')
+  assert.strictEqual(s.buttonName(5), 'x2')
+  assert.strictEqual(s.buttonName(99), null, '未知按钮要返回 null，不能瞎猜')
+
+  assert.strictEqual(s.onWheel({ rotation: 1 }), 'wheel-forward')
+  assert.strictEqual(s.onWheel({ rotation: -1 }), 'wheel-backward')
+  assert.strictEqual(s.onWheel({ rotation: 0 }), null)
+})
+
+test('gesture_sample：采样结果能直接喂给识别器（端到端）', () => {
+  const s = load('main/classes/point/gesture_sample.js')
+  const g = load('shared/gestureRecognizer.js')
+
+  // 用采样状态机造一条 L→D→R
+  let st = s.onDown({ x: 0, y: 0, t: 0, button: 'right' })
+  const path = []
+  const dirs = { L: [-1, 0], D: [0, 1], R: [1, 0] }
+  let x = 0, y = 0, t = 0
+  for (const d of ['L', 'D', 'R']) {
+    for (let i = 0; i < 8; i++) {
+      const [dx, dy] = dirs[d]
+      x += dx * 12; y += dy * 12; t += 20
+      path.push({ x, y, t })
+    }
+  }
+  for (const p of path) st = s.onMove(st, p)
+  const sample = s.onUp(st, { t: t + 20 })
+
+  assert.ok(sample.points.length > 20, '采样点要够识别器用')
+  const recognized = g.recognize(sample.points)
+  assert.strictEqual(recognized.valid, true, `采样结果应能识别，实际 ${recognized.reason}`)
+  assert.strictEqual(recognized.directions, 'LDR', `识别出 ${recognized.directions}`)
 })

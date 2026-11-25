@@ -75,11 +75,14 @@ const bodyProfileOverrides: Record<string, BodyProfile> = {
   'body.gesture': {
     classId: 'body.gesture',
     composition: [
-      // 这三个 id 目前**都不存在于目录里** —— 这正是这个体要暴露的缺口。
-      // 体层重构的前提是先有点层识别类和线层派发类，否则体只是空壳。
+      // gesture.sample 已落地。其余仍是缺口 —— 体的作用就是把缺口一直显示出来。
+      { layer: 'point', ref: 'gesture.sample', role: '全局鼠标采样', required: true },
       { layer: 'point', ref: 'gesture.recognize', role: '轨迹 → 方向串', required: true },
       { layer: 'line', ref: 'gesture.dispatch', role: '识别 → 匹配绑定 → 派发', required: true },
-      { layer: 'surface', ref: 'gesture.recorder', role: '录制板 + 绑定管理', required: true }
+      { layer: 'surface', ref: 'gesture.recorder', role: '录制板 + 绑定管理', required: true },
+      // 两个浮层对应 WGestures 的 GestureViewShowPath / ShowCommandName，默认开但可关
+      { layer: 'surface', ref: 'gesture.trail', role: '轨迹浮层（可关）', required: false },
+      { layer: 'surface', ref: 'gesture.hint', role: '动作提示浮层（可关）', required: false }
     ],
     manifest: {
       id: 'body.gesture', version: '0.1.0', channel: 'dev',

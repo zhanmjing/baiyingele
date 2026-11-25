@@ -3,6 +3,7 @@
   "order": [
     "point.key_send",
     "point.key_trigger",
+    "point.gesture_sample",
     "point.window_control",
     "point.window_query",
     "point.open",

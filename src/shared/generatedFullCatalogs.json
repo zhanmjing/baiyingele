@@ -149,6 +149,79 @@
       ]
     },
     {
+      "id": "point.gesture_sample",
+      "name": "鼠标轨迹采样",
+      "family": "gesture",
+      "priority": "P0",
+      "effect": "L0",
+      "status": "active",
+      "description": "全局鼠标钩子：按下/移动/抬手采成轨迹点；滚轮转成会话事件。对应 WGestures 的 PathTracker。",
+      "params": [
+        {
+          "key": "triggerButtons",
+          "label": "triggerButtons",
+          "type": "text",
+          "required": false,
+          "description": "triggerButtons",
+          "defaultValue": "right"
+        },
+        {
+          "key": "initialValidMove",
+          "label": "initialValidMove",
+          "type": "number",
+          "required": false,
+          "description": "initialValidMove",
+          "defaultValue": "30"
+        },
+        {
+          "key": "initialStayTimeoutMs",
+          "label": "initialStayTimeoutMs",
+          "type": "number",
+          "required": false,
+          "description": "initialStayTimeoutMs",
+          "defaultValue": "500"
+        }
+      ],
+      "instances": [
+        {
+          "id": "point.gesture_sample.right@r1",
+          "name": "右键轨迹",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"triggerButtons\":\"right\",\"initialValidMove\":30,\"initialStayTimeoutMs\":500}",
+          "params": {
+            "triggerButtons": "right",
+            "initialValidMove": "30",
+            "initialStayTimeoutMs": "500"
+          }
+        },
+        {
+          "id": "point.gesture_sample.middle@r1",
+          "name": "中键轨迹",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"triggerButtons\":\"middle\",\"initialValidMove\":30,\"initialStayTimeoutMs\":500}",
+          "params": {
+            "triggerButtons": "middle",
+            "initialValidMove": "30",
+            "initialStayTimeoutMs": "500"
+          }
+        },
+        {
+          "id": "point.gesture_sample.chord@r1",
+          "name": "右键+左键弦",
+          "rev": 1,
+          "status": "active",
+          "description": "{\"triggerButtons\":\"right,left\",\"initialValidMove\":20,\"initialStayTimeoutMs\":0}",
+          "params": {
+            "triggerButtons": "right,left",
+            "initialValidMove": "20",
+            "initialStayTimeoutMs": "0"
+          }
+        }
+      ]
+    },
+    {
       "id": "point.window_control",
       "name": "控制窗口",
       "family": "window",

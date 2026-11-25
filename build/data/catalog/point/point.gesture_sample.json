@@ -1,0 +1,33 @@
+{
+  "id": "point.gesture_sample",
+  "name": "鼠标轨迹采样",
+  "group": "gesture",
+  "version": "1.0.0",
+  "status": "stable",
+  "effect": "L0",
+  "priority": "P0",
+  "summary": "全局鼠标钩子：按下/移动/抬手采成轨迹点；滚轮转成会话事件。对应 WGestures 的 PathTracker。",
+  "instances": [
+    {
+      "id": "point.gesture_sample.right@r1",
+      "name": "右键轨迹",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"triggerButtons\":\"right\",\"initialValidMove\":30,\"initialStayTimeoutMs\":500}"
+    },
+    {
+      "id": "point.gesture_sample.middle@r1",
+      "name": "中键轨迹",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"triggerButtons\":\"middle\",\"initialValidMove\":30,\"initialStayTimeoutMs\":500}"
+    },
+    {
+      "id": "point.gesture_sample.chord@r1",
+      "name": "右键+左键弦",
+      "rev": 1,
+      "status": "stable",
+      "detail": "{\"triggerButtons\":\"right,left\",\"initialValidMove\":20,\"initialStayTimeoutMs\":0}"
+    }
+  ]
+}
