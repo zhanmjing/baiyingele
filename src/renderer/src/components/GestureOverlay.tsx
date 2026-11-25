@@ -26,6 +26,10 @@ interface Hint {
   text: string
   color: string
   background: string
+  /** 屏幕坐标（中心点）；渲染层用 translateX(-50%) 居中 */
+  position?: { x: number; y: number }
+  fontSize?: number
+  padding?: { x: number; y: number }
   visible: boolean
 }
 
@@ -182,13 +186,21 @@ export function GestureOverlay(): React.JSX.Element | null {
   return (
     <div className="gesture-overlay" aria-hidden>
       <canvas ref={canvasRef} className="gesture-overlay-canvas" />
-      {active && hint && (
-        <div className="gesture-overlay-hint" style={{ color: hint.color, background: hint.background }}>
-          {hint.text}
-        </div>
-      )}
-      {!active && hint && (
-        <div className="gesture-overlay-hint" style={{ color: hint.color, background: hint.background }}>
+      {/* 提示：位置/字号/内边距全部由 surface.gesture_hint 算好，
+          照原码 x=W/2, y=H/2+W/8, padding=25/15×dpi */}
+      {hint && (
+        <div
+          className="gesture-overlay-hint"
+          style={{
+            color: hint.color,
+            background: hint.background,
+            left: hint.position ? `${hint.position.x}px` : '50%',
+            top: hint.position ? `${hint.position.y}px` : '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: hint.fontSize ? `${hint.fontSize}px` : undefined,
+            padding: hint.padding ? `${hint.padding.y}px ${hint.padding.x}px` : undefined
+          }}
+        >
           {hint.text}
         </div>
       )}

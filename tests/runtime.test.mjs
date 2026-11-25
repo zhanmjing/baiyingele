@@ -1776,14 +1776,29 @@ test('surface.gesture_trail：点太多要抽稀，但必须保留最后一点',
 test('surface.gesture_hint：文本 = 意图名 + 空格 + modifier 助记符（照原码拼法）', () => {
   const h = load('main/classes/surface/gesture_hint.js')
 
-  // 有 modifier
+  // ① 识别时：名字在前
   const withMod = h.formatHintText('音量', 'wheel-forward')
-  assert.strictEqual(withMod.text, `音量 ${withMod.modifierText}`)
+  assert.strictEqual(withMod.text, `音量 ${withMod.modifierText}`, '识别时是「名字 + 空格 + 助记符」')
   assert.ok(withMod.modifierText.length > 0, 'modifier 要有助记符')
+
+  // ② 状态回报时：modifier 在前 + 状态后缀（原码两处格式不同）
+  const status = h.formatHintText('音量', 'wheel-forward', '+', 'status')
+  assert.strictEqual(status.text, `${status.modifierText} 音量+`, '状态回报时是「助记符 名字+状态」')
+  const statusNoMod = h.formatHintText('音量', undefined, '-', 'status')
+  assert.strictEqual(statusNoMod.text, '音量-', '没 modifier 就不加前缀空格')
 
   // 没有 modifier → 不补空格
   assert.strictEqual(h.formatHintText('复制').text, '复制')
   assert.strictEqual(h.formatHintText('复制').modifierText, '')
+
+  // 位置与内边距照原码：x=W/2, y=H/2+W/8, padding=25/15×dpi
+  const pos = h.computeHint({ name: '音量', modifier: 'wheel-forward', screen: { width: 2560, height: 1440 }, dpiFactor: 1 })
+  assert.deepStrictEqual(pos.position, { x: 1280, y: 1440 / 2 + 2560 / 8 }, 'x=W/2, y=H/2+W/8')
+  assert.deepStrictEqual(pos.padding, { x: 25, y: 15 }, '内边距 25/15')
+  assert.strictEqual(pos.fontSize, 15)
+  const pos2 = h.computeHint({ name: '音量', screen: { width: 2560, height: 1440 }, dpiFactor: 2 })
+  assert.deepStrictEqual(pos2.padding, { x: 50, y: 30 }, 'DPI 2 内边距翻倍')
+  assert.strictEqual(pos2.fontSize, 30, 'DPI 2 字号翻倍')
 
   // 空名字 → 不显示
   assert.strictEqual(h.computeHint({ name: '' }).visible, false)

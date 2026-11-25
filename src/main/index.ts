@@ -253,10 +253,16 @@ app.whenReady().then(() => {
     }
 
     /** 把提示推给渲染层（surface.gesture_hint） */
-    const pushHint = (name: string, modifier?: string) => {
-      if (!mainWindow || mainWindow.isDestroyed()) return
-      const hint = computeHint({ name, modifier, instanceId: 'surface.gesture_hint.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } })
-      if (!sendToOverlay('gesture:hint', hint)) mainWindow.webContents.send('gesture:hint', hint)
+    const pushHint = (name: string, modifier?: string, status = '', mode: 'recognized' | 'status' = 'recognized') => {
+      const display = screen.getPrimaryDisplay()
+      const hint = computeHint({
+        name, modifier, status, mode,
+        screen: { width: display.bounds.width, height: display.bounds.height },
+        dpiFactor: display.scaleFactor || 1,
+        instanceId: 'surface.gesture_hint.default@r1', params: {},
+        deps: { hasClass: () => true, declaredRegionKeys: () => [] }
+      })
+      if (!sendToOverlay('gesture:hint', hint)) mainWindow?.webContents.send('gesture:hint', hint)
     }
 
     const start = () =>
