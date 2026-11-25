@@ -155,6 +155,16 @@ export interface SamplingControl {
   state: () => SampleState | null
 }
 
+/**
+ * uiohook 的 time 是开机以来的毫秒数（单调时钟），不是 epoch。
+ * 实测 uiohook time=74,276,500 / Date.now()=1,795,581,907,867，差约 20,780 天。
+ *
+ * 如果 onDown 存 e.time 而 isStayTimedOut 拿 Date.now() 去减，
+ * 差值永远巨大 → 一按下就被判长按超时 → 采样被清掉，一个手势都出不来。
+ * 这个 bug 只有接真实钩子才会暴露。
+ *
+ * 所以：全部用自己的时钟（Date.now）。
+ */
 export const classId = 'point.gesture_sample'
 export const summary = 'uiohook-napi 全局鼠标采样：按下/移动/抬手 → 轨迹点；滚轮 → 会话事件'
 export const specialized = true
@@ -195,7 +205,8 @@ export function startSampling(
   const onDownHandler = (event: any) => {
     const button = buttonName(event.button)
     if (!button) return
-    const next = onDown({ x: event.x, y: event.y, t: event.time ?? Date.now(), button }, config)
+    // 用自己的时钟，不用 uiohook 的单调 time
+    const next = onDown({ x: event.x, y: event.y, t: Date.now(), button }, config)
     if (!next) return
     state = next
     clearStay()
@@ -209,7 +220,7 @@ export function startSampling(
 
   const onMoveHandler = (event: any) => {
     if (!state) return
-    state = onMove(state, { x: event.x, y: event.y, t: event.time ?? Date.now() }, config)
+    state = onMove(state, { x: event.x, y: event.y, t: Date.now() }, config)
     if (state.activated) clearStay()
   }
 

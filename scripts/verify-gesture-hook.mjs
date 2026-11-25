@@ -131,12 +131,13 @@ if (sampler) {
   uiohook.on('mousedown', (e) => {
     const button = sampler.buttonName(e.button)
     if (!button) return
-    const next = sampler.onDown({ x: e.x, y: e.y, t: e.time ?? Date.now(), button })
+    // uiohook 的 e.time 是单调时钟，不能和 Date.now() 混用
+    const next = sampler.onDown({ x: e.x, y: e.y, t: Date.now(), button })
     if (next) state = next
   })
   uiohook.on('mousemove', (e) => {
     if (!state) return
-    state = sampler.onMove(state, { x: e.x, y: e.y, t: e.time ?? Date.now() })
+    state = sampler.onMove(state, { x: e.x, y: e.y, t: Date.now() })
     if (sampler.isStayTimedOut(state, Date.now())) {
       state = null
     }
