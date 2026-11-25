@@ -84,19 +84,19 @@ const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
 const { decideLanding } = require('../.tmp/smoke/shared/fieldLanding.js')
 const { applyLanding } = require('../.tmp/smoke/main/fieldRuntime.js')
 const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
-const { selectWindows, parseSelector } = require('../.tmp/smoke/main/capabilities/win.window.query.js')
-const { planThemeChange } = require('../.tmp/smoke/main/capabilities/win.theme.mode.js')
-const { computeRect, resolveTarget } = require('../.tmp/smoke/main/capabilities/win.window.control.js')
-const { parseCombo, matchesCombo, withHeldModifiers, registeredCombos, stopHook } = require('../.tmp/smoke/main/capabilities/win.key.trigger.js')
+const { selectWindows, parseSelector } = require('../.tmp/smoke/main/classes/point/window_query.js')
+const { planThemeChange } = require('../.tmp/smoke/main/classes/point/theme_mode.js')
+const { computeRect, resolveTarget } = require('../.tmp/smoke/main/classes/point/window_control.js')
+const { parseCombo, matchesCombo, withHeldModifiers, registeredCombos, stopHook } = require('../.tmp/smoke/main/classes/point/key_trigger.js')
 const { TriggerStore } = require('../.tmp/smoke/main/triggerStore.js')
 const { TriggerService } = require('../.tmp/smoke/main/triggerService.js')
 const gesture = require('../.tmp/smoke/shared/gestureRecognizer.js')
-const keysend = require('../.tmp/smoke/main/capabilities/win.key.send.js')
-const volmod = require('../.tmp/smoke/main/capabilities/win.audio.volume.js')
+const keysend = require('../.tmp/smoke/main/classes/point/key_send.js')
+const volmod = require('../.tmp/smoke/main/classes/point/audio_volume.js')
 const comm = require('../.tmp/smoke/main/capabilities/_com.js')
-const bright = require('../.tmp/smoke/main/capabilities/win.display.brightness.js')
+const bright = require('../.tmp/smoke/main/classes/point/display_brightness.js')
 const formSpec = require('../.tmp/smoke/shared/formSpec.js')
-const formMod = require('../.tmp/smoke/main/capabilities/ui.form.js')
+const formMod = require('../.tmp/smoke/main/classes/point/ui_form.js')
 const catalogs = require('../src/shared/generatedFullCatalogs.json')
 const profiles = require('../src/shared/generatedLineProfiles.json')
 
@@ -1347,7 +1347,7 @@ async function main() {
 
 
   // ── 7r. field.guard：确定性闸门 ────────────────────────────────
-  const guard = require('../.tmp/smoke/main/capabilities/field.guard.js')
+  const guard = require('../.tmp/smoke/main/classes/field/guard.js')
   const makeDraft = (over) => ({ effect: 'L1', autonomy: 'A1', confidence: null, approved: false, text: '', action: '', ...over })
 
   // A3 是设计上禁止的，不看其他条件
@@ -1409,7 +1409,7 @@ async function main() {
   console.log('✓ field.guard：A3 禁止 / L2 询问 / L3 批准 / 置信度三档 / 隐私脱敏 6 类 / 描述→策略 都正确')
 
   // ── 7s. field.observe：切面解析与历史统计 ──────────────────────
-  const observe = require('../.tmp/smoke/main/capabilities/field.observe.js')
+  const observe = require('../.tmp/smoke/main/classes/field/observe.js')
   assert.deepStrictEqual(observe.facetsOf('global · 前台进程/窗口/时间/空闲'), ['前台进程', '窗口', '时间', '空闲'])
   assert.deepStrictEqual(observe.facetsOf('run history · 最近运行/失败/耗时'), ['最近运行', '失败', '耗时'])
   assert.deepStrictEqual(observe.facetsOf('没有分隔符'), [], '没有「·」就无法区分作用域和切面')
@@ -1448,7 +1448,7 @@ async function main() {
 
 
   // ── 7t. field.simulate：静态推演（不执行任何东西）────────────────
-  const simulate = require('../.tmp/smoke/main/capabilities/field.simulate.js')
+  const simulate = require('../.tmp/smoke/main/classes/field/simulate.js')
 
   // 接触面推断
   assert.deepStrictEqual(
@@ -1630,7 +1630,7 @@ async function main() {
 
 
   // ── 7w. field.rank / field.detect：纯规则，确定性 ─────────────
-  const rankRt = require('../.tmp/smoke/main/capabilities/field.rank.js')
+  const rankRt = require('../.tmp/smoke/main/classes/field/rank.js')
   const ranked = rankRt.rankItems([
     { id: 'c', name: 'C', priority: 'P2', usage: 9 },
     { id: 'a', name: 'A', priority: 'P0' },
@@ -1643,7 +1643,7 @@ async function main() {
   assert.deepStrictEqual(rankRt.rankItems([{ id: 'x', name: '同' }, { id: 'y', name: '同' }]),
     rankRt.rankItems([{ id: 'x', name: '同' }, { id: 'y', name: '同' }]))
 
-  const detectRt = require('../.tmp/smoke/main/capabilities/field.detect.js')
+  const detectRt = require('../.tmp/smoke/main/classes/field/detect.js')
   const mkRun = (classId, status, ms, at) => ({ id: `${classId}@${at}`, classId, status, elapsedMs: ms, createdAt: at })
   // 构造 A→B→C 重复 3 次
   const seq = []
@@ -1664,7 +1664,7 @@ async function main() {
 
 
   // ── 7x. field.critique：结构审查（环 / 悬空边 / 循环构造）─────────
-  const critRt = require('../.tmp/smoke/main/capabilities/field.critique.js')
+  const critRt = require('../.tmp/smoke/main/classes/field/critique.js')
   const critDeps = {
     profiles: {},
     bodyProfiles: {},

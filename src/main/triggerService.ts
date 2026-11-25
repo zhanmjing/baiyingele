@@ -8,7 +8,7 @@
  *   hotkey  —— uiohook-napi 全局钩子，组合键**精确**匹配
  *   gesture —— 渲染层送来轨迹，识别成方向串后**模糊**匹配（编辑距离 ≥ 阈值）
  */
-import { onFiring, parseCombo, registerCombo, registeredCombos } from './capabilities/win.key.trigger'
+import { onFiring, parseCombo, registerCombo, registeredCombos } from './classes/point/key_trigger'
 import { matchPattern, recognize, type GesturePoint } from '../shared/gestureRecognizer'
 import type { LayerStore } from './layerStore'
 import type { TriggerBinding, TriggerSource, TriggerStore, TriggerTargetKind } from './triggerStore'

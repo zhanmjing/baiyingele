@@ -116,6 +116,37 @@ export function scanCapabilities() {
 }
 
 export function renderIndex(modules) {
+  // 旧轨空了 = 全部迁到 classes/，此时 index.ts 只做薄适配层
+  if (!modules.length) {
+    return `${HEADER}// 能力注册表已统一到 src/main/classes/index.ts（一类一个实现单元）。
+// 这里只留薄适配层：老代码 import { runCapability } from './capabilities'。
+import type { RunContext, RunOutcome } from '../layerStore'
+import { CLASS_IMPLS } from '../classes'
+
+export const CAPABILITIES: Record<string, (ctx: RunContext) => Promise<RunOutcome> | RunOutcome> =
+  Object.fromEntries(
+    Object.entries(CLASS_IMPLS).map(([id, impl]) => [
+      id,
+      impl.run as (ctx: RunContext) => Promise<RunOutcome> | RunOutcome
+    ])
+  )
+
+export async function runCapability(context: RunContext): Promise<RunOutcome | null> {
+  const capability = CAPABILITIES[context.instance.classId]
+  if (!capability) return null
+  try {
+    return await capability(context)
+  } catch (error) {
+    return {
+      status: 'warn',
+      output: '执行异常：' + (error instanceof Error ? error.message : String(error)),
+      elapsedMs: 0
+    }
+  }
+}
+`
+  }
+
   const imports = modules
     .map((module, index) => `import * as cap${index} from './${module.file.replace(/\.ts$/, '')}'`)
     .join('\n')
