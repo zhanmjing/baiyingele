@@ -63,6 +63,11 @@ export interface TriggerBinding {
    * 同一个手势因此可以有两套含义。
    */
   executeOnModifier?: boolean
+  /**
+   * 这条绑定触发后要不要开命令会话继续接管滚轮。
+   * 对应 WGestures 的 IGestureModifiersAware（音量、任务切换）。
+   */
+  needsSession?: boolean
   /** 应用作用域（对应 ExeApp + InheritGlobalGestures）。不填 = 全局 */
   appScope?: { exePath: string; inheritGlobal: boolean }
   /** 展示名 */
@@ -157,6 +162,7 @@ function migrate(raw: Partial<TriggerBinding> & { combo?: string }): TriggerBind
       ? (raw.gesture as GestureTriple | undefined) ?? parseGestureKey(String(raw.pattern ?? '')) ?? undefined
       : undefined,
     executeOnModifier: raw.executeOnModifier === true,
+    needsSession: raw.needsSession === true,
     appScope: raw.appScope as TriggerBinding['appScope'],
     name: raw.name ?? undefined,
     effect: raw.effect ?? undefined,

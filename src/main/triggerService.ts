@@ -11,6 +11,7 @@
 import { onFiring, parseCombo, registerCombo, registeredCombos } from './classes/point/key_trigger'
 import { matchPattern, recognize, type GesturePoint } from '../shared/gestureRecognizer'
 import type { LayerStore } from './layerStore'
+import { createSessionHost } from '../shared/commandSession'
 import { formatGestureKey, parseGestureKey, type GestureTriple, type TriggerBinding, type TriggerSource, type TriggerStore, type TriggerTargetKind } from './triggerStore'
 
 export interface FiringRecord {
@@ -35,6 +36,8 @@ export interface AddTriggerInput {
   gesture?: GestureTriple
   /** 只在按住 modifier 时执行（WGestures ExecuteOnModifier） */
   executeOnModifier?: boolean
+  /** 是否开命令会话（触发后继续接管滚轮） */
+  needsSession?: boolean
   /** 应用作用域；不填 = 全局 */
   appScope?: { exePath: string; inheritGlobal: boolean }
   targetKind: TriggerTargetKind
@@ -61,6 +64,9 @@ const GESTURE_THRESHOLD = 0.75
 const GESTURE_PATTERN = /^(↑|↗|→|↘|↓|↙|←|↖)+$/
 
 export class TriggerService {
+  /** 命令会话宿主：整个服务只该有一个，否则会开出两个接管滚轮 */
+  private sessionHost = createSessionHost()
+
   private readonly firings: FiringRecord[] = []
   private unsubscribe: (() => void) | null = null
 
@@ -142,6 +148,7 @@ export class TriggerService {
       pattern,
       gesture: triple ?? undefined,
       executeOnModifier: input.executeOnModifier === true,
+      needsSession: input.needsSession === true,
       appScope: input.appScope,
       targetKind: input.targetKind,
       targetId: input.targetId,
@@ -170,8 +177,21 @@ export class TriggerService {
     return this.execute(matched, { source: 'hotkey', pattern })
   }
 
-  /** 手势路径：先识别，再在启用的手势绑定里挑最像的一个 */
-  async dispatchGesturePoints(points: GesturePoint[]): Promise<{ directions: string; valid: boolean; reason?: string; records: FiringRecord[] }> {
+  /**
+   * 手势路径：识别 → 精确三元组匹配 → 模糊兜底 → 派发 → 可能开会话
+   *
+   * ## 为什么不只用模糊匹配
+   *
+   * 模糊匹配（编辑距离 ≥0.75）是我们自己的加法，好处是手抖多一段还能命中。
+   * 但它**分不清「右键+↑」和「右键+滚轮前+↑」** —— 那两个方向串完全一样。
+   *
+   * 所以顺序是：
+   *   1. 先按三元组**精确**匹配（button + dirs + modifier 全对上）
+   *   2. 精确没命中，再按方向串模糊兜底（此时不看 modifier）
+   *
+   * 第 2 步是为了不丢掉原来能用的场景；它命中时会标注 fuzzy=true。
+   */
+  async dispatchGesturePoints(points: GesturePoint[]): Promise<{ directions: string; valid: boolean; reason?: string; records: FiringRecord[]; session?: unknown }> {
     const result = recognize(points)
     if (!result.valid) {
       return { directions: '', valid: false, reason: result.reason, records: [] }
@@ -180,6 +200,16 @@ export class TriggerService {
     const candidates = this.deps.store
       .list()
       .filter((binding) => binding.enabled && binding.source === 'gesture')
+
+    // ① 三元组精确匹配
+    const exact = candidates.filter((binding) => binding.gesture && binding.gesture.dirs === result.directions)
+    if (exact.length) {
+      const records = await this.execute(exact, { source: 'gesture', pattern: result.directions, directions: result.directions, score: 1 })
+      this.openSessionIfNeeded(exact)
+      return { directions: result.directions, valid: true, records, session: this.activeSession() }
+    }
+
+    // ② 模糊兜底
     const best = matchPattern(result.directions, candidates.map((binding) => binding.pattern), GESTURE_THRESHOLD)
 
     if (!best) {
@@ -199,16 +229,57 @@ export class TriggerService {
     return { directions: result.directions, valid: true, records }
   }
 
+  /**
+   * 命中单个绑定且它声明了 needsSession 时开一个会话。
+   * 多个目标同时接管滚轮没有意义，所以只在单个时开。
+   */
+  private openSessionIfNeeded(matched: TriggerBinding[]): void {
+    if (matched.length !== 1) return
+    const binding = matched[0]
+    if (!binding.needsSession) return
+    this.sessionHost.start({
+      bindingId: binding.id,
+      observes: ['wheel-forward', 'wheel-backward'],
+      onEvent: (event) => {
+        // 会话期间每次滚轮都记一条 FiringRecord，方便排查
+        this.push(this.makeRecord({ source: 'gesture', pattern: `${binding.pattern}·${event}` }, binding.id, 'ok', `会话事件 ${event}`, 0))
+        return true
+      }
+    })
+  }
+
+  /** 当前会话（「DR + 音量」这类触发后继续接管滚轮的命令） */
+  activeSession() {
+    return this.sessionHost.active()
+  }
+
+  /** 把滚轮事件送给当前会话。返回 'no-session' 表示没人接管，调用方按普通流程走 */
+  feedSessionEvent(event: Parameters<typeof this.sessionHost.dispatch>[0]) {
+    return this.sessionHost.dispatch(event)
+  }
+
   /** 直接按方向串派发（跳过轨迹识别，便于测试） */
   async dispatchGestureDirections(directions: string): Promise<FiringRecord[]> {
     const candidates = this.deps.store
       .list()
       .filter((binding) => binding.enabled && binding.source === 'gesture')
     const normalized = String(directions ?? '').replace(/\s+/g, '')
+
+    const exact = candidates.filter(
+      (binding) => binding.gesture && binding.gesture.dirs === normalized && !binding.gesture.modifier
+    )
+    if (exact.length) {
+      const records = await this.execute(exact, { source: 'gesture', pattern: normalized, directions: normalized, score: 1 })
+      this.openSessionIfNeeded(exact)
+      return records
+    }
+
     const best = matchPattern(normalized, candidates.map((binding) => binding.pattern), GESTURE_THRESHOLD)
     if (!best) return this.execute([], { source: 'gesture', pattern: normalized })
     const matched = candidates.filter((binding) => binding.pattern === best.pattern)
-    return this.execute(matched, { source: 'gesture', pattern: best.pattern, directions: normalized, score: best.score })
+    const records = await this.execute(matched, { source: 'gesture', pattern: best.pattern, directions: normalized, score: best.score })
+    this.openSessionIfNeeded(matched)
+    return records
   }
 
   private async execute(

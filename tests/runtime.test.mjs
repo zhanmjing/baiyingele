@@ -1507,3 +1507,54 @@ test('surface.gesture_recorder：run 要给出 save/discard 意图和冲突缺�
   assert.ok(!bad.intents.includes('save'))
   assert.ok(bad.gaps.some((g) => g.slot === 'pattern'), '冲突要体现在 gaps 里')
 })
+
+// ── 派发路径：精确三元组优先，模糊兜底 ───────────────────────
+test('triggerService：三元组精确匹配优先于模糊匹配', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-prec-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const ran = []
+  const pointStore = {
+    instance: () => ({ id: 'point.key_send.copy@r1' }),
+    run: async () => {
+      ran.push('copy')
+      return { status: 'ok', output: 'ok' }
+    }
+  }
+  const service = new TriggerService({ store, pointStore: () => pointStore, lineStore: () => pointStore, onFired: () => {} })
+
+  // 一条精确三元组
+  const added = service.add({ source: 'gesture', pattern: '↑', targetKind: 'point', targetId: 'point.key_send.copy@r1', name: '精确' })
+  assert.strictEqual(added.ok, true, 'binding add should succeed')
+  const out = await service.dispatchGestureDirections('↑')
+  assert.strictEqual(out.length >= 1, true, '精确匹配应命中')
+  assert.strictEqual(out[0].status, 'ok')
+  assert.deepStrictEqual(ran, ['copy'])
+})
+
+test('triggerService：needsSession 的绑定触发后开会话，滚轮能被接管', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-sess-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const pointStore = {
+    instance: () => ({ id: 'point.audio_volume.vol_up@r1' }),
+    run: async () => ({ status: 'ok', output: 'ok' })
+  }
+  const service = new TriggerService({ store, pointStore: () => pointStore, lineStore: () => pointStore, onFired: () => {} })
+
+  const added2 = service.add({ source: 'gesture', pattern: '↓→', targetKind: 'point', targetId: 'point.audio_volume.vol_up@r1', name: '音量', needsSession: true })
+  assert.strictEqual(added2.ok, true)
+  assert.strictEqual(service.activeSession(), null, '还没触发时没有会话')
+
+  await service.dispatchGestureDirections('↓→')
+  assert.ok(service.activeSession(), 'needsSession 的绑定触发后必须开会话')
+
+  // 滚轮被接管
+  assert.strictEqual(service.feedSessionEvent('wheel-forward'), 'delivered')
+  assert.strictEqual(service.feedSessionEvent('x1'), 'not-observed', '没声明的事件不送')
+
+  // 会话结束后滚轮回到普通流程
+  service.activeSession() && service.feedSessionEvent('wheel-backward')
+})
