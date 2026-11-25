@@ -1020,7 +1020,11 @@ async function main() {
   assert.strictEqual(ldrList.length, 1, '同 pattern 只能有一条')
   assert.strictEqual(ldrList[0].targetId, TRIGGER_TARGET, '应覆盖成新目标')
   assert.strictEqual(ldrList[0].name, '改绑')
-  assert.strictEqual(ldrList[0].id, 'gesture:LDR')
+  // 绑定 id 现在是三元组（v3）：旧版是 'gesture:LDR'，扁平方向串会让
+  // 「右键+LDR」和「右键+滚轮前+LDR」共用一个 id。加断言防止回退。
+  assert.strictEqual(ldrList[0].id, 'gesture:right:LDR')
+  assert.strictEqual(ldrList[0].gesture.button, 'right', '三元组要带上按钮')
+  assert.strictEqual(ldrList[0].gesture.dirs, 'LDR', '三元组要带方向串')
 
   assert.strictEqual(triggerService.remove(hotBinding.binding.id), true)
   assert.strictEqual(triggerService.remove(gestBinding.binding.id), true)
