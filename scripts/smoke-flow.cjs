@@ -1022,7 +1022,9 @@ async function main() {
   assert.strictEqual(ldrList[0].name, '改绑')
   // 绑定 id 现在是三元组（v3）：旧版是 'gesture:LDR'，扁平方向串会让
   // 「右键+LDR」和「右键+滚轮前+LDR」共用一个 id。加断言防止回退。
-  assert.strictEqual(ldrList[0].id, 'gesture:right:←↓→')
+  // 绑定 id 现在带应用作用域后缀（@global / @<exe>）：
+  // 不带的话同一手势在两个应用里会撞成一条绑定，迁移时实测丢 5 条
+  assert.strictEqual(ldrList[0].id, 'gesture:right:←↓→@global')
   assert.strictEqual(ldrList[0].gesture.button, 'right', '三元组要带上按钮')
   assert.strictEqual(ldrList[0].gesture.dirs, '←↓→', '三元组要带方向串')
 

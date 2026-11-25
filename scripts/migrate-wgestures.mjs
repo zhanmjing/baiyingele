@@ -194,7 +194,9 @@ for (const scope of scopes) {
       const targetExists = realInstances.has(instanceId)
       bindings.push({
         ...base,
-        id: `gesture:${triple.button}:${triple.dirs}:${triple.modifier ?? ''}`,
+        // 绑定 id 必须带作用域：不同应用的同一手势是两条不同的绑定，
+        // 不带作用域会撞成一条，70 条里丢 5 条。
+        id: `gesture:${triple.button}:${triple.dirs}:${triple.modifier ?? ''}@${scopeSlug}`,
         targetKind: mapped.kind,
         targetId: instanceId,
         targetClass: classId,

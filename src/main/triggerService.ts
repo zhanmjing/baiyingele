@@ -138,9 +138,14 @@ export class TriggerService {
     if (input.source === 'gesture' && !triple) {
       return { ok: false, message: `手势三元组无法解析：${input.pattern}` }
     }
+    // 手势绑定的身份 = 三元组 + 应用作用域。
+    // 只带三元组的话，同一手势在两个应用里会撞成一条绑定（迁移时实测丢 5 条）。
+    const scopeTag = input.appScope?.exePath
+      ? `@${String(input.appScope.exePath).replace(/[^a-zA-Z0-9]/g, '_').slice(-24)}`
+      : '@global'
     const bindingId =
       input.source === 'gesture' && triple
-        ? `gesture:${formatGestureKey(triple)}`
+        ? `gesture:${formatGestureKey(triple)}${scopeTag}`
         : `${input.source}:${pattern}→${input.targetId}`
     const binding = this.deps.store.upsert({
       id: bindingId,
