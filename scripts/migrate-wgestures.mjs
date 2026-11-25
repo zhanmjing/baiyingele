@@ -26,8 +26,24 @@ import { fileURLToPath } from 'node:url'
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const SRC = join(ROOT, 'docs/wgestures-1.8.5.0.gestures.json')
 const OUT = join(ROOT, '.tmp/wgestures-migrated.json')
+const CATALOG = join(ROOT, 'src/shared/generatedFullCatalogs.json')
 
-const DIRS = ['U', 'UR', 'R', 'DR', 'D', 'DL', 'L', 'UL']
+/**
+ * 目录里真实存在的实例 id。
+ *
+ * 为什么必须核对：WGestures 把命令参数内联在命令对象里
+ * （keys / filePath / url），我们的绑定指向**预先配置好的实例**。
+ * 所以迁移不可能直接复用现有实例 —— 每个绑定通常都需要一个新实例。
+ * 不核对就会产出一堆指向不存在实例的绑定，add() 全部被拒。
+ */
+const catalog = JSON.parse(readFileSync(CATALOG, 'utf8'))
+const realInstances = new Set(
+  ['point', 'line'].flatMap((layer) => catalog[layer].flatMap((cls) => cls.instances.map((i) => i.id)))
+)
+const instanceClassOf = (id) => id.split('.').slice(0, 2).join('.')
+
+// 箭头记法，与 WGestures Gesture.dirs[] 索引一一对应（0=↑ … 7=↖）
+const DIRS = ['↑', '↗', '→', '↘', '↓', '↙', '←', '↖']
 const BUTTONS = { 0: null, 1: 'right', 2: 'middle', 4: 'x1', 8: 'x2' }
 const MODIFIERS = {
   1: 'wheel-forward', 2: 'wheel-backward', 4: 'middle-down',
@@ -77,6 +93,7 @@ const bindings = []
 const pending = []
 const byCommand = {}
 let total = 0
+let missingTargets = 0
 
 const scopes = [{ name: '(Global)', exePath: null, intents: data.Global.GestureIntents }]
 for (const app of Object.values(data.Apps)) {
@@ -101,15 +118,19 @@ for (const scope of scopes) {
     }
 
     if (triple && mapped.capable) {
+      const targetExists = realInstances.has(mapped.instance)
       bindings.push({
         ...base,
         id: `gesture:${triple.button}:${triple.dirs}:${triple.modifier ?? ''}`,
         targetKind: mapped.kind,
         targetId: mapped.instance,
+        targetClass: instanceClassOf(mapped.instance),
+        targetExists,
         detail: mapped.detail,
         needsSession: mapped.needsSession === true
       })
       row.migratable += 1
+      if (!targetExists) missingTargets += 1
     } else {
       pending.push({ ...base, reason: !triple ? '三元组无法解析' : mapped.needs })
       row.blocked += 1
@@ -119,7 +140,13 @@ for (const scope of scopes) {
 }
 
 console.log('=== WGestures 备份迁移报告 ===\n')
-console.log(`总手势 ${total} 条 · 能落地 ${bindings.length} · 被阻塞 ${pending.length}\n`)
+console.log(`总手势 ${total} 条 · 能落地 ${bindings.length} · 被阻塞 ${pending.length}`)
+if (missingTargets) {
+  console.log(`\n⚠ 能落地的 ${bindings.length} 条里，${missingTargets} 条的目标实例还不存在`)
+  console.log('  WGestures 把命令参数内联在命令对象里，我们的绑定指向预配置实例，')
+  console.log('  所以每条通常都要先建一个点层实例（参数见 bindings[].detail）。')
+}
+console.log('')
 console.log('按作用域：')
 for (const s of scopeRows) {
   console.log(`  ${s.name.padEnd(10)} ${String(s.total).padStart(2)} 条  能落地 ${String(s.migratable).padStart(2)}  阻塞 ${s.blocked}`)

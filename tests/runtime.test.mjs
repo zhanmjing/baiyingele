@@ -10,6 +10,7 @@
  */
 import test from 'node:test'
 import assert from 'node:assert'
+import { execFileSync } from 'node:child_process'
 import { mkdtempSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -1171,4 +1172,25 @@ test('算法：首段 8 向、后续 4 向（照 WGestures）', () => {
   const with8 = g.recognize(diag, { switchVotes: 1, dragSuppressPx: 0 })
   assert.strictEqual(with8.valid, true)
   assert.ok(['↗','↑','→'].some((a) => with8.directions.includes(a)), `实际 ${with8.directions}`)
+})
+
+test('迁移脚本：产出必须自洽（箭头串 + 目标存在性标出）', () => {
+  const out = execFileSync(process.execPath, [join(process.cwd(), 'scripts/migrate-wgestures.mjs'), '--write'], { encoding: 'utf8' })
+  assert.match(out, /目标实例还不存在/, '必须如实报出目标缺口，不能只报「能落地 64」')
+  assert.match(out, /71 条/, '必须报总数')
+
+  const migrated = JSON.parse(readFileSync(join(process.cwd(), '.tmp/wgestures-migrated.json'), 'utf8'))
+  const s = load('main/triggerStore.js')
+  assert.ok(migrated.bindings.length > 0)
+
+  for (const b of migrated.bindings) {
+    assert.ok(b.gesture, `${b.id} 缺三元组`)
+    assert.ok(s.DIRS_PATTERN.test(b.gesture.dirs), `${b.id} 的 dirs 不是箭头串：${JSON.stringify(b.gesture.dirs)}`)
+    assert.strictEqual(typeof b.targetExists, 'boolean', `${b.id} 必须标明目标是否存在`)
+
+    const spec = `${b.gesture.button}:${b.gesture.dirs}${b.gesture.modifier ? ':' + b.gesture.modifier : ''}`
+    const parsed = s.parseGestureKey(spec)
+    assert.ok(parsed, `${b.id} 无法解析：${spec}`)
+    assert.strictEqual(s.gestureKeyOf(parsed), s.gestureKeyOf(b.gesture), `${b.id} 身份键往返不一致`)
+  }
 })

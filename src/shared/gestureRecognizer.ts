@@ -1,4 +1,4 @@
-import { directionsToArrows, type Direction } from './gestureNotation'
+import { DIR_ARROW, type Direction } from './gestureNotation'
 
 /**
  * 手势识别（纯函数，渲染层与主进程共用）。
@@ -134,7 +134,10 @@ export function directionOf(dx: number, dy: number): string {
   return 'UR'
 }
 
-/** 轨迹 → 方向序列（已降采样 + 去噪 + 去重） */
+/**
+ * 轨迹 → 方向序列（已降采样 + 去噪 + 去重），**箭头记法**。
+ * 字母 'UL' 有歧义（一段斜左上 / 先上后左），箭头全是单码位。
+ */
 export function toDirectionSequence(points: GesturePoint[], options: RecognizerOptions = {}): string[] {
   const config = { ...DEFAULT_OPTIONS, ...options }
   const total = pathLength(points)
@@ -171,7 +174,8 @@ export function toDirectionSequence(points: GesturePoint[], options: RecognizerO
   }
   if (raw.length && run >= config.switchVotes) stable.push(raw[raw.length - 1])
 
-  return stable.filter((direction, index) => index === 0 || stable[index - 1] !== direction)
+  const deduped = stable.filter((direction, index) => index === 0 || stable[index - 1] !== direction)
+  return deduped.map((direction) => DIR_ARROW[direction as Direction] ?? '?')
 }
 
 /** 轨迹 → 识别结果（含无效原因） */
@@ -192,8 +196,7 @@ export function recognize(points: GesturePoint[], options: RecognizerOptions = {
   }
 
   const sequence = toDirectionSequence(points, config)
-  // 输出转箭头记法 —— 存储和比较都用它
-  const directions = directionsToArrows(sequence as Direction[])
+  const directions = sequence.join('')
   if (!directions) return { directions: '', valid: false, reason: 'no-direction', length, durationMs }
 
   // 拖拽抑制：单向 + 长距离 = 大概率在拖东西，不是画手势
