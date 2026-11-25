@@ -41,7 +41,7 @@
   "group": "perceive",
   "version": "1.0.0",
   "status": "active",
-  "effect": "A1",
+  "effect": "L0",
   "priority": "P1",
   "summary": "suggestion → point/line/body · 自主度上限 A1"
 }

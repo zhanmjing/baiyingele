@@ -41,7 +41,7 @@
   "group": "evolve",
   "version": "1.0.0",
   "status": "active",
-  "effect": "A2",
+  "effect": "L0",
   "priority": "P1",
   "summary": "defaults/layout → point/surface · 自主度上限 A2"
 }

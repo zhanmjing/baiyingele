@@ -43,6 +43,15 @@ export interface LayerClassSeed {
   description: string
   /** 场层专用：这个 FieldClass 的落点。设计上不允许为空 */
   landing?: string
+  /**
+   * 场层专用：自主度上限 A0/A1/A2。
+   *
+   * 和 `effect` 是**两个正交的轴**：
+   *   effect    副作用等级 L0/L1/L2 —— 这个能力会不会改变世界
+   *   autonomy  自主度上限 A0/A1/A2 —— 允许它自己决定到哪一步
+   * 一个能力可以同时「无副作用（L0）」和「允许自动应用（A2）」。
+   */
+  autonomy?: string
   params: LayerParam[]
   instances: LayerInstanceSeed[]
 }

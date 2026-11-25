@@ -113,6 +113,9 @@ function transformFlatLayer(source, { deriveInstanceId } = {}) {
     priority: item.priority,
     effect: item.effect,
     status: normalizeStatus(item.status),
+    // autonomy 是场层专属的「自主度上限」，和 effect（副作用等级）是两个正交的轴。
+    // 之前这里没传，导致运行时只能拿 effect 当自主度用（decideLanding 的 bug）。
+    ...(item.autonomy ? { autonomy: String(item.autonomy) } : {}),
     description: item.summary,
     params: [{ ...DETAIL_PARAM }],
     instances: item.instances.map((instance) => ({
@@ -176,7 +179,10 @@ function transformFieldLayer(source) {
       name: item.name ?? item.id.replace(/^field\./, ''),
       family: item.family,
       priority: item.priority,
-      effect: item.autonomy,
+      // 这里原来写的是 effect: item.autonomy —— 把自主度塞进了副作用等级字段，
+      // 于是运行时只能拿 effect 当自主度用。两个轴必须分开传。
+      effect: item.effect,
+      autonomy: item.autonomy,
       landing: item.landing,
       status: normalizeStatus(item.status),
       description: item.summary ?? `${item.output} → ${item.landing} · 自主度上限 ${item.autonomy}`,

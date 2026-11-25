@@ -41,7 +41,7 @@
   "group": "perceive",
   "version": "1.0.0",
   "status": "active",
-  "effect": "A0",
+  "effect": "L0",
   "priority": "P0",
   "summary": "context snapshot → all · 自主度上限 A0"
 }

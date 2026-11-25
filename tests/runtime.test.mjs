@@ -410,3 +410,40 @@ test('surfaceRuntime：16 个面层类都有结构化槽位，不再报「没结
   assert.strictEqual(byId['surface.wizard'].blocks.length, 3)
   assert.deepStrictEqual(byId['surface.wizard'].blocks.map((b) => b.label), ['选模板', '绑槽位', '试运行'])
 })
+
+// ── 两个正交的轴：effect（副作用）vs autonomy（自主度）────────────
+test('目录：effect 是 L 码、autonomy 是 A 码，两个轴不许混', () => {
+  const all = ['point', 'line', 'surface', 'body', 'field'].flatMap((layer) => catalogs[layer] ?? [])
+  const badEffect = all.filter((c) => !/^L[0-3]$/.test(String(c.effect ?? ''))).map((c) => `${c.id}=${c.effect}`)
+  assert.deepStrictEqual(badEffect, [], `effect 必须是 L0-L3：${badEffect.join(',')}`)
+
+  const fieldMissingAutonomy = (catalogs.field ?? []).filter((c) => !c.autonomy).map((c) => c.id)
+  assert.deepStrictEqual(fieldMissingAutonomy, [], `场层类必须有 autonomy：${fieldMissingAutonomy.join(',')}`)
+
+  const nonFieldWithAutonomy = ['point', 'line', 'surface', 'body']
+    .flatMap((layer) => (catalogs[layer] ?? []).filter((c) => c.autonomy).map((c) => c.id))
+  assert.deepStrictEqual(nonFieldWithAutonomy, [], `非场层不该有 autonomy：${nonFieldWithAutonomy.join(',')}`)
+
+  const badAutonomy = (catalogs.field ?? []).filter((c) => !/^A[0-2]$/.test(String(c.autonomy))).map((c) => `${c.id}=${c.autonomy}`)
+  assert.deepStrictEqual(badAutonomy, [], `autonomy 必须是 A0-A2：${badAutonomy.join(',')}`)
+
+  // 关键性质：两个轴确实在独立变化 —— 全部 effect=L0 但 autonomy 三种都有
+  const distinctAutonomy = new Set((catalogs.field ?? []).map((c) => c.autonomy))
+  assert.deepStrictEqual([...distinctAutonomy].sort(), ['A0', 'A1', 'A2'], 'litmus：场层 autonomy 应该三种都有')
+  const distinctEffect = new Set((catalogs.field ?? []).map((c) => c.effect))
+  assert.deepStrictEqual([...distinctEffect], ['L0'], '场层能力只计算不行动，effect 全为 L0')
+})
+
+test('decideLanding：必须吃 autonomy，不吃 effect', () => {
+  const { decideLanding } = load('shared/fieldLanding.js')
+  // A2 可自动应用
+  assert.strictEqual(decideLanding('A2', { layer: 'point', target: 'params', ref: 'x' }).action, 'apply')
+  // A0/A1 只出草稿
+  assert.strictEqual(decideLanding('A0', { layer: 'point', target: 'params', ref: 'x' }).action, 'draft')
+  assert.strictEqual(decideLanding('A1', { layer: 'point', target: 'params', ref: 'x' }).action, 'draft')
+  // A3 禁止
+  assert.strictEqual(decideLanding('A3', { layer: 'point', target: 'params', ref: 'x' }).action, 'refuse')
+  // 传 L 码必须被拒绝，而不是悄悄当成 A3 —— 这就是当年能跑的那个 bug 的护栏
+  assert.strictEqual(decideLanding('L0', { layer: 'point', target: 'params', ref: 'x' }).action, 'refuse', 'L 码必须按未知自主度拒绝')
+  assert.match(decideLanding('L0', { layer: 'point', target: 'params', ref: 'x' }).reason, /未知自主度/)
+})

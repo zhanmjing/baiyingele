@@ -172,7 +172,10 @@ app.whenReady().then(() => {
     const outcome = (await runCapability(context)) ?? (await mockRunner(context))
     if (!outcome.landing) return outcome
 
-    const decision = decideLanding(context.pointClass.effect, outcome.landing)
+    // 必须用 autonomy，不能用 effect：
+      // effect 是副作用等级（L0-L2），autonomy 才是自主度（A0-A2）。
+      // 之前传 effect 能跑，纯粹因为场层类的 effect 里恰好存着 A 码。
+      const decision = decideLanding(context.pointClass.autonomy ?? 'A0', outcome.landing)
     const landed = await applyLanding({
       decision,
       landing: outcome.landing,

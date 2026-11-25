@@ -5,7 +5,7 @@
  * 这和 surface 层的 GestureBinding 是同构的（pattern → target），
  * 区别是这里的 pattern 是键盘组合，且由主进程在钩子命中时直接派发。
  */
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 
 export type TriggerTargetKind = 'point' | 'line'
@@ -67,6 +67,13 @@ function dedupeGestures(bindings: TriggerBinding[]): TriggerBinding[] {
 }
 
 export class TriggerStore {
+  /**
+   * 状态文件损坏时留档的路径。
+   *
+   * 以前这里是 `catch { return this.seedState() }` —— 文件坏了就悄悄回到种子数据，
+   * 用户自建的实例没了，界面上看不出发生过什么。损坏必须留痕。
+   */
+  private corruptBackup: string | null = null
   private readonly filePath: string
   private state: TriggerState
 

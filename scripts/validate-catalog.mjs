@@ -235,6 +235,30 @@ for (const section of settings.sections ?? []) {
   }
 }
 
+// ── effect 与 autonomy 是两个正交的轴，不许混 ──
+// 历史上场层把 A0/A1/A2 存在 effect 里，导致 decideLanding 拿 effect 当自主度用。
+for (const layer of LAYERS) {
+  for (const cls of catalogs[layer] ?? []) {
+    const effect = String(cls.effect ?? '')
+    if (!/^L[0-3]$/.test(effect)) {
+      hard.push(`${cls.id} 的 effect 必须是 L0-L3，实际是 ${JSON.stringify(cls.effect)}`)
+    }
+    if (cls.autonomy !== undefined) {
+      if (layer !== 'field') hard.push(`${cls.id} 不属于场层，不该有 autonomy`)
+      if (!/^A[0-3]$/.test(String(cls.autonomy))) {
+        hard.push(`${cls.id} 的 autonomy 必须是 A0-A3，实际是 ${JSON.stringify(cls.autonomy)}`)
+      }
+      if (String(cls.autonomy) === 'A3') {
+        // A3 是禁止自主执行的档位，不应该有类默认落在这一档
+        hard.push(`${cls.id} 的 autonomy 是 A3（禁止自主），不该出现在目录里`)
+      }
+    }
+  }
+}
+for (const cls of catalogs.field ?? []) {
+  if (!cls.autonomy) hard.push(`${cls.id} 是场层类，必须有 autonomy`)
+}
+
 stats.classes = classTotal
 stats.instances = instanceTotal
 stats.params = paramTotal

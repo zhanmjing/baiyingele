@@ -8,7 +8,7 @@
  * 持久化格式保持 `{ version: 1, instances, runs }`，与旧 state 文件完全兼容。
  */
 import { stringParams } from '../shared/layerTypes'
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import type { PointClassSeed, PointInstanceRecord, PointRunRecord } from '../shared/pointCatalog'
 import type { LayerDef } from './layerRegistry'
@@ -85,6 +85,13 @@ export const mockRunner: InstanceRunner = ({ def, instance }) => ({
 })
 
 export class LayerStore {
+  /**
+   * 状态文件损坏时留档的路径。
+   *
+   * 以前这里是 `catch { return this.seedState() }` —— 文件坏了就悄悄回到种子数据，
+   * 用户自建的实例没了，界面上看不出发生过什么。损坏必须留痕。
+   */
+  private corruptBackup: string | null = null
   private readonly filePath: string
   private readonly def: LayerDef
   private readonly runner: InstanceRunner
@@ -155,7 +162,16 @@ export class LayerStore {
         })),
         runs: parsed.runs
       }
-    } catch {
+    } catch (error) {
+      // 把坏文件改名留档，再回退到种子数据 —— 至少数据还在磁盘上
+      try {
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+        const backup = `${this.filePath}.corrupt-${stamp}`
+        copyFileSync(this.filePath, backup)
+        this.corruptBackup = backup
+      } catch {
+        this.corruptBackup = null
+      }
       return this.seedState()
     }
   }
