@@ -248,7 +248,7 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'point.key_trigger': 'uiohook-napi 全局热键监听（起钩子后常驻，不同于一次性能力）',
   'point.notify_toast': 'Electron Notification',
   'point.ocr_read': '视觉模型 OCR：支持截图 / 本地图片 / 图片 URL，复用 provider 降级链',
-  'point.open': 'Electron shell.openExternal / openPath；带 app 时走 spawn',
+  'point.open': '打开应用 / 文件 / 文件夹 / 网址；一个路径交给系统 shell 决定',
   'point.screen_capture': 'desktopCapturer 枚举屏幕源',
   'point.send_keys': 'SendKeys 方言解析 + 发送（^v{enter} / %{TAB} / {sleep 500}）',
   'point.shell_exec': '执行命令行，支持 %WG_PROCID% / %WG_EXE% / %WG_APP% 变量替换',

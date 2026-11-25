@@ -2250,3 +2250,17 @@ test('point.key_send：没给 target 时必须报告「发给了哪个窗口」'
   // 给了 target 时仍走 focusWindow
   assert.match(src, /focusWindow\(resolved\.window\.hwnd\)/, '给了 target 要先聚焦')
 })
+
+test('point.open：一个路径交给 shell，不用手动指定 kind', () => {
+  const src = readFileSync(join(process.cwd(), 'src/main/classes/point/open.ts'), 'utf8')
+  // 照 WGestures OpenFileCommand：UseShellExecute = true，不判断类型
+  assert.match(src, /shell\.openPath\(target\)/, '应用/文件/文件夹都走 openPath（= ShellExecute）')
+  assert.match(src, /\/\^https\?:\\\/\\\/\/i\.test\(rawTarget\)/, '只把 http(s) 分流去 openExternal')
+  // 参数名要宽容：target / path / file / url / app 都认
+  assert.match(src, /pick\('target', 'path', 'file', 'url', 'app'\)/, '参数名要宽容')
+  // 路径必须先校验存在，否则 openPath 会"成功"但什么都不发生
+  assert.match(src, /statSync\(target\)/, '要先 stat 确认存在')
+  assert.match(src, /路径不存在或不可访问/, '不存在必须报 warn，不能假成功')
+  // 分类只用于提示，不用于分支
+  assert.match(src, /kind === 'app' \? '应用'/, '分类只影响提示文案')
+})

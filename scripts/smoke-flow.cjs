@@ -81,6 +81,7 @@ const { LayerStore } = require('../.tmp/smoke/main/layerStore.js')
 const { createLineRunner, orderNodes, parseLineArgs } = require('../.tmp/smoke/main/lineRuntime.js')
 const { classIdOf, instanceIdOf, isExprRef } = require('../.tmp/smoke/shared/atomId.js')
 const { CAPABILITIES } = require('../.tmp/smoke/main/capabilities/index.js')
+const { expandPath } = require('../.tmp/smoke/main/capabilities/_shared.js')
 const { decideLanding } = require('../.tmp/smoke/shared/fieldLanding.js')
 const { applyLanding } = require('../.tmp/smoke/main/fieldRuntime.js')
 const { UndoJournal } = require('../.tmp/smoke/main/undoJournal.js')
@@ -602,9 +603,21 @@ async function main() {
   assert.strictEqual(badUrl.status, 'warn', '非 http(s) 必须 warn')
   assert.strictEqual(shellCalls.length, 1, '非法 URL 不能触达 shell')
 
-  const openFolder = await CAPABILITIES['point.open'](ctx('point.open', { kind: 'folder', target: '%USERPROFILE%\\Downloads' }))
+  // point.open 现在会 stat 校验路径存在（否则 openPath 会"成功"但什么都不发生）。
+  // 所以这里必须用一个真实存在的目录，不能再编一个 C:\Users\smoke\Downloads。
+  const openFolder = await CAPABILITIES['point.open'](ctx('point.open', { target: process.cwd() }))
   assert.strictEqual(openFolder.status, 'ok', `打开文件夹应成功: ${openFolder.output}`)
-  assert.deepStrictEqual(shellCalls.at(-1), ['openPath', 'C:\\Users\\smoke\\Downloads'], '%VAR% 应被展开')
+  assert.deepStrictEqual(shellCalls.at(-1), ['openPath', process.cwd()], '路径应原样交给 openPath')
+
+  // %VAR% 展开：冒烟环境把 USERPROFILE 打成了不存在的 C:\Users\smoke，
+  // 而 open 现在要求路径真实存在，所以这里只验展开本身，不验能否打开。
+  const expanded = expandPath('%USERPROFILE%\\Downloads')
+  assert.ok(!expanded.includes('%'), `%VAR% 应被展开，实际 ${expanded}`)
+  assert.ok(/^[A-Za-z]:\\/.test(expanded), `展开后应是绝对路径，实际 ${expanded}`)
+
+  // 不存在的路径必须报 warn，不能假成功
+  const missing = await CAPABILITIES['point.open'](ctx('point.open', { target: 'C:\\__definitely_not_here__\\x.exe' }))
+  assert.strictEqual(missing.status, 'warn', '不存在的路径必须报 warn')
 
   const noTarget = await CAPABILITIES['point.open'](ctx('point.open', { kind: 'folder', target: '' }))
   assert.strictEqual(noTarget.status, 'warn', '缺 target 必须 warn')
