@@ -69,6 +69,17 @@ export interface SlotReadResult {
  */
 export type SlotReader = (source: SlotSource) => Promise<SlotReadResult>
 
+/**
+ * 面层实现单元的输入。
+ * 一类一个文件之后，每个面的 run 都收这个、返回 RenderResult。
+ * 特化点在于「怎么把槽位变成具体的渲染树」。
+ */
+export interface SurfaceClassInput {
+  instanceId: string
+  params: SurfaceParamsLike
+  deps: SurfaceDeps
+}
+
 export interface SurfaceDeps {
   /** 取数器；没注入时所有槽位都是 missing，且原因明确 */
   read?: SlotReader

@@ -23,6 +23,7 @@ const ENTRIES = [
   'src/main/surfaceRuntime.ts',
   'src/main/fieldRuntime.ts',
   'src/main/capabilities/index.ts',
+  'src/main/classes/index.ts',
   'src/main/capabilities/_win32.ts',
   'src/main/capabilities/_com.ts',
   'src/shared/fieldLanding.ts',

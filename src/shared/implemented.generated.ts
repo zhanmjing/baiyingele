@@ -36,7 +36,24 @@ export const IMPLEMENTED_CLASS_IDS = [
   'point.translate_text',
   'point.ui_form',
   'point.window_control',
-  'point.window_query'
+  'point.window_query',
+  'surface.canvas',
+  'surface.card_grid',
+  'surface.command_palette',
+  'surface.dashboard',
+  'surface.dialog',
+  'surface.diff',
+  'surface.form',
+  'surface.hud',
+  'surface.inspector',
+  'surface.metric_card',
+  'surface.notification',
+  'surface.panel',
+  'surface.run_history',
+  'surface.table',
+  'surface.tray_menu',
+  'surface.tree',
+  'surface.wizard'
 ] as const
 
 export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string> = {
@@ -76,5 +93,22 @@ export const IMPL_SUMMARY: Record<(typeof IMPLEMENTED_CLASS_IDS)[number], string
   'point.translate_text': '翻译文本；provider 链 本地 → 网络 → API 降级，key 走环境变量',
   'point.ui_form': '向界面要用户输入并等待答复；取消/超时都返回明确状态，绝不当成成功',
   'point.window_control': 'koffi 控制窗口：focus / move / topmost / close（focus 用 AttachThreadInput 绕前台锁）',
-  'point.window_query': 'koffi 直调 user32 枚举窗口（微秒级）；koffi 不可用时回退 PowerShell'
+  'point.window_query': 'koffi 直调 user32 枚举窗口（微秒级）；koffi 不可用时回退 PowerShell',
+  'surface.canvas': '画布：槽位是图层，要能平移/缩放/选中',
+  'surface.card_grid': '卡片墙：槽位是卡片，每张有图标+标题+跳转目标',
+  'surface.command_palette': '命令面板：槽位是结果分组，输入即过滤，选中即执行',
+  'surface.dashboard': '仪表盘：槽位是指标卡，值来自 run 聚合',
+  'surface.dialog': '对话框：槽位是动作按钮；主按钮只能有一个，危险动作要标红',
+  'surface.diff': '差异对比：槽位是差异面板，两侧来自不同版本的 registry',
+  'surface.form': '表单：每个槽位是一个可编辑字段，值来自 params；改完要能提交并校验',
+  'surface.hud': '浮层：槽位是浮层内容，不抢焦点，可拖动',
+  'surface.inspector': '检查器：槽位是只读分区，内容随选中对象切换',
+  'surface.metric_card': '指标卡：槽位是同一指标的不同呈现（数值/趋势/阈值）',
+  'surface.notification': '通知：槽位是消息体+动作，要能自动消失',
+  'surface.panel': '面板容器：槽位是承载的页面；要管挂载位/宽度/折叠状态',
+  'surface.run_history': '运行历史：槽位是时间线，数据来自 run；要能按状态筛',
+  'surface.table': '表格：槽位是列定义，行数据来自 registry；要能排序与分页',
+  'surface.tray_menu': '托盘菜单：槽位是菜单项，层级不超过两层',
+  'surface.tree': '树：槽位是层级节点，来自 registry；要能展开/折叠',
+  'surface.wizard': '向导：槽位是有序步骤，要能前进/后退；未完成的步骤不能跳过'
 }

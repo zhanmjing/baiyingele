@@ -546,3 +546,31 @@ test('surfaceRuntime.resolveSlots：static / params 本地解析，不依赖注�
   assert.strictEqual(external[0].status, 'missing')
   assert.match(external[0].reason, /没有注入取数器/)
 })
+
+// ── 一类一实现单元（新轨）──────────────────────────────────────
+test('新轨：每个实现单元的 classId 与注册表键一致，且 summary 有实质内容', () => {
+  const impls = load('main/classes/index.js').CLASS_IMPLS
+  const keys = Object.keys(impls)
+  assert.ok(keys.length >= 18, `新轨至少该有 18 个，实际 ${keys.length}`)
+
+  for (const [key, impl] of Object.entries(impls)) {
+    assert.strictEqual(impl.classId, key, `注册表键 ${key} 与 impl.classId ${impl.classId} 不一致`)
+    assert.strictEqual(typeof impl.run, 'function', `${key} 缺 run`)
+    assert.ok(impl.summary.length >= 12, `${key} 的 summary 太短：${impl.summary}`)
+    assert.ok(!impl.summary.includes('TODO'), `${key} 的 summary 还是 TODO`)
+  }
+
+  const surfaceIds = catalogs.surface.map((c) => c.id).sort()
+  const covered = surfaceIds.filter((id) => impls[id])
+  assert.deepStrictEqual(covered, surfaceIds, `面层有类没有实现单元：${surfaceIds.filter((id) => !impls[id]).join(',')}`)
+})
+
+test('新轨：清单与注册表一致，面层 17 个必须全部进清单', () => {
+  const impls = load('main/classes/index.js').CLASS_IMPLS
+  const manifest = new Set(load('shared/implemented.generated.js').IMPLEMENTED_CLASS_IDS)
+  for (const key of Object.keys(impls)) {
+    assert.ok(manifest.has(key), `注册表里的 ${key} 没进清单`)
+  }
+  const surfaceInManifest = catalogs.surface.filter((c) => manifest.has(c.id))
+  assert.strictEqual(surfaceInManifest.length, catalogs.surface.length, '面层 17 个类必须全部进清单')
+})
