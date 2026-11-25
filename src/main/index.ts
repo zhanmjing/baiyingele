@@ -18,7 +18,7 @@ import { resolveForm, setFormSink } from './classes/point/ui_form'
 import { setRunHistorySource } from './classes/field/observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
-import { createGestureOverlayWindow, sendToOverlay, resizeOverlayToPrimary } from './gestureOverlayWindow'
+import { createGestureOverlayWindow, sendToOverlay, resizeOverlayToPrimary, setOverlayVisible } from './gestureOverlayWindow'
 import { computeTrail } from './classes/surface/gesture_trail'
 import { computeHint } from './classes/surface/gesture_hint'
 import { lineProfiles } from '../shared/lineCatalog'
@@ -220,7 +220,8 @@ app.whenReady().then(() => {
       if (!force && now - lastTrailSent < 33) return
       lastTrailSent = now
       const trail = computeTrail({ points: points as never, directions, recognized, instanceId: 'surface.gesture_trail.default@r1', params: {}, deps: { hasClass: () => true, declaredRegionKeys: () => [] } })
-      // 优先发到独立透明浮层；没起来才回落主窗口（这样开发时也能看见）
+      // 有轨迹才显示浮层，空轨迹就藏起来（照 WGestures 的 Visible 开关）
+      setOverlayVisible(trail.visible)
       if (!sendToOverlay('gesture:trail', trail)) mainWindow.webContents.send('gesture:trail', trail)
     }
 

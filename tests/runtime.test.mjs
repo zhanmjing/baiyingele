@@ -1729,19 +1729,30 @@ test('surface.gesture_trail：识别成功后换笔，空轨迹不可见', () =>
     { x: -80, y: 40, t: 60 }, { x: -80, y: 80, t: 80 }
   ]
 
+  // 未识别用待定笔（原码 _alternativePen 橙 rgb(255,120,20)）
   const idle = t.computeTrail({ points: pts, directions: '←↓', recognized: false })
   assert.strictEqual(idle.visible, true)
   assert.strictEqual(idle.recognized, false)
-  assert.strictEqual(idle.pen.color, t.DEFAULT_TRAIL_STYLE.idle.color, '未识别用灰笔')
+  assert.strictEqual(idle.pen.color, '#ff7814', '未识别用 _alternativePen 橙')
 
-  const hit = t.computeTrail({ points: pts, directions: '←↓', recognized: true })
-  assert.strictEqual(hit.recognized, true)
-  assert.strictEqual(hit.pen.color, t.DEFAULT_TRAIL_STYLE.recognized.color, '识别后换绿笔')
-  assert.ok(hit.pen.width > t.DEFAULT_TRAIL_STYLE.idle.width, '识别后更粗')
+  // 识别后按按钮换笔（原码 CanvasWindowGestureView.cs:210）
+  const right = t.computeTrail({ points: pts, directions: '←↓', recognized: true, button: 'right' })
+  assert.strictEqual(right.pen.color, '#32c864', '右键手势用 _mainPen 绿 rgb(50,200,100)')
+
+  const middle = t.computeTrail({ points: pts, directions: '←↓', recognized: true, button: 'middle' })
+  assert.strictEqual(middle.pen.color, '#1496c8', '中键手势用 _middleBtnPen 蓝 rgb(20,150,200)')
+
+  const x1 = t.computeTrail({ points: pts, directions: '←↓', recognized: true, button: 'x1' })
+  assert.strictEqual(x1.pen.color, '#1464c8', 'X 键手势用 _xBtnPen 深蓝 rgb(20,100,200)')
+
+  // 认不出的按钮回退右键色，不能崩
+  const unknown = t.computeTrail({ points: pts, directions: '←↓', recognized: true, button: 'weird' })
+  assert.strictEqual(unknown.pen.color, '#32c864')
 
   // 包围盒够包住所有点
-  assert.strictEqual(hit.bounds.minX, -80)
-  assert.strictEqual(hit.bounds.maxY, 80)
+  assert.strictEqual(right.bounds.minX, -80)
+  assert.strictEqual(right.bounds.maxY, 80)
+  assert.strictEqual(right.recognized, true)
 
   // 空轨迹
   const empty = t.computeTrail({ points: [] })
@@ -1823,4 +1834,30 @@ test('浮层窗口：主进程优先推浮层，回落主窗口', () => {
   assert.match(main, /createGestureOverlayWindow/, '要创建浮层窗口')
   assert.match(main, /sendToOverlay\('gesture:trail'/, '轨迹推给浮层')
   assert.match(main, /sendToOverlay\('gesture:hint'/, '提示推给浮层')
+})
+
+test('浮层窗口：照 CanvasWindow.cs 的样式映射，并补上 backgroundColor', () => {
+  const src = readFileSync(join(process.cwd(), 'src/main/gestureOverlayWindow.ts'), 'utf8')
+
+  // WGestures CreateWindowEx: LAYERED | TOPMOST | TOOLWINDOW
+  // 之后的 NOACTIVATE / TRANSPARENT 分别对应 Electron 的 focusable:false / setIgnoreMouseEvents
+  assert.match(src, /transparent: true/, 'WS_EX_LAYERED ↔ transparent')
+  assert.match(src, /alwaysOnTop: true/, 'WS_EX_TOPMOST ↔ alwaysOnTop')
+  assert.match(src, /skipTaskbar: true/, 'WS_EX_TOOLWINDOW ↔ skipTaskbar')
+  assert.match(src, /focusable: false/, 'WS_EX_NOACTIVATE ↔ focusable:false')
+  assert.match(src, /setIgnoreMouseEvents\(true/, 'WS_EX_TRANSPARENT ↔ setIgnoreMouseEvents')
+
+  // WGestures 用 UpdateLayeredWindow + DIB 走 per-pixel alpha，Electron 没有这个 API
+  assert.match(src, /backgroundColor: '#00000000'/, '必须显式给全透明背景色，否则 Windows 上会画成黑底')
+
+  // WGestures 的 Visible = false：画手势才显示
+  assert.match(src, /overlayReady = true/, '不能 ready 就 show')
+  assert.ok(!/once\('ready-to-show', \(\) => overlay\?\.showInactive\(\)\)/.test(src), '不能在 ready-to-show 里 showInactive')
+  assert.match(src, /export function setOverlayVisible/, '要有显隐开关')
+  assert.match(src, /win\.hide\(\)/, '没手势时要藏起来')
+})
+
+test('主进程：轨迹可见性驱动浮层显隐', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(main, /setOverlayVisible\(trail\.visible\)/, '浮层显隐要跟着轨迹走')
 })

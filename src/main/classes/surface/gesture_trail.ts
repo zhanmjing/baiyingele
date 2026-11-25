@@ -29,14 +29,40 @@ export const specialized = true
 export interface TrailStyle {
   /** 未识别时的笔 */
   idle: { color: string; width: number; opacity: number }
-  /** 识别成功后的笔（对应 _tempMainPen） */
+  /** 识别成功后的笔（对应 WGestures 的 _tempMainPen） */
   recognized: { color: string; width: number; opacity: number }
 }
 
-/** 默认笔：识别前灰细，识别后亮粗。数值是适配值，不是 WGestures 原值。 */
+/**
+ * 笔色**按触发按钮**区分 —— 照 CanvasWindowGestureView.cs:210。
+ *
+ *   if ((args.Button & Right) != 0) _tempMainPen = _mainPen;     rgb(50,200,100)
+ *   else if ((args.Button & X) != 0) _tempMainPen = _xBtnPen;    rgb(20,100,200)
+ *   else                             _tempMainPen = _middleBtnPen; rgb(20,150,200)
+ *
+ * 我第一版编了「灰→绿」，那是错的：颜色不是表示「认没认出来」，
+ * 而是表示「哪个键触发的」。识别与否体现在用哪支笔（idle vs recognized）。
+ */
+export const BUTTON_PEN: Record<string, { color: string; width: number; opacity: number }> = {
+  right: { color: '#32c864', width: 2, opacity: 1 },   // rgb(50,200,100)
+  middle: { color: '#1496c8', width: 2, opacity: 1 },  // rgb(20,150,200)
+  x1: { color: '#1464c8', width: 2, opacity: 1 },      // rgb(20,100,200)
+  x2: { color: '#1464c8', width: 2, opacity: 1 }
+}
+
+/** 待定笔（未识别）：WGestures 的 _alternativePen rgb(255,120,20) */
+export const ALTERNATIVE_PEN = { color: '#ff7814', width: 2, opacity: 1 }
+/** 白边（_borderPen，宽度 ×2.5，alpha 230） */
+export const BORDER_PEN = { color: '#ffffff', width: 5, opacity: 0.9 }
+/** 阴影（_shadowPen，宽度 ×3，alpha 25） */
+export const SHADOW_PEN = { color: '#000000', width: 6, opacity: 0.098 }
+/** 每 DPI 的点数上限：_pathMaxPointCount = 512 * dpiFactor */
+export const MAX_POINTS_BASE = 512
+
+/** 旧导出保留：等价于「右键 + 未识别 / 右键 + 已识别」 */
 export const DEFAULT_TRAIL_STYLE: TrailStyle = {
-  idle: { color: '#9aa4b2', width: 3, opacity: 0.75 },
-  recognized: { color: '#4ade80', width: 5, opacity: 1 }
+  idle: ALTERNATIVE_PEN,
+  recognized: BUTTON_PEN.right
 }
 
 export interface TrailRender {
@@ -59,14 +85,18 @@ export interface TrailInput extends SurfaceClassInput {
   points?: GesturePoint[]
   directions?: string
   recognized?: boolean
+  /** 触发按钮；决定识别后用什么颜色（照原码按按钮选笔） */
+  button?: string
   style?: Partial<TrailStyle>
 }
 
 export function computeTrail(input: TrailInput): TrailRender {
   const points = input.points ?? []
+  // 识别后的笔由按钮决定；认不出来就回退右键色
+  const buttonPen = BUTTON_PEN[String(input.button ?? 'right')] ?? BUTTON_PEN.right
   const style: TrailStyle = {
-    idle: { ...DEFAULT_TRAIL_STYLE.idle, ...(input.style?.idle ?? {}) },
-    recognized: { ...DEFAULT_TRAIL_STYLE.recognized, ...(input.style?.recognized ?? {}) }
+    idle: { ...ALTERNATIVE_PEN, ...(input.style?.idle ?? {}) },
+    recognized: { ...buttonPen, ...(input.style?.recognized ?? {}) }
   }
   const recognized = input.recognized === true
 

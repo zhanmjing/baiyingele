@@ -18,6 +18,8 @@ import { join } from 'node:path'
  */
 
 let overlay: BrowserWindow | null = null
+let overlayReady = false
+let overlayShown = false
 
 export function createGestureOverlayWindow(devServerUrl?: string): BrowserWindow | null {
   if (overlay && !overlay.isDestroyed()) return overlay
@@ -32,6 +34,10 @@ export function createGestureOverlayWindow(devServerUrl?: string): BrowserWindow
     width: bounds.width,
     height: bounds.height,
     transparent: true,
+    // 必须显式给全透明背景色：不给的话 Windows 上 Chromium 合成时
+    // 可能画成黑底。WGestures 用 UpdateLayeredWindow + DIB 走 per-pixel alpha，
+    // Electron 没这个 API，只能靠 backgroundColor 兜。
+    backgroundColor: '#00000000',
     frame: false,
     hasShadow: false,
     resizable: false,
@@ -59,7 +65,9 @@ export function createGestureOverlayWindow(devServerUrl?: string): BrowserWindow
   overlay.setSkipTaskbar(true)
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
-  overlay.once('ready-to-show', () => overlay?.showInactive())
+  // 不调 show()：照 WGestures 的 Visible = false，画手势时才显示。
+  // 一直挂着的全屏置顶窗口会一直占合成资源，也更容易被别的程序误判。
+  overlay.once('ready-to-show', () => { overlayReady = true })
   overlay.on('closed', () => {
     overlay = null
   })
@@ -76,6 +84,23 @@ export function createGestureOverlayWindow(devServerUrl?: string): BrowserWindow
 
 export function getGestureOverlayWindow(): BrowserWindow | null {
   return overlay && !overlay.isDestroyed() ? overlay : null
+}
+
+/**
+ * 有手势时显示浮层，没有就藏起来（对应 WGestures 的 Visible 开关）。
+ * 只在状态真的变化时调 show/hide，避免每帧都发窗口消息。
+ */
+export function setOverlayVisible(visible: boolean): void {
+  const win = getGestureOverlayWindow()
+  if (!win || !overlayReady) return
+  if (visible === overlayShown) return
+  overlayShown = visible
+  if (visible) {
+    win.showInactive()
+    win.setAlwaysOnTop(true, 'screen-saver')
+  } else {
+    win.hide()
+  }
 }
 
 /** 推给浮层窗口；浮层没起来就安静返回 false，不抛错 */
