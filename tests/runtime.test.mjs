@@ -1566,7 +1566,7 @@ test('triggerService：needsSession 的绑定触发后开会话，滚轮能被�
 
 test('主进程：启动时必须调用 startGestureHook，失败不阻塞启动', () => {
   const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
-  assert.match(source, /const hookStatus = startGestureHook\(\)/, '必须在 whenReady 里起钩子')
+  assert.match(source, /hookStatus = startGestureHook\(\)/, '必须在 whenReady 里起钩子')
   assert.match(source, /startSampling\(\{/, '必须真的调用 startSampling（静态导入，不能 require）')
   assert.match(source, /onSample:[\s\S]{0,900}dispatchGesturePoints/, '采样结束必须派发')
   assert.match(source, /onWheel:[\s\S]{0,200}feedSessionEvent/, '滚轮必须送进会话')
@@ -2037,4 +2037,22 @@ test('triggerService：按作用域筛候选，照 AbstractGestureIntentFinder.F
   const inApp = await service.dispatchGesturePoints(up, 'C:\\APP.EXE')
   assert.strictEqual(inApp.valid, true)
   assert.ok(ran.length > 0, '应用级绑定必须能命中（以前 exePath 永远 undefined，这里永远打不中）')
+})
+
+test('main：手势子系统抛异常不能拖垮 IPC 注册', () => {
+  const main = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+
+  // startGestureHook / 浮层窗口都在 whenReady 里、IPC 注册之前。
+  // 它们一抛异常，后面所有 ipcMain.handle 都不会执行 ——
+  // 界面能开但每个 IPC 都失败，点层线层页面直接空白（真实踩过）。
+  assert.match(main, /try \{\s*hookStatus = startGestureHook\(\)\s*\} catch/, 'startGestureHook 必须在 try/catch 里')
+  assert.match(main, /try \{\s*createGestureOverlayWindow/, '浮层窗口创建必须在 try/catch 里')
+
+  // 顺序不变量：钩子启动确实在 IPC 注册之前 —— 所以必须靠 try/catch 兜
+  const hookIdx = main.indexOf('startGestureHook()')
+  const handleIdx = main.indexOf('ipcMain.handle(')
+  assert.ok(hookIdx > 0 && handleIdx > 0, '两处都要存在')
+  if (hookIdx < handleIdx) {
+    assert.match(main, /try \{\s*hookStatus = startGestureHook\(\)/, '在 IPC 之前启动就必须包 try/catch')
+  }
 })

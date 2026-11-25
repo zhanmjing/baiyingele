@@ -326,13 +326,31 @@ app.whenReady().then(() => {
     return result
   }
 
-  // 钩子失败不阻塞启动 —— 没有鼠标钩子，热键和手动派发仍可用
-  const hookStatus = startGestureHook()
+  /**
+   * 钩子失败绝不能阻塞启动。
+   *
+   * 这里踩过一次真实的坑：startGestureHook 在 whenReady 里、**IPC 注册之前**，
+   * 它一抛异常，后面所有 ipcMain.handle 都不会执行 ——
+   * 界面能打开，但每个 IPC 都失败，点层/线层页面直接空白。
+   *
+   * 所以这里必须 try/catch：手势子系统坏了，应用其它部分照常可用。
+   */
+  let hookStatus: { ok: boolean; message: string } = { ok: false, message: '未尝试启动' }
+  try {
+    hookStatus = startGestureHook()
+  } catch (error) {
+    hookStatus = { ok: false, message: error instanceof Error ? error.message : String(error) }
+    console.warn('[gesture] 钩子启动抛异常，已降级：', hookStatus.message)
+  }
 
   // 独立透明浮层窗口：这样在别的程序里画手势也能看见
   // 开发态用 devServerUrl，打包后用 loadFile
-  createGestureOverlayWindow(process.env['ELECTRON_RENDERER_URL'])
-  app.on('browser-window-created', () => resizeOverlayToPrimary())
+  try {
+    createGestureOverlayWindow(process.env['ELECTRON_RENDERER_URL'])
+    app.on('browser-window-created', () => resizeOverlayToPrimary())
+  } catch (error) {
+    console.warn('[gesture] 浮层窗口创建失败，已降级：', error instanceof Error ? error.message : String(error))
+  }
 
   /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */
   const fieldRunner: InstanceRunner = async (context) => {
