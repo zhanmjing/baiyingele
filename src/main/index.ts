@@ -19,6 +19,7 @@ import { setRunHistorySource } from './classes/field/observe'
 import { TriggerStore } from './triggerStore'
 import { TriggerService } from './triggerService'
 import { startSampling } from './classes/point/gesture_sample'
+import { foregroundProcess } from './capabilities/_win32'
 import { onResume as onGestureResume } from './classes/point/gesture_pause'
 import { createGestureOverlayWindow, sendToOverlay, resizeOverlayToPrimary, setOverlayVisible } from './gestureOverlayWindow'
 import { computeTrail } from './classes/surface/gesture_trail'
@@ -218,6 +219,8 @@ app.whenReady().then(() => {
     let currentDirections = ''
     // 触发按钮决定笔色（照原码按 Button 选 _mainPen/_middleBtnPen/_xBtnPen）
     let currentButton = 'right'
+    // 画手势那一刻的前台进程；应用作用域靠它匹配（原码 GetExeAppByContext）
+    let currentExePath = ''
     let lastTrailSent = 0
 
     /**
@@ -269,6 +272,8 @@ app.whenReady().then(() => {
       startSampling({
         onPathStart: (start) => {
           currentButton = start.button
+          // 在**手势开始那一刻**取前台进程：抬手时焦点可能已经变了
+          currentExePath = foregroundProcess()?.exePath ?? ''
           pushTrailStart(start.button)
         },
         onPathPoint: (point) => {
@@ -284,7 +289,7 @@ app.whenReady().then(() => {
           if (triggerService.endSessionOnPathEnd()) return
           if (sample.reason) return
           void triggerService
-            .dispatchGesturePoints(sample.points)
+            .dispatchGesturePoints(sample.points, currentExePath || undefined)
             .catch((error) => console.warn('[gesture] 派发失败', error))
         },
         onWheel: (event) => {

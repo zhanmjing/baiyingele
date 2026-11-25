@@ -196,15 +196,18 @@ export class TriggerService {
    *
    * 第 2 步是为了不丢掉原来能用的场景；它命中时会标注 fuzzy=true。
    */
-  async dispatchGesturePoints(points: GesturePoint[]): Promise<{ directions: string; valid: boolean; reason?: string; records: FiringRecord[]; session?: unknown }> {
+  async dispatchGesturePoints(points: GesturePoint[], exePath?: string): Promise<{ directions: string; valid: boolean; reason?: string; records: FiringRecord[]; session?: unknown }> {
     const result = recognize(points)
     if (!result.valid) {
       return { directions: '', valid: false, reason: result.reason, records: [] }
     }
 
-    const candidates = this.deps.store
+    const all = this.deps.store
       .list()
       .filter((binding) => binding.enabled && binding.source === 'gesture')
+    // 按应用作用域筛：当前应用有绑定就用应用级的，否则按 inheritGlobal 回落全局。
+    // 这一步以前完全没有，所以 15 条应用级绑定永远不命中。
+    const candidates = this.scopeCandidates(all, exePath)
 
     // ① 三元组精确匹配
     const exact = candidates.filter((binding) => binding.gesture && binding.gesture.dirs === result.directions)
@@ -251,6 +254,30 @@ export class TriggerService {
         return true
       }
     })
+  }
+
+  /**
+   * 按应用作用域筛候选，照 AbstractGestureIntentFinder.Find：
+   *
+   *   if (exeApp != null) {
+   *     found = exeApp.Find(gesture);
+   *     if (found == null && exeApp.InheritGlobalGestures) found = globalApp.Find(gesture);
+   *   } else { found = globalApp.Find(gesture); }
+   *
+   * 关键：InheritGlobalGestures 是**当前应用自己那条记录**的属性。
+   */
+  private scopeCandidates(all: TriggerBinding[], exePath?: string): TriggerBinding[] {
+    const globalOnly = all.filter((b) => !b.appScope)
+    if (!exePath) return globalOnly
+
+    const target = exePath.toLowerCase()
+    const atApp = all.filter((b) => b.appScope && b.appScope.exePath.toLowerCase() === target)
+    if (atApp.length) return atApp
+
+    // 当前应用没登记 → 直接用全局；登记了但声明不继承 → 不回落
+    const registered = all.find((b) => b.appScope && b.appScope.exePath.toLowerCase() === target)
+    if (!registered) return globalOnly
+    return registered.appScope!.inheritGlobal ? globalOnly : []
   }
 
   /** 当前会话（「DR + 音量」这类触发后继续接管滚轮的命令） */

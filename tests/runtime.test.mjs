@@ -2001,3 +2001,40 @@ test('手势去重：同一三元组在不同应用作用域下不能合并（70
   const list = new TriggerStore(file).list()
   assert.strictEqual(list.length, 3, '原码每个 ExeApp 各存一份，同手势不同应用是三条独立记录')
 })
+
+// ── 应用作用域：前台进程必须真的解析 ─────────────────────────
+test('_win32：必须有 foregroundProcess（原码 GetExeAppByContext 靠它）', () => {
+  const src = readFileSync(join(process.cwd(), 'src/main/capabilities/_win32.ts'), 'utf8')
+  assert.match(src, /export function foregroundProcess\(\)/, '要导出 foregroundProcess')
+  assert.match(src, /GetForegroundWindow\(\)/, '要用 GetForegroundWindow')
+  assert.match(src, /GetWindowThreadProcessId/, '要拿 pid')
+  assert.match(src, /QueryFullProcessImageNameW/, '要拿完整 exe 路径，不是 basename')
+  // 拿不到不能抛
+  assert.match(src, /catch \{\s*return null\s*\}/, '失败返回 null，不能抛')
+})
+
+test('triggerService：按作用域筛候选，照 AbstractGestureIntentFinder.Find', async () => {
+  const { TriggerStore } = load('main/triggerStore.js')
+  const { TriggerService } = load('main/triggerService.js')
+  const dir = mkdtempSync(join(tmpdir(), 'ts-scope-'))
+  const store = new TriggerStore(join(dir, 'b.json'))
+  const ran = []
+  const mkStore = (tag) => ({ instance: () => ({ id: tag }), run: async () => { ran.push(tag); return { status: 'ok', output: 'ok' } } })
+  const service = new TriggerService({
+    store, pointStore: () => mkStore('p'), lineStore: () => mkStore('l'), onFired: () => {}
+  })
+
+  // 全局：↑ → A；应用 C:\\app.exe 的同手势 → B
+  service.add({ source: 'gesture', pattern: '↑', targetKind: 'point', targetId: 'point.a@r1', name: '全局A' })
+  service.add({
+    source: 'gesture', pattern: '↑', targetKind: 'point', targetId: 'point.b@r1', name: '应用B',
+    appScope: { exePath: 'C:\\app.exe', inheritGlobal: true }
+  })
+
+  // 一段合法的向上轨迹（屏幕坐标 y 减小 = 向上），时长要落在 80–3000ms
+  const up = Array.from({ length: 12 }, (_, i) => ({ x: 100, y: 100 - i * 6, t: i * 15 }))
+  // 在 app.exe 里画 ↑ → 用应用级的 B
+  const inApp = await service.dispatchGesturePoints(up, 'C:\\APP.EXE')
+  assert.strictEqual(inApp.valid, true)
+  assert.ok(ran.length > 0, '应用级绑定必须能命中（以前 exePath 永远 undefined，这里永远打不中）')
+})

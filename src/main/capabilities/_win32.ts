@@ -436,3 +436,40 @@ export function foregroundWindow(): { process: string; title: string } | null {
     return null
   }
 }
+
+/**
+ * 前台窗口的进程完整路径。
+ *
+ * 手势的应用作用域要靠它：WGestures 在 Win32GestrueIntentFinder.GetExeAppByContext
+ * 里用 procId -> Native.GetProcessFile(procId) 拿进程文件名，再去 ExeApp 列表里找。
+ *
+ * 我们之前 context.exePath 一直没人填，所以 15 条应用级绑定永远不命中——
+ * 表面是「应用级手势不生效」，实际是这一层根本没接。
+ */
+export function foregroundProcess(): { pid: number; exePath: string; exeName: string } | null {
+  const api = ensure()
+  if (!api) return null
+  try {
+    const hwnd = api.GetForegroundWindow()
+    if (!hwnd) return null
+    const pidBuffer = Buffer.alloc(4)
+    api.GetWindowThreadProcessId(hwnd, pidBuffer)
+    const pid = pidBuffer.readUInt32LE(0)
+    if (!pid) return null
+    const handle = api.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid)
+    if (!handle) return { pid, exePath: '', exeName: '' }
+    try {
+      const sizeBuffer = Buffer.alloc(4)
+      sizeBuffer.writeUInt32LE(MAX_PATH_CHARS, 0)
+      const nameBuffer = Buffer.alloc(MAX_PATH_CHARS * 2)
+      if (!api.QueryFullProcessImageNameW(handle, 0, nameBuffer, sizeBuffer)) return { pid, exePath: '', exeName: '' }
+      const chars = sizeBuffer.readUInt32LE(0)
+      const exePath = nameBuffer.toString('utf16le', 0, chars * 2)
+      return { pid, exePath, exeName: basename(exePath) }
+    } finally {
+      api.CloseHandle(handle)
+    }
+  } catch {
+    return null
+  }
+}
