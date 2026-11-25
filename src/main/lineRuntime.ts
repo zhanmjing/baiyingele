@@ -148,25 +148,16 @@ export function parseListValue(raw: string): { ok: boolean; items?: string[]; re
 /**
  * 纯函数：给定 gate 结果，算出该激活哪些出边。
  *
- * 分支 gate：
- *   if        → 按**值**分支，边标签 true / false
- *   if-status → 按**上游节点状态**分支，边标签 ok / warn（warn/fail/error 同义）
+ * 分支 gate 的边标签由 GATE_HANDLERS 里的 edgeLabels 决定，不在这里硬编码。
  */
 export function firedEdges(profile: LineProfile, node: LineNode, truthy: boolean): { to: string; label?: string }[] {
   const outgoing = profile.edges.filter((edge) => edge.from === node.id)
   if (node.kind !== 'gate') return outgoing
 
-  if (node.gate === 'if') {
-    const wanted = truthy ? 'true' : 'false'
-    return outgoing.filter((edge) => (edge.label ?? '').toLowerCase() === wanted)
-  }
-  if (node.gate === 'if-status') {
-    const okLabels = ['ok', 'success', 'true']
-    const failLabels = ['warn', 'fail', 'failed', 'error', 'false']
-    const wanted = truthy ? okLabels : failLabels
-    return outgoing.filter((edge) => wanted.includes((edge.label ?? '').toLowerCase()))
-  }
-  return outgoing
+  const labels = GATE_HANDLERS[String(node.gate ?? '')]?.edgeLabels
+  if (!labels) return outgoing
+  const wanted = truthy ? labels.truthy : labels.falsy
+  return outgoing.filter((edge) => wanted.includes((edge.label ?? '').toLowerCase()))
 }
 
 /**
@@ -179,8 +170,9 @@ export function firedEdges(profile: LineProfile, node: LineNode, truthy: boolean
  * `each` 分支到达，那它就是回边，不计入入度。
  */
 export function entryNodes(profile: LineProfile): LineNode[] {
+  // 哪些 gate 的回边不该计入入度 —— 由注册表说了算，不再这里硬编码 foreach
   const foreachIds = new Set(
-    profile.nodes.filter((node) => node.kind === 'gate' && node.gate === 'foreach').map((node) => node.id)
+    profile.nodes.filter((node) => node.kind === 'gate' && isSoftIncomingGate(node.gate)).map((node) => node.id)
   )
 
   const reachableFrom = (startIds: string[]): Set<string> => {
@@ -263,6 +255,75 @@ interface ExecContext {
   record: (result: LineNodeResult) => void
 }
 
+/** execNode 里那个 base 工厂的类型 */
+type BaseFactory = (overrides: Partial<NodeOutcome> & { result: LineNodeResult }) => NodeOutcome
+
+/**
+ * gate 处理器注册表。
+ *
+ * 以前 if / if-status / foreach 的分派是散在三处的硬判断：
+ *   evaluateIfGate() 只会算 if
+ *   firedEdges()     里按 gate 名选边标签
+ *   execNode()       里 `if (node.gate === 'foreach') …`
+ *   entryNodes()     里单独 filter 出 foreach 再算入度
+ *
+ * 三处各写一遍「有哪些 gate」，加一种 gate 要改三个地方，而且容易漏。
+ * 现在只有这张表说了算：加一种 gate = 往这里加一条。
+ *
+ * 两个能力位：
+ *   execute       自己接管执行（foreach 要跑循环体，不是简单分支）
+ *   decide        需要先算出 truthy，再由 firedEdges 选边（if / if-status）
+ *   softIncoming  它的回边不计入入度（foreach 的 each 回边是约定，不是环）
+ */
+export interface GateHandler {
+  gate: string
+  softIncoming?: boolean
+  execute?: (context: ExecContext, base: BaseFactory) => Promise<NodeOutcome> | NodeOutcome
+  decide?: (context: ExecContext) => { ok: true; truthy: boolean; note: string } | { ok: false; halt: string }
+  /**
+   * truthy / falsy 各自匹配哪些边标签。
+   * 不收进注册表的话，firedEdges 里就还得按 gate 名硬编码一遍 —— 那还是漏了一处。
+   */
+  edgeLabels?: { truthy: string[]; falsy: string[] }
+}
+
+export const GATE_HANDLERS: Record<string, GateHandler> = {
+  foreach: {
+    gate: 'foreach',
+    // foreach --each--> 循环体 --> foreach 是文档化的约定，回边不是环
+    softIncoming: true,
+    execute: (context, base) => runForEach(context, base)
+  },
+  if: {
+    gate: 'if',
+    decide: ({ input }) => {
+      const decided = evaluateIfGate(input)
+      if (!decided.ok) return { ok: false, halt: decided.reason ?? 'if gate 无法判断' }
+      return { ok: true, truthy: decided.truthy === true, note: `if(${input.slice(0, 30)})` }
+    },
+    edgeLabels: { truthy: ['true'], falsy: ['false'] }
+  },
+  'if-status': {
+    gate: 'if-status',
+    decide: ({ node, prevStatus }) => {
+      if (prevStatus === 'start') {
+        return { ok: false, halt: `if-status gate「${node.label}」没有上游节点，无法按状态分支` }
+      }
+      return { ok: true, truthy: prevStatus === 'ok', note: `上游=${prevStatus}` }
+    },
+    // warn/fail/failed/error/false 同义；ok/success/true 同义
+    edgeLabels: {
+      truthy: ['ok', 'success', 'true'],
+      falsy: ['warn', 'fail', 'failed', 'error', 'false']
+    }
+  }
+}
+
+/** 这个 gate 类型是不是「自循环型」（回边不计入入度） */
+export function isSoftIncomingGate(gate: unknown): boolean {
+  return GATE_HANDLERS[String(gate ?? '')]?.softIncoming === true
+}
+
 async function execNode(context: ExecContext): Promise<NodeOutcome> {
   const { node, profile, input, prevStatus, args, deps, counters } = context
   const outgoing = (label?: string): string[] =>
@@ -280,11 +341,10 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
 
   // ── gate ──────────────────────────────────────────
   if (node.kind === 'gate') {
-    if (node.gate === 'foreach') {
-      return runForEach(context, base)
-    }
+    const handler = GATE_HANDLERS[String(node.gate ?? '')]
 
-    if (node.gate !== 'if' && node.gate !== 'if-status') {
+    // 表里没有就是没实现 —— 明确停下，不静默跳过
+    if (!handler) {
       counters.failed += 1
       const halt = `gate「${node.gate ?? node.label}」尚未实现，流程在此停止`
       return base({
@@ -293,48 +353,36 @@ async function execNode(context: ExecContext): Promise<NodeOutcome> {
       })
     }
 
-    let truthy: boolean
-    if (node.gate === 'if-status') {
-      if (prevStatus === 'start') {
-        counters.failed += 1
-        const halt = `if-status gate「${node.label}」没有上游节点，无法按状态分支`
-        return base({
-          result: { nodeId: node.id, label: node.label, kind: 'gate:if-status', status: 'failed', output: halt, real: false, fired: [] },
-          halt
-        })
-      }
-      truthy = prevStatus === 'ok'
-    } else {
-      const decided = evaluateIfGate(input)
-      if (!decided.ok) {
-        counters.failed += 1
-        const halt = decided.reason ?? 'if gate 无法判断'
-        return base({
-          result: { nodeId: node.id, label: node.label, kind: 'gate:if', status: 'failed', output: halt, real: false, fired: [] },
-          halt
-        })
-      }
-      truthy = decided.truthy === true
+    // foreach 这类自己跑循环的，直接接管
+    if (handler.execute) return handler.execute(context, base)
+
+    // if / if-status：先算 truthy，再由 firedEdges 选边
+    const decided = handler.decide!(context)
+    if (!decided.ok) {
+      counters.failed += 1
+      return base({
+        result: { nodeId: node.id, label: node.label, kind: `gate:${node.gate}`, status: 'failed', output: decided.halt, real: false, fired: [] },
+        halt: decided.halt
+      })
     }
 
-    const edges = firedEdges(profile, node, truthy)
+    const edges = firedEdges(profile, node, decided.truthy)
     if (!edges.length) {
       counters.failed += 1
-      const halt = `${node.gate} gate「${node.label}」判定为 ${truthy}，但没有对应的出边`
+      const halt = `${node.gate} gate「${node.label}」判定为 ${decided.truthy}，但没有对应的出边`
       return base({
         result: { nodeId: node.id, label: node.label, kind: `gate:${node.gate}`, status: 'failed', output: halt, real: false, fired: [] },
         halt
       })
     }
 
-    const note = node.gate === 'if-status' ? `上游=${prevStatus}` : `if(${input.slice(0, 30)})`
     return base({
       result: {
         nodeId: node.id,
         label: node.label,
         kind: `gate:${node.gate}`,
         status: 'ok',
-        output: `${note} = ${truthy} → ${edges.map((edge) => edge.to).join(', ')}`,
+        output: `${decided.note} = ${decided.truthy} → ${edges.map((edge) => edge.to).join(', ')}`,
         real: true,
         fired: edges.map((edge) => edge.to)
       },
