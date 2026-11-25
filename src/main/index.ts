@@ -185,6 +185,47 @@ app.whenReady().then(() => {
     }
   })
 
+  /**
+   * 全局鼠标采样 —— 手势链路的入口。
+   *
+   * point.gesture_sample 建好了但没人起钩子，所以手势只能靠 IPC 传点测试。
+   * 这里接上：采样 → 识别派发 → 会话接管滚轮。
+   *
+   *   1. 一次采样结束 → dispatchGesturePoints
+   *   2. 采样之外的滚轮 → feedSessionEvent
+   *   3. 暂停时钩子停，恢复时重起
+   */
+  const startGestureHook = () => {
+    const samplers = require('./classes/point/gesture_sample') as typeof import('./classes/point/gesture_sample')
+    const pause = require('./classes/point/gesture_pause') as typeof import('./classes/point/gesture_pause')
+
+    const start = () =>
+      samplers.startSampling({
+        onSample: (sample) => {
+          if (sample.reason) return
+          void triggerService
+            .dispatchGesturePoints(sample.points)
+            .catch((error) => console.warn('[gesture] 派发失败', error))
+        },
+        onWheel: (event) => {
+          triggerService.feedSessionEvent(event)
+        }
+      })
+
+    const result = start()
+    if (!result.ok) {
+      console.warn('[gesture] 全局钩子未启动：', result.message)
+      return result
+    }
+    pause.onResume(() => {
+      start()
+    })
+    return result
+  }
+
+  // 钩子失败不阻塞启动 —— 没有鼠标钩子，热键和手动派发仍可用
+  const hookStatus = startGestureHook()
+
   /** 场层：先出建议，再按自主度决定要不要真的落到目标位置（A2 才写，且必留撤销令牌） */
   const fieldRunner: InstanceRunner = async (context) => {
     const outcome = (await runCapability(context)) ?? notImplemented(context)
@@ -342,6 +383,7 @@ app.whenReady().then(() => {
   ipcMain.handle('ui:form:resolve', (_event, requestId: string, answer) => resolveForm(requestId, answer))
 
   ipcMain.handle('trigger:list', () => ({
+    gestureHook: hookStatus,
     bindings: triggerService.list(),
     firings: triggerService.recent(30),
     combos: registeredCombos(),

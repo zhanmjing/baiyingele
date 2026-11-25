@@ -1558,3 +1558,14 @@ test('triggerService：needsSession 的绑定触发后开会话，滚轮能被�
   // 会话结束后滚轮回到普通流程
   service.activeSession() && service.feedSessionEvent('wheel-backward')
 })
+
+test('主进程：启动时必须调用 startGestureHook，失败不阻塞启动', () => {
+  const source = readFileSync(join(process.cwd(), 'src/main/index.ts'), 'utf8')
+  assert.match(source, /const hookStatus = startGestureHook\(\)/, '必须在 whenReady 里起钩子')
+  assert.match(source, /samplers\.startSampling\(/, '必须真的调用 startSampling')
+  assert.match(source, /onSample:[\s\S]{0,400}dispatchGesturePoints/, '采样结束必须派发')
+  assert.match(source, /onWheel:[\s\S]{0,200}feedSessionEvent/, '滚轮必须送进会话')
+  assert.match(source, /pause\.onResume\(/, '恢复时必须重起钩子')
+  assert.match(source, /if \(!result\.ok\)/, '钩子失败要能看见')
+  assert.match(source, /gestureHook: hookStatus/, 'app:info 要暴露钩子状态')
+})
